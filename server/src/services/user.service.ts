@@ -35,12 +35,16 @@ export const getUserById = async (id: string) => {
 
 export const updateUser = async (
   id: string,
-  data: { name?: string; phone?: string; username?: string; password?: string }
+  data: { name?: string; email?: string; phone?: string; username?: string; password?: string }
 ) => {
-  const updateData: Record<string, unknown> = {};
+  const updateData: {
+    name?: string; email?: string; phone?: string;
+    username?: string; password?: string;
+  } = {};
 
-  if (data.name) updateData.name = data.name;
-  if (data.phone) updateData.phone = data.phone;
+  if (data.name)     updateData.name     = data.name;
+  if (data.email)    updateData.email    = data.email;
+  if (data.phone)    updateData.phone    = data.phone;
   if (data.username) updateData.username = data.username;
   if (data.password) updateData.password = await hashPassword(data.password);
 
