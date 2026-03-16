@@ -1,0 +1,85 @@
+import { prisma } from '../models/prismaClient';
+import { hashPassword } from '../utils/password';
+
+export const getAllUsers = async () => {
+  return prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      username: true,
+      role: true,
+      active: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+};
+
+export const getUserById = async (id: string) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      username: true,
+      role: true,
+      active: true,
+      createdAt: true,
+    },
+  });
+};
+
+export const updateUser = async (
+  id: string,
+  data: { name?: string; email?: string; phone?: string; username?: string; password?: string }
+) => {
+  const updateData: Record<string, unknown> = {};
+
+  if (data.name)     updateData.name     = data.name;
+  if (data.email)    updateData.email    = data.email;
+  if (data.phone)    updateData.phone    = data.phone;
+  if (data.username) updateData.username = data.username;
+  if (data.password) updateData.password = await hashPassword(data.password);
+
+  return prisma.user.update({
+    where: { id },
+    data: updateData,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      username: true,
+      role: true,
+      createdAt: true,
+    },
+  });
+};
+
+export const updateUserRole = async (id: string, role: 'MASTER' | 'ADMIN' | 'MEMBRO') => {
+  return prisma.user.update({
+    where: { id },
+    data: { role },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+  });
+};
+
+export const toggleUserActive = async (id: string) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error('Usuário não encontrado');
+
+  return prisma.user.update({
+    where: { id },
+    data: { active: !user.active },
+    select: { id: true, name: true, active: true },
+  });
+};
