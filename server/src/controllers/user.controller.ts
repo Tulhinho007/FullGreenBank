@@ -40,9 +40,8 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
 export const updateProfileById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, phone, username, password } = req.body;
+    const { name, email, phone, username, password } = req.body;
 
-    // Admin não pode editar usuário Master
     const targetUser = await userService.getUserById(id);
     if (!targetUser) { sendError(res, 'Usuário não encontrado', 404); return; }
     if (targetUser.role === 'MASTER' && req.user!.role !== 'MASTER') {
