@@ -38,7 +38,8 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       return;
     }
     sendSuccess(res, user);
-  } catch {
-    sendError(res, 'Erro interno do servidor', 500);
+  } catch (error) {
+  console.error("ERRO NO LOGIN:", error); // Isso vai imprimir o erro real nos Logs do Railway
+  res.status(422).json({ message: "Erro interno no servidor" });
   }
 };
