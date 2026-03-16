@@ -63,7 +63,6 @@ const TeamSearchInput = ({
           return ms && mg
         })
         // Merge: custom first, then API (avoid duplicates)
-        const apiIds = new Set(res.teams.map(t => t.id))
         const merged = [
           ...extraFiltered,
           ...res.teams.filter(t => !extraFiltered.some(e => e.id === t.id))

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import {
   X, Search, ChevronDown, ChevronRight, Star, Trophy,
-  Plus, Trash2, Pencil, RotateCcw, FolderPlus, Check, AlertTriangle,
+  Plus, Trash2, Pencil, RotateCcw, FolderPlus, AlertTriangle,
 } from 'lucide-react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -131,7 +131,7 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave }: LeaguesModalP
   const [showAll,    setShowAll]    = useState(false)
   const [action,     setAction]     = useState<ActionType>(null)
   const [history,    setHistory]    = useState<HistoryEntry[]>([])
-  const [confirm,    setConfirm]    = useState<{title:string;message:string;variant:'danger'|'success';fn:()=>void}|null>(null)
+  const [confirm,    setConfirm]    = useState<{title:string;message:string;variant:'danger'|'success';confirmLabel?:string;fn:()=>void}|null>(null)
   const [undoPrompt, setUndoPrompt] = useState(false)
 
   // Form states

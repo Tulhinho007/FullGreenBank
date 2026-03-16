@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { formatDateTime } from '../utils/formatters'
-import { Activity, Users, Filter, Download, Printer, FileText, FileSpreadsheet, Trash2 } from 'lucide-react'
+import { Activity, Users, Filter, Printer, FileText, FileSpreadsheet, Trash2 } from 'lucide-react'
 
 interface LogEntry {
   id: string
@@ -311,7 +311,6 @@ export const SystemLogPage = () => {
               {/* Entries */}
               {entries.map((log, i) => {
                 const catCls = categoryColors[log.category] || categoryColors['Sistema']
-                const catClsLight = categoryColorLight[log.category] || categoryColorLight['Sistema']
                 return (
                   <div
                     key={log.id}
