@@ -9,6 +9,11 @@ import userRoutes from './routes/user.routes';
 import teamsRoutes from './routes/teams.routes';
 
 const app = express();
+
+// Middlewares obrigatórios
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+
 const PORT = process.env.PORT || 3001;
 
 // ─── Middlewares ────────────────────────────────────────────────────────────
