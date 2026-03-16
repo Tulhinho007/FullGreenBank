@@ -22,7 +22,8 @@ app.use(
     origin: function (origin, callback) {
       const allowedOrigins = [
         'http://localhost:5173',
-        'https://full-green-bank.vercel.app'
+        'https://full-green-bank.vercel.app',
+        'https://full-green-bank-49h4bm5ul-kamaelcontatos-1282s-projects.vercel.app'
       ];
       
       // Permite origins da lista ou qualquer subdomínio da vercel.app (para branches de preview)
