@@ -14,17 +14,24 @@ const PORT = process.env.PORT || 3001;
 // ─── Middlewares ────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'https://full-green-bank.vercel.app'
+      ];
+      
+      // Permite origins da lista ou qualquer subdomínio da vercel.app (para branches de preview)
+      if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Bloqueado pelo CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
-
 // ─── Routes ─────────────────────────────────────────────────────────────────
 app.use('/api/auth',  authRoutes);
 app.use('/api/tips',  tipsRoutes);
