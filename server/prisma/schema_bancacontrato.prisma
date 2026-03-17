@@ -1,0 +1,35 @@
+// ─── Adicione este bloco ao seu schema.prisma ─────────────────────────────────
+// Arquivo: server/prisma/schema.prisma
+//
+// Cole o model abaixo junto aos outros models existentes.
+// Depois rode: npx prisma migrate dev --name add_banca_contrato
+
+model BancaContrato {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  valorInicial     Decimal  @db.Decimal(10, 2)
+  valorAtual       Decimal  @db.Decimal(10, 2)
+  comissaoPercent  Decimal  @default(10) @db.Decimal(5, 2)
+
+  // ATIVO | ENCERRADO_LUCRO | ENCERRADO_QUEBRA
+  status           String   @default("ATIVO")
+
+  observacoes      String?  @db.Text
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("banca_contratos")
+}
+
+// ─── Lembre de adicionar também na model User (se ainda não tiver): ───────────
+//
+//   bancaContratos  BancaContrato[]
+//
+// Exemplo:
+// model User {
+//   ...campos existentes...
+//   bancaContratos  BancaContrato[]
+// }

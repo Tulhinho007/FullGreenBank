@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes';
 import tipsRoutes from './routes/tips.routes';
 import userRoutes from './routes/user.routes';
 import teamsRoutes from './routes/teams.routes';
+import bancaContratosRoutes from './routes/banca-contratos.routes';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/auth',  authRoutes);
 app.use('/api/tips',  tipsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamsRoutes);
+app.use('/api/banca-contratos', bancaContratosRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

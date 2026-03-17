@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Trophy, Bell, BookOpen,
-  ClipboardList, PlusCircle, ScrollText, CreditCard,
+  ClipboardList, PlusCircle, ScrollText, CreditCard, Briefcase,
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -138,7 +138,10 @@ export const Sidebar = () => {
         {/* 4. FINANCEIRO */}
         <SectionLabel label="Financeiro" />
         {isAdmin && (
-          <NavItem icon={<CreditCard size={16} />} label="Pagamentos" to="/financeiro/pagamentos" />
+          <>
+            <NavItem icon={<CreditCard size={16} />}  label="Pagamentos"       to="/financeiro/pagamentos" />
+            <NavItem icon={<Briefcase size={16} />}   label="Banca Gerenciada" to="/financeiro/banca-gerenciada" />
+          </>
         )}
         <NavItem icon={<DollarSign size={16} />} label="Fluxo de Caixa" placeholder />
         <NavItem icon={<FileText size={16} />}   label="Relatórios"     placeholder />

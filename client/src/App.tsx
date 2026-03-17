@@ -15,6 +15,7 @@ import { AdminNewTipPage }    from './pages/AdminNewTipPage'
 import { AdminCadastrosPage } from './pages/AdminCadastrosPage'
 import { SystemLogPage }               from './pages/SystemLogPage'
 import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
+import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
 
 function App() {
   return (
@@ -77,6 +78,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
                 <FinanceiroPagamentosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="financeiro/banca-gerenciada"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+                <BancaGerenciadaPage />
               </ProtectedRoute>
             }
           />
