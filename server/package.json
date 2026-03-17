@@ -4,9 +4,10 @@
   "description": "Full Green Bank - Backend API",
   "main": "dist/server.js",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "ts-node-dev src/server.ts",
-  "start": "node dist/server.js", 
-  "build": "tsc",
+    "start": "node dist/server.js",
+    "build": "tsc",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
