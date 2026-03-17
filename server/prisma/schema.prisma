@@ -57,21 +57,27 @@ model Tip {
 }
 
 model BancaContrato {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  valorInicial     Decimal  @db.Decimal(10, 2)
-  valorAtual       Decimal  @db.Decimal(10, 2)
-  comissaoPercent  Decimal  @default(10) @db.Decimal(5, 2)
+  dataInicial      DateTime  @default(now())
+  dataFinal        DateTime?
 
-  // ATIVO | ENCERRADO_LUCRO | ENCERRADO_QUEBRA
-  status           String   @default("ATIVO")
+  bancaInicial     Decimal   @db.Decimal(10, 2)
+  bancaFinal       Decimal   @db.Decimal(10, 2)
+  comissaoPercent  Decimal   @default(10) @db.Decimal(5, 2)
 
-  observacoes      String?  @db.Text
+  // ATIVO | AGUARDANDO_SAQUE | FINALIZADO | ENCERRADO | CANCELADO
+  status           String    @default("ATIVO")
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  // FIM_DO_PRAZO | CLIENTE_ENCERROU | STOP_LOSS | META_ATINGIDA | SAQUE_TOTAL | CANCELADO | OUTRO
+  motivoFim        String?
+
+  observacoes      String?   @db.Text
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@map("banca_contratos")
 }
