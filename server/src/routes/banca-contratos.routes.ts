@@ -1,9 +1,10 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
+import { PrismaClient } from '@prisma/client'
 import { authenticate, authorizeRoles } from '../middlewares/auth.middleware'
 import { validateRequest } from '../middlewares/validate.middleware'
-import { prisma } from '../models/prisma'
 
+const prisma = new PrismaClient()
 const router = Router()
 router.use(authenticate)
 router.use(authorizeRoles('ADMIN', 'MASTER'))
@@ -14,7 +15,7 @@ router.get('/', async (_req, res) => {
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { id: true, name: true, email: true } } },
     })
-    res.json(contratos.map(c => ({
+    res.json(contratos.map((c) => ({
       id: c.id, userId: c.userId, userName: c.user.name, userEmail: c.user.email,
       dataInicial: c.dataInicial.toISOString(),
       dataFinal: c.dataFinal ? c.dataFinal.toISOString() : null,
@@ -50,7 +51,10 @@ router.post('/',
 )
 
 router.patch('/:id',
-  [body('bancaFinal').optional().isFloat({ min: 0 }), body('status').optional().isIn(['ATIVO','AGUARDANDO_SAQUE','FINALIZADO','ENCERRADO','CANCELADO'])],
+  [
+    body('bancaFinal').optional().isFloat({ min: 0 }),
+    body('status').optional().isIn(['ATIVO', 'AGUARDANDO_SAQUE', 'FINALIZADO', 'ENCERRADO', 'CANCELADO']),
+  ],
   validateRequest,
   async (req: import('express').Request, res: import('express').Response) => {
     const { id } = req.params
@@ -61,14 +65,14 @@ router.patch('/:id',
       const updated = await prisma.bancaContrato.update({
         where: { id },
         data: {
-          ...(dataInicial ? { dataInicial: new Date(dataInicial) } : {}),
+          ...(dataInicial     ? { dataInicial: new Date(dataInicial) }             : {}),
           ...(dataFinal !== undefined ? { dataFinal: dataFinal ? new Date(dataFinal) : null } : {}),
-          ...(bancaInicial !== undefined ? { bancaInicial: Number(bancaInicial) } : {}),
-          ...(bancaFinal !== undefined ? { bancaFinal: Number(bancaFinal) } : {}),
+          ...(bancaInicial    !== undefined ? { bancaInicial: Number(bancaInicial) }    : {}),
+          ...(bancaFinal      !== undefined ? { bancaFinal: Number(bancaFinal) }        : {}),
           ...(comissaoPercent !== undefined ? { comissaoPercent: Number(comissaoPercent) } : {}),
-          ...(status ? { status } : {}),
-          ...(motivoFim !== undefined ? { motivoFim: motivoFim || null } : {}),
-          ...(observacoes !== undefined ? { observacoes } : {}),
+          ...(status          ? { status }                                          : {}),
+          ...(motivoFim       !== undefined ? { motivoFim: motivoFim || null }      : {}),
+          ...(observacoes     !== undefined ? { observacoes }                       : {}),
         },
       })
       res.json(updated)
