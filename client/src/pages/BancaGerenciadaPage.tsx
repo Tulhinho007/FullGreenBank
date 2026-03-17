@@ -74,8 +74,10 @@ export const BancaGerenciadaPage = () => {
     setLoading(true)
     try {
       const [cRes, uRes] = await Promise.all([api.get('/banca-contratos'), api.get('/users')])
-      setContracts((cRes.data as Omit<BancaContract,'lucro'|'vlComissao'|'vlCliente'|'duracaoDias'>[]).map(calcFields))
-      setUsers(uRes.data)
+      const contratosRaw = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? cRes.data?.contratos ?? [])
+      const usersRaw = Array.isArray(uRes.data) ? uRes.data : (uRes.data?.data ?? uRes.data?.users ?? [])
+      setContracts((contratosRaw as Omit<BancaContract,'lucro'|'vlComissao'|'vlCliente'|'duracaoDias'>[]).map(calcFields))
+      setUsers(usersRaw)
     } catch { toast.error('Erro ao carregar contratos.') }
     finally { setLoading(false) }
   }
