@@ -126,7 +126,7 @@ export const BancaGerenciadaPage = () => {
     if (!editTarget) return
     setSaving(true)
     try {
-      await api.patch(\`/banca-contratos/${editTarget.id}\`, {
+      await api.patch(`/banca-contratos/${editTarget.id}`, {
         dataInicial: editForm.dataInicial, dataFinal: editForm.dataFinal || null,
         bancaInicial: Number(editForm.bancaInicial), bancaFinal: Number(editForm.bancaFinal),
         comissaoPercent: Number(editForm.comissaoPercent), status: editForm.status,
@@ -142,7 +142,7 @@ export const BancaGerenciadaPage = () => {
     if (!deleteTarget) return
     setSaving(true)
     try {
-      await api.delete(\`/banca-contratos/${deleteTarget.id}\`)
+      await api.delete(`/banca-contratos/${deleteTarget.id}`)
       toast.success('Contrato excluído.')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Contrato excluído', detail: deleteTarget.userName })
       setDeleteTarget(null); loadAll()
@@ -158,7 +158,7 @@ export const BancaGerenciadaPage = () => {
         userId: renewTarget.userId, dataInicial: today(), dataFinal: null,
         bancaInicial: novoValor, bancaFinal: novoValor,
         comissaoPercent: renewTarget.comissaoPercent, status: 'ATIVO',
-        motivoFim: null, observacoes: \`Renovação do contrato #${renewTarget.id.slice(-6).toUpperCase()}\`,
+        motivoFim: null, observacoes: `Renovação do contrato #${renewTarget.id.slice(-6).toUpperCase()}`,
       })
       toast.success('Contrato renovado! ✓')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Contrato renovado', detail: renewTarget.userName })
