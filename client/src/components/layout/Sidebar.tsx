@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Trophy, Bell, BookOpen,
-  ClipboardList, PlusCircle, ScrollText,
+  ClipboardList, PlusCircle, ScrollText, CreditCard,
 } from 'lucide-react'
 
 interface NavItemProps {
