@@ -13,7 +13,8 @@ import { ProfilePage }        from './pages/ProfilePage'
 import { AdminUsersPage }     from './pages/AdminUsersPage'
 import { AdminNewTipPage }    from './pages/AdminNewTipPage'
 import { AdminCadastrosPage } from './pages/AdminCadastrosPage'
-import { SystemLogPage }      from './pages/SystemLogPage'
+import { SystemLogPage }               from './pages/SystemLogPage'
+import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
 
 function App() {
   return (
@@ -68,6 +69,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
                 <SystemLogPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="financeiro/pagamentos"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+                <FinanceiroPagamentosPage />
               </ProtectedRoute>
             }
           />
