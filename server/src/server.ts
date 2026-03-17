@@ -10,13 +10,10 @@ import teamsRoutes from './routes/teams.routes';
 
 const app = express();
 
-// Middlewares obrigatórios
-app.use(express.json()); 
+// ─── Middlewares ─────────────────────────────────────────────────────────────
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const PORT = process.env.PORT || 3001;
-
-// ─── Middlewares ────────────────────────────────────────────────────────────
+app.use(morgan('dev'));
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -25,8 +22,6 @@ app.use(
         'https://full-green-bank.vercel.app',
         'https://full-green-bank-49h4bm5ul-kamaelcontatos-1282s-projects.vercel.app'
       ];
-      
-      // Permite origins da lista ou qualquer subdomínio da vercel.app (para branches de preview)
       if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
@@ -38,27 +33,30 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
-// ─── Routes ─────────────────────────────────────────────────────────────────
+
+// ─── Routes ──────────────────────────────────────────────────────────────────
 app.use('/api/auth',  authRoutes);
 app.use('/api/tips',  tipsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamsRoutes);
 
-// ─── Health check ────────────────────────────────────────────────────────────
+// ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Full Green Bank API running 🟢' });
 });
 
-// ─── 404 handler ─────────────────────────────────────────────────────────────
+// ─── 404 handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ success: false, message: 'Rota não encontrada' });
 });
 
-// ─── Start ───────────────────────────────────────────────────────────────────
+// ─── Export para o Vercel ─────────────────────────────────────────────────────
+export default app;
+
+// ─── Start local ──────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
   console.log(`\n🟢 Full Green Bank API`);
   console.log(`📡 Server running on http://localhost:${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
-
-export default app;
