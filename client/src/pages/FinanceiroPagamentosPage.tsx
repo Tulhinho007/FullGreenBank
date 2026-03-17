@@ -7,6 +7,7 @@ import {
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
+import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 
@@ -94,7 +95,7 @@ export const FinanceiroPagamentosPage = () => {
   const loadUsers = async () => {
     setLoading(true)
     try {
-      const { data } = await api.get('/users')
+      const data = await usersService.getAll()
       // Mapeia os dados do backend para o formato local
       // O backend pode não ter todos esses campos ainda — usamos fallback
       const mapped: UserPayment[] = data.map((u: {
