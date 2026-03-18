@@ -520,7 +520,7 @@ function HistoryTable({ tips }: { tips: Tip[] }) {
             <button key={r} onClick={() => setRange(r)}
               className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-all ${
                 range === r
-                  ? 'bg-slate-800 dark:bg-slate-200 border-slate-800 dark:border-slate-200 text-white dark:text-slate-900'
+                  ? 'bg-slate-800 dark:bg-slate-200 border-slate-800 dark:border-slate-200 text-slate-50 dark:text-slate-900'
                   : 'bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}>
               {DATE_RANGE_LABELS[r]}

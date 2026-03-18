@@ -23,6 +23,8 @@ const mgmtCards = [
   { icon: <RefreshCw size={18} />, title: 'ROI & Revisão', desc: 'Monitore seu ROI mensalmente. Um ROI positivo de 5–10% já é excelente. Consistência é a meta.' },
   { icon: <BarChart3 size={18} />, title: 'Mercados Certos', desc: 'Especializar-se em 2-3 mercados/ligas melhora muito sua edge. Generalista perde, especialista lucra.' },
 ]
+const formatBRL = (v: number) =>
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 export const DashboardPage = () => {
   const { user } = useAuth()
@@ -53,11 +55,11 @@ export const DashboardPage = () => {
           subtitle="Dicas registradas"
         />
         <StatCard
-          title="Lucro (units)"
-          value={profit >= 0 ? `+${profit.toFixed(1)}u` : `${profit.toFixed(1)}u`}
+          title="Lucro"
+          value={profit >= 0 ? `+${formatBRL(profit)}` : formatBRL(profit)}
           icon={<DollarSign size={18} />}
           accent={profit >= 0 ? 'green' : 'red'}
-          subtitle="Resultado acumulado"
+          subtitle="Resultado em R$"
         />
         <StatCard
           title="Win Rate"
