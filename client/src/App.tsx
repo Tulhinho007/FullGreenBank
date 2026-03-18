@@ -11,7 +11,6 @@ import { DashboardPage }      from './pages/DashboardPage'
 import { TipsPage }           from './pages/TipsPage'
 import { ProfilePage }        from './pages/ProfilePage'
 import { AdminUsersPage }     from './pages/AdminUsersPage'
-import { AdminNewTipPage }    from './pages/AdminNewTipPage'
 import { AdminCadastrosPage } from './pages/AdminCadastrosPage'
 import { SystemLogPage }               from './pages/SystemLogPage'
 import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
@@ -46,14 +45,6 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
                 <AdminUsersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/tips/new"
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
-                <AdminNewTipPage />
               </ProtectedRoute>
             }
           />
