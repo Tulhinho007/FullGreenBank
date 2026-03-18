@@ -128,7 +128,7 @@ export const Sidebar = () => {
 
         {/* 3. GESTÃO */}
         <SectionLabel label="Gestão" />
-        <NavItem icon={<Wallet size={16} />}       label="Banca"            placeholder />
+        <NavItem icon={<Wallet size={16} />}       label="Banca"            to="/gestao/banca" />
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
         <NavItem icon={<History size={16} />}      label="Histórico"        placeholder />

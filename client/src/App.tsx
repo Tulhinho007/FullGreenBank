@@ -15,6 +15,7 @@ import { AdminCadastrosPage } from './pages/AdminCadastrosPage'
 import { SystemLogPage }               from './pages/SystemLogPage'
 import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
 import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
+import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 
 function App() {
   return (
@@ -80,6 +81,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="gestao/banca" element={<GestaoBancaPage />} />
         </Route>
 
         {/* Catch-all */}

@@ -29,8 +29,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tips           Tip[]
-  bancaContratos BancaContrato[]
+  tips                 Tip[]
+  bancaContratos       BancaContrato[]
+  gestaoBancaConfigs   GestaoBancaConfig[]
+  gestaoBancaItens     GestaoBancaItem[]
 
   @@map("users")
 }
@@ -86,4 +88,35 @@ model BancaContrato {
   updatedAt        DateTime  @updatedAt
 
   @@map("banca_contratos")
+}
+
+model GestaoBancaConfig {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  casaAposta     String
+  bancaInicial   Decimal  @db.Decimal(10, 2) @default(1000)
+  perfilRisco    String   @default("moderado")
+
+  @@unique([userId, casaAposta])
+  @@map("gestao_banca_configs")
+}
+
+model GestaoBancaItem {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  casaAposta     String
+  dataReferencia DateTime @db.Date // Salva apenas a data (YYYY-MM-DD)
+  
+  deposito       Decimal  @default(0) @db.Decimal(10, 2)
+  saque          Decimal  @default(0) @db.Decimal(10, 2)
+  resultado      Decimal  @default(0) @db.Decimal(10, 2)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("gestao_banca_itens")
 }
