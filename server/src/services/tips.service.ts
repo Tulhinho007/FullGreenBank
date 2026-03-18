@@ -62,3 +62,8 @@ export const updateTipResult = async (
     data: { result, profit },
   });
 };
+export const deleteTip = async (id: string): Promise<void> => {
+  await prisma.tip.delete({
+    where: { id },
+  });
+};

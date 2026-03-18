@@ -45,4 +45,12 @@ router.patch(
   tipsController.updateResult
 );
 
+
+// DELETE tip - admin and master only
+router.delete(
+  '/:id',
+  authorizeRoles('ADMIN', 'MASTER'),
+  tipsController.deleteTip
+);
+
 export default router;

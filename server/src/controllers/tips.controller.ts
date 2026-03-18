@@ -48,3 +48,18 @@ export const updateResult = async (req: AuthRequest, res: Response): Promise<voi
     sendError(res, message, 400);
   }
 };
+
+export const deleteTip = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const tip = await tipsService.getTipById(req.params.id);
+    if (!tip) {
+      sendError(res, 'Dica não encontrada', 404);
+      return;
+    }
+    await tipsService.deleteTip(req.params.id);
+    sendSuccess(res, null, 'Dica removida com sucesso!');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao excluir dica';
+    sendError(res, message, 400);
+  }
+};
