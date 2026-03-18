@@ -209,7 +209,8 @@ function TipCard({ tip, isAdmin, onUpdateResult, onDelete }: {
             <div className="text-center">
               <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Profit</p>
               <p className={`text-base font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                {tip.profit >= 0 ? '+' : ''}{tip.profit.toFixed(2)}u
+                {/* ALTERADO: De 'u' para formatBRL */}
+                {tip.profit >= 0 ? '+' : ''}{formatBRL(tip.profit)}
               </p>
             </div>
           </>
@@ -318,7 +319,8 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
               <div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Odd</p>
                 <p className="text-sm font-bold font-mono text-slate-900 dark:text-white">
-                  {form.odds ? `@${form.odds}` : <span className="text-slate-300 dark:text-slate-600">@—</span>}
+                  {/* ALTERADO: Adicionado 'Odd @' */}
+                  {form.odds ? `Odd @${form.odds}` : <span className="text-slate-300 dark:text-slate-600">Odd @—</span>}
                 </p>
               </div>
               <div className="h-6 w-px bg-slate-200 dark:bg-surface-400" />
@@ -574,7 +576,8 @@ function HistoryTable({ tips }: { tips: Tip[] }) {
                     </td>
                     {/* Odd */}
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">@{tip.odds.toFixed(2)}</span>
+                      {/* ALTERADO: Adicionado 'Odd' */}
+                      <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">Odd @{tip.odds.toFixed(2)}</span>
                     </td>
                     {/* Valor */}
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -740,8 +743,9 @@ export const TipsPage = () => {
               <TrendingUp size={13} className="text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
+          {/* ALTERADO: De 'u' para formatBRL */}
           <p className={`text-xl font-bold font-mono ${metrics.pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-            {metrics.pnl >= 0 ? '+' : ''}{metrics.pnl.toFixed(2)}u
+            {metrics.pnl >= 0 ? '+' : ''}{formatBRL(metrics.pnl)}
           </p>
           <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400">
             {metrics.pnl >= 0 ? <ChevronUp size={10} className="text-emerald-500" /> : <ChevronDown size={10} className="text-rose-500" />}
@@ -839,7 +843,8 @@ export const TipsPage = () => {
           <div className="flex flex-col gap-4">
             <div className="rounded-lg p-3 bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400">
               <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">{selected.title}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{selected.event} · @{selected.odds.toFixed(2)} · {formatBRL(selected.stake)}</p>
+              {/* ALTERADO: Adicionado 'Odd @' */}
+              <p className="text-xs text-slate-400 mt-0.5">{selected.event} · Odd @{selected.odds.toFixed(2)} · {formatBRL(selected.stake)}</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Resultado</label>
@@ -849,10 +854,15 @@ export const TipsPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Profit (unidades)</label>
+              {/* ALTERADO: Label de Profit (unidades) para Profit (R$) */}
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Profit (R$)</label>
               <input type="number" step="0.01" className={`${inp} font-mono`} placeholder="Ex: +0.85 ou -1.00"
                 value={resultForm.profit} onChange={e => setResultForm(f => ({ ...f, profit: e.target.value }))} />
-              <p className="text-[10px] text-slate-400 mt-1">Retorno potencial: +{((selected.odds - 1) * selected.stake).toFixed(2)}u</p>
+              
+              {/* ALTERADO: Cálculo do retorno potencial real (Odd * Stake) */}
+              <p className="text-[10px] text-slate-400 mt-1">
+                Retorno potencial: {formatBRL(selected.odds * selected.stake)}
+              </p>
             </div>
             <div className="flex gap-3 pt-1">
               <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
