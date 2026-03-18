@@ -9,7 +9,7 @@ interface LogEntry {
   userEmail: string
   userName: string
   userRole: string
-  category: 'Auth' | 'Dicas' | 'Usuários' | 'Admin' | 'Sistema'
+  category: 'Auth' | 'Dicas' | 'Usuários' | 'Admin' | 'Sistema' | 'Financeiro'
   action: string
   detail: string
 }
@@ -23,14 +23,7 @@ const categoryColors: Record<string, string> = {
   Usuários: 'bg-blue-900/50   text-blue-400   border-blue-800/40',
   Admin:    'bg-purple-900/50 text-purple-400  border-purple-800/40',
   Sistema:  'bg-slate-700/50  text-slate-300   border-slate-600/40',
-}
-
-const categoryColorLight: Record<string, string> = {
-  Auth:     'bg-yellow-100 text-yellow-700 border-yellow-300',
-  Dicas:    'bg-green-100  text-green-700  border-green-300',
-  Usuários: 'bg-blue-100   text-blue-700   border-blue-300',
-  Admin:    'bg-purple-100 text-purple-700  border-purple-300',
-  Sistema:  'bg-slate-100  text-slate-600   border-slate-300',
+  Financeiro: 'bg-emerald-900/50 text-emerald-400 border-emerald-800/40',
 }
 
 const roleColor: Record<string, string> = {
@@ -66,7 +59,7 @@ const groupByDate = (logs: LogEntry[]) => {
   return groups
 }
 
-const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin', 'Sistema']
+const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin', 'Sistema', 'Financeiro']
 
 export const SystemLogPage = () => {
   const { user } = useAuth()
