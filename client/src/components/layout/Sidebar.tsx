@@ -114,7 +114,7 @@ export const Sidebar = () => {
         {/* 1. PRINCIPAL */}
         <SectionLabel label="Principal" />
         <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard" to="/dashboard" />
-        <NavItem icon={<TrendingUp size={16} />}      label="Dicas"      to="/tips" />
+        <NavItem icon={<TrendingUp size={16} />}      label="Dicas do Dia" to="/tips" />
 
         {/* 2. ADMIN — só para admin/master */}
         {isAdmin && (
