@@ -1,10 +1,11 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { tipsService } from '../services/tips.service'
 import { Modal } from '../components/ui/Modal'
 import {
-  TrendingUp, Target, Zap, Filter,
-  Edit2, Trash2, ChevronUp, ChevronDown, Info, X,
+  TrendingUp, Target, Zap, DollarSign,
+  Edit2, Trash2, Info, X, Plus,
+  ChevronUp, ChevronDown,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -21,7 +22,7 @@ export interface Tip {
   market: string
   odds: number
   stake: number
-  result?: string      // 'GREEN' | 'RED' | 'VOID' | 'PENDING' | undefined
+  result?: string
   profit?: number
   tipDate: string
   author: { name: string; username: string }
@@ -29,19 +30,45 @@ export interface Tip {
 
 type ResultFilter = 'Todos' | 'PENDING' | 'GREEN' | 'RED' | 'VOID'
 
+interface NewTipForm {
+  title: string; description: string; sport: string; event: string
+  market: string; odds: string; stake: string; tipDate: string
+}
+
 // ─────────────────────────────────────────────
-// Helpers
+// Constants
 // ─────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string; border: string }> = {
-  GREEN:   { label: 'Green ✓',  bg: 'bg-emerald-500/15', text: 'text-emerald-400', dot: 'bg-emerald-400', border: 'border-l-emerald-500' },
-  RED:     { label: 'Red ✗',    bg: 'bg-rose-500/15',    text: 'text-rose-400',    dot: 'bg-rose-400',    border: 'border-l-rose-500'    },
-  VOID:    { label: 'Anulado',  bg: 'bg-slate-500/20',   text: 'text-slate-400',   dot: 'bg-slate-400',   border: 'border-l-slate-600'   },
-  PENDING: { label: 'Pendente', bg: 'bg-amber-500/15',   text: 'text-amber-400',   dot: 'bg-amber-400',   border: 'border-l-amber-500'   },
+const SPORTS  = ['Futebol','Basquete','Tênis','Hóquei','Americano','Outros']
+const MARKETS = ['Resultado (1X2)','Over/Under','BTTS','Handicap Asiático','Dupla Chance','Placar Exato','Outros']
+const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID']
+
+const FILTER_LABELS: Record<ResultFilter, string> = {
+  Todos: 'Todos', PENDING: '🟡 Pendente', GREEN: '🟢 Green', RED: '🔴 Red', VOID: '⚪ Anulado',
+}
+
+// ─────────────────────────────────────────────
+// Status Config — light + dark mode safe
+// ─────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<string, {
+  label: string
+  badgeBg: string
+  badgeText: string
+  dot: string
+  borderL: string
+}> = {
+  GREEN:   { label: '🟢 Green',    badgeBg: 'bg-emerald-100 dark:bg-emerald-500/20', badgeText: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500', borderL: 'border-l-emerald-500' },
+  RED:     { label: '🔴 Red',      badgeBg: 'bg-rose-100 dark:bg-rose-500/20',       badgeText: 'text-rose-700 dark:text-rose-400',       dot: 'bg-rose-500',    borderL: 'border-l-rose-500'    },
+  VOID:    { label: '⚪ Anulado',  badgeBg: 'bg-slate-100 dark:bg-slate-700/40',     badgeText: 'text-slate-600 dark:text-slate-400',     dot: 'bg-slate-400',   borderL: 'border-l-slate-400'   },
+  PENDING: { label: '🟡 Pendente', badgeBg: 'bg-amber-100 dark:bg-amber-500/20',     badgeText: 'text-amber-700 dark:text-amber-400',     dot: 'bg-amber-500',   borderL: 'border-l-amber-500'   },
 }
 
 const getStatus = (tip: Tip) => tip.result || 'PENDING'
-const cfg = (tip: Tip) => STATUS_CONFIG[getStatus(tip)] ?? STATUS_CONFIG.PENDING
+const scfg = (tip: Tip) => STATUS_CONFIG[getStatus(tip)] ?? STATUS_CONFIG.PENDING
+
+const formatBRL = (v: number) =>
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleString('pt-BR', {
@@ -49,124 +76,300 @@ const formatDate = (iso: string) =>
     hour: '2-digit', minute: '2-digit',
   })
 
-const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID']
-const FILTER_LABELS: Record<ResultFilter, string> = {
-  Todos: 'Todos', PENDING: 'Pendente', GREEN: 'Green ✓', RED: 'Red ✗', VOID: 'Anulado',
+const EMPTY_FORM: NewTipForm = {
+  title: '', description: '', sport: 'Futebol', event: '',
+  market: 'Resultado (1X2)', odds: '', stake: '', tipDate: '',
 }
 
 // ─────────────────────────────────────────────
-// Sub-components
+// Doughnut Chart (canvas — sem lib externa)
+// ─────────────────────────────────────────────
+
+function DoughnutChart({ greens, reds, pending, voided }: {
+  greens: number; reds: number; pending: number; voided: number
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const total = greens + reds + pending + voided || 1
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const cx = canvas.width / 2, cy = canvas.height / 2
+    const r = cx - 6, ir = r * 0.62
+    const slices = [
+      { value: greens,  color: '#10b981' },
+      { value: reds,    color: '#f43f5e' },
+      { value: pending, color: '#f59e0b' },
+      { value: voided,  color: '#64748b' },
+    ]
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    let start = -Math.PI / 2
+    slices.forEach(({ value, color }) => {
+      if (!value) return
+      const sweep = (value / total) * 2 * Math.PI
+      ctx.beginPath(); ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, r, start, start + sweep)
+      ctx.closePath(); ctx.fillStyle = color; ctx.fill()
+      start += sweep
+    })
+    // hole
+    ctx.beginPath(); ctx.arc(cx, cy, ir, 0, 2 * Math.PI)
+    ctx.fillStyle = 'transparent'; ctx.fill()
+    // center %
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = `bold ${Math.round(r * 0.38)}px sans-serif`
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+    ctx.fillText(`${Math.round((greens / total) * 100)}%`, cx, cy)
+  }, [greens, reds, pending, voided, total])
+
+  return (
+    <div className="flex items-center gap-3">
+      <canvas ref={canvasRef} width={76} height={76} />
+      <div className="flex flex-col gap-1 text-xs">
+        <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400"><span className="w-2 h-2 rounded-full bg-emerald-500" />{greens} Green</span>
+        <span className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400"><span className="w-2 h-2 rounded-full bg-rose-500" />{reds} Red</span>
+        <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400"><span className="w-2 h-2 rounded-full bg-amber-500" />{pending} Pend.</span>
+        {voided > 0 && <span className="flex items-center gap-1.5 text-slate-500"><span className="w-2 h-2 rounded-full bg-slate-400" />{voided} Anul.</span>}
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// Status Badge
 // ─────────────────────────────────────────────
 
 function StatusBadge({ tip }: { tip: Tip }) {
-  const c = cfg(tip)
+  const c = scfg(tip)
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${c.bg} ${c.text}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${c.badgeBg} ${c.badgeText}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
       {c.label}
     </span>
   )
 }
 
-function MiniDonut({ greens, reds }: { greens: number; reds: number }) {
-  const total = greens + reds || 1
-  return (
-    <div className="flex flex-col gap-1.5 w-36">
-      <div className="flex items-center gap-1.5 text-xs text-slate-400">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-        Green
-        <span className="ml-auto text-emerald-400 font-semibold">{greens}</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">
-        <div className="h-full bg-emerald-400 rounded-full transition-all" style={{ width: `${(greens / total) * 100}%` }} />
-      </div>
-      <div className="flex items-center gap-1.5 text-xs text-slate-400">
-        <span className="w-2 h-2 rounded-full bg-rose-400 inline-block" />
-        Red
-        <span className="ml-auto text-rose-400 font-semibold">{reds}</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">
-        <div className="h-full bg-rose-400 rounded-full transition-all" style={{ width: `${(reds / total) * 100}%` }} />
-      </div>
-    </div>
-  )
-}
+// ─────────────────────────────────────────────
+// Tip Card
+// ─────────────────────────────────────────────
 
-function TipCard({
-  tip, isAdmin,
-  onUpdateResult, onDelete,
-}: {
+function TipCard({ tip, isAdmin, onUpdateResult, onDelete }: {
   tip: Tip
   isAdmin: boolean
   onUpdateResult: (t: Tip) => void
   onDelete: (id: string) => void
 }) {
-  const c = cfg(tip)
+  const c = scfg(tip)
   return (
-    <div className={`bg-surface-200 border border-surface-400 border-l-4 ${c.border} rounded-xl p-5 shadow-sm hover:shadow-md hover:border-surface-300 transition-all group`}>
+    <div className={`
+      border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm group transition-all
+      bg-white dark:bg-surface-200
+      border-slate-200 dark:border-surface-400
+      hover:shadow-md hover:border-slate-300 dark:hover:border-surface-300
+    `}>
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 flex-1">
+        <h3 className="font-semibold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2 flex-1">
           {tip.title}
         </h3>
         {isAdmin && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-            <button
-              onClick={() => onUpdateResult(tip)}
-              className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-surface-400 transition-colors"
-              title="Atualizar resultado"
-            >
+            <button onClick={() => onUpdateResult(tip)} title="Editar resultado"
+              className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-surface-400 transition-colors">
               <Edit2 size={13} />
             </button>
-            <button
-              onClick={() => onDelete(tip.id)}
-              className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-              title="Excluir dica"
-            >
+            <button onClick={() => onDelete(tip.id)} title="Excluir"
+              className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors">
               <Trash2 size={13} />
             </button>
           </div>
         )}
       </div>
 
-      {/* Sport + Event */}
-      <p className="text-xs text-slate-500 mb-1">
-        <span className="text-slate-400">{tip.sport}</span> · {tip.event}
-      </p>
+      <p className="text-xs text-slate-400 mb-1"><span className="text-slate-500">{tip.sport}</span> · {tip.event}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{tip.market}</p>
 
-      {/* Market */}
-      <p className="text-xs text-slate-400 mb-4 leading-relaxed">{tip.market}</p>
-
-      {/* Valores */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Values */}
+      <div className="flex items-center justify-between mb-4 gap-2">
         <div className="text-center">
-          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Odd</p>
-          <p className="text-base font-bold font-mono text-white">@{tip.odds.toFixed(2)}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Odd</p>
+          <p className="text-base font-bold font-mono text-slate-900 dark:text-white">@{tip.odds.toFixed(2)}</p>
         </div>
-        <div className="h-8 w-px bg-surface-400" />
+        <div className="h-8 w-px bg-slate-200 dark:bg-surface-400" />
         <div className="text-center">
-          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Stake*</p>
-          <p className="text-base font-bold font-mono text-emerald-400">{tip.stake}u</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Valor*</p>
+          <p className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">{formatBRL(tip.stake)}</p>
         </div>
         {tip.profit !== undefined && tip.profit !== null && (
           <>
-            <div className="h-8 w-px bg-surface-400" />
+            <div className="h-8 w-px bg-slate-200 dark:bg-surface-400" />
             <div className="text-center">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Profit</p>
-              <p className={`text-base font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Profit</p>
+              <p className={`text-base font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                 {tip.profit >= 0 ? '+' : ''}{tip.profit.toFixed(2)}u
               </p>
             </div>
           </>
         )}
-        <div className="h-8 w-px bg-surface-400" />
-        <StatusBadge tip={tip} />
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t border-surface-400">
-        <span className="text-[10px] text-slate-500">{formatDate(tip.tipDate)}</span>
-        <span className="text-[10px] text-slate-600 italic">*stake tipster</span>
+      {/* Footer — badge + date */}
+      <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-surface-400">
+        <StatusBadge tip={tip} />
+        <span className="text-[10px] text-slate-400">{formatDate(tip.tipDate)}</span>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// Modal Nova Dica (inline, sem rota separada)
+// ─────────────────────────────────────────────
+
+function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState<NewTipForm>(EMPTY_FORM)
+  const [loading, setLoading] = useState(false)
+  const set = (f: keyof NewTipForm) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setForm(p => ({ ...p, [f]: e.target.value }))
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.event || !form.odds || !form.stake) {
+      toast.error('Preencha todos os campos obrigatórios'); return
+    }
+    setLoading(true)
+    try {
+      await tipsService.create({
+        ...form,
+        odds:    Number(form.odds),
+        stake:   Number(form.stake),
+        tipDate: new Date(form.tipDate).toISOString(),
+      })
+      toast.success('Dica criada com sucesso! 🟢')
+      onSaved(); onClose()
+    } catch (err: unknown) {
+      toast.error((err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao criar dica')
+    } finally { setLoading(false) }
+  }
+
+  const retorno = form.odds && form.stake
+    ? ((Number(form.odds) - 1) * Number(form.stake)).toFixed(2)
+    : null
+
+  const inp = `w-full rounded-lg px-3 py-2.5 text-sm border transition-colors
+    bg-white dark:bg-surface-300
+    border-slate-200 dark:border-surface-400
+    text-slate-900 dark:text-white
+    placeholder-slate-400 dark:placeholder-slate-500
+    focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/30`
+  const lbl = 'block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5'
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="w-full max-w-lg rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto
+        bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-surface-400 sticky top-0 bg-white dark:bg-surface-200 z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+              <TrendingUp size={15} className="text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">Nova Dica</p>
+              <p className="text-[10px] text-slate-400">Publicar em Dicas do Dia</p>
+            </div>
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-surface-400 transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="p-6 flex flex-col gap-4">
+          {/* Preview card */}
+          <div className="border border-l-4 border-l-amber-500 rounded-xl p-4
+            bg-slate-50 dark:bg-surface-300 border-slate-200 dark:border-surface-400">
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Preview do card</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{form.title || 'Título da dica'}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{form.event || 'Evento'} · {form.market}</p>
+            <div className="flex items-center gap-3 mt-3 flex-wrap">
+              {form.odds  && <span className="text-xs font-mono font-bold text-slate-700 dark:text-white">@{form.odds}</span>}
+              {form.stake && <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">{formatBRL(Number(form.stake))}</span>}
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />🟡 Pendente
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className={lbl}>Título da dica *</label>
+            <input className={inp} placeholder="Ex: Over 2.5 — Manchester City vs Arsenal" value={form.title} onChange={set('title')} />
+          </div>
+          <div>
+            <label className={lbl}>Análise / Descrição *</label>
+            <textarea className={`${inp} min-h-[80px] resize-none`} placeholder="Explique o raciocínio..." value={form.description} onChange={set('description')} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={lbl}>Esporte *</label>
+              <select className={inp} value={form.sport} onChange={set('sport')}>
+                {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={lbl}>Evento / Jogo *</label>
+              <input className={inp} placeholder="Ex: City vs Arsenal" value={form.event} onChange={set('event')} />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className={lbl}>Mercado *</label>
+              <select className={inp} value={form.market} onChange={set('market')}>
+                {MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={lbl}>Odd *</label>
+              <input type="number" step="0.01" min="1.01" className={`${inp} font-mono`} placeholder="2.10" value={form.odds} onChange={set('odds')} />
+            </div>
+            <div>
+              <label className={lbl}>Valor (R$) *</label>
+              <input type="number" step="0.5" min="0.5" className={`${inp} font-mono`} placeholder="50" value={form.stake} onChange={set('stake')} />
+            </div>
+          </div>
+          <div>
+            <label className={lbl}>Data/Hora do jogo *</label>
+            <input type="datetime-local" className={inp} value={form.tipDate} onChange={set('tipDate')} />
+          </div>
+          {retorno && (
+            <div className="flex items-center gap-3 p-3 rounded-lg text-xs
+              bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40">
+              <Zap size={13} className="text-green-600 dark:text-green-400 shrink-0" />
+              <span className="text-slate-600 dark:text-slate-400">Retorno potencial:</span>
+              <span className="font-mono font-bold text-green-600 dark:text-green-400 ml-auto">+{retorno}u</span>
+            </div>
+          )}
+          <p className="text-[10px] text-slate-400 italic border-t border-slate-100 dark:border-surface-400 pt-3">
+            * O valor é uma sugestão. Cada apostador deve adaptar conforme sua banca e gestão pessoal.
+          </p>
+        </div>
+
+        <div className="flex gap-3 px-6 pb-6">
+          <button onClick={onClose}
+            className="flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-400">
+            Cancelar
+          </button>
+          <button onClick={handleSubmit} disabled={loading}
+            className="flex-1 py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold shadow-lg shadow-green-500/20 transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2">
+            {loading
+              ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Publicando...</>
+              : '🟢 Publicar Dica'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -180,57 +383,41 @@ export const TipsPage = () => {
   const { user } = useAuth()
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
 
-  const [tips,        setTips]        = useState<Tip[]>([])
-  const [loading,     setLoading]     = useState(true)
-  const [filter,      setFilter]      = useState<ResultFilter>('Todos')
-  const [page,        setPage]        = useState(1)
-  const [totalPages,  setTotalPages]  = useState(1)
-  const [selected,    setSelected]    = useState<Tip | null>(null)
-  const [resultForm,  setResultForm]  = useState({ result: 'GREEN', profit: '' })
-  const [saving,      setSaving]      = useState(false)
-  const [showBanner,  setShowBanner]  = useState(true)
+  const [tips,       setTips]       = useState<Tip[]>([])
+  const [loading,    setLoading]    = useState(true)
+  const [filter,     setFilter]     = useState<ResultFilter>('Todos')
+  const [page,       setPage]       = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [selected,   setSelected]   = useState<Tip | null>(null)
+  const [resultForm, setResultForm] = useState({ result: 'GREEN', profit: '' })
+  const [saving,     setSaving]     = useState(false)
+  const [showBanner, setShowBanner] = useState(true)
+  const [newTipOpen, setNewTipOpen] = useState(false)
 
-  // ── Load ──────────────────────────────────
   const load = async (p = 1) => {
     setLoading(true)
     try {
       const data = await tipsService.getAll(p, 9)
-      setTips(data.tips)
-      setTotalPages(data.totalPages)
-      setPage(p)
-    } finally {
-      setLoading(false)
-    }
+      setTips(data.tips); setTotalPages(data.totalPages); setPage(p)
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { load(1) }, [])
 
-  // ── Delete ────────────────────────────────
   const handleDelete = async (id: string) => {
     if (!confirm('Excluir esta dica?')) return
-    try {
-      await tipsService.delete(id)
-      toast.success('Dica removida.')
-      load(page)
-    } catch {
-      toast.error('Erro ao excluir dica')
-    }
+    try { await tipsService.delete(id); toast.success('Dica removida.'); load(page) }
+    catch { toast.error('Erro ao excluir dica') }
   }
 
-  // ── Update result ─────────────────────────
   const handleUpdateResult = async () => {
     if (!selected) return
     setSaving(true)
     try {
       await tipsService.updateResult(selected.id, resultForm.result, Number(resultForm.profit))
-      toast.success('Resultado atualizado! 🎯')
-      setSelected(null)
-      load(page)
-    } catch {
-      toast.error('Erro ao atualizar resultado')
-    } finally {
-      setSaving(false)
-    }
+      toast.success('Resultado atualizado! 🎯'); setSelected(null); load(page)
+    } catch { toast.error('Erro ao atualizar resultado') }
+    finally { setSaving(false) }
   }
 
   const openResultModal = (tip: Tip) => {
@@ -238,211 +425,195 @@ export const TipsPage = () => {
     setResultForm({ result: tip.result || 'GREEN', profit: tip.profit?.toString() || '' })
   }
 
-  // ── Métricas ──────────────────────────────
   const metrics = useMemo(() => {
-    const greens   = tips.filter(t => t.result === 'GREEN')
-    const reds     = tips.filter(t => t.result === 'RED')
-    const pendente = tips.filter(t => !t.result || t.result === 'PENDING')
-    const lucro    = tips.reduce((acc, t) => acc + (t.profit ?? 0), 0)
-    const finalizadas = greens.length + reds.length
-    const taxaAcerto  = finalizadas > 0 ? (greens.length / finalizadas) * 100 : 0
-    return { lucro, taxaAcerto, ativas: pendente.length, greens: greens.length, reds: reds.length }
+    const greens  = tips.filter(t => t.result === 'GREEN')
+    const reds    = tips.filter(t => t.result === 'RED')
+    const voided  = tips.filter(t => t.result === 'VOID')
+    const pending = tips.filter(t => !t.result || t.result === 'PENDING')
+    const pnl     = tips.reduce((acc, t) => acc + (t.profit ?? 0), 0)
+    const volume  = tips.reduce((acc, t) => acc + t.stake, 0)
+    const fin     = greens.length + reds.length
+    return {
+      pnl, volume,
+      winRate: fin > 0 ? (greens.length / fin) * 100 : 0,
+      greens: greens.length, reds: reds.length,
+      pending: pending.length, voided: voided.length,
+    }
   }, [tips])
 
-  // ── Filter ────────────────────────────────
   const filtered = useMemo(
     () => filter === 'Todos' ? tips : tips.filter(t => getStatus(t) === filter),
     [tips, filter]
   )
 
-  // ─────────────────────────────────────────
-  // Render
-  // ─────────────────────────────────────────
+  const inp = `w-full rounded-lg px-3 py-2.5 text-sm border transition-colors
+    bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400
+    text-slate-900 dark:text-white placeholder-slate-400
+    focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/30`
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 relative pb-20">
 
-      {/* ── Banner disclaimer ── */}
+      {/* Banner */}
       {showBanner && (
-        <div className="relative flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-300">
-          <Info size={16} className="mt-0.5 shrink-0 text-amber-400" />
-          <p className="leading-relaxed text-xs">
-            <strong className="text-amber-200">Atenção:</strong> O stake exibido é a sugestão do tipster.
-            Adapte o valor de acordo com o tamanho da sua banca e sua gestão pessoal.
+        <div className="flex items-start gap-3 rounded-xl p-4 border
+          bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30">
+          <Info size={16} className="mt-0.5 shrink-0 text-amber-500 dark:text-amber-400" />
+          <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+            <strong className="text-amber-900 dark:text-amber-200">Atenção:</strong> O stake exibido é a sugestão do tipster.
+            Adapte conforme sua banca e gestão pessoal.
           </p>
-          <button onClick={() => setShowBanner(false)} className="ml-auto shrink-0 text-amber-400 hover:text-amber-200">
+          <button onClick={() => setShowBanner(false)} className="ml-auto shrink-0 text-amber-500 hover:text-amber-700 dark:hover:text-amber-200">
             <X size={14} />
           </button>
         </div>
       )}
 
-      {/* ── Header + Métricas ── */}
-      <div>
-        <div className="mb-4">
-          <h2 className="font-display font-semibold text-white">Dicas do Dia</h2>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="font-display font-semibold text-slate-900 dark:text-white">Dicas do Dia</h2>
           <p className="text-xs text-slate-500">{tips.length} dicas carregadas</p>
         </div>
+        {isAdmin && (
+          <button onClick={() => setNewTipOpen(true)}
+            className="hidden lg:flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-green-500/20 transition-all active:scale-95">
+            <Plus size={16} />Nova Dica
+          </button>
+        )}
+      </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Lucro/Profit */}
-          <div className="card border border-surface-400 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Profit Total</span>
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <TrendingUp size={13} className="text-emerald-400" />
-              </div>
-            </div>
-            <p className={`text-xl font-bold font-mono ${metrics.lucro >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {metrics.lucro >= 0 ? '+' : ''}{metrics.lucro.toFixed(2)}u
-            </p>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-500">
-              {metrics.lucro >= 0
-                ? <ChevronUp size={11} className="text-emerald-500" />
-                : <ChevronDown size={11} className="text-rose-500" />}
-              acumulado no período
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="rounded-xl p-4 shadow-sm border bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">P&amp;L</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+              <TrendingUp size={13} className="text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
+          <p className={`text-xl font-bold font-mono ${metrics.pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+            {metrics.pnl >= 0 ? '+' : ''}{metrics.pnl.toFixed(2)}u
+          </p>
+          <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400">
+            {metrics.pnl >= 0 ? <ChevronUp size={10} className="text-emerald-500" /> : <ChevronDown size={10} className="text-rose-500" />}
+            profit acumulado
+          </div>
+        </div>
 
-          {/* Taxa de acerto */}
-          <div className="card border border-surface-400 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Taxa Acerto</span>
-              <div className="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center">
-                <Target size={13} className="text-sky-400" />
-              </div>
-            </div>
-            <p className="text-xl font-bold font-mono text-sky-400">{metrics.taxaAcerto.toFixed(1)}%</p>
-            <div className="mt-2 h-1 rounded-full bg-surface-400 overflow-hidden">
-              <div className="h-full bg-sky-400 rounded-full transition-all" style={{ width: `${metrics.taxaAcerto}%` }} />
+        <div className="rounded-xl p-4 shadow-sm border bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Win Rate</span>
+            <div className="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-500/10 flex items-center justify-center">
+              <Target size={13} className="text-sky-600 dark:text-sky-400" />
             </div>
           </div>
-
-          {/* Dicas ativas */}
-          <div className="card border border-surface-400 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Pendentes</span>
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                <Zap size={13} className="text-amber-400" />
-              </div>
-            </div>
-            <p className="text-xl font-bold font-mono text-amber-400">{metrics.ativas}</p>
-            <p className="text-[10px] text-slate-500 mt-1">{tips.length} total de dicas</p>
+          <p className="text-xl font-bold font-mono text-sky-600 dark:text-sky-400">{metrics.winRate.toFixed(1)}%</p>
+          <div className="mt-2 h-1 rounded-full bg-slate-100 dark:bg-surface-400 overflow-hidden">
+            <div className="h-full bg-sky-500 rounded-full transition-all" style={{ width: `${metrics.winRate}%` }} />
           </div>
+        </div>
 
-          {/* G/R */}
-          <div className="card border border-surface-400 p-4">
-            <div className="mb-2">
-              <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Resultado</span>
+        <div className="rounded-xl p-4 shadow-sm border bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Volume</span>
+            <div className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center">
+              <DollarSign size={13} className="text-purple-600 dark:text-purple-400" />
             </div>
-            <MiniDonut greens={metrics.greens} reds={metrics.reds} />
           </div>
+          <p className="text-xl font-bold font-mono text-slate-900 dark:text-white">{formatBRL(metrics.volume)}</p>
+          <p className="text-[10px] text-slate-400 mt-1">total apostado</p>
+        </div>
+
+        <div className="rounded-xl p-4 shadow-sm border bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400">
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest block mb-2">Proporção</span>
+          <DoughnutChart greens={metrics.greens} reds={metrics.reds} pending={metrics.pending} voided={metrics.voided} />
         </div>
       </div>
 
-      {/* ── Filtros ── */}
+      {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2">
-        <Filter size={14} className="text-slate-500" />
         {FILTERS.map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
+          <button key={f} onClick={() => setFilter(f)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
               filter === f
-                ? 'bg-green-900/50 border-green-700 text-green-400'
-                : 'bg-surface-300 border-surface-400 text-slate-400 hover:text-white hover:border-surface-300'
-            }`}
-          >
+                ? 'bg-green-600 border-green-600 text-white dark:bg-green-900/60 dark:border-green-700 dark:text-green-300'
+                : 'bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-surface-300'
+            }`}>
             {FILTER_LABELS[f]}
           </button>
         ))}
-        <span className="ml-auto text-xs text-slate-500">{filtered.length} dica(s)</span>
+        <span className="ml-auto text-xs text-slate-400">{filtered.length} dica(s)</span>
       </div>
 
-      {/* ── Grid ── */}
+      {/* Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="card border border-surface-400 p-16 text-center">
-          <TrendingUp size={36} className="text-slate-700 mx-auto mb-4" />
-          <p className="text-slate-400 text-sm">Nenhuma dica encontrada.</p>
+        <div className="rounded-xl border p-16 text-center bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400">
+          <TrendingUp size={36} className="text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+          <p className="text-slate-500 text-sm">Nenhuma dica encontrada.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(tip => (
-            <TipCard
-              key={tip.id}
-              tip={tip}
-              isAdmin={isAdmin}
-              onUpdateResult={openResultModal}
-              onDelete={handleDelete}
-            />
+            <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onUpdateResult={openResultModal} onDelete={handleDelete} />
           ))}
         </div>
       )}
 
-      {/* ── Paginação ── */}
+      {/* Paginação */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <button disabled={page <= 1}          onClick={() => load(page - 1)} className="btn-secondary text-sm disabled:opacity-40">← Anterior</button>
-          <span className="text-sm text-slate-400">{page} / {totalPages}</span>
+          <span className="text-sm text-slate-500">{page} / {totalPages}</span>
           <button disabled={page >= totalPages} onClick={() => load(page + 1)} className="btn-secondary text-sm disabled:opacity-40">Próxima →</button>
         </div>
       )}
 
-      {/* ── Modal Atualizar Resultado ── */}
+      {/* FAB mobile */}
+      {isAdmin && (
+        <button onClick={() => setNewTipOpen(true)}
+          className="fixed bottom-6 right-6 lg:hidden w-14 h-14 rounded-full bg-green-600 hover:bg-green-500 text-white shadow-2xl shadow-green-500/30 flex items-center justify-center transition-all active:scale-95 z-40">
+          <Plus size={24} />
+        </button>
+      )}
+
+      {/* Modal — Atualizar resultado */}
       <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Atualizar Resultado" size="sm">
         {selected && (
           <div className="flex flex-col gap-4">
-            {/* Dica info */}
-            <div className="bg-surface-300 border border-surface-400 rounded-lg p-3">
-              <p className="text-sm font-medium text-white line-clamp-1">{selected.title}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{selected.event} · @{selected.odds.toFixed(2)} · {selected.stake}u</p>
+            <div className="rounded-lg p-3 bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400">
+              <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">{selected.title}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{selected.event} · @{selected.odds.toFixed(2)} · {formatBRL(selected.stake)}</p>
             </div>
-
             <div>
-              <label className="label">Resultado</label>
-              <select
-                className="input-field"
-                value={resultForm.result}
-                onChange={e => setResultForm(f => ({ ...f, result: e.target.value }))}
-              >
-                {[
-                  { v: 'GREEN', l: 'Green ✓' },
-                  { v: 'RED',   l: 'Red ✗'   },
-                  { v: 'VOID',  l: 'Anulado'  },
-                ].map(({ v, l }) => <option key={v} value={v}>{l}</option>)}
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Resultado</label>
+              <select className={inp} value={resultForm.result} onChange={e => setResultForm(f => ({ ...f, result: e.target.value }))}>
+                {[{ v: 'GREEN', l: '🟢 Green' }, { v: 'RED', l: '🔴 Red' }, { v: 'VOID', l: '⚪ Anulado' }]
+                  .map(({ v, l }) => <option key={v} value={v}>{l}</option>)}
               </select>
             </div>
-
             <div>
-              <label className="label">Profit (unidades)</label>
-              <input
-                type="number"
-                step="0.01"
-                className="input-field font-mono"
-                placeholder="Ex: +0.85 ou -1.00"
-                value={resultForm.profit}
-                onChange={e => setResultForm(f => ({ ...f, profit: e.target.value }))}
-              />
-              <p className="text-[10px] text-slate-500 mt-1">
-                Retorno potencial: +{((selected.odds - 1) * selected.stake).toFixed(2)}u
-              </p>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Profit (unidades)</label>
+              <input type="number" step="0.01" className={`${inp} font-mono`} placeholder="Ex: +0.85 ou -1.00"
+                value={resultForm.profit} onChange={e => setResultForm(f => ({ ...f, profit: e.target.value }))} />
+              <p className="text-[10px] text-slate-400 mt-1">Retorno potencial: +{((selected.odds - 1) * selected.stake).toFixed(2)}u</p>
             </div>
-
             <div className="flex gap-3 pt-1">
               <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
               <button onClick={handleUpdateResult} disabled={saving} className="btn-primary flex-1">
-                {saving
-                  ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block mr-2" />Salvando...</>
-                  : 'Salvar Resultado'
-                }
+                {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block mr-2" />Salvando...</> : 'Salvar Resultado'}
               </button>
             </div>
           </div>
         )}
       </Modal>
+
+      {/* Modal — Nova Dica */}
+      {newTipOpen && <NewTipModal onClose={() => setNewTipOpen(false)} onSaved={() => load(1)} />}
     </div>
   )
 }
