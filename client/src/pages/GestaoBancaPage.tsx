@@ -34,12 +34,17 @@ export const GestaoBancaPage = () => {
   const loadDados = async () => {
     setLoading(true)
     try {
-      // Puxa as casas cadastradas/utilizadas
-      const resBookies = await api.get('/gestao-banca/bookmakers')
-      if (resBookies.data && resBookies.data.length > 0) {
-        setBookmakers(resBookies.data)
-        if (!resBookies.data.includes(casaAposta) && casaAposta === 'Betano') {
-           setBookmakers(['Betano', ...resBookies.data])
+      // Puxa as casas cadastradas do AdminCadastrosPage (localStorage global do sistema)
+      const storedBookies = localStorage.getItem('fgb_bookmakers')
+      if (storedBookies) {
+        const parsed = JSON.parse(storedBookies)
+        if (Array.isArray(parsed)) {
+          const nomesCasas = parsed.map((c: any) => c.name)
+          setBookmakers(nomesCasas)
+          
+          if (nomesCasas.length > 0 && !nomesCasas.includes(casaAposta)) {
+            setCasaAposta(nomesCasas[0]) // Auto-seleciona a primeira se a atual não existir
+          }
         }
       }
 
@@ -225,10 +230,23 @@ export const GestaoBancaPage = () => {
           <button onClick={() => {
               const novaCasa = prompt('Digite o nome da nova casa:')
               if (novaCasa && novaCasa.trim()) {
-                 setCasaAposta(novaCasa.trim())
-                 if (!bookmakers.includes(novaCasa.trim())) {
-                   setBookmakers((prev: string[]) => [...prev, novaCasa.trim()])
+                 const nome = novaCasa.trim()
+                 setCasaAposta(nome)
+                 
+                 // Adiciona no Dropdown local
+                 if (!bookmakers.includes(nome)) {
+                   setBookmakers((prev: string[]) => [...prev, nome])
                  }
+                 
+                 // Adiciona no LocalStorage global da página "Cadastros"
+                 try {
+                   const stored = localStorage.getItem('fgb_bookmakers')
+                   const parsed = stored ? JSON.parse(stored) : []
+                   if (!parsed.find((p: any) => p.name === nome)) {
+                     parsed.push({ id: Date.now().toString(), name: nome })
+                     localStorage.setItem('fgb_bookmakers', JSON.stringify(parsed))
+                   }
+                 } catch {}
               }
             }} className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2">
             <Plus size={14} /> <span className="hidden sm:inline">Nova Casa</span>
