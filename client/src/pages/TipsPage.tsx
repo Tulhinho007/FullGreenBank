@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { tipsService } from '../services/tips.service'
 import { Modal } from '../components/ui/Modal'
 import {
-  TrendingUp, Target, Zap, DollarSign,
+  TrendingUp, Target, DollarSign,
   Edit2, Trash2, Info, X, Plus,
   ChevronUp, ChevronDown,
 } from 'lucide-react'
@@ -31,15 +31,17 @@ export interface Tip {
 type ResultFilter = 'Todos' | 'PENDING' | 'GREEN' | 'RED' | 'VOID'
 
 interface NewTipForm {
-  title: string; description: string; sport: string; event: string
-  market: string; odds: string; stake: string; tipDate: string
+  event: string
+  market: string
+  odds: string
+  stake: string
+  tipDate: string
 }
 
 // ─────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────
 
-const SPORTS  = ['Futebol','Basquete','Tênis','Hóquei','Americano','Outros']
 const MARKETS = ['Resultado (1X2)','Over/Under','BTTS','Handicap Asiático','Dupla Chance','Placar Exato','Outros']
 const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID']
 
@@ -77,8 +79,7 @@ const formatDate = (iso: string) =>
   })
 
 const EMPTY_FORM: NewTipForm = {
-  title: '', description: '', sport: 'Futebol', event: '',
-  market: 'Resultado (1X2)', odds: '', stake: '', tipDate: '',
+  event: '', market: 'Resultado (1X2)', odds: '', stake: '', tipDate: '',
 }
 
 // ─────────────────────────────────────────────
@@ -231,18 +232,20 @@ function TipCard({ tip, isAdmin, onUpdateResult, onDelete }: {
 function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const [form, setForm] = useState<NewTipForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(false)
+
   const set = (f: keyof NewTipForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm(p => ({ ...p, [f]: e.target.value }))
 
   const handleSubmit = async () => {
-    if (!form.title || !form.event || !form.odds || !form.stake) {
+    if (!form.event || !form.odds || !form.stake || !form.tipDate) {
       toast.error('Preencha todos os campos obrigatórios'); return
     }
     setLoading(true)
     try {
       await tipsService.create({
-        ...form,
+        event:   form.event,
+        market:  form.market,
         odds:    Number(form.odds),
         stake:   Number(form.stake),
         tipDate: new Date(form.tipDate).toISOString(),
@@ -254,33 +257,29 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
     } finally { setLoading(false) }
   }
 
-  const retorno = form.odds && form.stake
-    ? ((Number(form.odds) - 1) * Number(form.stake)).toFixed(2)
-    : null
-
   const inp = `w-full rounded-lg px-3 py-2.5 text-sm border transition-colors
     bg-white dark:bg-surface-300
     border-slate-200 dark:border-surface-400
     text-slate-900 dark:text-white
     placeholder-slate-400 dark:placeholder-slate-500
     focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/30`
-  const lbl = 'block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5'
+  const lbl = 'block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2'
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="w-full max-w-lg rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto
+      <div className="w-full max-w-md rounded-2xl shadow-2xl
         bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-surface-400 sticky top-0 bg-white dark:bg-surface-200 z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-surface-400">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-              <TrendingUp size={15} className="text-green-600 dark:text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+              <TrendingUp size={17} className="text-green-600 dark:text-green-400" />
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">Nova Dica</p>
-              <p className="text-[10px] text-slate-400">Publicar em Dicas do Dia</p>
+              <p className="text-xs text-slate-400">Publicar em Dicas do Dia</p>
             </div>
           </div>
           <button onClick={onClose}
@@ -289,82 +288,104 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           </button>
         </div>
 
-        <div className="p-6 flex flex-col gap-4">
-          {/* Preview card */}
-          <div className="border border-l-4 border-l-amber-500 rounded-xl p-4
-            bg-slate-50 dark:bg-surface-300 border-slate-200 dark:border-surface-400">
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Preview do card</p>
-            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{form.title || 'Título da dica'}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{form.event || 'Evento'} · {form.market}</p>
-            <div className="flex items-center gap-3 mt-3 flex-wrap">
-              {form.odds  && <span className="text-xs font-mono font-bold text-slate-700 dark:text-white">@{form.odds}</span>}
-              {form.stake && <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">{formatBRL(Number(form.stake))}</span>}
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400">
+        <div className="p-6 flex flex-col gap-5">
+
+          {/* ── Preview do Card ── */}
+          <div className="border-l-4 border-l-amber-500 rounded-xl p-5
+            bg-slate-50 dark:bg-surface-300
+            border border-slate-200 dark:border-surface-400">
+            <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+              Preview do card
+            </p>
+            {/* Evento em destaque */}
+            <p className="text-base font-bold text-slate-900 dark:text-white leading-snug">
+              {form.event || <span className="text-slate-300 dark:text-slate-600">Nome do Evento</span>}
+            </p>
+            {/* Mercado */}
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {form.market}
+            </p>
+            {/* Valores em linha */}
+            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-200 dark:border-surface-400 flex-wrap">
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Odd</p>
+                <p className="text-sm font-bold font-mono text-slate-900 dark:text-white">
+                  {form.odds ? `@${form.odds}` : <span className="text-slate-300 dark:text-slate-600">@—</span>}
+                </p>
+              </div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-surface-400" />
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Valor</p>
+                <p className="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                  {form.stake ? formatBRL(Number(form.stake)) : <span className="text-slate-300 dark:text-slate-600">R$ —</span>}
+                </p>
+              </div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-surface-400" />
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Data</p>
+                <p className="text-sm font-mono text-slate-700 dark:text-slate-300">
+                  {form.tipDate
+                    ? new Date(form.tipDate).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+                    : <span className="text-slate-300 dark:text-slate-600">—</span>
+                  }
+                </p>
+              </div>
+              <span className="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />🟡 Pendente
               </span>
             </div>
           </div>
 
+          {/* ── Campos ── */}
           <div>
-            <label className={lbl}>Título da dica *</label>
-            <input className={inp} placeholder="Ex: Over 2.5 — Manchester City vs Arsenal" value={form.title} onChange={set('title')} />
+            <label className={lbl}>Evento / Jogo *</label>
+            <input className={inp} placeholder="Ex: Manchester City vs Arsenal" value={form.event} onChange={set('event')} />
           </div>
+
           <div>
-            <label className={lbl}>Análise / Descrição *</label>
-            <textarea className={`${inp} min-h-[80px] resize-none`} placeholder="Explique o raciocínio..." value={form.description} onChange={set('description')} />
+            <label className={lbl}>Mercado *</label>
+            <select className={inp} value={form.market} onChange={set('market')}>
+              {MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={lbl}>Esporte *</label>
-              <select className={inp} value={form.sport} onChange={set('sport')}>
-                {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={lbl}>Evento / Jogo *</label>
-              <input className={inp} placeholder="Ex: City vs Arsenal" value={form.event} onChange={set('event')} />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className={lbl}>Mercado *</label>
-              <select className={inp} value={form.market} onChange={set('market')}>
-                {MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-            <div>
               <label className={lbl}>Odd *</label>
-              <input type="number" step="0.01" min="1.01" className={`${inp} font-mono`} placeholder="2.10" value={form.odds} onChange={set('odds')} />
+              <input type="number" step="0.01" min="1.01" className={`${inp} font-mono`}
+                placeholder="2.10" value={form.odds} onChange={set('odds')} />
             </div>
             <div>
               <label className={lbl}>Valor (R$) *</label>
-              <input type="number" step="0.5" min="0.5" className={`${inp} font-mono`} placeholder="50" value={form.stake} onChange={set('stake')} />
+              <input type="number" step="0.5" min="0.5" className={`${inp} font-mono`}
+                placeholder="50" value={form.stake} onChange={set('stake')} />
             </div>
           </div>
+
           <div>
-            <label className={lbl}>Data/Hora do jogo *</label>
+            <label className={lbl}>Data/Hora do evento *</label>
             <input type="datetime-local" className={inp} value={form.tipDate} onChange={set('tipDate')} />
           </div>
-          {retorno && (
-            <div className="flex items-center gap-3 p-3 rounded-lg text-xs
-              bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40">
-              <Zap size={13} className="text-green-600 dark:text-green-400 shrink-0" />
-              <span className="text-slate-600 dark:text-slate-400">Retorno potencial:</span>
-              <span className="font-mono font-bold text-green-600 dark:text-green-400 ml-auto">+{retorno}u</span>
-            </div>
-          )}
-          <p className="text-[10px] text-slate-400 italic border-t border-slate-100 dark:border-surface-400 pt-3">
-            * O valor é uma sugestão. Cada apostador deve adaptar conforme sua banca e gestão pessoal.
+
+          {/* Disclaimer */}
+          <p className="text-xs text-slate-400 italic border-t border-slate-100 dark:border-surface-400 pt-3 leading-relaxed">
+            * O valor exibido é uma sugestão do tipster. Cada apostador deve adaptar conforme
+            o tamanho da sua banca e sua gestão pessoal.
           </p>
         </div>
 
+        {/* Footer */}
         <div className="flex gap-3 px-6 pb-6">
           <button onClick={onClose}
-            className="flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-400">
+            className="flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors
+              border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300
+              hover:bg-slate-50 dark:hover:bg-surface-400">
             Cancelar
           </button>
           <button onClick={handleSubmit} disabled={loading}
-            className="flex-1 py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold shadow-lg shadow-green-500/20 transition-all active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold
+              shadow-lg shadow-green-500/20 transition-all active:scale-95 disabled:opacity-60
+              flex items-center justify-center gap-2">
             {loading
               ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Publicando...</>
               : '🟢 Publicar Dica'}

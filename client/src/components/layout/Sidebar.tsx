@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Trophy, Bell, BookOpen,
-  ClipboardList, PlusCircle, ScrollText, CreditCard, Briefcase,
+  ClipboardList, ScrollText, CreditCard, Briefcase,
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -120,9 +120,8 @@ export const Sidebar = () => {
         {isAdmin && (
           <>
             <SectionLabel label="Admin" />
-            <NavItem icon={<Users size={16} />}        label="Usuários"   to="/admin/users" />
-            <NavItem icon={<ClipboardList size={16} />} label="Cadastros" to="/admin/cadastros" />
-            <NavItem icon={<PlusCircle size={16} />}   label="Criar Dica" to="/admin/tips/new" />
+            <NavItem icon={<Users size={16} />}        label="Usuários"       to="/admin/users" />
+            <NavItem icon={<ClipboardList size={16} />} label="Cadastros"     to="/admin/cadastros" />
             <NavItem icon={<ScrollText size={16} />}   label="Log do Sistema" to="/admin/log" />
           </>
         )}
