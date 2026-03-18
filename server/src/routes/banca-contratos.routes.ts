@@ -17,7 +17,7 @@ router.get('/', async (_req, res) => {
     })
     res.json(contratos.map((c) => ({
       id: c.id, userId: c.userId, userName: c.user.name, userEmail: c.user.email,
-      parentId: c.parentId,
+      parentId: c.parentId, identificacao: c.identificacao,
       dataInicial: c.dataInicial.toISOString(),
       dataFinal: c.dataFinal ? c.dataFinal.toISOString() : null,
       bancaInicial: Number(c.bancaInicial), bancaFinal: Number(c.bancaFinal),
@@ -32,7 +32,7 @@ router.post('/',
   [body('userId').notEmpty(), body('bancaInicial').isFloat({ min: 0.01 })],
   validateRequest,
   async (req: import('express').Request, res: import('express').Response) => {
-    const { userId, dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent = 10, status = 'ATIVO', motivoFim, observacoes, parentId } = req.body
+    const { userId, dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent = 10, status = 'ATIVO', motivoFim, observacoes, parentId, identificacao } = req.body
     try {
       const contrato = await prisma.bancaContrato.create({
         data: {
@@ -43,7 +43,7 @@ router.post('/',
           bancaFinal: Number(bancaFinal ?? bancaInicial),
           comissaoPercent: Number(comissaoPercent),
           status, motivoFim: motivoFim || null, observacoes: observacoes || null,
-          parentId: parentId || null,
+          parentId: parentId || null, identificacao: identificacao || null,
         },
         include: { user: { select: { id: true, name: true, email: true } } },
       })
@@ -60,7 +60,7 @@ router.patch('/:id',
   validateRequest,
   async (req: import('express').Request, res: import('express').Response) => {
     const { id } = req.params
-    const { dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent, status, motivoFim, observacoes } = req.body
+    const { dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent, status, motivoFim, observacoes, identificacao } = req.body
     try {
       const atual = await prisma.bancaContrato.findUnique({ where: { id } })
       if (!atual) return res.status(404).json({ message: 'Contrato nao encontrado.' })
@@ -75,6 +75,7 @@ router.patch('/:id',
           ...(status          ? { status }                                          : {}),
           ...(motivoFim       !== undefined ? { motivoFim: motivoFim || null }      : {}),
           ...(observacoes     !== undefined ? { observacoes }                       : {}),
+          ...(identificacao   !== undefined ? { identificacao }                     : {}),
         },
       })
       res.json(updated)

@@ -65,6 +65,8 @@ model BancaContrato {
   parent           BancaContrato?  @relation("SubContratos", fields: [parentId], references: [id])
   subContratos     BancaContrato[] @relation("SubContratos")
 
+  identificacao    String?   @db.VarChar(50)
+
   dataInicial      DateTime  @default(now())
   dataFinal        DateTime?
 
