@@ -55,10 +55,12 @@ app.use((_req, res) => {
 // ─── Export para o Vercel ─────────────────────────────────────────────────────
 export default app;
 
-// ─── Start local ──────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3333;
-app.listen(PORT, () => {
-  console.log(`\n🟢 Full Green Bank API`);
-  console.log(`📡 Server running on http://localhost:${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
-});
+// ─── Start local (não roda na Vercel/Serverless) ──────────────────────────────
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3333;
+  app.listen(PORT, () => {
+    console.log(`\n🟢 Full Green Bank API`);
+    console.log(`📡 Server running on http://localhost:${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+  });
+}

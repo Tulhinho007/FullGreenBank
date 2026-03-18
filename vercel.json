@@ -1,4 +1,4 @@
 {
-  "version": 2,
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+  "_comment": "Este arquivo NÃO é usado pela Vercel. O backend usa server/vercel.json e o frontend usa client/. Mantido apenas para referência.",
+  "version": 2
 }
