@@ -49,16 +49,29 @@ export const GestaoBancaPage = () => {
         if (Array.isArray(parsed) && parsed.length > 0) nomesCasas = parsed.map((c: any) => c.name)
       }
       setBookmakers(nomesCasas)
-      if (nomesCasas.length > 0 && !nomesCasas.includes(casaAposta)) setCasaAposta(nomesCasas[0])
       
-      // 2. Traz todas as carteiras do BD
-      const { data } = await api.get('/gestao-banca/carteiras')
-      setTodasCarteiras(data || [])
-    } catch {
-      toast.error('Erro ao conectar com servidor.')
-    } finally {
-      setLoading(false)
-    }
+      // Valida a casa atual
+      const atualCasa = (nomesCasas.length > 0 && !nomesCasas.includes(casaAposta)) ? nomesCasas[0] : casaAposta
+        setCasaAposta(atualCasa)
+        
+        // 2. Traz todas as carteiras do BD e valida/cria se faltar a da Casa atual
+        const { data } = await api.get('/gestao-banca/carteiras')
+        let carteirasFeitas = data || []
+        
+        const temNaCasa = carteirasFeitas.some((c: any) => c.casaAposta === atualCasa)
+        if (!temNaCasa && atualCasa) {
+           const resNova = await api.post('/gestao-banca/carteiras', {
+             nome: 'Principal', casaAposta: atualCasa, perfilRisco: 'moderado'
+           })
+           carteirasFeitas.push(resNova.data)
+        }
+        
+        setTodasCarteiras(carteirasFeitas)
+      } catch {
+        toast.error('Erro ao conectar com servidor.')
+      } finally {
+        setLoading(false)
+      }
   }
 
   // Ao montar, carrega a lista mestre
@@ -66,19 +79,32 @@ export const GestaoBancaPage = () => {
     loadInitialData()
   }, [])
 
-  // Quando mudar a casa selecionada, ajusta a carteira selecionada
-  const carteirasDaCasa = useMemo(() => todasCarteiras.filter(c => c.casaAposta === casaAposta), [todasCarteiras, casaAposta])
-  
   useEffect(() => {
-    if (carteirasDaCasa.length > 0) {
-      if (!carteirasDaCasa.find(c => c.id === selectedCarteiraId)) {
-        setSelectedCarteiraId(carteirasDaCasa[0].id)
+    if (todasCarteiras.length === 0) return
+    const daCasa = todasCarteiras.filter(c => c.casaAposta === casaAposta)
+    if (daCasa.length > 0) {
+      if (!daCasa.find(c => c.id === selectedCarteiraId)) {
+        setSelectedCarteiraId(daCasa[0].id)
       }
     } else {
       setSelectedCarteiraId('')
       setRows([])
     }
-  }, [carteirasDaCasa])
+  }, [casaAposta, todasCarteiras])
+
+  const handleChangeCasa = async (novaCasa: string) => {
+    setCasaAposta(novaCasa)
+    const daCasa = todasCarteiras.filter(c => c.casaAposta === novaCasa)
+    if (daCasa.length === 0) {
+      try {
+        const { data } = await api.post('/gestao-banca/carteiras', { 
+           nome: 'Principal', casaAposta: novaCasa, perfilRisco: 'moderado' 
+        })
+        setTodasCarteiras(prev => [...prev, data])
+        setSelectedCarteiraId(data.id)
+      } catch {}
+    }
+  }
 
   // Quando mudar a carteira selecionada, carrega as linhas
   useEffect(() => {
@@ -196,21 +222,6 @@ export const GestaoBancaPage = () => {
 
   const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-  const criarNovaBanca = async () => {
-    const nome = prompt('Digite o nome da sua nova carteira (ex: Alavancagem):')
-    if (!nome) return
-    try {
-      const { data } = await api.post('/gestao-banca/carteiras', {
-         nome, casaAposta, perfilRisco: 'moderado'
-      })
-      setTodasCarteiras((prev: BancaCarteira[]) => [...prev, data])
-      setSelectedCarteiraId(data.id)
-      toast.success('Banca Criada!')
-    } catch {
-      toast.error('Falha ao criar banca.')
-    }
-  }
-
   return (
     <div className="flex flex-col gap-6 font-sans">
       
@@ -223,13 +234,13 @@ export const GestaoBancaPage = () => {
       {/* ── PAINEL SUPERIOR ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* BANCA INICIAL */}
-        <div className="card p-5 relative overflow-hidden group">
+        <label className="card p-5 relative overflow-hidden group block cursor-text">
           <div className="flex items-center justify-between mb-2 z-10 relative">
             <div className="flex items-center gap-2">
               <Wallet size={16} className="text-slate-400" />
               <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">Banca Inicial (R$)</span>
             </div>
-            <Edit2 size={13} className="text-slate-500" />
+            <Edit2 size={13} className="text-slate-500 group-hover:text-green-400 transition-colors" />
           </div>
           <input 
             type="number" 
@@ -240,7 +251,7 @@ export const GestaoBancaPage = () => {
             className="text-3xl font-bold text-white bg-transparent outline-none w-full border-b border-transparent focus:border-green-500/50 transition-colors z-10 relative disabled:opacity-50" 
             placeholder="0.00"
           />
-        </div>
+        </label>
 
         {/* BANCA ATUAL (VERDE) */}
         <div className="card p-5 bg-gradient-to-br from-green-900/40 to-surface-100 border-green-900/50 relative overflow-hidden">
@@ -264,7 +275,7 @@ export const GestaoBancaPage = () => {
               title="Casa de Aposta"
               className="input-field py-2 pr-8 pl-3 text-sm appearance-none cursor-pointer bg-surface-300 outline-none focus:ring-1 ring-green-500/50"
               value={casaAposta}
-              onChange={(e) => setCasaAposta(e.target.value)}
+              onChange={(e) => handleChangeCasa(e.target.value)}
             >
               {bookmakers.map((b: string) => <option key={b} value={b}>{b}</option>)}
               {bookmakers.length === 0 && <option value="Betano">Betano</option>}
@@ -279,20 +290,16 @@ export const GestaoBancaPage = () => {
               className="input-field py-2 pr-8 pl-3 text-sm appearance-none cursor-pointer bg-surface-300 outline-none focus:ring-1 ring-green-500/50"
               value={selectedCarteiraId}
               onChange={(e) => setSelectedCarteiraId(e.target.value)}
-              disabled={carteirasDaCasa.length === 0}
+              disabled={todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0}
             >
-              {carteirasDaCasa.length === 0 && <option value="">Sem Bancas Registradas</option>}
-              {carteirasDaCasa.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              {todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0 && <option value="">Carregando Bancas...</option>}
+              {todasCarteiras.filter(c => c.casaAposta === casaAposta).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
             </select>
             <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
         </div>
         
         <div className="flex items-center gap-2 w-full md:w-auto mt-3 md:mt-0">
-          <button onClick={criarNovaBanca} className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2">
-            <Plus size={14} /> <span className="hidden sm:inline">Nova Banca</span>
-          </button>
-          
           <button onClick={handleAddRow} disabled={!selectedCarteiraId} className="flex-1 md:flex-none btn-primary flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
             <Plus size={14} /> Adicionar Linha
           </button>
