@@ -37,6 +37,9 @@ export const GestaoBancaPage = () => {
   const [todasCarteiras, setTodasCarteiras] = useState<BancaCarteira[]>([])
   const [selectedCarteiraId, setSelectedCarteiraId] = useState<string>('')
   const [rows, setRows] = useState<DailyRow[]>([])
+  
+  const [isModalBancaOpen, setIsModalBancaOpen] = useState(false)
+  const [novaBancaNome, setNovaBancaNome] = useState('')
 
   const loadInitialData = async () => {
     setLoading(true)
@@ -222,6 +225,26 @@ export const GestaoBancaPage = () => {
 
   const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
+  const handleCriarNovaBanca = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!novaBancaNome.trim()) return toast.error('Digite o nome da Banca')
+    
+    try {
+      const { data } = await api.post('/gestao-banca/carteiras', {
+        nome: novaBancaNome.trim(),
+        casaAposta,
+        perfilRisco: 'moderado'
+      })
+      setTodasCarteiras(prev => [...prev, data])
+      setSelectedCarteiraId(data.id)
+      setIsModalBancaOpen(false)
+      setNovaBancaNome('')
+      toast.success('Carteira criada com sucesso!')
+    } catch {
+      toast.error('Erro ao criar carteira.')
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6 font-sans">
       
@@ -300,6 +323,9 @@ export const GestaoBancaPage = () => {
         </div>
         
         <div className="flex items-center gap-2 w-full md:w-auto mt-3 md:mt-0">
+          <button onClick={() => setIsModalBancaOpen(true)} className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2">
+            <Plus size={14} /> <span className="hidden sm:inline">Nova Banca</span>
+          </button>
           <button onClick={handleAddRow} disabled={!selectedCarteiraId} className="flex-1 md:flex-none btn-primary flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
             <Plus size={14} /> Adicionar Linha
           </button>
@@ -426,6 +452,63 @@ export const GestaoBancaPage = () => {
           ))}
         </div>
       </div>
+
+      {/* MODAL NOVA BANCA */}
+      {isModalBancaOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-surface-200 border border-surface-300 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-4 border-b border-surface-300 flex items-center justify-between bg-surface-100/50">
+              <h3 className="font-semibold text-white flex items-center gap-2">
+                <Wallet size={16} className="text-green-500" />
+                Criar Nova Banca
+              </h3>
+              <button 
+                onClick={() => setIsModalBancaOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors p-1"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCriarNovaBanca} className="p-5 flex flex-col gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1 ml-1 uppercase tracking-wider">
+                  Nome da Carteira
+                </label>
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Ex: Alavancagem Fim de Semana"
+                  required
+                  value={novaBancaNome}
+                  onChange={(e) => setNovaBancaNome(e.target.value)}
+                  className="input-field w-full py-2.5 bg-surface-300 focus:ring-green-500/50"
+                />
+              </div>
+              
+              <div className="bg-surface-300/50 p-3 rounded-lg border border-surface-300 text-sm text-slate-400 mt-2">
+                Esta banca pertencerá à casa: <strong className="text-white">{casaAposta}</strong>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalBancaOpen(false)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-surface-300 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg shadow-green-900/20"
+                >
+                  Criar Banca
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   )
