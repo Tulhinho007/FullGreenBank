@@ -21,6 +21,8 @@ interface BancaContract {
   dataInicial: string; dataFinal: string | null
   bancaInicial: number; bancaFinal: number; comissaoPercent: number
   status: ContractStatus; motivoFim: MotivoFim; observacoes: string
+  parentId?: string | null
+  identificacao?: string | null
   createdAt: string; updatedAt: string
   lucro: number; vlComissao: number; vlCliente: number; duracaoDias: number
 }
@@ -182,16 +184,26 @@ interface RowProps {
   onEdit: (c: BancaContract) => void
   onDelete: (c: BancaContract) => void
   onRenew: (c: BancaContract) => void
+  isSubcontract?: boolean
+  hasChild?: boolean
 }
 
-const ContractRow = ({ contract: c, onEdit, onDelete, onRenew }: RowProps) => {
+const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isSubcontract, hasChild }: RowProps) => {
   const st = STATUS_CONFIG[c.status]
   const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
+  const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
   return (
-    <div className="px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group">
-      <div className="flex flex-col xl:grid xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-2 xl:gap-3 xl:items-center">
+    <div className={`px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group ${isSubcontract ? 'pl-10 lg:pl-16 bg-surface-300/10 border-l-4 border-l-slate-700' : ''}`}>
+      <div className="flex flex-col xl:grid xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_160px] gap-2 xl:gap-3 xl:items-center">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-white truncate">{c.userName}</p>
+          <div className="flex items-center gap-2 mb-0.5">
+            {c.identificacao && (
+              <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${isSubcontract ? 'bg-slate-700/50 border border-slate-600/50 text-slate-300' : 'bg-surface-400 border border-surface-500 text-white'}`}>
+                {c.identificacao}
+              </span>
+            )}
+            <p className="text-sm font-medium text-white truncate">{c.userName}</p>
+          </div>
           <p className="text-xs text-slate-500 truncate">{c.userEmail}</p>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -199,7 +211,14 @@ const ContractRow = ({ contract: c, onEdit, onDelete, onRenew }: RowProps) => {
           <span>{fmtDate(c.dataInicial)}{c.dataFinal ? ` → ${fmtDate(c.dataFinal)}` : ''}</span>
         </div>
         <span className="text-sm text-slate-400 font-mono">{fmt(c.bancaInicial)}</span>
-        <span className="text-sm text-white font-mono font-medium">{fmt(c.bancaFinal)}</span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-sm text-white font-mono font-medium truncate">{fmt(c.bancaFinal)}</span>
+          {dobrouBanca && (
+            <span title="Banca Inicial Dobrada!" className="shrink-0 inline-flex items-center justify-center bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
+              🚀 100%
+            </span>
+          )}
+        </div>
         <span className={`text-sm font-mono font-medium ${c.lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>
           {c.lucro > 0 ? '+' : ''}{fmt(c.lucro)}
         </span>
@@ -213,22 +232,19 @@ const ContractRow = ({ contract: c, onEdit, onDelete, onRenew }: RowProps) => {
           {c.motivoFim && <p className="text-[10px] text-slate-600 mt-1">{MOTIVO_LABEL[c.motivoFim]}</p>}
         </div>
         <div className="flex items-center gap-1.5 xl:justify-end">
-          {encerrado ? (
-            <button onClick={() => onRenew(c)}
+          <button onClick={() => onEdit(c)} title="Editar"
+            className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
+            <Edit2 size={11} /><span className="hidden sm:inline">Editar</span>
+          </button>
+          <button onClick={() => onDelete(c)} title="Excluir"
+            className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
+            <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
+          </button>
+          {!hasChild && !encerrado && (
+            <button onClick={() => onRenew(c)} title="Renovar Contrato"
               className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
-              <RefreshCw size={11} />Renovar
+              <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
             </button>
-          ) : (
-            <>
-              <button onClick={() => onEdit(c)} title="Editar"
-                className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
-                <Edit2 size={11} /><span className="hidden sm:inline">Editar</span>
-              </button>
-              <button onClick={() => onDelete(c)} title="Excluir"
-                className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
-                <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
-              </button>
-            </>
           )}
         </div>
       </div>
@@ -298,12 +314,25 @@ export const BancaGerenciadaPage = () => {
     e.preventDefault()
     if (!addForm.userId || !addForm.bancaInicial) { toast.error('Preencha os campos obrigatórios.'); return }
     setSaving(true)
+    
+    // Calcula identificação do contrato Rais (ex: Contrato 01)
+    const roots = contracts.filter(c => !c.parentId);
+    let maxRoot = 0;
+    roots.forEach(r => {
+      if (r.identificacao && r.identificacao.startsWith('Contrato ')) {
+        const num = parseInt(r.identificacao.replace('Contrato ', ''));
+        if (!isNaN(num) && num > maxRoot) maxRoot = num;
+      }
+    });
+    const identificacao = `Contrato ${String(maxRoot + 1).padStart(2, '0')}`;
+
     try {
       await api.post('/banca-contratos', {
         userId: addForm.userId, dataInicial: addForm.dataInicial, dataFinal: addForm.dataFinal || null,
         bancaInicial: Number(addForm.bancaInicial), bancaFinal: Number(addForm.bancaFinal || addForm.bancaInicial),
         comissaoPercent: Number(addForm.comissaoPercent), status: addForm.status,
         motivoFim: addForm.motivoFim || null, observacoes: addForm.observacoes,
+        identificacao
       })
       toast.success('Contrato criado! ✓')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Contrato criado', detail: fmt(Number(addForm.bancaInicial)) })
@@ -359,15 +388,35 @@ export const BancaGerenciadaPage = () => {
   const handleRenew = async () => {
     if (!renewTarget) return
     setSaving(true)
+
+    // Calcula a numeração do Filho (ex: Contrato 01.1)
+    const parentIdent = renewTarget.identificacao || `Contrato ${renewTarget.id.slice(-2).toUpperCase()}`
+    const subs = contracts.filter(c => c.parentId === renewTarget.id)
+    let maxSub = 0
+    subs.forEach(s => {
+      if (s.identificacao) {
+        const parts = s.identificacao.split('.')
+        const num = parseInt(parts[parts.length - 1])
+        if (!isNaN(num) && num > maxSub) maxSub = num
+      }
+    })
+    const identificacao = `${parentIdent}.${maxSub + 1}`
+
     try {
+      // 1. Finaliza o pai
+      await api.patch(`/banca-contratos/${renewTarget.id}`, { status: 'FINALIZADO' })
+
+      // 2. Cria o filho
       const novoValor = renewTarget.vlCliente > 0 ? renewTarget.vlCliente : renewTarget.bancaInicial
       await api.post('/banca-contratos', {
         userId: renewTarget.userId, dataInicial: today(), dataFinal: null,
         bancaInicial: novoValor, bancaFinal: novoValor,
         comissaoPercent: renewTarget.comissaoPercent, status: 'ATIVO',
-        motivoFim: null, observacoes: `Renovação do contrato #${renewTarget.id.slice(-6).toUpperCase()}`,
+        motivoFim: null, observacoes: '', // Usuário pediu pra parar de popular a observação caso seja filho
+        parentId: renewTarget.parentId || renewTarget.id,
+        identificacao
       })
-      toast.success('Contrato renovado! ✓')
+      toast.success('Contrato renovado com sucesso! ✓')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Contrato renovado', detail: renewTarget.userName })
       setRenewTarget(null); loadAll()
     } catch { toast.error('Erro ao renovar.') }
@@ -469,9 +518,29 @@ export const BancaGerenciadaPage = () => {
               <p className="text-slate-600 text-xs mt-1">Crie um novo contrato ou ajuste os filtros</p>
             </div>
           ) : (
-            filtered.map(c => (
-              <ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} />
-            ))
+            (() => {
+              const roots = filtered.filter(c => !c.parentId);
+              const nodes: React.ReactNode[] = [];
+              const handled = new Set<string>();
+              roots.forEach(r => {
+                const hasChild = contracts.some(x => x.parentId === r.id);
+                nodes.push(<ContractRow key={r.id} contract={r} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} />);
+                handled.add(r.id);
+                const subs = filtered.filter(c => c.parentId === r.id).sort((a,b) => new Date(a.dataInicial).getTime() - new Date(b.dataInicial).getTime());
+                subs.forEach(s => {
+                  const hasGrandChild = contracts.some(x => x.parentId === s.id);
+                  nodes.push(<ContractRow key={s.id} contract={s} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasGrandChild} isSubcontract />);
+                  handled.add(s.id);
+                });
+              });
+              filtered.forEach(c => {
+                if (!handled.has(c.id)) {
+                  const hasChild = contracts.some(x => x.parentId === c.id);
+                  nodes.push(<ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isSubcontract={!!c.parentId} />);
+                }
+              });
+              return nodes;
+            })()
           )}
         </div>
       )}
