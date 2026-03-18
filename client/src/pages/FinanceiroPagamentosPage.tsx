@@ -1,8 +1,9 @@
 import { useEffect, useState, FormEvent } from 'react'
 import {
   CreditCard, Users, Clock, AlertTriangle,
-  TrendingUp, Edit2, X, ChevronDown, Search,
+  TrendingUp, Edit2, ChevronDown, Search,
   CheckCircle, XCircle, Hourglass, Ban,
+  FileSpreadsheet, FileText, Printer,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -145,6 +146,73 @@ export const FinanceiroPagamentosPage = () => {
   // Separar por tipo de conta
   const admins  = filtered.filter(u => u.role === 'ADMIN' || u.role === 'MASTER')
   const members = filtered.filter(u => u.role !== 'ADMIN' && u.role !== 'MASTER')
+
+  // ── Exportar CSV ──────────────────────────────────────────────────────────
+  const exportCSV = () => {
+    const header = ['Usuario', 'Email', 'Tipo de Conta', 'Plano', 'Valor', 'Forma Pagamento', 'Vencimento', 'Status', 'Observacoes']
+    const rows = filtered.map(u => [
+      u.name, u.email,
+      (u.role === 'ADMIN' || u.role === 'MASTER') ? 'Admin' : 'Membro',
+      PLAN_CONFIG[u.plan].label,
+      u.value !== null ? u.value : '',
+      PAY_METHOD_LABEL[u.payMethod] || '',
+      u.dueDate ? formatDate(u.dueDate) : '',
+      STATUS_CONFIG[u.status].label,
+      u.notes || ''
+    ])
+    const csvContent = [header, ...rows].map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `pagamentos-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // ── Exportar PDF ──────────────────────────────────────────────────────────
+  const exportPDF = () => {
+    const win = window.open('', '_blank')
+    if (!win) return
+    const rowsHtml = filtered.map(u => `
+      <tr>
+        <td>${u.name}<br/><small>${u.email}</small></td>
+        <td>${(u.role === 'ADMIN' || u.role === 'MASTER') ? 'Admin' : 'Membro'}</td>
+        <td>${PLAN_CONFIG[u.plan].label}</td>
+        <td>${u.value != null ? formatCurrency(u.value) : '-'}</td>
+        <td>${PAY_METHOD_LABEL[u.payMethod] || '-'}</td>
+        <td>${u.dueDate ? formatDate(u.dueDate) : '-'}</td>
+        <td>${STATUS_CONFIG[u.status].label}</td>
+      </tr>`).join('')
+
+    win.document.write(`
+      <!DOCTYPE html><html><head>
+      <meta charset="utf-8"/>
+      <title>Pagamentos — Full Green Bank</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; }
+        h1   { font-size: 18px; color: #166534; margin-bottom: 4px; }
+        p    { color: #64748b; margin: 0 0 16px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; }
+        th   { background: #166534; color: #fff; padding: 6px 8px; text-align: left; font-size: 10px; }
+        td   { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        small { color: #94a3b8; }
+        @media print { body { -webkit-print-color-adjust: exact; } }
+      </style></head><body>
+      <h1>🟢 Relatório: Pagamentos — Full Green Bank</h1>
+      <p>Gerado em ${new Date().toLocaleString('pt-BR')} · ${filtered.length} usuários listados</p>
+      <table>
+        <thead><tr>
+          <th>Usuário / Email</th><th>Tipo</th><th>Plano</th>
+          <th>Valor</th><th>Pagamento</th><th>Vencimento</th><th>Status</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <script>window.onload=()=>{window.print();window.close()}<\/script>
+      </body></html>`)
+    win.document.close()
+  }
 
   // ── Modal edição ───────────────────────────────────────────────────────────
   const openEdit = (u: UserPayment) => {
@@ -292,6 +360,18 @@ export const FinanceiroPagamentosPage = () => {
             ))}
           </select>
           <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+        </div>
+
+        <div className="flex gap-2 ml-auto w-full md:w-auto mt-2 md:mt-0">
+          <button onClick={exportCSV} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors flex" title="Exportar Excel">
+            <FileSpreadsheet size={13} /> Excel
+          </button>
+          <button onClick={exportPDF} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors flex" title="Exportar PDF">
+            <FileText size={13} /> PDF
+          </button>
+          <button onClick={() => window.print()} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors flex" title="Imprimir">
+            <Printer size={13} /> Imprimir
+          </button>
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import {
   Briefcase, TrendingUp, DollarSign, Percent,
   Plus, Edit2, Trash2, RefreshCw, AlertTriangle,
   CheckCircle, XCircle, Clock, Search, Ban, Users,
-  CalendarDays,
+  CalendarDays, FileSpreadsheet, FileText, Printer,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -305,9 +305,72 @@ export const BancaGerenciadaPage = () => {
 
   const filtered = contracts.filter(c => {
     const t = search.toLowerCase()
-    return (!t || c.userName.toLowerCase().includes(t) || c.userEmail.toLowerCase().includes(t)) &&
+    return (!t || c.userName.toLowerCase().includes(t) || c.userEmail.toLowerCase().includes(t) || (c.identificacao && c.identificacao.toLowerCase().includes(t))) &&
            (!filterStatus || c.status === filterStatus)
   })
+
+  // ── Exportar CSV ──────────────────────────────────────────────────────────
+  const exportCSV = () => {
+    const header = ['Identificacao', 'Usuario', 'Email', 'Data Inicial', 'Data Final', 'Status', 'Motivo Fim', 'Banca Inicial', 'Banca Final', 'Lucro Gerado', 'Vl Cliente', 'Comissao Percentual']
+    const rows = filtered.map(c => [
+      c.identificacao || '',
+      c.userName, c.userEmail, fmtDate(c.dataInicial), c.dataFinal ? fmtDate(c.dataFinal) : '',
+      STATUS_CONFIG[c.status].label, c.motivoFim ? MOTIVO_LABEL[c.motivoFim] : '',
+      c.bancaInicial, c.bancaFinal, c.lucro, c.vlCliente, c.comissaoPercent
+    ])
+    const csvContent = [header, ...rows].map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `banca-gerenciada-${today()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // ── Exportar PDF ──────────────────────────────────────────────────────────
+  const exportPDF = () => {
+    const win = window.open('', '_blank')
+    if (!win) return
+    const rowsHtml = filtered.map(c => `
+      <tr>
+        <td>${c.identificacao || '-'}</td>
+        <td>${c.userName}<br/><small>${c.userEmail}</small></td>
+        <td>${fmtDate(c.dataInicial)} ${c.dataFinal ? 'ate ' + fmtDate(c.dataFinal) : ''}</td>
+        <td>${c.bancaInicial.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
+        <td>${c.bancaFinal.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
+        <td style="color:${c.lucro > 0 ? '#16a34a' : 'inherit'} font-weight:bold">${c.lucro.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
+        <td>${STATUS_CONFIG[c.status].label}</td>
+      </tr>`).join('')
+
+    win.document.write(`
+      <!DOCTYPE html><html><head>
+      <meta charset="utf-8"/>
+      <title>Banca Gerenciada — Full Green Bank</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; }
+        h1   { font-size: 18px; color: #166534; margin-bottom: 4px; }
+        p    { color: #64748b; margin: 0 0 16px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; }
+        th   { background: #166534; color: #fff; padding: 6px 8px; text-align: left; font-size: 10px; }
+        td   { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        small { color: #94a3b8; }
+        @media print { body { -webkit-print-color-adjust: exact; } }
+      </style></head><body>
+      <h1>🟢 Relatório: Banca Gerenciada — Full Green Bank</h1>
+      <p>Gerado em ${new Date().toLocaleString('pt-BR')} · ${filtered.length} contratos listados</p>
+      <table>
+        <thead><tr>
+          <th>Id.</th><th>Usuário / Email</th><th>Período</th>
+          <th>B. Inicial</th><th>B. Final</th><th>Lucro</th><th>Status</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <script>window.onload=()=>{window.print();window.close()}<\/script>
+      </body></html>`)
+    win.document.close()
+  }
 
   // ── ADD ───────────────────────────────────────────────────────────────────
   const handleAdd = async (e: FormEvent) => {
@@ -491,13 +554,26 @@ export const BancaGerenciadaPage = () => {
           <input className="input-field pl-9 py-2 text-sm" placeholder="Buscar por nome ou e-mail..."
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <select className="input-field py-2 pr-8 text-sm appearance-none cursor-pointer"
-          value={filterStatus} onChange={e => setFilterStatus(e.target.value as ContractStatus | '')}>
-          <option value="">Todos os status</option>
-          {(Object.keys(STATUS_CONFIG) as ContractStatus[]).map(s => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-          ))}
-        </select>
+        <div className="relative">
+          <select className="input-field py-2 pr-8 text-sm appearance-none cursor-pointer"
+            value={filterStatus} onChange={e => setFilterStatus(e.target.value as ContractStatus | '')}>
+            <option value="">Todos os status</option>
+            {(Object.keys(STATUS_CONFIG) as ContractStatus[]).map(s => (
+              <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-2 ml-auto w-full md:w-auto">
+          <button onClick={exportCSV} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors flex" title="Exportar Excel">
+            <FileSpreadsheet size={13} /> Excel
+          </button>
+          <button onClick={exportPDF} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors flex" title="Exportar PDF">
+            <FileText size={13} /> PDF
+          </button>
+          <button onClick={() => window.print()} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors flex" title="Imprimir">
+            <Printer size={13} /> Imprimir
+          </button>
+        </div>
       </div>
 
       {/* Tabela */}
