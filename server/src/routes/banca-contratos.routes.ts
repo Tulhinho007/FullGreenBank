@@ -17,6 +17,7 @@ router.get('/', async (_req, res) => {
     })
     res.json(contratos.map((c) => ({
       id: c.id, userId: c.userId, userName: c.user.name, userEmail: c.user.email,
+      parentId: c.parentId,
       dataInicial: c.dataInicial.toISOString(),
       dataFinal: c.dataFinal ? c.dataFinal.toISOString() : null,
       bancaInicial: Number(c.bancaInicial), bancaFinal: Number(c.bancaFinal),
@@ -31,7 +32,7 @@ router.post('/',
   [body('userId').notEmpty(), body('bancaInicial').isFloat({ min: 0.01 })],
   validateRequest,
   async (req: import('express').Request, res: import('express').Response) => {
-    const { userId, dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent = 10, status = 'ATIVO', motivoFim, observacoes } = req.body
+    const { userId, dataInicial, dataFinal, bancaInicial, bancaFinal, comissaoPercent = 10, status = 'ATIVO', motivoFim, observacoes, parentId } = req.body
     try {
       const contrato = await prisma.bancaContrato.create({
         data: {
@@ -42,6 +43,7 @@ router.post('/',
           bancaFinal: Number(bancaFinal ?? bancaInicial),
           comissaoPercent: Number(comissaoPercent),
           status, motivoFim: motivoFim || null, observacoes: observacoes || null,
+          parentId: parentId || null,
         },
         include: { user: { select: { id: true, name: true, email: true } } },
       })

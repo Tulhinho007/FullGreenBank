@@ -61,6 +61,10 @@ model BancaContrato {
   userId           String
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  parentId         String?
+  parent           BancaContrato?  @relation("SubContratos", fields: [parentId], references: [id])
+  subContratos     BancaContrato[] @relation("SubContratos")
+
   dataInicial      DateTime  @default(now())
   dataFinal        DateTime?
 
