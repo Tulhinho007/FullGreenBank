@@ -5,7 +5,7 @@ import { Modal } from '../components/ui/Modal'
 import {
   TrendingUp, Target, DollarSign,
   Edit2, Trash2, Info, X, Plus,
-  ChevronUp, ChevronDown,
+  ChevronUp, ChevronDown, CalendarDays, ChevronLeft, ChevronRight as ChevronRightIcon,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -32,6 +32,7 @@ type ResultFilter = 'Todos' | 'PENDING' | 'GREEN' | 'RED' | 'VOID'
 
 interface NewTipForm {
   event: string
+  championship: string
   market: string
   odds: string
   stake: string
@@ -42,7 +43,6 @@ interface NewTipForm {
 // Constants
 // ─────────────────────────────────────────────
 
-const MARKETS = ['Resultado (1X2)','Over/Under','BTTS','Handicap Asiático','Dupla Chance','Placar Exato','Outros']
 const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID']
 
 const FILTER_LABELS: Record<ResultFilter, string> = {
@@ -79,7 +79,7 @@ const formatDate = (iso: string) =>
   })
 
 const EMPTY_FORM: NewTipForm = {
-  event: '', market: 'Resultado (1X2)', odds: '', stake: '', tipDate: '',
+  event: '', championship: '', market: '', odds: '', stake: '', tipDate: '',
 }
 
 // ─────────────────────────────────────────────
@@ -234,7 +234,7 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
   const [loading, setLoading] = useState(false)
 
   const set = (f: keyof NewTipForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(p => ({ ...p, [f]: e.target.value }))
 
   const handleSubmit = async () => {
@@ -243,12 +243,20 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
     }
     setLoading(true)
     try {
+      // Monta título automático e preenche campos obrigatórios do backend
+      const autoTitle = form.championship
+        ? `${form.event} — ${form.championship}`
+        : form.event
+
       await tipsService.create({
-        event:   form.event,
-        market:  form.market,
-        odds:    Number(form.odds),
-        stake:   Number(form.stake),
-        tipDate: new Date(form.tipDate).toISOString(),
+        title:       autoTitle,
+        description: form.market || autoTitle,
+        sport:       'Futebol',
+        event:       form.event,
+        market:      form.market,
+        odds:        Number(form.odds),
+        stake:       Number(form.stake),
+        tipDate:     new Date(form.tipDate).toISOString(),
       })
       toast.success('Dica criada com sucesso! 🟢')
       onSaved(); onClose()
@@ -268,11 +276,11 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="w-full max-w-md rounded-2xl shadow-2xl
+      <div className="w-full max-w-md rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto
         bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-surface-400">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-surface-400 sticky top-0 bg-white dark:bg-surface-200 z-10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
               <TrendingUp size={17} className="text-green-600 dark:text-green-400" />
@@ -299,13 +307,13 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
             </p>
             {/* Evento em destaque */}
             <p className="text-base font-bold text-slate-900 dark:text-white leading-snug">
-              {form.event || <span className="text-slate-300 dark:text-slate-600">Nome do Evento</span>}
+              {form.event || <span className="text-slate-300 dark:text-slate-600 font-normal">Nome do Evento</span>}
             </p>
-            {/* Mercado */}
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              {form.market}
+            {/* Campeonato + Mercado */}
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              {[form.championship, form.market].filter(Boolean).join(' · ') || <span className="text-slate-300 dark:text-slate-600">Campeonato · Mercado</span>}
             </p>
-            {/* Valores em linha */}
+            {/* Valores */}
             <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-200 dark:border-surface-400 flex-wrap">
               <div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Odd</p>
@@ -338,15 +346,21 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
 
           {/* ── Campos ── */}
           <div>
-            <label className={lbl}>Evento / Jogo *</label>
-            <input className={inp} placeholder="Ex: Manchester City vs Arsenal" value={form.event} onChange={set('event')} />
+            <label className={lbl}>Evento *</label>
+            <input className={inp} placeholder="Ex: Manchester City vs Arsenal"
+              value={form.event} onChange={set('event')} />
+          </div>
+
+          <div>
+            <label className={lbl}>Campeonato</label>
+            <input className={inp} placeholder="Ex: Premier League, Champions League..."
+              value={form.championship} onChange={set('championship')} />
           </div>
 
           <div>
             <label className={lbl}>Mercado *</label>
-            <select className={inp} value={form.market} onChange={set('market')}>
-              {MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
+            <input className={inp} placeholder="Ex: Over 2.5, BTTS, Resultado Final..."
+              value={form.market} onChange={set('market')} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -397,6 +411,214 @@ function NewTipModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
 }
 
 // ─────────────────────────────────────────────
+// History Table
+// ─────────────────────────────────────────────
+
+type DateRange = 'hoje' | 'ontem' | '2dias' | '7dias' | 'tudo'
+
+const DATE_RANGE_LABELS: Record<DateRange, string> = {
+  hoje:   'Hoje',
+  ontem:  'Ontem',
+  '2dias': 'Últimos 2 dias',
+  '7dias': 'Últimos 7 dias',
+  tudo:   'Tudo',
+}
+
+function getDateBounds(range: DateRange): { from: Date; to: Date } {
+  const now = new Date()
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const endOfDay   = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59)
+
+  switch (range) {
+    case 'hoje':
+      return { from: startOfDay(now), to: endOfDay(now) }
+    case 'ontem': {
+      const y = new Date(now); y.setDate(y.getDate() - 1)
+      return { from: startOfDay(y), to: endOfDay(y) }
+    }
+    case '2dias': {
+      const d = new Date(now); d.setDate(d.getDate() - 1)
+      return { from: startOfDay(d), to: endOfDay(now) }
+    }
+    case '7dias': {
+      const d = new Date(now); d.setDate(d.getDate() - 6)
+      return { from: startOfDay(d), to: endOfDay(now) }
+    }
+    default:
+      return { from: new Date(0), to: endOfDay(now) }
+  }
+}
+
+const RESULT_BADGE: Record<string, string> = {
+  GREEN:   'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400',
+  RED:     'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400',
+  VOID:    'bg-slate-100 dark:bg-slate-700/40 text-slate-600 dark:text-slate-400',
+  PENDING: 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400',
+}
+const RESULT_LABEL: Record<string, string> = {
+  GREEN: '🟢 Green', RED: '🔴 Red', VOID: '⚪ Anulado', PENDING: '🟡 Pendente',
+}
+
+function HistoryTable({ tips }: { tips: Tip[] }) {
+  const [range, setRange] = useState<DateRange>('7dias')
+  const [resultFilter, setResultFilter] = useState<string>('Todos')
+  const [histPage, setHistPage] = useState(1)
+  const PER_PAGE = 10
+
+  const filtered = useMemo(() => {
+    const { from, to } = getDateBounds(range)
+    return tips
+      .filter(t => {
+        const d = new Date(t.tipDate)
+        return d >= from && d <= to
+      })
+      .filter(t => resultFilter === 'Todos' || (t.result || 'PENDING') === resultFilter)
+      .sort((a, b) => new Date(b.tipDate).getTime() - new Date(a.tipDate).getTime())
+  }, [tips, range, resultFilter])
+
+  const totalHistPages = Math.ceil(filtered.length / PER_PAGE)
+  const paginated = filtered.slice((histPage - 1) * PER_PAGE, histPage * PER_PAGE)
+
+  // reset page when filters change
+  useMemo(() => setHistPage(1), [range, resultFilter])
+
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+
+  return (
+    <div className="rounded-xl border bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400 overflow-hidden">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-surface-400">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={16} className="text-slate-400" />
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Histórico de Tips</p>
+          <span className="text-xs text-slate-400 bg-slate-100 dark:bg-surface-400 px-2 py-0.5 rounded-full">
+            {filtered.length} registros
+          </span>
+        </div>
+
+        {/* Filtros */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Resultado */}
+          {(['Todos', 'GREEN', 'RED', 'VOID', 'PENDING'] as const).map(r => (
+            <button key={r} onClick={() => setResultFilter(r)}
+              className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-all ${
+                resultFilter === r
+                  ? 'bg-green-600 border-green-600 text-white dark:bg-green-900/60 dark:border-green-700 dark:text-green-300'
+                  : 'bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}>
+              {r === 'Todos' ? 'Todos' : RESULT_LABEL[r]}
+            </button>
+          ))}
+
+          <div className="w-px h-4 bg-slate-200 dark:bg-surface-400 mx-1" />
+
+          {/* Período */}
+          {(Object.keys(DATE_RANGE_LABELS) as DateRange[]).map(r => (
+            <button key={r} onClick={() => setRange(r)}
+              className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-all ${
+                range === r
+                  ? 'bg-slate-800 dark:bg-slate-200 border-slate-800 dark:border-slate-200 text-white dark:text-slate-900'
+                  : 'bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}>
+              {DATE_RANGE_LABELS[r]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Table */}
+      {paginated.length === 0 ? (
+        <div className="py-12 text-center text-slate-400 text-sm">
+          <CalendarDays size={32} className="mx-auto mb-3 opacity-30" />
+          Nenhuma tip encontrada nesse período.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-100 dark:border-surface-400">
+                {['Data', 'Campeonato / Sport', 'Evento', 'Mercado', 'Odd', 'Valor', 'Resultado'].map(h => (
+                  <th key={h} className="text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 py-3 whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {paginated.map((tip, i) => {
+                const status = tip.result || 'PENDING'
+                return (
+                  <tr key={tip.id}
+                    className={`border-b border-slate-50 dark:border-surface-400/50 transition-colors hover:bg-slate-50 dark:hover:bg-surface-300/50 ${
+                      i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-surface-300/20'
+                    }`}>
+                    {/* Data */}
+                    <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 font-mono">
+                      {fmtDate(tip.tipDate)}
+                    </td>
+                    {/* Campeonato / Sport */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{tip.sport}</span>
+                    </td>
+                    {/* Evento */}
+                    <td className="px-4 py-3 max-w-[200px]">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{tip.event}</p>
+                      {tip.title !== tip.event && (
+                        <p className="text-[10px] text-slate-400 truncate mt-0.5">{tip.title}</p>
+                      )}
+                    </td>
+                    {/* Mercado */}
+                    <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">
+                      {tip.market}
+                    </td>
+                    {/* Odd */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">@{tip.odds.toFixed(2)}</span>
+                    </td>
+                    {/* Valor */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="font-mono font-semibold text-sm text-emerald-600 dark:text-emerald-400">
+                        {formatBRL(tip.stake)}
+                      </span>
+                    </td>
+                    {/* Resultado */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${RESULT_BADGE[status] ?? RESULT_BADGE.PENDING}`}>
+                        {RESULT_LABEL[status] ?? '🟡 Pendente'}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Paginação da tabela */}
+      {totalHistPages > 1 && (
+        <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-surface-400">
+          <span className="text-xs text-slate-400">
+            Página {histPage} de {totalHistPages} · {filtered.length} registros
+          </span>
+          <div className="flex items-center gap-1">
+            <button disabled={histPage <= 1} onClick={() => setHistPage(p => p - 1)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 dark:border-surface-400 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-surface-400 disabled:opacity-40 transition-colors">
+              <ChevronLeft size={13} />
+            </button>
+            <button disabled={histPage >= totalHistPages} onClick={() => setHistPage(p => p + 1)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 dark:border-surface-400 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-surface-400 disabled:opacity-40 transition-colors">
+              <ChevronRightIcon size={13} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
 // Main Page
 // ─────────────────────────────────────────────
 
@@ -427,8 +649,13 @@ export const TipsPage = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Excluir esta dica?')) return
-    try { await tipsService.delete(id); toast.success('Dica removida.'); load(page) }
-    catch { toast.error('Erro ao excluir dica') }
+    try {
+      await tipsService.delete(id)
+      toast.success('Dica removida.')
+      load(page)
+    } catch (err: unknown) {
+      toast.error((err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao excluir dica')
+    }
   }
 
   const handleUpdateResult = async () => {
@@ -593,6 +820,10 @@ export const TipsPage = () => {
           <button disabled={page >= totalPages} onClick={() => load(page + 1)} className="btn-secondary text-sm disabled:opacity-40">Próxima →</button>
         </div>
       )}
+
+
+      {/* ── Histórico em Tabela ── */}
+      <HistoryTable tips={tips} />
 
       {/* FAB mobile */}
       {isAdmin && (

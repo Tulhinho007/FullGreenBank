@@ -19,6 +19,11 @@ export const tipsService = {
     return res.data.data
   },
 
+  delete: async (id: string) => {
+    const res = await api.delete(`/tips/${id}`)
+    return res.data
+  },
+
   updateResult: async (id: string, result: string, profit: number) => {
     const res = await api.patch(`/tips/${id}/result`, { result, profit })
     return res.data.data
