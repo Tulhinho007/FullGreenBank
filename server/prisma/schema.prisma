@@ -31,8 +31,7 @@ model User {
 
   tips                 Tip[]
   bancaContratos       BancaContrato[]
-  gestaoBancaConfigs   GestaoBancaConfig[]
-  gestaoBancaItens     GestaoBancaItem[]
+  bancaCarteiras       BancaCarteira[]
 
   @@map("users")
 }
@@ -90,25 +89,29 @@ model BancaContrato {
   @@map("banca_contratos")
 }
 
-model GestaoBancaConfig {
-  id             String   @id @default(uuid())
+model BancaCarteira {
+  id             String            @id @default(uuid())
   userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  casaAposta     String
-  bancaInicial   Decimal  @db.Decimal(10, 2) @default(1000)
-  perfilRisco    String   @default("moderado")
+  nome           String            @db.VarChar(100)
+  casaAposta     String            
+  
+  bancaInicial   Decimal           @db.Decimal(10, 2) @default(0)
+  perfilRisco    String            @default("moderado")
+  
+  itens          GestaoBancaItem[]
 
-  @@unique([userId, casaAposta])
-  @@map("gestao_banca_configs")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("banca_carteiras")
 }
 
 model GestaoBancaItem {
-  id             String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  casaAposta     String
+  id             String         @id @default(uuid())
+  carteiraId     String?
+  carteira       BancaCarteira? @relation(fields: [carteiraId], references: [id], onDelete: Cascade)
   dataReferencia DateTime @db.Date // Salva apenas a data (YYYY-MM-DD)
   
   deposito       Decimal  @default(0) @db.Decimal(10, 2)

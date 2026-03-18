@@ -21,84 +21,117 @@ const RISK_PROFILES = [
   { id: 'moderado', label: 'Moderado', target: '3% a 9% diário', color: 'border-amber-500/50 bg-amber-900/20 text-amber-400' },
   { id: 'agressivo', label: 'Agressivo', target: 'Acima de 10% diário', color: 'border-red-500/50 bg-red-900/20 text-red-400' }
 ]
+export interface BancaCarteira {
+  id: string
+  nome: string
+  casaAposta: string
+  bancaInicial: number
+  perfilRisco: string
+}
 
 export const GestaoBancaPage = () => {
-  const [bancaInicialMensal, setBancaInicialMensal] = useState(() => Number(localStorage.getItem('bancaInicialMensal')) || 1000)
-  const [casaAposta, setCasaAposta] = useState('Betano')
-  const [bookmakers, setBookmakers] = useState<string[]>(['Betano'])
-  const [riskProfile, setRiskProfile] = useState(() => localStorage.getItem('riskProfile') || 'moderado')
   const [loading, setLoading] = useState(false)
+  const [bookmakers, setBookmakers] = useState<string[]>([])
+  const [casaAposta, setCasaAposta] = useState<string>('Betano')
   
+  const [todasCarteiras, setTodasCarteiras] = useState<BancaCarteira[]>([])
+  const [selectedCarteiraId, setSelectedCarteiraId] = useState<string>('')
   const [rows, setRows] = useState<DailyRow[]>([])
 
-  const loadDados = async () => {
+  const loadInitialData = async () => {
     setLoading(true)
     try {
-      // Puxa as casas cadastradas do AdminCadastrosPage (localStorage global do sistema)
+      // 1. Puxa as casas globais
       const storedBookies = localStorage.getItem('fgb_bookmakers')
+      let nomesCasas = ['Betano']
       if (storedBookies) {
         const parsed = JSON.parse(storedBookies)
-        if (Array.isArray(parsed)) {
-          const nomesCasas = parsed.map((c: any) => c.name)
-          setBookmakers(nomesCasas)
-          
-          if (nomesCasas.length > 0 && !nomesCasas.includes(casaAposta)) {
-            setCasaAposta(nomesCasas[0]) // Auto-seleciona a primeira se a atual não existir
-          }
-        }
+        if (Array.isArray(parsed) && parsed.length > 0) nomesCasas = parsed.map((c: any) => c.name)
       }
-
-      // Traz as linhas
-      const { data } = await api.get(`/gestao-banca/${casaAposta}`)
-      if (data.itens && data.itens.length > 0) {
-        setRows(data.itens.map((i: any) => ({
-          id: i.id, date: i.dataReferencia, initial: 0, deposit: Number(i.deposito), withdrawal: Number(i.saque), result: Number(i.resultado), isEditing: false
-        })))
-      } else {
-        setRows([])
-      }
+      setBookmakers(nomesCasas)
+      if (nomesCasas.length > 0 && !nomesCasas.includes(casaAposta)) setCasaAposta(nomesCasas[0])
+      
+      // 2. Traz todas as carteiras do BD
+      const { data } = await api.get('/gestao-banca/carteiras')
+      setTodasCarteiras(data || [])
     } catch {
-      toast.error('Erro ao buscar dados da Gestão de Banca.')
+      toast.error('Erro ao conectar com servidor.')
     } finally {
       setLoading(false)
     }
   }
 
+  // Ao montar, carrega a lista mestre
   useEffect(() => {
-    loadDados()
-  }, [casaAposta])
+    loadInitialData()
+  }, [])
 
+  // Quando mudar a casa selecionada, ajusta a carteira selecionada
+  const carteirasDaCasa = useMemo(() => todasCarteiras.filter(c => c.casaAposta === casaAposta), [todasCarteiras, casaAposta])
+  
   useEffect(() => {
-    localStorage.setItem('bancaInicialMensal', String(bancaInicialMensal))
-  }, [bancaInicialMensal])
+    if (carteirasDaCasa.length > 0) {
+      if (!carteirasDaCasa.find(c => c.id === selectedCarteiraId)) {
+        setSelectedCarteiraId(carteirasDaCasa[0].id)
+      }
+    } else {
+      setSelectedCarteiraId('')
+      setRows([])
+    }
+  }, [carteirasDaCasa])
 
+  // Quando mudar a carteira selecionada, carrega as linhas
   useEffect(() => {
-    localStorage.setItem('riskProfile', riskProfile)
-  }, [riskProfile])
+    if (!selectedCarteiraId) return
+    const fetchRows = async () => {
+      setLoading(true)
+      try {
+        const { data } = await api.get(`/gestao-banca/carteiras/${selectedCarteiraId}/itens`)
+        if (data && data.itens) {
+          setRows(data.itens.map((i: any) => ({
+            id: i.id, date: i.dataReferencia, initial: 0, deposit: Number(i.deposito), withdrawal: Number(i.saque), result: Number(i.resultado), isEditing: false, isNew: false
+          })))
+        } else {
+          setRows([])
+        }
+      } catch {
+        toast.error('Erro carregar histórico.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchRows()
+  }, [selectedCarteiraId])
 
-  // Lógica de cálculo estático baseada nas linhas
-  // Ao invés de usar `initial` puro salvo, ele vai re-calcular baseado na linha anterior, exceto o 1.
+  // Carteira Ativa Local
+  const carteiraAtiva = todasCarteiras.find(c => c.id === selectedCarteiraId)
+  const bancaInicialAtual = carteiraAtiva ? Number(carteiraAtiva.bancaInicial) : 0
+  const riskProfileAtual = carteiraAtiva ? carteiraAtiva.perfilRisco : 'moderado'
+
   const computedRows = useMemo(() => {
-    let currentInitial = bancaInicialMensal
+    let currentInitial = bancaInicialAtual
     return rows.map((r: DailyRow, i: number) => {
-      // a primeira usa a "Banca Inicial Global", as próximas usam a final da anterior
-      const initialAtRow = i === 0 ? bancaInicialMensal : currentInitial
+      const initialAtRow = i === 0 ? bancaInicialAtual : currentInitial
       const finalAtRow = initialAtRow + r.deposit - r.withdrawal + r.result
       
       const pct = initialAtRow > 0 ? (r.result / initialAtRow) * 100 : 0
-      
-      currentInitial = finalAtRow // prepara pra próxima row
+      currentInitial = finalAtRow 
 
-      return {
-        ...r,
-        calcInitial: initialAtRow,
-        calcFinal: finalAtRow,
-        calcPct: pct
-      }
+      return { ...r, calcInitial: initialAtRow, calcFinal: finalAtRow, calcPct: pct }
     })
-  }, [rows, bancaInicialMensal])
+  }, [rows, bancaInicialAtual])
 
-  const bancaAtual = computedRows.length > 0 ? computedRows[computedRows.length - 1].calcFinal : bancaInicialMensal
+  const bancaAtual = computedRows.length > 0 ? computedRows[computedRows.length - 1].calcFinal : bancaInicialAtual
+
+  const handleSaveConfigCarteira = async (campo: 'bancaInicial' | 'perfilRisco', value: string|number) => {
+    if (!selectedCarteiraId) return
+    try {
+       await api.patch(`/gestao-banca/carteiras/${selectedCarteiraId}`, { [campo]: value })
+       setTodasCarteiras(prev => prev.map(c => c.id === selectedCarteiraId ? { ...c, [campo]: value } : c))
+    } catch {
+       toast.error('Erro ao atualizar info da banca.')
+    }
+  }
 
   // Handlers
   const handleAddRow = () => {
@@ -116,7 +149,7 @@ export const GestaoBancaPage = () => {
     }
     
     try {
-      await api.delete(`/gestao-banca/${casaAposta}/item/${id}`)
+      await api.delete(`/gestao-banca/item/${id}`)
       setRows((prev: DailyRow[]) => prev.filter((r: DailyRow) => r.id !== id))
       toast.success('Linha removida')
     } catch {
@@ -125,25 +158,23 @@ export const GestaoBancaPage = () => {
   }
 
   const handleSaveRow = async (r: DailyRow) => {
+    if (!selectedCarteiraId) return toast.error('Selecione uma Banca primeiro.')
     try {
       if (r.isNew) {
-        const { data } = await api.post(`/gestao-banca/${casaAposta}/item`, {
+        const { data } = await api.post(`/gestao-banca/carteiras/${selectedCarteiraId}/item`, {
           date: r.date, deposit: r.deposit, withdrawal: r.withdrawal, result: r.result
         })
         setRows((prev: DailyRow[]) => prev.map((row: DailyRow) => row.id === r.id ? { ...row, id: data.id, isEditing: false, isNew: false } : row))
         toast.success('Criado!')
-        
-        // Se a casa não tava cadastrada nos bookmakers do dropdown, forçamos o load
-        if (!bookmakers.includes(casaAposta)) loadDados()
       } else {
-        await api.patch(`/gestao-banca/${casaAposta}/item/${r.id}`, {
+        await api.patch(`/gestao-banca/item/${r.id}`, {
           date: r.date, deposit: r.deposit, withdrawal: r.withdrawal, result: r.result
         })
         setRows((prev: DailyRow[]) => prev.map((row: DailyRow) => row.id === r.id ? { ...row, isEditing: false } : row))
         toast.success('Atualizado!')
       }
     } catch {
-      toast.error('Erro ao salvar no banco.')
+      toast.error('Erro ao salvar miniatura no banco.')
     }
   }
 
@@ -160,10 +191,25 @@ export const GestaoBancaPage = () => {
   }
 
   const handleRiskChange = (id: string) => {
-    setRiskProfile(id)
+    handleSaveConfigCarteira('perfilRisco', id)
   }
 
   const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
+  const criarNovaBanca = async () => {
+    const nome = prompt('Digite o nome da sua nova carteira (ex: Alavancagem):')
+    if (!nome) return
+    try {
+      const { data } = await api.post('/gestao-banca/carteiras', {
+         nome, casaAposta, perfilRisco: 'moderado'
+      })
+      setTodasCarteiras((prev: BancaCarteira[]) => [...prev, data])
+      setSelectedCarteiraId(data.id)
+      toast.success('Banca Criada!')
+    } catch {
+      toast.error('Falha ao criar banca.')
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6 font-sans">
@@ -188,9 +234,10 @@ export const GestaoBancaPage = () => {
           <input 
             type="number" 
             step="0.01" 
-            value={bancaInicialMensal || ''} 
-            onChange={(e) => setBancaInicialMensal(Number(e.target.value))} 
-            className="text-3xl font-bold text-white bg-transparent outline-none w-full border-b border-transparent focus:border-green-500/50 transition-colors z-10 relative" 
+            value={bancaInicialAtual === 0 ? '' : bancaInicialAtual} 
+            onChange={(e) => handleSaveConfigCarteira('bancaInicial', e.target.value)} 
+            disabled={!selectedCarteiraId}
+            className="text-3xl font-bold text-white bg-transparent outline-none w-full border-b border-transparent focus:border-green-500/50 transition-colors z-10 relative disabled:opacity-50" 
             placeholder="0.00"
           />
         </div>
@@ -200,8 +247,8 @@ export const GestaoBancaPage = () => {
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={16} className="text-green-400" />
             <span className="text-sm font-medium text-green-400/80 uppercase tracking-wider">Banca Atual</span>
-            {bancaAtual > bancaInicialMensal && (
-             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{(bancaAtual - bancaInicialMensal).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</span>
+            {bancaAtual > bancaInicialAtual && (
+             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{(bancaAtual - bancaInicialAtual).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</span>
             )}
           </div>
           <p className="text-3xl font-bold text-green-400">{formatCurrency(bancaAtual)}</p>
@@ -210,8 +257,9 @@ export const GestaoBancaPage = () => {
 
       {/* ── BARRA DE FERRAMENTAS ───────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row gap-3 items-center justify-between bg-surface-200/50 p-3 rounded-xl border border-surface-300">
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-none">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+          {/* Dropdown Casa Categoria */}
+          <div className="relative w-full sm:w-48">
             <select
               title="Casa de Aposta"
               className="input-field py-2 pr-8 pl-3 text-sm appearance-none cursor-pointer bg-surface-300 outline-none focus:ring-1 ring-green-500/50"
@@ -219,39 +267,33 @@ export const GestaoBancaPage = () => {
               onChange={(e) => setCasaAposta(e.target.value)}
             >
               {bookmakers.map((b: string) => <option key={b} value={b}>{b}</option>)}
-              <option value="Betano" className="hidden">Betano</option>
-              {/* O usuário também pode digitar a casa caso decida criar um input livre ou ter modal. Para manter com Options simples: */}
+              {bookmakers.length === 0 && <option value="Betano">Betano</option>}
+            </select>
+            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          </div>
+
+          {/* Dropdown Banca Carteira */}
+          <div className="relative w-full sm:w-48">
+            <select
+              title="Carteira Selecionada"
+              className="input-field py-2 pr-8 pl-3 text-sm appearance-none cursor-pointer bg-surface-300 outline-none focus:ring-1 ring-green-500/50"
+              value={selectedCarteiraId}
+              onChange={(e) => setSelectedCarteiraId(e.target.value)}
+              disabled={carteirasDaCasa.length === 0}
+            >
+              {carteirasDaCasa.length === 0 && <option value="">Sem Bancas Registradas</option>}
+              {carteirasDaCasa.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
             </select>
             <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
         </div>
         
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <button onClick={() => {
-              const novaCasa = prompt('Digite o nome da nova casa:')
-              if (novaCasa && novaCasa.trim()) {
-                 const nome = novaCasa.trim()
-                 setCasaAposta(nome)
-                 
-                 // Adiciona no Dropdown local
-                 if (!bookmakers.includes(nome)) {
-                   setBookmakers((prev: string[]) => [...prev, nome])
-                 }
-                 
-                 // Adiciona no LocalStorage global da página "Cadastros"
-                 try {
-                   const stored = localStorage.getItem('fgb_bookmakers')
-                   const parsed = stored ? JSON.parse(stored) : []
-                   if (!parsed.find((p: any) => p.name === nome)) {
-                     parsed.push({ id: Date.now().toString(), name: nome })
-                     localStorage.setItem('fgb_bookmakers', JSON.stringify(parsed))
-                   }
-                 } catch {}
-              }
-            }} className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2">
-            <Plus size={14} /> <span className="hidden sm:inline">Nova Casa</span>
+        <div className="flex items-center gap-2 w-full md:w-auto mt-3 md:mt-0">
+          <button onClick={criarNovaBanca} className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2">
+            <Plus size={14} /> <span className="hidden sm:inline">Nova Banca</span>
           </button>
-          <button onClick={handleAddRow} className="flex-1 md:flex-none btn-primary flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20">
+          
+          <button onClick={handleAddRow} disabled={!selectedCarteiraId} className="flex-1 md:flex-none btn-primary flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
             <Plus size={14} /> Adicionar Linha
           </button>
         </div>
@@ -363,14 +405,14 @@ export const GestaoBancaPage = () => {
               key={p.id} 
               onClick={() => handleRiskChange(p.id)}
               className={`p-4 rounded-xl border text-left flex flex-col gap-1 transition-all ${
-                riskProfile === p.id 
+                riskProfileAtual === p.id 
                 ? `border-green-500 bg-green-500/10 scale-[1.02] shadow-[0_0_15px_rgba(34,197,94,0.1)]` 
                 : `${p.color} opacity-80 hover:opacity-100`
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-sm">{p.label}</span>
-                {riskProfile === p.id && <CheckCircle size={14} className="text-green-500" />}
+                {riskProfileAtual === p.id && <CheckCircle size={14} className="text-green-500" />}
               </div>
               <span className="text-xs opacity-80 font-medium">{p.target}</span>
             </button>
