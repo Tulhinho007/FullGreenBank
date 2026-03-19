@@ -444,7 +444,8 @@ export const HistoryPage = () => {
                   const handledIds = new Set<string>();
 
                   const renderRow = (c: BancaContract, isSub = false) => {
-                    const StatusIcon = STATUS_CONFIG[c.status].icon;
+                    const config = STATUS_CONFIG[c.status] || STATUS_CONFIG.ENCERRADO;
+                    const StatusIcon = config.icon;
                     return (
                       <tr key={c.id} className={`hover:bg-surface-300/20 transition-colors group ${isSub ? 'bg-surface-200/30' : ''}`}>
                         <td className={`px-6 py-4`}>
@@ -468,9 +469,9 @@ export const HistoryPage = () => {
                         <td className="px-6 py-4 text-xs font-mono text-slate-300">{fmt(c.bancaInicial)}</td>
                         <td className="px-6 py-4 text-xs font-mono text-white font-bold">{fmt(c.bancaFinal)}</td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${STATUS_CONFIG[c.status].color}`}>
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${config.color}`}>
                             <StatusIcon size={10} />
-                            {STATUS_CONFIG[c.status].label}
+                            {config.label}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right whitespace-nowrap">

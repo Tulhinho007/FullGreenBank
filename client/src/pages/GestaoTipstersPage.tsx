@@ -525,9 +525,9 @@ export const GestaoTipstersPage = () => {
                         </p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${STATUS_CONFIG[t.status].colorClass}`}>
-                          {STATUS_CONFIG[t.status].icon}
-                          {STATUS_CONFIG[t.status].label}
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).colorClass}`}>
+                          {(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).icon}
+                          {(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).label}
                         </span>
                       </td>
                       <td className="px-6 py-4">

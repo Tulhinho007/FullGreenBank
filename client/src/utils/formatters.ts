@@ -30,5 +30,7 @@ export const roleLabelMap: Record<string, { label: string; color: string }> = {
   MEMBRO: { label: 'Membro',       color: 'text-slate-400'  },
 }
 
-export const getRoleInfo = (role?: string) => 
-  roleLabelMap[role || 'MEMBRO'] || roleLabelMap['MEMBRO']
+export const getRoleInfo = (role?: string) => {
+  const normalized = (role || 'MEMBRO').toUpperCase()
+  return roleLabelMap[normalized] || roleLabelMap['MEMBRO']
+}
