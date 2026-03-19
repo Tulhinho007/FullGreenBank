@@ -118,10 +118,18 @@ export const translations = {
 
 export const useTranslation = (overrideLang?: Language) => {
   const { user } = useAuth()
-  const lang = overrideLang || (user?.language as Language) || 'pt-BR'
   
+  // Normalizar para o formato das chaves (ex: PT-BR -> pt-BR)
+  const rawLang = overrideLang || user?.language || 'pt-BR'
+  const lang = (translations[rawLang as Language] 
+    ? rawLang 
+    : (translations[rawLang.toLowerCase() as Language] 
+        ? rawLang.toLowerCase() 
+        : 'pt-BR')) as Language
+
   const t = (key: keyof typeof translations['pt-BR']) => {
-    return translations[lang][key] || translations['pt-BR'][key] || key
+    const group = translations[lang] || translations['pt-BR']
+    return group[key] || translations['pt-BR'][key] || key
   }
 
   return { t, lang }
