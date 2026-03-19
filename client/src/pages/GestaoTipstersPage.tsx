@@ -86,7 +86,8 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
         const matchingTipster = tipsters.find(t => t.name.toLowerCase() === user?.name.toLowerCase())
         
         setForm({
-          tipsterId: matchingTipster?.id || tipsters[0]?.id || '', date: new Date().toISOString().split('T')[0],
+          tipsterId: matchingTipster?.id || user?.id || 'manual', 
+          date: new Date().toISOString().split('T')[0],
           event: '', market: '', status: 'GREEN', amount: '', profit: ''
         })
       }
@@ -97,7 +98,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.tipsterId || !form.event) return
+    
     onSave({
       id: editData?.id,
       tipsterId: form.tipsterId,
@@ -123,12 +124,11 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
           </div>
 
           <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Tipster</label>
-              <select required value={form.tipsterId} onChange={e => setForm({ ...form, tipsterId: e.target.value })} className="input-field py-2">
-                <option value="" disabled>Selecione um Tipster...</option>
-                {tipsters.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-              </select>
+            <div className="flex flex-col gap-1.5 opacity-80">
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Tipster (Automático)</label>
+              <div className="input-field py-2 bg-slate-50 dark:bg-surface-300/30 text-slate-500 font-medium cursor-not-allowed">
+                {editData ? editData.tipsterName : user?.name}
+              </div>
             </div>
 
             <div className="flex gap-3">
@@ -217,14 +217,14 @@ export const GestaoTipstersPage = () => {
   }
 
   const handleSaveModal = (data: Omit<Transaction, 'id' | 'tipsterName'> & { id?: string }) => {
-    const tipsterName = tipsters.find(t => t.id === data.tipsterId)?.name || 'Anônimo'
-    
     if (data.id) {
-      // Edit
+      // Edit: Mantém o nome que já estava ou atualiza se mudou o tipsterId
+      const tipsterName = tipsters.find(t => t.id === data.tipsterId)?.name || transactions.find(t => t.id === data.id)?.tipsterName || 'Anônimo'
       const updated = transactions.map(t => t.id === data.id ? { ...t, ...data, tipsterName } : t)
       saveTransactions(updated)
     } else {
-      // Add
+      // Add: Usa o nome do usuário logado/impersonado
+      const tipsterName = user?.name || 'Anônimo'
       const newRecord: Transaction = { ...data, id: crypto.randomUUID(), tipsterName }
       saveTransactions([newRecord, ...transactions])
     }
