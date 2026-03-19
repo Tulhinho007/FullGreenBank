@@ -90,6 +90,7 @@ export const FinanceiroPagamentosPage = () => {
   // Modal edição
   const [editTarget, setEditTarget] = useState<UserPayment | null>(null)
   const [editForm,   setEditForm]   = useState(emptyEdit)
+  const [activeTab,  setActiveTab]  = useState<'pagamento' | 'plano'>('pagamento')
 
   // ── Carregar usuários ──────────────────────────────────────────────────────
   const loadUsers = async () => {
@@ -221,7 +222,7 @@ export const FinanceiroPagamentosPage = () => {
     })
   }
 
-  const closeEdit = () => { setEditTarget(null); setEditForm(emptyEdit) }
+  const closeEdit = () => { setEditTarget(null); setEditForm(emptyEdit); setActiveTab('pagamento') }
 
   const setF = (field: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -446,88 +447,112 @@ export const FinanceiroPagamentosPage = () => {
               <p className="text-xs text-slate-500 mt-0.5">{editTarget.email}</p>
             </div>
 
-            {/* Tipo de conta + Plano */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label">Tipo de Conta</label>
-                <input
-                  className="input-field bg-surface-300/60 cursor-not-allowed text-slate-400"
-                  value={editTarget.role === 'ADMIN' || editTarget.role === 'MASTER' ? 'Admin' : 'Membro'}
-                  disabled
-                  readOnly
-                />
-              </div>
-              <div>
-                <label className="label">Plano</label>
-                <select className="input-field" value={editForm.plan} onChange={setF('plan')}>
-                  {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
-                    <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
-                  ))}
-                </select>
-              </div>
+            {/* TABS NAVIGATION */}
+            <div className="flex border-b border-surface-300">
+              <button 
+                type="button"
+                onClick={() => setActiveTab('pagamento')}
+                className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'pagamento' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
+              >
+                Pagamento
+              </button>
+              <button 
+                type="button"
+                onClick={() => setActiveTab('plano')}
+                className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'plano' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
+              >
+                Plano & Status
+              </button>
             </div>
 
-            {/* Valor + Forma de pagamento */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label">Valor ({me?.currency || 'R$'})</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="input-field"
-                  placeholder="Ex: 49.90"
-                  value={editForm.value}
-                  onChange={setF('value')}
-                />
-              </div>
-              <div>
-                <label className="label">Forma de Pagamento</label>
-                <select className="input-field" value={editForm.payMethod} onChange={setF('payMethod')}>
-                  <option value="">— Selecione —</option>
-                  <option value="PIX">PIX</option>
-                  <option value="CARTAO">Cartão</option>
-                  <option value="BOLETO">Boleto</option>
-                  <option value="TRANSFERENCIA">Transferência</option>
-                </select>
-              </div>
-            </div>
+            {activeTab === 'pagamento' && (
+              <div className="flex flex-col gap-4">
+                {/* Valor + Forma de pagamento */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="label">Valor ({me?.currency || 'R$'})</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="input-field"
+                      placeholder="Ex: 49.90"
+                      value={editForm.value}
+                      onChange={setF('value')}
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Forma de Pagamento</label>
+                    <select className="input-field" value={editForm.payMethod} onChange={setF('payMethod')}>
+                      <option value="">— Selecione —</option>
+                      <option value="PIX">PIX</option>
+                      <option value="CARTAO">Cartão</option>
+                      <option value="BOLETO">Boleto</option>
+                      <option value="TRANSFERENCIA">Transferência</option>
+                    </select>
+                  </div>
+                </div>
 
-            {/* Vencimento + Status */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label">Vencimento</label>
-                <input
-                  type="date"
-                  className="input-field"
-                  value={editForm.dueDate}
-                  onChange={setF('dueDate')}
-                />
-              </div>
-              <div>
-                <label className="label">Status de Pagamento</label>
-                <select className="input-field" value={editForm.status} onChange={setF('status')}>
-                  {(Object.keys(STATUS_CONFIG) as PaymentStatus[]).map(s => (
-                    <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+                {/* Vencimento */}
+                <div>
+                  <label className="label">Vencimento</label>
+                  <input
+                    type="date"
+                    className="input-field"
+                    value={editForm.dueDate}
+                    onChange={setF('dueDate')}
+                  />
+                </div>
 
-            {/* Observações */}
-            <div>
-              <label className="label">Observações</label>
-              <textarea
-                className="input-field resize-none"
-                rows={3}
-                placeholder="Ex: Pagamento via PIX confirmado em 10/03"
-                value={editForm.notes}
-                onChange={setF('notes')}
-              />
-            </div>
+                {/* Observações */}
+                <div>
+                  <label className="label">Observações</label>
+                  <textarea
+                    className="input-field resize-none"
+                    rows={3}
+                    placeholder="Ex: Pagamento via PIX confirmado em 10/03"
+                    value={editForm.notes}
+                    onChange={setF('notes')}
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'plano' && (
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="label">Tipo de Conta</label>
+                    <input
+                      className="input-field bg-surface-300/60 cursor-not-allowed text-slate-400"
+                      value={editTarget.role === 'ADMIN' || editTarget.role === 'MASTER' ? 'Admin' : 'Membro'}
+                      disabled
+                      readOnly
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Plano de Assinatura</label>
+                    <select className="input-field text-green-400 font-bold" value={editForm.plan} onChange={setF('plan')}>
+                      {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
+                        <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label">Status de Pagamento</label>
+                  <select className="input-field" value={editForm.status} onChange={setF('status')}>
+                    {(Object.keys(STATUS_CONFIG) as PaymentStatus[]).map(s => (
+                      <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
 
             {/* Ações */}
-            <div className="flex gap-3 pt-1">
+            <div className="flex gap-3 pt-3 border-t border-surface-300 mt-2">
               <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
                 {isReadOnly ? 'Fechar' : 'Cancelar'}
               </button>
@@ -579,7 +604,7 @@ const UserRow = ({ user, onEdit, isReadOnly, formatCurrency }: UserRowProps) => 
         <span className="text-xs text-slate-400">
           {isAdmin ? 'Admin' : 'Membro'}
         </span>
-        <span className={`text-xs px-2 py-0.5 rounded-full border ${plan.color}`}>
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${plan.color}`}>
           {plan.label}
         </span>
       </div>

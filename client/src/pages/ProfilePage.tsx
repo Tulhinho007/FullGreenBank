@@ -89,8 +89,12 @@ export const ProfilePage = () => {
             <p className="text-slate-400 text-sm mb-4">@{user?.username}</p>
             
             <div className="flex flex-wrap justify-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-green-900/40 text-green-400 border border-green-800/50">
-                {user?.plan || 'FREE'}
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                user?.plan === 'PRO' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-800/50' :
+                user?.plan === 'STANDARD' ? 'bg-green-900/40 text-green-400 border-green-800/50' :
+                'bg-slate-900/40 text-slate-400 border-slate-800/50'
+              }`}>
+                {user?.plan || 'STARTER'}
               </span>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-900/40 text-blue-400 border border-blue-800/50">
                 {user?.role}

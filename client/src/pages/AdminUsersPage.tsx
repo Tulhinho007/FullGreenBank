@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp } from 'lucide-react'
+import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
+
 interface User {
   id: string; name: string; email: string; phone?: string
   username: string; role: string; active: boolean; isTipster?: boolean; createdAt: string
@@ -23,12 +24,16 @@ export const AdminUsersPage = () => {
   const [selected,  setSelected]  = useState<User | null>(null)
   const [modalType, setModalType] = useState<ModalType>(null)
   const [saving,    setSaving]    = useState(false)
+  const [activeTab, setActiveTab] = useState<'geral' | 'plano'>('geral')
 
   // Role form
   const [newRole, setNewRole] = useState('')
 
   // Edit form
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', username: '', password: '', isTipster: false, plan: 'STARTER' })
+  const [editForm, setEditForm] = useState({ 
+    name: '', email: '', phone: '', username: '', password: '', 
+    isTipster: false, plan: 'STARTER' 
+  })
   const [showPass, setShowPass] = useState(false)
 
   const load = () => {
@@ -40,10 +45,9 @@ export const AdminUsersPage = () => {
 
   useEffect(() => { load() }, [])
 
-  // Guard: Admin não pode mexer em Master
   const canEdit = (u: User) => {
     if (me?.role === 'TESTER') return false
-    if (u.role === 'MASTER' && !isMaster) return false  // Admin não edita Master
+    if (u.role === 'MASTER' && !isMaster) return false
     return isAdmin
   }
 
@@ -53,7 +57,15 @@ export const AdminUsersPage = () => {
       return
     }
     setSelected(u)
-    setEditForm({ name: u.name, email: u.email, phone: u.phone || '', username: u.username, password: '', isTipster: u.isTipster || false, plan: u.plan || 'STARTER' })
+    setEditForm({ 
+      name: u.name, 
+      email: u.email, 
+      phone: u.phone || '', 
+      username: u.username, 
+      password: '', 
+      isTipster: u.isTipster || false, 
+      plan: u.plan || 'STARTER' 
+    })
     setModalType('edit')
   }
 
@@ -64,7 +76,12 @@ export const AdminUsersPage = () => {
     setModalType('role')
   }
 
-  const closeModal = () => { setSelected(null); setModalType(null); setShowPass(false) }
+  const closeModal = () => { 
+    setSelected(null)
+    setModalType(null)
+    setShowPass(false)
+    setActiveTab('geral') 
+  }
 
   const handleToggle = async (u: User) => {
     if (!canEdit(u)) { toast.error('Admins não podem desativar usuários Master.'); return }
@@ -79,21 +96,21 @@ export const AdminUsersPage = () => {
     if (!selected) return
     setSaving(true)
     try {
-      const payload: Record<string, string> = {
+      const payload: any = { 
         name: editForm.name,
         email: editForm.email,
         phone: editForm.phone,
         username: editForm.username,
-        isTipster: editForm.isTipster as any,
-        plan: editForm.plan
+        isTipster: editForm.isTipster,
+        plan: editForm.plan,
       }
       if (editForm.password) payload.password = editForm.password
       await usersService.updateProfileById(selected.id, payload)
       toast.success('Usuário atualizado!')
       closeModal()
       load()
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao atualizar'
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Erro ao atualizar'
       toast.error(msg)
     } finally { setSaving(false) }
   }
@@ -110,15 +127,15 @@ export const AdminUsersPage = () => {
     finally { setSaving(false) }
   }
 
-  const setEdit = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const setEdit = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setEditForm(f => ({ ...f, [field]: e.target.value }))
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display font-semibold text-white">{'Usuários'}</h2>
-          <p className="text-xs text-slate-500">{users.length} {'Cadastrado em'?.replace(' em', 's') || 'usuários cadastrados'}</p>
+          <h2 className="font-display font-semibold text-white">Usuários</h2>
+          <p className="text-xs text-slate-500">{users.length} usuários cadastrados</p>
         </div>
       </div>
 
@@ -156,8 +173,12 @@ export const AdminUsersPage = () => {
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.email}</td>
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.phone || '—'}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-300 text-slate-400 border border-surface-400">
-                          {u.plan || 'Free'}
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                          u.plan === 'PRO' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-800/50' :
+                          u.plan === 'STANDARD' ? 'bg-green-900/40 text-green-400 border-green-800/50' :
+                          'bg-slate-900/40 text-slate-400 border-slate-800/50'
+                        }`}>
+                          {u.plan || 'STARTER'}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -172,59 +193,45 @@ export const AdminUsersPage = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt)}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt).split(' ')[0]}</td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-semibold ${u.active ? 'text-green-500' : 'text-red-500'}`}>
+                        <button 
+                          onClick={() => handleToggle(u)}
+                          disabled={!editable || loading}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
+                            u.active 
+                              ? 'bg-green-900/30 text-green-500 border border-green-800/50 hover:bg-green-900/50' 
+                              : 'bg-red-900/30 text-red-500 border border-red-800/50 hover:bg-red-900/50'
+                          }`}
+                        >
                           {u.active ? 'Ativo' : 'Inativo'}
-                        </span>
+                        </button>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {/* Editar */}
-                          <button
+                        <div className="flex items-center gap-2">
+                          <button 
                             onClick={() => openEdit(u)}
-                            disabled={!editable}
-                            className={`text-xs px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 font-medium ${
-                              editable
-                                ? 'text-green-600 border-green-500/50 hover:bg-green-50 dark:text-green-400 dark:border-green-800/40 dark:hover:bg-green-900/20'
-                                : 'opacity-30 cursor-not-allowed border-slate-300 text-slate-400'
-                            }`}
+                            className="p-1.5 rounded-lg bg-surface-300 text-slate-400 hover:text-white hover:bg-surface-400 transition-all"
+                            title="Editar Perfil"
                           >
-                            <Pencil size={10} />Editar
+                            <Pencil size={14} />
                           </button>
-
-                          {/* Role — só master */}
                           {isMaster && (
-                            <button
+                            <button 
                               onClick={() => openRole(u)}
-                              className="text-xs px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 font-medium text-blue-600 border-blue-400/50 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800/40 dark:hover:bg-blue-900/20"
+                              className="p-1.5 rounded-lg bg-surface-300 text-blue-400 hover:text-white hover:bg-blue-600/50 transition-all"
+                              title="Alterar Cargo"
                             >
-                              <ShieldCheck size={10} />Role
+                              <ShieldCheck size={14} />
                             </button>
                           )}
-
-                          {/* Ativar/Desativar */}
-                          <button
-                            onClick={() => handleToggle(u)}
-                            disabled={!editable}
-                            className={`text-xs px-2.5 py-1 rounded-md border transition-colors font-medium ${
-                              !editable
-                                ? 'opacity-30 cursor-not-allowed border-slate-300 text-slate-400'
-                                : u.active
-                                  ? 'text-red-600 border-red-400/50 hover:bg-red-50 dark:text-red-400 dark:border-red-800/40 dark:hover:bg-red-900/20'
-                                  : 'text-green-600 border-green-400/50 hover:bg-green-50 dark:text-green-400 dark:border-green-800/40 dark:hover:bg-green-900/20'
-                            }`}
-                          >
-                            {u.active ? 'Desativar' : 'Ativar'}
-                          </button>
-
-                          {/* Gerenciar — Admin/Master gerencia Membro */}
-                          {isAdmin && u.role !== 'MASTER' && u.id !== me?.id && (
-                            <button
-                              onClick={() => impersonateUser(u as any)}
-                              className="text-xs px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 font-medium text-orange-600 border-orange-400/50 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800/40 dark:hover:bg-orange-900/20"
+                          {isMaster && (
+                            <button 
+                              onClick={() => impersonateUser(u.id)}
+                              className="p-1.5 rounded-lg bg-surface-300 text-orange-400 hover:text-white hover:bg-orange-600/50 transition-all"
+                              title="Acessar conta"
                             >
-                              <Eye size={10} />Gerenciar
+                              <UserIcon size={14} />
                             </button>
                           )}
                         </div>
@@ -235,122 +242,154 @@ export const AdminUsersPage = () => {
               </tbody>
             </table>
           </div>
-          {users.length === 0 && (
-            <div className="py-16 text-center">
-              <Users size={32} className="text-slate-700 mx-auto mb-3" />
-              <p className="text-slate-500">Nenhum usuário encontrado.</p>
-            </div>
-          )}
         </div>
       )}
 
-      {/* MODAL EDITAR */}
-      <Modal isOpen={modalType === 'edit'} onClose={closeModal} title="Editar Usuário" size="md">
-        {selected && (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 pb-3 border-b border-surface-300">
-              <div className="w-9 h-9 rounded-full bg-green-800 flex items-center justify-center text-sm font-bold text-green-300">
-                {selected.name[0].toUpperCase()}
-              </div>
-              <div>
-                <p className="text-slate-500 text-xs">@{selected.username} · <span className={getRoleInfo(selected.role).color}>{getRoleInfo(selected.role).label}</span></p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label">Nome completo</label>
-                <input className="input-field" value={editForm.name} onChange={setEdit('name')} />
-              </div>
-              <div>
-                <label className="label">Usuário</label>
-                <input className="input-field" value={editForm.username} onChange={setEdit('username')} />
-              </div>
-              <div className="col-span-2">
-                <label className="label">Email</label>
-                <input type="email" className="input-field" value={editForm.email} onChange={setEdit('email')} />
-              </div>
-              <div className="col-span-2">
-                <label className="label">Telefone</label>
-                <input className="input-field" placeholder="(11) 99999-9999" value={editForm.phone} onChange={setEdit('phone')} />
-              </div>
-              <div className="col-span-2">
-                <label className="label">Nova senha <span className="text-slate-600 font-normal">(deixe em branco para não alterar)</span></label>
-                <div className="relative">
-                  <input
-                    type={showPass ? 'text' : 'password'}
-                    className="input-field pr-10"
-                    placeholder="••••••••"
-                    value={editForm.password}
-                    onChange={setEdit('password')}
-                  />
-                  <button type="button" onClick={() => setShowPass(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                    {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="col-span-2 pt-1 flex flex-col gap-3">
-                <label className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-400 bg-surface-300/30 cursor-pointer hover:bg-surface-300 transition-colors">
-                  <input 
-                    type="checkbox" 
-                    checked={editForm.isTipster}
-                    onChange={e => setEditForm({ ...editForm, isTipster: e.target.checked })}
-                    className="w-4 h-4 rounded border-slate-600 text-green-600 focus:ring-green-500 bg-surface-400"
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-white">Usuário é Tipster</span>
-                    <span className="text-[10px] text-slate-500 tracking-tight">Permite realizar novos registros na Gestão de Tipsters</span>
-                  </div>
-                </label>
-
-                <div>
-                  <label className="label">Plano de Assinatura</label>
-                  <select 
-                    className="input-field"
-                    value={editForm.plan}
-                    onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
-                  >
-                    <option value="STARTER">Starter</option>
-                    <option value="STANDARD">Standard</option>
-                    <option value="PRO">Pro</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>
-              <button onClick={handleEditSave} disabled={saving} className="btn-primary flex-1">
-                {saving ? 'Salvando...' : 'Salvar alterações'}
-              </button>
-            </div>
+      {/* Modal: Editar Perfil */}
+      <Modal 
+        isOpen={modalType === 'edit'} 
+        onClose={closeModal} 
+        title="Editar Usuário"
+      >
+        <div className="flex flex-col gap-5">
+          {/* Tabs */}
+          <div className="flex border-b border-surface-300">
+            <button 
+              onClick={() => setActiveTab('geral')}
+              className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'geral' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
+            >
+              Geral
+            </button>
+            <button 
+              onClick={() => setActiveTab('plano')}
+              className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'plano' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
+            >
+              Plano & Acesso
+            </button>
           </div>
-        )}
+
+          {activeTab === 'geral' && (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className="label">Nome</label>
+                  <input className="input-field" value={editForm.name} onChange={setEdit('name')} />
+                </div>
+                <div>
+                  <label className="label">Email</label>
+                  <input className="input-field" value={editForm.email} onChange={setEdit('email')} />
+                </div>
+                <div>
+                  <label className="label">Usuário</label>
+                  <input className="input-field" value={editForm.username} onChange={setEdit('username')} />
+                </div>
+                <div>
+                  <label className="label">Telefone</label>
+                  <input className="input-field" value={editForm.phone} onChange={setEdit('phone')} />
+                </div>
+                <div>
+                  <label className="label">Nova Senha (opcional)</label>
+                  <div className="relative">
+                    <input 
+                      type={showPass ? 'text' : 'password'} 
+                      className="input-field pr-10" 
+                      value={editForm.password} 
+                      onChange={setEdit('password')} 
+                    />
+                    <button 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                      onClick={() => setShowPass(!showPass)}
+                    >
+                      {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'plano' && (
+            <div className="flex flex-col gap-6">
+              <div>
+                <label className="label mb-3">Plano de Assinatura</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['STARTER', 'STANDARD', 'PRO'].map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setEditForm(f => ({ ...f, plan: p }))}
+                      className={`py-3 px-2 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
+                        editForm.plan === p 
+                          ? 'border-green-500 bg-green-500/10 text-green-400' 
+                          : 'border-surface-300 bg-surface-300/30 text-slate-500 hover:border-surface-400'
+                      }`}
+                    >
+                      <span className="text-[10px] font-black tracking-widest">{p}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl bg-surface-300/20 border border-surface-400">
+                <div>
+                  <p className="text-sm font-bold text-white tracking-tight">Status de Tipster</p>
+                  <p className="text-[10px] text-slate-500">Permite postar dicas de apostas</p>
+                </div>
+                <button
+                  onClick={() => setEditForm(f => ({ ...f, isTipster: !f.isTipster }))}
+                  className={`w-12 h-6 rounded-full transition-all relative ${editForm.isTipster ? 'bg-green-500' : 'bg-slate-700'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${editForm.isTipster ? 'left-7' : 'left-1'}`} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleEditSave} disabled={saving} className="btn-primary flex-1">
+              {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </button>
+          </div>
+        </div>
       </Modal>
 
-      {/* MODAL ROLE */}
-      <Modal isOpen={modalType === 'role'} onClose={closeModal} title="Alterar Role" size="sm">
-        {selected && (
-          <div className="flex flex-col gap-4">
-            <p className="text-sm text-slate-400">Alterar role de <strong className="text-white">{selected.name}</strong></p>
-            <div>
-              <label className="label">Novo Role</label>
-              <select className="input-field" value={newRole} onChange={e => setNewRole(e.target.value)}>
-                <option value="MEMBRO">Membro</option>
-                <option value="TESTER">Visualizador</option>
-                <option value="ADMIN">Admin</option>
-                <option value="MASTER">Master</option>
-              </select>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>
-              <button onClick={handleRoleUpdate} disabled={saving} className="btn-primary flex-1">
-                {saving ? 'Salvando...' : 'Confirmar'}
+      {/* Modal: Alterar Role */}
+      <Modal 
+        isOpen={modalType === 'role'} 
+        onClose={closeModal} 
+        title="Alterar Nível de Acesso"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-sm text-slate-400">
+            Alterar o cargo de <span className="text-white font-bold">{selected?.name}</span> para:
+          </p>
+          <div className="flex flex-col gap-2">
+            {['USER', 'ADMIN', 'MASTER'].map(r => (
+              <button 
+                key={r}
+                onClick={() => setNewRole(r)}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  newRole === r 
+                    ? 'border-green-500 bg-green-500/10 text-green-400' 
+                    : 'border-surface-300 bg-surface-300/20 text-slate-400 hover:bg-surface-300'
+                }`}
+              >
+                <p className="font-bold text-sm tracking-wide">{getRoleInfo(r).label}</p>
+                <p className="text-[10px] opacity-70">
+                  {r === 'MASTER' ? 'Acesso total e gerenciamento de administradores.' : 
+                   r === 'ADMIN' ? 'Gerenciamento de usuários e financeiro.' : 
+                   'Acesso padrão de membro.'}
+                </p>
               </button>
-            </div>
+            ))}
           </div>
-        )}
+          <div className="flex gap-3 mt-4">
+            <button onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>
+            <button onClick={handleRoleUpdate} disabled={saving} className="btn-primary flex-1">
+              {saving ? 'Salvando...' : 'Confirmar Alteração'}
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   )
