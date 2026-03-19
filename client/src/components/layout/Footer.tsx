@@ -6,6 +6,7 @@ import {
   AlertTriangle, 
   AtSign
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -52,12 +53,12 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Legal</h4>
             <ul className="space-y-2.5">
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Termos de Uso</a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Privacidade</a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Cookies</a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 text-xs transition-colors flex items-center gap-1.5">
+              <li><Link to="/legal/terms" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Termos de Uso</Link></li>
+              <li><Link to="/legal/privacy" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Privacidade</Link></li>
+              <li><Link to="/legal/cookies" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Cookies</Link></li>
+              <li><Link to="/legal/responsible-gaming" className="text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 text-xs transition-colors flex items-center gap-1.5">
                 <ShieldCheck size={14} /> Jogo Responsável
-              </a></li>
+              </Link></li>
             </ul>
           </div>
 
