@@ -18,6 +18,7 @@ import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
 import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
 import { ReportsPage }                 from './pages/ReportsPage'
+import { HistoryPage }                 from './pages/HistoryPage'
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/gestao/banca" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
@@ -86,6 +87,7 @@ function App() {
           />
           <Route path="gestao/banca" element={<GestaoBancaPage />} />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
+          <Route path="gestao/historico" element={<HistoryPage />} />
         </Route>
 
         {/* Catch-all */}

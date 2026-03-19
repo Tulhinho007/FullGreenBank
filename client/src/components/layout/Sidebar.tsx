@@ -132,7 +132,7 @@ export const Sidebar = () => {
         <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-        <NavItem icon={<History size={16} />}      label="Histórico"        placeholder />
+        <NavItem icon={<History size={16} />}      label="Histórico"        to="/gestao/historico" />
 
         {/* 4. FINANCEIRO */}
         <SectionLabel label="Financeiro" />
