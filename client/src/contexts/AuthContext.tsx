@@ -9,7 +9,7 @@ export interface User {
   email: string
   phone?: string
   username: string
-  role: 'MASTER' | 'ADMIN' | 'MEMBRO'
+  role: 'MASTER' | 'ADMIN' | 'TESTER' | 'MEMBRO'
   active: boolean
   createdAt: string
 }

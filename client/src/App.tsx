@@ -44,7 +44,7 @@ function App() {
           <Route
             path="admin/users"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <AdminUsersPage />
               </ProtectedRoute>
             }
@@ -52,7 +52,7 @@ function App() {
           <Route
             path="admin/cadastros"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <AdminCadastrosPage />
               </ProtectedRoute>
             }
@@ -60,7 +60,7 @@ function App() {
           <Route
             path="admin/log"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <SystemLogPage />
               </ProtectedRoute>
             }
@@ -68,7 +68,7 @@ function App() {
           <Route
             path="financeiro/pagamentos"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <FinanceiroPagamentosPage />
               </ProtectedRoute>
             }
@@ -76,7 +76,7 @@ function App() {
           <Route
             path="financeiro/banca-gerenciada"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <BancaGerenciadaPage />
               </ProtectedRoute>
             }

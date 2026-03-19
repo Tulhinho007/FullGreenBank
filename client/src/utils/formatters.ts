@@ -25,5 +25,6 @@ export const resultLabel: Record<string, { label: string; cls: string }> = {
 export const roleLabelMap: Record<string, { label: string; color: string }> = {
   MASTER: { label: 'Master', color: 'text-yellow-400' },
   ADMIN:  { label: 'Admin',  color: 'text-blue-400'   },
-  MEMBRO: { label: 'Membro', color: 'text-slate-400'  },
+  TESTER: { label: 'Visualizador', color: 'text-purple-400' },
+  MEMBRO: { label: 'Membro',       color: 'text-slate-400'  },
 }
