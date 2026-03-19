@@ -11,15 +11,7 @@ router.use(checkReadOnly)
 
 router.get('/', async (req: any, res) => {
   try {
-    const userRole = req.user?.role
-    const userId = req.user?.id
-
-    const where = (userRole === 'ADMIN' || userRole === 'MASTER') 
-      ? {} 
-      : { userId }
-
     const contratos = await prisma.bancaContrato.findMany({
-      where,
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { id: true, name: true, email: true } } },
     })

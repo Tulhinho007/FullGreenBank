@@ -101,15 +101,9 @@ export const HistoryPage = () => {
     loadData()
   }, [])
 
-  // Derived Data
+  // Global filtered data for Stats and Chart
   const filtered = useMemo(() => {
-    const isMasterOrAdmin = user?.role === 'MASTER' || user?.role === 'ADMIN'
-    
     return contracts.filter(c => {
-      // Role-based visibility
-      const isOwner = c.userId === user?.id
-      if (!isMasterOrAdmin && !isOwner) return false
-
       const matchSearch = !search || 
         c.userName.toLowerCase().includes(search.toLowerCase()) || 
         c.userEmail.toLowerCase().includes(search.toLowerCase()) ||
@@ -123,7 +117,14 @@ export const HistoryPage = () => {
 
       return matchSearch && matchStatus && matchMin && matchMax
     })
-  }, [contracts, search, statusFilter, minValue, maxValue, user])
+  }, [contracts, search, statusFilter, minValue, maxValue])
+
+  // Restricted data for the TABLE only
+  const tableContracts = useMemo(() => {
+    const isMasterOrAdmin = user?.role === 'MASTER' || user?.role === 'ADMIN'
+    if (isMasterOrAdmin) return filtered
+    return filtered.filter(c => c.userId === user?.id)
+  }, [filtered, user])
 
   const stats = useMemo(() => {
     const closed = filtered.filter(c => c.status === 'FINALIZADO' || c.status === 'ENCERRADO')
@@ -156,7 +157,7 @@ export const HistoryPage = () => {
 
   const exportCSV = () => {
     const header = ['Identificação', 'Usuário', 'Email', 'Status', 'Data Inicial', 'Data Final', 'Banca Inicial', 'Banca Final', 'Lucro', 'Comissão (%)', 'Vl Comissão']
-    const rows = filtered.map(c => [
+    const rows = tableContracts.map(c => [
       c.identificacao || '',
       c.userName,
       c.userEmail,
@@ -416,7 +417,7 @@ export const HistoryPage = () => {
                     Carregando histórico...
                   </td>
                 </tr>
-              ) : filtered.length === 0 ? (
+              ) : tableContracts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center gap-2 text-slate-500">
@@ -429,7 +430,7 @@ export const HistoryPage = () => {
               ) : (
                 (() => {
                   // Lógica de Hierarquia (Raiz -> Filhos)
-                  const roots = filtered.filter(c => !c.parentId);
+                  const roots = tableContracts.filter(c => !c.parentId);
                   const elements: React.ReactNode[] = [];
                   const handledIds = new Set<string>();
 
@@ -476,7 +477,7 @@ export const HistoryPage = () => {
                   roots.forEach(r => {
                     elements.push(renderRow(r));
                     handledIds.add(r.id);
-                    const children = filtered.filter(child => child.parentId === r.id);
+                    const children = tableContracts.filter(child => child.parentId === r.id);
                     children.forEach(child => {
                       elements.push(renderRow(child, true));
                       handledIds.add(child.id);
@@ -484,7 +485,7 @@ export const HistoryPage = () => {
                   });
 
                   // Casos órfãos ou que sobraram
-                  filtered.forEach(c => {
+                  tableContracts.forEach(c => {
                     if (!handledIds.has(c.id)) {
                       elements.push(renderRow(c, !!c.parentId));
                     }
