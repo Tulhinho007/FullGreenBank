@@ -1,10 +1,11 @@
 import { useEffect, useState, FormEvent } from 'react'
-import { ClipboardList, Users, Eye, EyeOff, Dumbbell, Trophy, Shield, Star } from 'lucide-react'
+import { ClipboardList, Users, Eye, EyeOff, Dumbbell, Trophy, Shield, Star, Target } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { SportsModal, Sport } from '../components/ui/SportsModal'
 import { LeaguesModal, League, DEFAULT_LEAGUES } from '../components/ui/LeaguesModal'
 import { TeamsModal } from '../components/ui/TeamsModal'
 import { BookmakersModal, Bookmaker, DEFAULT_BOOKMAKERS } from '../components/ui/BookmakersModal'
+import { TipstersModal, Tipster } from '../components/ui/TipstersModal'
 import { usersService } from '../services/users.service'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
@@ -14,6 +15,7 @@ import toast from 'react-hot-toast'
 const SPORTS_KEY     = 'fgb_sports'
 const LEAGUES_KEY    = 'fgb_leagues'
 const BOOKMAKERS_KEY = 'fgb_bookmakers'
+const TIPSTERS_KEY   = 'fgb_tipsters'
 
 // Dados iniciais — carregados apenas na primeira vez (localStorage vazio)
 const DEFAULT_SPORTS: Sport[] = [
@@ -53,6 +55,13 @@ const loadBookmakers = (): Bookmaker[] => {
   } catch { return DEFAULT_BOOKMAKERS }
 }
 
+const loadTipsters = (): Tipster[] => {
+  try {
+    const stored = localStorage.getItem(TIPSTERS_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch { return [] }
+}
+
 const placeholders = [
   { title: 'Mercados',   desc: 'Mercados de apostas disponíveis' },
   { title: 'Categorias', desc: 'Categorias e tags de dicas'      },
@@ -74,6 +83,8 @@ export const AdminCadastrosPage = () => {
   const [teamsOpen,     setTeamsOpen]     = useState(false)
   const [bookmakers,    setBookmakers]    = useState<Bookmaker[]>(() => loadBookmakers())
   const [bookmakersOpen,setBookmakersOpen]= useState(false)
+  const [tipsters,     setTipsters]     = useState<Tipster[]>(() => loadTipsters())
+  const [tipstersOpen, setTipstersOpen] = useState(false)
   const [form,       setForm]       = useState(emptyForm)
   const [showPass,   setShowPass]   = useState(false)
   const [loading,    setLoading]    = useState(false)
@@ -94,6 +105,12 @@ export const AdminCadastrosPage = () => {
     setBookmakers(updated)
     localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(updated))
     if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Casas de apostas atualizadas', detail: `${updated.length} casas na lista` })
+  }
+
+  const saveTipsters = (updated: Tipster[]) => {
+    setTipsters(updated)
+    localStorage.setItem(TIPSTERS_KEY, JSON.stringify(updated))
+    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Tipsters atualizados', detail: `${updated.length} tipsters na lista` })
   }
 
   // Carrega contagem de usuários
@@ -287,6 +304,27 @@ export const AdminCadastrosPage = () => {
           </div>
         </div>
 
+        {/* ── Card TIPSTER — funcional ── */}
+        <div
+          onClick={() => setTipstersOpen(true)}
+          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
+              <Target size={16} className="text-green-400" />
+            </div>
+            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">Ativo</span>
+          </div>
+          <h3 className="font-semibold text-white text-sm">Tipsters</h3>
+          <p className="text-xs text-slate-500 mt-1">Cadastro e gestão de analistas de tips</p>
+          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
+            <span className="text-xs text-slate-500">
+              {tipsters.length} {tipsters.length === 1 ? 'tipster' : 'tipsters'}
+            </span>
+            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">Gerenciar</span>
+          </div>
+        </div>
+
         {/* ── Cards PLACEHOLDER ── */}
         {placeholders.map(s => (
           <div key={s.title} className="card p-5 border border-surface-400 hover:border-surface-300 transition-colors">
@@ -453,6 +491,15 @@ export const AdminCadastrosPage = () => {
         onClose={() => setLeaguesOpen(false)}
         leagues={leagues}
         onSave={saveLeagues}
+        readOnly={isReadOnly}
+      />
+
+      {/* ── Modal Tipsters ── */}
+      <TipstersModal
+        isOpen={tipstersOpen}
+        onClose={() => setTipstersOpen(false)}
+        tipsters={tipsters}
+        onSave={saveTipsters}
         readOnly={isReadOnly}
       />
     </div>
