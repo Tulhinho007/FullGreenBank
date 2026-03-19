@@ -17,6 +17,7 @@ import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
 import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
 import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
+import { ReportsPage }                 from './pages/ReportsPage'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
+          <Route path="reports"   element={<ReportsPage />} />
 
           {/* Admin & Master only */}
           <Route

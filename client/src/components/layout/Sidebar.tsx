@@ -143,7 +143,7 @@ export const Sidebar = () => {
           </>
         )}
         <NavItem icon={<DollarSign size={16} />} label="Fluxo de Caixa" placeholder />
-        <NavItem icon={<FileText size={16} />}   label="Relatórios"     placeholder />
+        <NavItem icon={<FileText size={16} />}   label="Relatórios"     to="/reports" />
 
         {/* 5. OUTROS */}
         <SectionLabel label="Outros" />
