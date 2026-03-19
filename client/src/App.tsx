@@ -22,8 +22,8 @@ import { HistoryPage }                 from './pages/HistoryPage'
 
 function App() {
   return (
-    <ThemeProvider>
     <AuthProvider>
+    <ThemeProvider>
       <Routes>
         {/* Public */}
         <Route path="/login"    element={<LoginPage />} />
@@ -93,8 +93,8 @@ function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </AuthProvider>
     </ThemeProvider>
+    </AuthProvider>
   )
 }
 
