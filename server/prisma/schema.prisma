@@ -27,6 +27,7 @@ model User {
   password  String
   role      UserRole @default(MEMBRO)
   active    Boolean  @default(true)
+  isTipster Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

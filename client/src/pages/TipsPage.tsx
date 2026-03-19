@@ -157,9 +157,9 @@ function StatusBadge({ tip }: { tip: Tip }) {
 // Tip Card
 // ─────────────────────────────────────────────
 
-function TipCard({ tip, isAdmin, onUpdateResult, onDelete, onShare }: {
+function TipCard({ tip, isMaster, onUpdateResult, onDelete, onShare }: {
   tip: Tip
-  isAdmin: boolean
+  isMaster: boolean
   onUpdateResult: (t: Tip) => void
   onDelete: (id: string) => void
   onShare: (t: Tip) => void
@@ -177,7 +177,7 @@ function TipCard({ tip, isAdmin, onUpdateResult, onDelete, onShare }: {
         <h3 className="font-semibold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2 flex-1">
           {tip.title}
         </h3>
-        {isAdmin && (
+        {isMaster && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
             <button onClick={() => onShare(tip)} title="Compartilhar"
               className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors">
@@ -633,7 +633,7 @@ function HistoryTable({ tips }: { tips: Tip[] }) {
 
 export const TipsPage = () => {
   const { user } = useAuth()
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
+  const isMaster = user?.role === 'MASTER'
 
   const [tips,       setTips]       = useState<Tip[]>([])
   const [loading,    setLoading]    = useState(true)
@@ -762,7 +762,7 @@ export const TipsPage = () => {
           <h2 className="font-display font-semibold text-slate-900 dark:text-white">Dicas do Dia</h2>
           <p className="text-xs text-slate-500">{tips.length} dicas carregadas</p>
         </div>
-        {isAdmin && (
+        {isMaster && (
           <button onClick={() => setNewTipOpen(true)}
             className="hidden lg:flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-green-500/20 transition-all active:scale-95">
             <Plus size={16} />Nova Dica
@@ -847,7 +847,7 @@ export const TipsPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(tip => (
-            <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onUpdateResult={openResultModal} onDelete={handleDelete} onShare={setSharingTip} />
+            <TipCard key={tip.id} tip={tip} isMaster={isMaster} onUpdateResult={openResultModal} onDelete={handleDelete} onShare={setSharingTip} />
           ))}
         </div>
       )}
@@ -866,7 +866,7 @@ export const TipsPage = () => {
       <HistoryTable tips={tips} />
 
       {/* FAB mobile */}
-      {isAdmin && (
+      {isMaster && (
         <button onClick={() => setNewTipOpen(true)}
           className="fixed bottom-6 right-6 lg:hidden w-14 h-14 rounded-full bg-green-600 hover:bg-green-500 text-white shadow-2xl shadow-green-500/30 flex items-center justify-center transition-all active:scale-95 z-40">
           <Plus size={24} />

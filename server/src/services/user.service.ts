@@ -11,6 +11,7 @@ export const getAllUsers = async () => {
       username: true,
       role: true,
       active: true,
+      isTipster: true,
       createdAt: true,
     },
     orderBy: { createdAt: 'desc' },
@@ -28,6 +29,7 @@ export const getUserById = async (id: string) => {
       username: true,
       role: true,
       active: true,
+      isTipster: true,
       createdAt: true,
     },
   });
@@ -35,11 +37,11 @@ export const getUserById = async (id: string) => {
 
 export const updateUser = async (
   id: string,
-  data: { name?: string; email?: string; phone?: string; username?: string; password?: string }
+  data: { name?: string; email?: string; phone?: string; username?: string; password?: string; isTipster?: boolean }
 ) => {
   const updateData: {
     name?: string; email?: string; phone?: string;
-    username?: string; password?: string;
+    username?: string; password?: string; isTipster?: boolean;
   } = {};
 
   if (data.name)     updateData.name     = data.name;
@@ -47,6 +49,7 @@ export const updateUser = async (
   if (data.phone)    updateData.phone    = data.phone;
   if (data.username) updateData.username = data.username;
   if (data.password) updateData.password = await hashPassword(data.password);
+  if (data.isTipster !== undefined) updateData.isTipster = data.isTipster;
 
   return prisma.user.update({
     where: { id },
@@ -58,6 +61,7 @@ export const updateUser = async (
       phone: true,
       username: true,
       role: true,
+      isTipster: true,
       createdAt: true,
     },
   });

@@ -11,6 +11,7 @@ export interface User {
   username: string
   role: 'MASTER' | 'ADMIN' | 'TESTER' | 'MEMBRO'
   active: boolean
+  isTipster?: boolean
   createdAt: string
 }
 

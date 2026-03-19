@@ -4,6 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import { Tipster } from '../components/ui/TipstersModal'
+import { useAuth } from '../contexts/AuthContext'
 
 // --- Types & Config ---
 
@@ -66,6 +67,7 @@ interface TransactionModalProps {
 }
 
 const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: TransactionModalProps) => {
+  const { user } = useAuth()
   const [form, setForm] = useState({
     tipsterId: '', date: new Date().toISOString().split('T')[0], event: '', market: '',
     status: 'GREEN' as StatusType, amount: '', profit: ''
@@ -80,13 +82,16 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
           profit: String(editData.profit)
         })
       } else {
+        // Tenta encontrar o tipster que corresponde ao usuário logado
+        const matchingTipster = tipsters.find(t => t.name.toLowerCase() === user?.name.toLowerCase())
+        
         setForm({
-          tipsterId: tipsters[0]?.id || '', date: new Date().toISOString().split('T')[0],
+          tipsterId: matchingTipster?.id || tipsters[0]?.id || '', date: new Date().toISOString().split('T')[0],
           event: '', market: '', status: 'GREEN', amount: '', profit: ''
         })
       }
     }
-  }, [isOpen, editData, tipsters])
+  }, [isOpen, editData, tipsters, user])
 
   if (!isOpen) return null
 
@@ -177,6 +182,8 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 // ── Page Main ────────────────────────────────────────────────────────────
 
 export const GestaoTipstersPage = () => {
+  const { user } = useAuth()
+  const isTipster = user?.isTipster || user?.role === 'MASTER'
   const [tipsters, setTipsters] = useState<Tipster[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedTipsterId, setSelectedTipsterId] = useState<string>('all')
@@ -443,12 +450,14 @@ export const GestaoTipstersPage = () => {
       <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-5 lg:p-6 border-b border-slate-200 dark:border-surface-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50 dark:bg-surface-300/20">
           <h2 className="text-lg font-semibold text-slate-800 dark:text-white">Registros de Apostas</h2>
-          <button 
-            onClick={() => { setEditTarget(null); setIsModalOpen(true) }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-          >
-            <Plus size={16} /> Novo Registro
-          </button>
+          {isTipster && (
+            <button 
+              onClick={() => { setEditTarget(null); setIsModalOpen(true) }}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+            >
+              <Plus size={16} /> Novo Registro
+            </button>
+          )}
         </div>
         
         <div className="overflow-x-auto">

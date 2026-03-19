@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { roleLabelMap, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { Users, ShieldCheck, Pencil, Eye, EyeOff } from 'lucide-react'
+import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 
 interface User {
   id: string; name: string; email: string; phone?: string
-  username: string; role: string; active: boolean; createdAt: string
+  username: string; role: string; active: boolean; isTipster?: boolean; createdAt: string
 }
 
 type ModalType = 'edit' | 'role' | null
@@ -28,7 +28,7 @@ export const AdminUsersPage = () => {
   const [newRole, setNewRole] = useState('')
 
   // Edit form
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', username: '', password: '' })
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', username: '', password: '', isTipster: false })
   const [showPass, setShowPass] = useState(false)
 
   const load = () => {
@@ -53,7 +53,7 @@ export const AdminUsersPage = () => {
       return
     }
     setSelected(u)
-    setEditForm({ name: u.name, email: u.email, phone: u.phone || '', username: u.username, password: '' })
+    setEditForm({ name: u.name, email: u.email, phone: u.phone || '', username: u.username, password: '', isTipster: u.isTipster || false })
     setModalType('edit')
   }
 
@@ -84,6 +84,7 @@ export const AdminUsersPage = () => {
         email: editForm.email,
         phone: editForm.phone,
         username: editForm.username,
+        isTipster: editForm.isTipster as any
       }
       if (editForm.password) payload.password = editForm.password
       await usersService.updateProfileById(selected.id, payload)
@@ -155,7 +156,14 @@ export const AdminUsersPage = () => {
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.email}</td>
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.phone || '—'}</td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-semibold ${roleInfo.color}`}>{roleInfo.label}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`text-xs font-semibold ${roleInfo.color}`}>{roleInfo.label}</span>
+                          {u.isTipster && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-orange-500 uppercase tracking-tight">
+                              <TrendingUp size={9} /> Tipster
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt)}</td>
                       <td className="px-4 py-3">
@@ -275,9 +283,24 @@ export const AdminUsersPage = () => {
                   </button>
                 </div>
               </div>
+
+              <div className="col-span-2 pt-1">
+                <label className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-400 bg-surface-300/30 cursor-pointer hover:bg-surface-300 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    checked={editForm.isTipster}
+                    onChange={e => setEditForm({ ...editForm, isTipster: e.target.checked })}
+                    className="w-4 h-4 rounded border-slate-600 text-green-600 focus:ring-green-500 bg-surface-400"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-white">Usuário é Tipster</span>
+                    <span className="text-[10px] text-slate-500 tracking-tight">Permite realizar novos registros na Gestão de Tipsters</span>
+                  </div>
+                </label>
+              </div>
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex gap-3 pt-2">
               <button onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>
               <button onClick={handleEditSave} disabled={saving} className="btn-primary flex-1">
                 {saving ? 'Salvando...' : 'Salvar alterações'}
