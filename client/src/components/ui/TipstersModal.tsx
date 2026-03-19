@@ -4,6 +4,8 @@ import { X, Plus, Pencil, Trash2, Target, Search, AlertTriangle, User } from 'lu
 export interface Tipster {
   id: string
   name: string
+  sport1: string
+  sport2: string
   market1: string
   market2: string
 }
@@ -97,7 +99,8 @@ const TipsterSearchInput = ({ tipsters, onSelect }: { tipsters: Tipster[]; onSel
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
 export const TipstersModal = ({ isOpen, onClose, tipsters, onSave, readOnly }: TipstersModalProps) => {
-  const [form, setForm] = useState({ name: '', market1: '', market2: '' })
+  const emptyForm = { name: '', sport1: '', sport2: '', market1: '', market2: '' }
+  const [form, setForm] = useState(emptyForm)
   const [editTarget, setEditTarget] = useState<Tipster | null>(null)
   const [actionMode, setActionMode] = useState<'add' | 'edit' | 'delete' | null>(null)
   const [confirm,    setConfirm]    = useState<{ title: string; message: string; variant: 'danger'|'success'; label: string; fn: ()=>void } | null>(null)
@@ -110,7 +113,7 @@ export const TipstersModal = ({ isOpen, onClose, tipsters, onSave, readOnly }: T
   if (!isOpen) return null
 
   const closeAction = () => {
-    setActionMode(null); setForm({ name: '', market1: '', market2: '' }); setEditTarget(null)
+    setActionMode(null); setForm(emptyForm); setEditTarget(null)
   }
 
   const handleAdd = () => {
@@ -204,13 +207,22 @@ export const TipstersModal = ({ isOpen, onClose, tipsters, onSave, readOnly }: T
                     {actionMode === 'add' ? 'Novo Tipster' : `Editando: ${editTarget?.name}`}
                   </p>
                   <div className="flex flex-col gap-2">
-                    <input ref={nameRef} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nome do Tipster (Ex: Mestre das Odds)" className="input-field py-1.5" />
+                    <input ref={nameRef} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nome do Tipster (Ex: Mestre das Odds)" className="w-full text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 transition-all" />
+                    
                     <div className="grid grid-cols-2 gap-2">
-                      <input value={form.market1} onChange={e => setForm(f => ({ ...f, market1: e.target.value }))} placeholder="Mercado 1 (Ex: Gols)" className="input-field py-1.5" />
-                      <input value={form.market2} onChange={e => setForm(f => ({ ...f, market2: e.target.value }))} placeholder="Mercado 2 (Ex: Escanteios)" className="input-field py-1.5" />
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] text-slate-500 uppercase font-bold ml-1">Esportes</label>
+                        <input value={form.sport1} onChange={e => setForm(f => ({ ...f, sport1: e.target.value }))} placeholder="Esporte Dominante 1" className="input-field py-1.5" />
+                        <input value={form.sport2} onChange={e => setForm(f => ({ ...f, sport2: e.target.value }))} placeholder="Esporte Dominante 2" className="input-field py-1.5" />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[10px] text-slate-500 uppercase font-bold ml-1">Mercados</label>
+                        <input value={form.market1} onChange={e => setForm(f => ({ ...f, market1: e.target.value }))} placeholder="Mercado Dominante 1" className="input-field py-1.5" />
+                        <input value={form.market2} onChange={e => setForm(f => ({ ...f, market2: e.target.value }))} placeholder="Mercado Dominante 2" className="input-field py-1.5" />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-1">
                     <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
                     <button onClick={actionMode === 'add' ? handleAdd : handleEdit} disabled={!form.name.trim()} className={`flex-1 py-1.5 rounded-lg text-white text-xs font-semibold transition-colors ${actionMode === 'add' ? 'bg-green-600 hover:bg-green-500' : 'bg-blue-500 hover:bg-blue-600'}`}>{actionMode === 'add' ? '✓ Confirmar adição' : 'Salvar alteração'}</button>
                   </div>
@@ -226,7 +238,7 @@ export const TipstersModal = ({ isOpen, onClose, tipsters, onSave, readOnly }: T
                   </p>
                   <TipsterSearchInput tipsters={tipsters} onSelect={t => {
                     setEditTarget(t)
-                    if (actionMode === 'edit') setForm({ name: t.name, market1: t.market1, market2: t.market2 })
+                    if (actionMode === 'edit') setForm({ name: t.name, sport1: t.sport1 || '', sport2: t.sport2 || '', market1: t.market1, market2: t.market2 })
                   }} />
                   <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
                 </div>
@@ -256,15 +268,45 @@ export const TipstersModal = ({ isOpen, onClose, tipsters, onSave, readOnly }: T
               </div>
             ) : (
               tipsters.map(t => (
-                <div key={t.id} className="flex items-center gap-3 px-5 py-3 border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-surface-300 dark:bg-surface-400 flex items-center justify-center shrink-0">
-                    <User size={16} className="text-slate-500 dark:text-slate-300" />
+                <div key={t.id} className="flex items-center gap-3 px-5 py-4 border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-surface-300 dark:bg-surface-400 flex items-center justify-center shrink-0">
+                    <User size={20} className="text-slate-500 dark:text-slate-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{t.name}</p>
-                    <div className="flex gap-2 mt-0.5">
-                      {t.market1 && <span className="text-[10px] text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded leading-none">{t.market1}</span>}
-                      {t.market2 && <span className="text-[10px] text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded leading-none">{t.market2}</span>}
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white truncate mb-1">{t.name}</p>
+                    
+                    <div className="flex flex-wrap gap-1.5">
+                      {/* Esportes */}
+                      {(t.sport1 || t.sport2) && (
+                        <div className="flex gap-1">
+                          {t.sport1 && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-green-600 bg-green-500/10 border border-green-500/20 px-1.5 py-0.5 rounded uppercase">
+                              <span className="opacity-60 text-[8px]">ESP:</span> {t.sport1}
+                            </span>
+                          )}
+                          {t.sport2 && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-green-600 bg-green-500/10 border border-green-500/20 px-1.5 py-0.5 rounded uppercase">
+                              <span className="opacity-60 text-[8px]">ESP:</span> {t.sport2}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Mercados */}
+                      {(t.market1 || t.market2) && (
+                        <div className="flex gap-1">
+                          {t.market1 && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-blue-600 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded uppercase">
+                              <span className="opacity-60 text-[8px]">MKT:</span> {t.market1}
+                            </span>
+                          )}
+                          {t.market2 && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-blue-600 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded uppercase">
+                              <span className="opacity-60 text-[8px]">MKT:</span> {t.market2}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
