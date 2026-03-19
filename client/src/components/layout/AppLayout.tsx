@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
+import { Footer } from './Footer'
 import { ImpersonationBanner } from '../ui/ImpersonationBanner'
 
 export const AppLayout = () => {
@@ -13,6 +14,7 @@ export const AppLayout = () => {
           <Header />
           <main className="flex-1 p-6 overflow-y-auto font-sans">
             <Outlet />
+            <Footer />
           </main>
         </div>
       </div>
