@@ -416,15 +416,7 @@ export const AdminCadastrosPage = () => {
               </select>
             </div>
 
-            {/* Moeda */}
-            <div className="col-span-2">
-              <label className="label">Moeda Principal</label>
-              <select className="input-field" value={form.currency} onChange={set('currency')}>
-                <option value="BRL">R$ (Real - BRL)</option>
-                <option value="USD">$ (Dólar - USD)</option>
-                <option value="EUR">€ (Euro - EUR)</option>
-              </select>
-            </div>
+
           </div>
 
           {/* Info */}
