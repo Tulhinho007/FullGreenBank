@@ -14,7 +14,7 @@ interface User {
 type ModalType = 'edit' | 'role' | null
 
 export const AdminUsersPage = () => {
-  const { user: me } = useAuth()
+  const { user: me, impersonateUser } = useAuth()
   const isMaster = me?.role === 'MASTER'
   const isAdmin  = me?.role === 'ADMIN' || me?.role === 'MASTER'
 
@@ -202,6 +202,16 @@ export const AdminUsersPage = () => {
                           >
                             {u.active ? 'Desativar' : 'Ativar'}
                           </button>
+
+                          {/* Gerenciar — Admin/Master gerencia Membro */}
+                          {isAdmin && u.role !== 'MASTER' && u.id !== me?.id && (
+                            <button
+                              onClick={() => impersonateUser(u as any)}
+                              className="text-xs px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 font-medium text-orange-600 border-orange-400/50 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800/40 dark:hover:bg-orange-900/20"
+                            >
+                              <Eye size={10} />Gerenciar
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

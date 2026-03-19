@@ -22,6 +22,9 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>
   logout:   () => void
   updateUser: (user: User) => void
+  impersonateUser: (targetUser: User) => void
+  stopImpersonating: () => void
+  isImpersonating: boolean
 }
 
 interface RegisterData {
@@ -44,6 +47,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setLoading(false)
   }, [])
+
+  const isImpersonating = !!localStorage.getItem('fgb_impersonate_id')
 
   const login = async (email: string, password: string) => {
     const res = await authService.login({ email, password })
@@ -79,8 +84,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('fgb_user', JSON.stringify(updatedUser))
   }
 
+  const impersonateUser = (targetUser: User) => {
+    // Salvamos o admin original antes de trocar
+    localStorage.setItem('fgb_original_user', JSON.stringify(user))
+    localStorage.setItem('fgb_impersonate_id', targetUser.id)
+    
+    // Trocamos o usuário ativo
+    setUser(targetUser)
+    localStorage.setItem('fgb_user', JSON.stringify(targetUser))
+    
+    toast.success(`Gerenciando conta de ${targetUser.name}`)
+    // Recarregamos para garantir que todos os contextos e a API peguem o novo estado
+    window.location.reload()
+  }
+
+  const stopImpersonating = () => {
+    const originalUser = localStorage.getItem('fgb_original_user')
+    if (originalUser) {
+      const parsed = JSON.parse(originalUser)
+      setUser(parsed)
+      localStorage.setItem('fgb_user', originalUser)
+    }
+    
+    localStorage.removeItem('fgb_original_user')
+    localStorage.removeItem('fgb_impersonate_id')
+    
+    toast.success('De volta à sua conta')
+    window.location.reload()
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ 
+      user, token, loading, login, register, logout, updateUser, 
+      impersonateUser, stopImpersonating, isImpersonating 
+    }}>
       {children}
     </AuthContext.Provider>
   )

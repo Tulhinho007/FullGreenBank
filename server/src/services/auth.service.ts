@@ -41,7 +41,7 @@ export const registerUser = async (data: RegisterData) => {
     },
   });
 
-  const token = generateToken({ userId: user.id, email: user.email, role: user.role });
+  const token = generateToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
 
   return { user, token };
 };
@@ -54,7 +54,7 @@ export const loginUser = async (data: LoginData) => {
   const isPasswordValid = await comparePassword(data.password, user.password);
   if (!isPasswordValid) throw new Error('Credenciais inválidas');
 
-  const token = generateToken({ userId: user.id, email: user.email, role: user.role });
+  const token = generateToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
 
   const { password: _, ...userWithoutPassword } = user;
   return { user: userWithoutPassword, token };
