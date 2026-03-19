@@ -126,12 +126,19 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                {/* ───────────────────────────────────────────── */}
                <div
                  ref={cardRef}
-                 className="relative w-full bg-[#08150c] border border-[#1b3623] text-white flex flex-col font-sans rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
+                 className="relative w-full bg-[#08150c] border border-[#1b3623] flex flex-col font-sans rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
                  style={{
                    // Optional: subtle radial gradient to mimic the center glow from Photo 2
-                   backgroundImage: 'radial-gradient(circle at top right, #0b2213 0%, #08150c 60%)'
+                   backgroundImage: 'radial-gradient(circle at top right, #0b2213 0%, #08150c 60%)',
+                   color: '#ffffff'
                  }}
                >
+                 {/* Watermark */}
+                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-[1]">
+                   <span className="font-black tracking-widest text-[#ffffff] opacity-[0.03] transform -rotate-45 select-none" style={{ fontSize: '80px', whiteSpace: 'nowrap' }}>
+                     KamaelzinhoTips
+                   </span>
+                 </div>
                  {/* Top Row: Logo and Date */}
                  <div className="px-8 pt-8 flex items-center justify-between">
                    <div className="font-extrabold text-[#00ff41] tracking-tighter text-xl">
@@ -143,28 +150,28 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                  </div>
 
                  {/* Match Info */}
-                 <div className="px-8 pt-8 pb-6 border-b border-[#1b3623]/60 mb-2">
-                   <h1 className="font-bold text-white text-3xl leading-tight tracking-tight mb-2">
+                 <div className="px-8 pt-8 pb-6 border-b border-[#1b3623]/60 mb-2 relative z-10">
+                   <h1 className="font-bold text-3xl leading-tight tracking-tight mb-2" style={{ color: '#ffffff' }}>
                      {tip.event}
                    </h1>
-                   <div className="text-[#64856f] text-[15px] font-medium">
+                   <div className="text-[15px] font-medium" style={{ color: '#64856f' }}>
                      {tip.market} <span className="mx-1">•</span> {tip.title.split('—')[1]?.trim() || tip.sport}
                    </div>
                  </div>
 
                  {/* Values Table */}
-                 <div className="px-8 py-2 flex flex-col gap-4">
+                 <div className="px-8 py-2 flex flex-col gap-4 relative z-10">
                    <div className="flex items-center justify-between">
-                     <span className="text-[#64856f] font-medium text-[15px]">Stake</span>
-                     <span className="text-white font-bold text-lg">{formatBRL(tip.stake)}</span>
+                     <span className="font-medium text-[15px]" style={{ color: '#64856f' }}>Stake</span>
+                     <span className="font-bold text-lg" style={{ color: '#ffffff' }}>{formatBRL(tip.stake)}</span>
                    </div>
                    <div className="flex items-center justify-between">
-                     <span className="text-[#64856f] font-medium text-[15px]">Odd</span>
-                     <span className="text-white font-bold text-lg">{tip.odds.toFixed(2)}</span>
+                     <span className="font-medium text-[15px]" style={{ color: '#64856f' }}>Odd</span>
+                     <span className="font-bold text-lg" style={{ color: '#ffffff' }}>{tip.odds.toFixed(2)}</span>
                    </div>
                    <div className="flex items-center justify-between mt-2">
-                     <span className="text-[#8ba895] font-semibold text-[15px]">Retorno Potencial</span>
-                     <span className="text-white font-bold text-xl">{formatBRL(potentialReturn)}</span>
+                     <span className="font-semibold text-[15px]" style={{ color: '#8ba895' }}>Retorno Potencial</span>
+                     <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{formatBRL(potentialReturn)}</span>
                    </div>
                  </div>
 
