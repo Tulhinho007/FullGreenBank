@@ -5,7 +5,7 @@ import { roleLabelMap } from '../../utils/formatters'
 import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
-  ChevronDown, ChevronRight, Wallet, User, Trophy, Bell, BookOpen,
+  ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
   ClipboardList, ScrollText, CreditCard, Briefcase, Target
 } from 'lucide-react'
 
@@ -133,7 +133,6 @@ export const Sidebar = () => {
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
         <NavItem icon={<History size={16} />}      label="Histórico"        placeholder />
-        <NavItem icon={<Trophy size={16} />}       label="Rankings"         placeholder />
 
         {/* 4. FINANCEIRO */}
         <SectionLabel label="Financeiro" />

@@ -3,12 +3,17 @@ import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, Do
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
-import { Tipster } from '../components/ui/TipstersModal'
 import { useAuth } from '../contexts/AuthContext'
+import { usersService } from '../services/users.service'
 
 // --- Types & Config ---
 
 export type StatusType = 'GREEN' | 'RED' | 'VOID' | 'PENDING'
+
+export interface Tipster {
+  id: string
+  name: string
+}
 
 export interface Transaction {
   id: string
@@ -194,12 +199,17 @@ export const GestaoTipstersPage = () => {
 
   // Load Tipsters and Transactions
   useEffect(() => {
-    try {
-      const storedTipsters = localStorage.getItem('fgb_tipsters')
-      if (storedTipsters) {
-        setTipsters(JSON.parse(storedTipsters))
-      }
+    // Busca usuários que são Tipsters do banco de dados
+    usersService.getAll()
+      .then(allUsers => {
+        const activeTipsters = allUsers
+          .filter((u: any) => u.isTipster)
+          .map((u: any) => ({ id: u.id, name: u.name }))
+        setTipsters(activeTipsters)
+      })
+      .catch(err => console.error('Failed to load tipsters', err))
 
+    try {
       const storedTx = localStorage.getItem('fgb_tipster_transactions')
       if (storedTx) {
         setTransactions(JSON.parse(storedTx))
@@ -207,7 +217,7 @@ export const GestaoTipstersPage = () => {
         setTransactions(MOCK_TRANSACTIONS) // Fallback for preview
       }
     } catch (err) {
-      console.error('Failed to load data', err)
+      console.error('Failed to load transactions', err)
     }
   }, [])
 
