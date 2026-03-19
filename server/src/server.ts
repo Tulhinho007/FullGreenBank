@@ -9,6 +9,7 @@ import userRoutes from './routes/user.routes';
 import teamsRoutes from './routes/teams.routes';
 import bancaContratosRoutes from './routes/banca-contratos.routes';
 import gestaoBancaRoutes from './routes/gestao-banca.routes';
+import rankingRoutes from './routes/ranking.routes';
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/banca-contratos', bancaContratosRoutes);
 app.use('/api/gestao-banca', gestaoBancaRoutes);
+app.use('/api/ranking', rankingRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

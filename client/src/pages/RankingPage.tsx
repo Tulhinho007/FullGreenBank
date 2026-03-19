@@ -1,7 +1,6 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Trophy, Medal, Crown, TrendingUp, Target, CheckCircle, XCircle, Users, Star } from 'lucide-react'
-import type { Transaction } from './GestaoTipstersPage'
-import type { Tipster } from '../components/ui/TipstersModal'
+import api from '../services/api'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,53 +22,8 @@ interface TipsterRank {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const buildRanking = (tipsters: Tipster[], transactions: Transaction[], period: Period): TipsterRank[] => {
-  const now = new Date()
-
-  const filtered = transactions.filter(tx => {
-    if (period === 'Semanal') {
-      const d = new Date(tx.date)
-      return (now.getTime() - d.getTime()) <= 7 * 24 * 60 * 60 * 1000
-    }
-    if (period === 'Mensal') {
-      const d = new Date(tx.date)
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-    }
-    return true
-  })
-
-  return tipsters.map(tipster => {
-    const txs = filtered.filter(tx => tx.tipsterId === tipster.id)
-    const greens = txs.filter(tx => tx.status === 'GREEN').length
-    const reds = txs.filter(tx => tx.status === 'RED').length
-    const voids = txs.filter(tx => tx.status === 'VOID').length
-    const decided = greens + reds
-    const winRate = decided > 0 ? Math.round((greens / decided) * 100) : 0
-    const profit = txs.reduce((acc, tx) => acc + tx.profit, 0)
-    const invested = txs.reduce((acc, tx) => acc + tx.amount, 0)
-    const roi = invested > 0 ? Number(((profit / invested) * 100).toFixed(1)) : 0
-    return {
-      id: tipster.id,
-      name: tipster.name,
-      specialty: [tipster.sport1, tipster.sport2].filter(Boolean).join(' / '),
-      greens, reds, voids,
-      total: txs.length,
-      winRate, profit, roi,
-    }
-  })
-    .filter(r => r.total > 0)
-    .sort((a, b) => b.winRate - a.winRate || b.greens - a.greens)
-}
-
-// ── Mock Users ─────────────────────────────────────────────────────────────
-
-const MOCK_USERS = [
-  { id: 'u1', name: 'Carlos Magro', role: 'Membro Premium', winRate: 72, greens: 36, reds: 14, profit: 1240 },
-  { id: 'u2', name: 'Lucas Fernandes', role: 'Membro', winRate: 68, greens: 34, reds: 16, profit: 980 },
-  { id: 'u3', name: 'João Alves', role: 'Membro Premium', winRate: 65, greens: 26, reds: 14, profit: 720 },
-  { id: 'u4', name: 'Mariana Costa', role: 'Membro', winRate: 60, greens: 18, reds: 12, profit: 340 },
-  { id: 'u5', name: 'Rafael Lima', role: 'Membro', winRate: 55, greens: 22, reds: 18, profit: 120 },
-]
+// ── Remove buildRanking as it moves to backend
+// ── Remove MOCK_USERS as it moves to backend
 
 // ── Podium Card ───────────────────────────────────────────────────────────────
 
@@ -172,20 +126,32 @@ const TableRow = ({ rank, name, sub, winRate, greens, reds, total, profit, roi }
 export const RankingPage = () => {
   const [tab, setTab] = useState<Tab>('tipsters')
   const [period, setPeriod] = useState<Period>('Geral')
-  const [tipsters, setTipsters] = useState<Tipster[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(false)
+  const [rankingTipsters, setRankingTipsters] = useState<TipsterRank[]>([])
+  const [rankingUsers, setRankingUsers] = useState<any[]>([])
 
   useEffect(() => {
-    try {
-      const ts = localStorage.getItem('fgb_tipsters')
-      if (ts) setTipsters(JSON.parse(ts))
-      const tx = localStorage.getItem('fgb_tipster_transactions')
-      if (tx) setTransactions(JSON.parse(tx))
-    } catch { /* ignore */ }
-  }, [])
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const [resT, resU] = await Promise.all([
+          api.get('/ranking/tipsters'),
+          api.get('/ranking/users')
+        ])
+        setRankingTipsters(resT.data)
+        setRankingUsers(resU.data)
+      } catch (err) {
+        console.error('Erro ao buscar rankings:', err)
+      } finally {
+        setLoading(true) 
+        setTimeout(() => setLoading(false), 500) // Small delay for feel
+      }
+    }
+    fetchData()
+  }, [period]) // Period filter can be handled backend later if needed
 
-  const ranking = useMemo(() => buildRanking(tipsters, transactions, period), [tipsters, transactions, period])
-  const top3 = ranking.slice(0, 3)
+  const top3 = tab === 'tipsters' ? rankingTipsters.slice(0, 3) : rankingUsers.slice(0, 3)
+
 
   const periods: Period[] = ['Geral', 'Mensal', 'Semanal']
 
@@ -233,7 +199,12 @@ export const RankingPage = () => {
       {/* TIPSTERS TAB */}
       {tab === 'tipsters' && (
         <>
-          {ranking.length === 0 ? (
+          {loading ? (
+             <div className="flex flex-col items-center justify-center py-24 gap-4">
+               <div className="w-10 h-10 border-4 border-[#00ff7f] border-t-transparent rounded-full animate-spin" />
+               <p className="text-sm text-slate-400">Carregando rankings...</p>
+             </div>
+          ) : rankingTipsters.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-slate-500">
               <Trophy size={48} className="opacity-20" />
               <p className="text-sm font-medium">Nenhum registro encontrado para este período.</p>
@@ -275,7 +246,7 @@ export const RankingPage = () => {
                       </tr>
                     </thead>
                     <tbody style={{ borderTop: 'none' }}>
-                      {ranking.map((entry, idx) => (
+                      {rankingTipsters.map((entry, idx) => (
                         <TableRow key={entry.id} rank={idx + 1}
                           name={entry.name} sub={entry.specialty}
                           winRate={entry.winRate} greens={entry.greens} reds={entry.reds}
@@ -300,11 +271,11 @@ export const RankingPage = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                MOCK_USERS[1] ? { rank: 2, entry: { id: MOCK_USERS[1].id, name: MOCK_USERS[1].name, specialty: MOCK_USERS[1].role, winRate: MOCK_USERS[1].winRate, greens: MOCK_USERS[1].greens, reds: MOCK_USERS[1].reds, voids: 0, total: MOCK_USERS[1].greens + MOCK_USERS[1].reds, profit: MOCK_USERS[1].profit, roi: 0 } } : null,
-                MOCK_USERS[0] ? { rank: 1, entry: { id: MOCK_USERS[0].id, name: MOCK_USERS[0].name, specialty: MOCK_USERS[0].role, winRate: MOCK_USERS[0].winRate, greens: MOCK_USERS[0].greens, reds: MOCK_USERS[0].reds, voids: 0, total: MOCK_USERS[0].greens + MOCK_USERS[0].reds, profit: MOCK_USERS[0].profit, roi: 0 } } : null,
-                MOCK_USERS[2] ? { rank: 3, entry: { id: MOCK_USERS[2].id, name: MOCK_USERS[2].name, specialty: MOCK_USERS[2].role, winRate: MOCK_USERS[2].winRate, greens: MOCK_USERS[2].greens, reds: MOCK_USERS[2].reds, voids: 0, total: MOCK_USERS[2].greens + MOCK_USERS[2].reds, profit: MOCK_USERS[2].profit, roi: 0 } } : null,
+                top3[1] ? { rank: 2, entry: top3[1] } : null,
+                top3[0] ? { rank: 1, entry: top3[0] } : null,
+                top3[2] ? { rank: 3, entry: top3[2] } : null,
               ].filter(Boolean).map(item => (
-                <PodiumCard key={item!.rank} rank={item!.rank} entry={item!.entry as TipsterRank} />
+                <PodiumCard key={item!.rank} rank={item!.rank} entry={item!.entry as any} />
               ))}
             </div>
           </div>
@@ -314,25 +285,22 @@ export const RankingPage = () => {
               <TrendingUp size={16} style={{ color: '#00ff7f' }} />
               <h2 className="text-sm font-bold" style={{ color: '#ffffff' }}>Classificação de Usuários</h2>
             </div>
-            <div className="text-center px-6 py-3 text-xs" style={{ color: '#64748b', background: '#0a1a10', borderBottom: '1px solid #1a3622' }}>
-              ⚠️ Dados simulados — a aba de usuários será conectada ao banco de dados em breve.
-            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #1a3622' }}>
-                    {['#', 'Usuário', 'Taxa de Acerto', 'Greens', 'Reds', 'Lucro'].map(h => (
+                    {['#', 'Usuário', 'Taxa de Acerto', 'Greens', 'Reds', 'Lucro', 'ROI (Melhor Banca)'].map(h => (
                       <th key={h} className={`px-6 py-3 text-[11px] uppercase tracking-wider font-bold ${h !== '#' && h !== 'Usuário' ? 'text-right' : ''}`}
                         style={{ color: '#64748b' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {MOCK_USERS.map((user, idx) => (
+                  {rankingUsers.map((user, idx) => (
                     <TableRow key={user.id} rank={idx + 1}
                       name={user.name} sub={user.role}
                       winRate={user.winRate} greens={user.greens} reds={user.reds}
-                      profit={user.profit} />
+                      profit={user.profit} roi={user.roi} />
                   ))}
                 </tbody>
               </table>
