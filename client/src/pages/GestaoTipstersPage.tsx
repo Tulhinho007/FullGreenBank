@@ -190,9 +190,9 @@ export const GestaoTipstersPage = () => {
   const { user } = useAuth()
   
   const formatCurrency = (v: number) => 
-    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+    v.toLocaleString('pt-BR', { 
       style: 'currency', 
-      currency: user?.currency || 'BRL' 
+      currency: 'BRL' 
     })
 
   const isTipster = user?.isTipster || user?.role === 'MASTER'

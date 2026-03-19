@@ -14,7 +14,8 @@ interface User {
 type ModalType = 'edit' | 'role' | null
 
 export const AdminUsersPage = () => {
-  const { user: me, impersonateUser } = useAuth()const isMaster = me?.role === 'MASTER'
+  const { user: me, impersonateUser } = useAuth()
+  const isMaster = me?.role === 'MASTER'
   const isAdmin  = me?.role === 'ADMIN' || me?.role === 'MASTER'
 
   const [users,     setUsers]     = useState<User[]>([])

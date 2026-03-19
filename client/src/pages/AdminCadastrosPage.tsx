@@ -63,7 +63,8 @@ const emptyForm = {
 }
 
 export const AdminCadastrosPage = () => {
-  const { user: me } = useAuth()const isReadOnly = me?.role === 'TESTER'
+  const { user: me } = useAuth()
+  const isReadOnly = me?.role === 'TESTER'
   const [userCount,    setUserCount]    = useState<number | null>(null)
   const [modalOpen,    setModalOpen]    = useState(false)
   const [sportsOpen,   setSportsOpen]   = useState(false)

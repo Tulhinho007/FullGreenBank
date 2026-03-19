@@ -71,10 +71,10 @@ export const ProfilePage = () => {
       {/* Header Contextual */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-4">
-          <h2 className="font-display font-semibold text-white">{'Perfil'} & {'Configurações'}</h2>
+          <h2 className="font-display font-semibold text-white">Perfil & Configurações</h2>
           <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">V3 FINAL CLEANUP</span>
         </div>
-        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{'Perfil'} · {'Configurações'} (Seletores Removidos)</p>
+        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Perfil · Configurações (Seletores Removidos)</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -126,7 +126,7 @@ export const ProfilePage = () => {
                 <div className="w-8 h-8 rounded-lg bg-green-900/30 flex items-center justify-center text-green-400">
                   <UserIcon size={18} />
                 </div>
-                <h3 className="font-display font-semibold text-white">{'Usuários'}</h3>
+                <h3 className="font-display font-semibold text-white">Usuário</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -135,7 +135,7 @@ export const ProfilePage = () => {
                   <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">{'Usuários'}</label>
+                  <label className="label">Usuário</label>
                   <div className="relative">
                     <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input className="input-field pl-10" value={form.username} onChange={(e) => set('username', e.target.value)} />
@@ -157,14 +157,14 @@ export const ProfilePage = () => {
                 <div className="w-8 h-8 rounded-lg bg-blue-900/30 flex items-center justify-center text-blue-400">
                   <Monitor size={18} />
                 </div>
-                <h3 className="font-display font-semibold text-white">{'Aparência'}</h3>
+                <h3 className="font-display font-semibold text-white">Aparência</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Tema */}
                 <div>
                   <label className="label flex items-center gap-2 mb-2">
-                    <Sun size={14} className="text-yellow-400" /> {'Tema'}
+                    <Sun size={14} className="text-yellow-400" /> Tema
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
@@ -196,7 +196,7 @@ export const ProfilePage = () => {
                 {/* Plano / Stats (info) */}
                 <div className="md:col-span-1">
                   <label className="label flex items-center gap-2 mb-2">
-                    <CreditCard size={14} className="text-purple-400" /> {'Assinatura Atual'}
+                    <CreditCard size={14} className="text-purple-400" /> Assinatura Atual
                   </label>
                   <div className="p-3 bg-surface-300 border border-surface-400 rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-2">

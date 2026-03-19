@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react'
 import {
   Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X
 } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 
@@ -224,9 +223,10 @@ export const GestaoBancaPage = () => {
     handleSaveConfigCarteira('perfilRisco', id)
   }
 
-  const { user } = useAuth()const formatCurrency = (val: number) => val.toLocaleString(user?.language === 'en-US' ? 'en-US' : (user?.language === 'es-ES' ? 'es-ES' : 'pt-BR'), { 
+
+  const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { 
     style: 'currency', 
-    currency: user?.currency || 'BRL' 
+    currency: 'BRL' 
   })
 
   const handleCriarNovaBanca = async (e: React.FormEvent) => {
@@ -265,7 +265,7 @@ export const GestaoBancaPage = () => {
           <div className="flex items-center justify-between mb-2 z-10 relative">
             <div className="flex items-center gap-2">
               <Wallet size={16} className="text-slate-400" />
-              <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">{'banca_inicial'}</span>
+              <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">Banca Inicial</span>
             </div>
             <Edit2 size={13} className="text-slate-500 group-hover:text-green-400 transition-colors" />
           </div>

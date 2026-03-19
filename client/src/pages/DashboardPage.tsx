@@ -24,13 +24,14 @@ const mgmtCards = [
   { icon: <BarChart3 size={18} />, title: 'Mercados Certos', desc: 'Especializar-se em 2-3 mercados/ligas melhora muito sua edge. Generalista perde, especialista lucra.' },
 ]
 export const DashboardPage = () => {
-  const { user } = useAuth()const [tips,    setTips]    = useState<Tip[]>([])
+  const { user } = useAuth()
+  const [tips,    setTips]    = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
 
   const formatCurrency = (v: number) =>
-    v.toLocaleString(user?.language === 'en-US' ? 'en-US' : (user?.language === 'es-ES' ? 'es-ES' : 'pt-BR'), { 
+    v.toLocaleString('pt-BR', { 
       style: 'currency', 
-      currency: user?.currency || 'BRL' 
+      currency: 'BRL' 
     })
 
   useEffect(() => {
@@ -58,11 +59,11 @@ export const DashboardPage = () => {
           subtitle="Dicas registradas"
         />
         <StatCard
-          title={'profit'}
+          title="Lucro Acumulado"
           value={profit >= 0 ? `+${formatCurrency(profit)}` : formatCurrency(profit)}
           icon={<DollarSign size={18} />}
           accent={profit >= 0 ? 'green' : 'red'}
-          subtitle={`${'result'} em ${user?.currency || 'BRL'}`}
+          subtitle={`Total em BRL`}
         />
         <StatCard
           title="Win Rate"
@@ -84,8 +85,8 @@ export const DashboardPage = () => {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-display font-semibold text-white">{'gestao'}</h2>
-            <p className="text-xs text-slate-500 mt-0.5">{'dashboard_subtitle'}</p>
+            <h2 className="font-display font-semibold text-white">Gestão</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Dicas e boas práticas de banca</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -106,8 +107,8 @@ export const DashboardPage = () => {
       {/* Recent tips */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-white">{'tips_recent'}</h2>
-          <a href="/tips" className="text-xs text-green-400 hover:text-green-300">{'view_all'} →</a>
+          <h2 className="font-display font-semibold text-white">Dicas Recentes</h2>
+          <a href="/tips" className="text-xs text-green-400 hover:text-green-300">Ver todas →</a>
         </div>
         {loading ? (
           <div className="flex items-center justify-center py-12">

@@ -12,18 +12,19 @@ const routeTitles: Record<string, string> = {
   '/admin/log':        'Log do Sistema',
 }
 
-const greetings = (t: any) => {
+const greetings = () => {
   const h = new Date().getHours()
-  if (h < 12) return 'greeting_morning'
-  if (h < 18) return 'greeting_afternoon'
-  return 'greeting_evening'
+  if (h < 12) return 'Bom dia'
+  if (h < 18) return 'Boa tarde'
+  return 'Boa noite'
 }
 
 export const Header = () => {
   const { user } = useAuth()
-  const { theme, toggleTheme } = useTheme()const location = useLocation()
+  const { theme, toggleTheme } = useTheme()
+  const location = useLocation()
   
-  const title = t(routeTitles[location.pathname]?.toLowerCase() || 'dashboard' as any) || routeTitles[location.pathname] || 'Full Green Bank'
+  const title = routeTitles[location.pathname] || 'Full Green Bank'
   const firstName = user?.name.split(' ')[0] || ''
 
   return (
@@ -32,8 +33,8 @@ export const Header = () => {
       <div>
         <h1 className="font-display font-semibold text-white text-base">{title}</h1>
         <p className="text-xs text-slate-400 mt-0.5">
-          {greetings(t)}, <span className="text-green-400 font-medium">{firstName}</span>! 
-          {' '}<span className="text-slate-500">— {'Sugestão do sistema: analise suas entradas hoje'} 📊</span>
+          {greetings()}, <span className="text-green-400 font-medium">{firstName}</span>! 
+          {' '}<span className="text-slate-500">— {'Sugestão: analise suas entradas hoje'} 📊</span>
         </p>
       </div>
 
@@ -42,7 +43,7 @@ export const Header = () => {
         {/* Search */}
         <div className="hidden md:flex items-center gap-2 bg-surface-300 border border-surface-400 rounded-lg px-3 py-2 text-sm text-slate-500 w-52">
           <Search size={14} />
-          <span>{'search'}</span>
+          <span>Pesquisar...</span>
         </div>
 
         {/* Theme toggle */}
