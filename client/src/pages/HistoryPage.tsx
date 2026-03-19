@@ -26,6 +26,7 @@ import {
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
+import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 
 // --- Types ---
 
@@ -63,15 +64,9 @@ const STATUS_CONFIG: Record<ContractStatus, { label: string, color: string, icon
 
 // --- Utils ---
 
-const fmtDate = (d: string) => new Date(d + (d.includes('T') ? '' : 'T00:00:00')).toLocaleDateString('pt-BR')
-
 export const HistoryPage = () => {
   const { user } = useAuth()
 
-  const fmt = (v: number) => v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', {
-    style: 'currency',
-    currency: user?.currency || 'BRL'
-  })
   const [contracts, setContracts] = useState<BancaContract[]>([])
   const [loading, setLoading] = useState(true)
   

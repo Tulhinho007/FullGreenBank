@@ -1,12 +1,15 @@
-import { 
-  TrendingUp, 
-  DollarSign, 
-  Target, 
-  ArrowUpRight, 
-  ArrowDownRight, 
+import {
+  TrendingUp,
+  DollarSign,
+  Target,
+  ArrowUpRight,
+  ArrowDownRight,
   Activity,
   Calendar
 } from 'lucide-react'
+import api from '../services/api'
+import toast from 'react-hot-toast'
+import { formatCurrency } from '../utils/formatters'
 import { useAuth } from '../contexts/AuthContext'
 import {
   AreaChart,
@@ -15,7 +18,10 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell
 } from 'recharts'
 
 // --- Mock Data ---
@@ -34,12 +40,12 @@ const MOCK_EVOLUTION = [
 
 // --- Components ---
 
-const StatCard = ({ title, value, subValue, icon: Icon, trend }: { 
-  title: string; 
-  value: string; 
-  subValue?: string; 
-  icon: any; 
-  trend?: 'up' | 'down' 
+const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
+  title: string;
+  value: string;
+  subValue?: string;
+  icon: any;
+  trend?: 'up' | 'down'
 }) => (
   <div className="card p-6 border border-surface-400 hover:border-green-600/40 transition-all duration-300 group">
     <div className="flex items-start justify-between">
@@ -68,12 +74,8 @@ const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
 
 export const ReportsPage = () => {
   const { user } = useAuth()
-  
-  const formatCurrency = (v: number) => 
-    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
-      style: 'currency', 
-      currency: user?.currency || 'BRL' 
-    })
+
+  const reports = [] // dummy for now
 
   const chartColors = {
     stroke: '#22c55e',

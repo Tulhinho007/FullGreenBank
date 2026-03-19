@@ -1,8 +1,8 @@
 import { useEffect, useState, FormEvent } from 'react'
-import {
-  CreditCard, Users, Clock, AlertTriangle,
-  TrendingUp, Edit2, ChevronDown, Search,
-  CheckCircle, XCircle, Hourglass, Ban,
+import { 
+  CreditCard, Users, Clock, AlertTriangle, 
+  TrendingUp, Edit2, ChevronDown, Search, 
+  CheckCircle, XCircle, Ban, 
   FileSpreadsheet, FileText, Printer, Eye,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
@@ -11,6 +11,7 @@ import { addLog } from './SystemLogPage'
 import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
+import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -35,9 +36,9 @@ interface UserPayment {
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon: React.ReactNode }> = {
   ATIVO:     { label: 'Ativo',     color: 'text-green-400 bg-green-900/40 border-green-800/50',  icon: <CheckCircle size={12} /> },
-  PENDENTE:  { label: 'Pendente',  color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50', icon: <Hourglass size={12} /> },
+  PENDENTE:  { label: 'Pendente',  color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50', icon: <Clock size={12} /> },
   ATRASADO:  { label: 'Atrasado',  color: 'text-red-400 bg-red-900/30 border-red-800/50',        icon: <AlertTriangle size={12} /> },
-  INATIVO:   { label: 'Inativo',   color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <XCircle size={12} /> },
+  INATIVO:   { label: 'Inativo',   color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <Ban size={12} /> },
   TRIAL:     { label: 'Trial',     color: 'text-blue-400 bg-blue-900/30 border-blue-800/50',     icon: <Clock size={12} /> },
 }
 
@@ -89,12 +90,6 @@ export const FinanceiroPagamentosPage = () => {
   // Modal edição
   const [editTarget, setEditTarget] = useState<UserPayment | null>(null)
   const [editForm,   setEditForm]   = useState(emptyEdit)
-
-  const formatCurrency = (v: number | null) =>
-    v == null ? '—' : v.toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
-      style: 'currency', 
-      currency: me?.currency || 'BRL' 
-    })
 
   // ── Carregar usuários ──────────────────────────────────────────────────────
   const loadUsers = async () => {
@@ -314,7 +309,9 @@ export const FinanceiroPagamentosPage = () => {
             <TrendingUp size={14} className="text-green-400" />
             <span className="text-xs text-slate-500 uppercase tracking-wide">Receita Mensal</span>
           </div>
-          <p className="text-2xl font-bold text-green-400">{loading ? '—' : formatCurrency(receitaMes)}</p>
+                <p className="text-xl font-bold font-mono text-emerald-400">
+                  {fmt(metrics.totalAtivo)}
+                </p>
         </div>
       </div>
 

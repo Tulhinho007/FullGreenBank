@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import {
   Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X
 } from 'lucide-react'
+import { formatCurrency } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 
@@ -223,11 +224,6 @@ export const GestaoBancaPage = () => {
     handleSaveConfigCarteira('perfilRisco', id)
   }
 
-
-  const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { 
-    style: 'currency', 
-    currency: 'BRL' 
-  })
 
   const handleCriarNovaBanca = async (e: React.FormEvent) => {
     e.preventDefault()

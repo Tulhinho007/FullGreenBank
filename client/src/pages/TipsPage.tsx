@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from 'react'
 import {
-  TrendingUp, Target, DollarSign,
-  Plus, X, Edit2, Trash2, Info,
-  Share2, CheckCircle, XCircle, Clock, Ban
+  TrendingUp, Target, BarChart3, Clock, AlertTriangle, CheckCircle, XCircle,
+  Plus, X, Edit2, Trash2, Info, Share2, Ban
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
+import { StatCard } from '../components/ui/StatCard'
+import { formatCurrency as fmt, formatDate as fmtDate, calcROI } from '../utils/formatters'
 import { tipsService } from '../services/tips.service'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
@@ -32,7 +32,7 @@ const FILTER_LABELS: Record<ResultFilter, string> = {
 const STATUS_CONFIG: Record<string, any> = {
   GREEN:   { bg: 'bg-emerald-500/10', text: 'text-emerald-500', borderL: 'border-l-emerald-500', label: 'Green', icon: <CheckCircle size={12} /> },
   RED:     { bg: 'bg-rose-500/10',    text: 'text-rose-500',    borderL: 'border-l-rose-500',    label: 'Red',   icon: <XCircle size={12} /> },
-  VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   borderL: 'border-l-slate-500',   label: 'Anulada', icon: <X size={12} /> },
+  VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   borderL: 'border-l-slate-500',   label: 'Anulada', icon: <XCircle size={12} /> },
   PENDING: { bg: 'bg-amber-500/10',   text: 'text-amber-500',   borderL: 'border-l-amber-500',   label: 'Pendente', icon: <Clock size={12} /> },
 }
 
@@ -69,19 +69,6 @@ const StatusBadge = ({ tip }: { tip: Tip }) => {
 export const TipsPage = () => {
   const { user: me } = useAuth()
   const isMaster = me?.role === 'MASTER' || me?.role === 'ADMIN'
-
-  // Formatters
-  const fmt = (v: number) => 
-    v.toLocaleString('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
-    })
-
-  const fmtDate = (iso: string) =>
-    new Date(iso).toLocaleString('pt-BR', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    })
 
   const [tips,       setTips]       = useState<Tip[]>([])
   const [loading,    setLoading]    = useState(true)

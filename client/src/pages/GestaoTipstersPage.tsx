@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, Target, User, Plus, X, AlertTriangle } from 'lucide-react'
+import { formatCurrency } from '../utils/formatters'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -188,12 +189,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
 export const GestaoTipstersPage = () => {
   const { user } = useAuth()
-  
-  const formatCurrency = (v: number) => 
-    v.toLocaleString('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
-    })
+  const fmt = (v: number) => formatCurrency(v)
 
   const isTipster = user?.isTipster || user?.role === 'MASTER'
   const [tipsters, setTipsters] = useState<Tipster[]>([])

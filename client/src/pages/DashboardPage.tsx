@@ -7,6 +7,7 @@ import {
   TrendingUp, DollarSign, Target, BarChart3,
   BookOpen, Lightbulb, ShieldCheck, RefreshCw,
 } from 'lucide-react'
+import { formatCurrency } from '../utils/formatters'
 
 interface Tip {
   id: string; title: string; description: string; sport: string
@@ -27,12 +28,6 @@ export const DashboardPage = () => {
   const { user } = useAuth()
   const [tips,    setTips]    = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
-
-  const formatCurrency = (v: number) =>
-    v.toLocaleString('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
-    })
 
   useEffect(() => {
     tipsService.getAll(1, 3)

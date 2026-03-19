@@ -12,8 +12,8 @@ export const Footer = () => {
 
   return (
     <footer className="mt-auto border-t border-surface-400 bg-surface-100/50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           
           {/* Coluna 1: Institucional */}
           <div className="space-y-4">
@@ -32,17 +32,17 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Comunidade</h4>
             <div className="flex flex-wrap gap-4">
-              <a href="https://www.instagram.com/kamaelzinhoo/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-500/10 transition-all border border-transparent hover:border-pink-500/20">
-                <Instagram size={18} />
+              <a href="https://www.instagram.com/kamaelzinhoo/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-500/10 transition-all border border-transparent hover:border-pink-500/20">
+                <Instagram size={16} />
               </a>
-              <a href="https://www.threads.com/?xmt=AQF0x2CFDo5k641Fl7nG-VSIVbtcbz1Nbh6baD6w7_u0n7E" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-white hover:bg-black transition-all border border-transparent hover:border-white/20">
-                <AtSign size={18} />
+              <a href="https://www.threads.com/?xmt=AQF0x2CFDo5k641Fl7nG-VSIVbtcbz1Nbh6baD6w7_u0n7E" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-white hover:bg-black transition-all border border-transparent hover:border-white/20">
+                <AtSign size={16} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-sky-500/10 transition-all border border-transparent hover:border-sky-500/20">
-                <Send size={18} />
+              <a href="#" className="w-8 h-8 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-sky-500/10 transition-all border border-transparent hover:border-sky-500/20">
+                <Send size={16} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-emerald-500/20">
-                <MessageCircle size={18} />
+              <a href="#" className="w-8 h-8 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-emerald-500/20">
+                <MessageCircle size={16} />
               </a>
             </div>
             <p className="text-[10px] text-slate-600 dark:text-slate-500 max-w-[200px]">Siga nossas redes para atualizações em tempo real e novos palpites.</p>
@@ -81,7 +81,7 @@ export const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-surface-400/50 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+        <div className="mt-8 pt-6 border-t border-surface-400/50 flex flex-col md:md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <div className="space-y-1">
             <p className="text-[10px] text-slate-500">
               © {currentYear} Full Green Bank. Todos os direitos reservados.

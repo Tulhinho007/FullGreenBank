@@ -1,15 +1,28 @@
-export const formatCurrency = (value: number, _ignoredCurrency?: string, _ignoredLocale?: string) => {
+export const formatCurrency = (value?: number | null) => {
+  if (value === null || value === undefined) return 'R$ 0,00'
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
-export const formatDate = (dateStr: string) =>
-  new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(dateStr))
+export const formatDate = (dateStr?: string | null) => {
+  if (!dateStr) return '—'
+  try {
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(dateStr))
+  } catch {
+    return '—'
+  }
+}
 
-export const formatDateTime = (dateStr: string) =>
-  new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  }).format(new Date(dateStr))
+export const formatDateTime = (dateStr?: string | null) => {
+  if (!dateStr) return '—'
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    }).format(new Date(dateStr))
+  } catch {
+    return '—'
+  }
+}
 
 export const calcROI = (profit: number, totalStake: number) => {
   if (totalStake === 0) return 0
