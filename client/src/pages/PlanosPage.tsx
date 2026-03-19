@@ -11,8 +11,14 @@ const PLAN_DATA = [
     borderColor: 'border-slate-200 dark:border-surface-400',
     bgColor: 'bg-slate-50 dark:bg-surface-300/10',
     icon: <Zap size={24} />,
-    features: ['Dashboard Básico', 'Gerenciamento de 1 Banca', 'Pagamentos Online'],
-    notIncluded: ['Dicas VIP', 'Tipsters', 'Análise de Valor', 'Relatórios Mensais', 'Exportação de Dados']
+    features: [
+      'Dashboard Básico', 
+      'Dicas & Palpites', 
+      'Gerenciamento de 1 Banca', 
+      'Sistema de Tipsters', 
+      'Histórico (2 meses de teste)'
+    ],
+    notIncluded: ['Análise de Valor', 'Banca Gerenciada']
   },
   {
     id: 'standard',
@@ -23,8 +29,8 @@ const PLAN_DATA = [
     borderColor: 'border-green-500/30',
     bgColor: 'bg-green-500/5 dark:bg-green-500/10',
     icon: <Shield size={24} />,
-    features: ['Dashboard Completo', 'Dicas & Palpites', 'Até 3 Bancas Ativas', 'Sistema de Tipsters', 'Histórico Completo', 'Relatórios Mensais'],
-    notIncluded: ['Análise de Valor', 'Banca Gerenciada', 'Fluxo de Caixa', 'Exportação PDF/Excel']
+    features: ['Dashboard Completo', 'Dicas & Palpites', 'Até 3 Bancas Ativas', 'Sistema de Tipsters', 'Histórico Completo'],
+    notIncluded: ['Análise de Valor', 'Banca Gerenciada']
   },
   {
     id: 'pro',
@@ -43,9 +49,7 @@ const PLAN_DATA = [
       'Sistema de Tipsters Profissional',
       'Análise de Valor (EV+)',
       'Histórico + Exportação total',
-      'Banca Gerenciada & Investidores',
-      'Fluxo de Caixa Detalhado',
-      'Relatórios Semanais / PDF / Excel'
+      'Banca Gerenciada & Investidores'
     ],
     notIncluded: []
   }
@@ -54,19 +58,17 @@ const PLAN_DATA = [
 const COMPARISON_TABLE = [
   { category: 'PRINCIPAL', features: [
     { name: '📊 Dashboard', starter: 'Resumo Básico', standard: 'Completo', pro: 'Avançado + Analytics' },
-    { name: '📈 Dicas', starter: false, standard: true, pro: true },
+    { name: '📈 Dicas', starter: true, standard: true, pro: true },
   ]},
   { category: 'GESTÃO', features: [
     { name: '💳 Bancas Ativas', starter: 'Apenas 1', standard: 'Até 3', pro: 'Ilimitadas' },
-    { name: '🎯 Tipsters', starter: false, standard: true, pro: true },
+    { name: '🎯 Tipsters', starter: true, standard: true, pro: true },
     { name: '📊 Análise de Valor', starter: false, standard: false, pro: true },
-    { name: '🕒 Histórico', starter: false, standard: 'Completo', pro: 'Completo + Exportação' },
+    { name: '🕒 Histórico', starter: '2 Meses (Teste)', standard: 'Completo', pro: 'Completo + Exportação' },
   ]},
   { category: 'FINANCEIRO', features: [
     { name: '💸 Pagamentos', starter: true, standard: true, pro: true },
     { name: '💼 Banca Gerenciada', starter: false, standard: false, pro: true },
-    { name: '💰 Fluxo de Caixa', starter: false, standard: false, pro: true },
-    { name: '📄 Relatórios', starter: false, standard: 'Mensal Simples', pro: 'Semanal / PDF / Excel' },
   ]}
 ]
 
@@ -140,12 +142,21 @@ export const PlanosPage = () => {
         ))}
       </div>
 
-      {/* PRO OBSERVER */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 text-center">
-        <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
-          <Zap size={16} fill="currentColor" /> 
-          Obs: Qualquer nova funcionalidade no sistema o plano <span className="underline font-black">PRO</span> terá acesso imediato e garantido.
-        </p>
+      {/* PRO OBSERVER & STARTER TRIAL NOTE */}
+      <div className="flex flex-col gap-4">
+        <div className="p-6 rounded-2xl bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 text-center text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+          <p className="flex items-center justify-center gap-2">
+            <Zap size={16} fill="currentColor" /> 
+            Obs: Qualquer nova funcionalidade no sistema o plano <span className="underline font-black">PRO</span> terá acesso imediato e garantido.
+          </p>
+        </div>
+        
+        <div className="p-6 rounded-2xl bg-slate-100 dark:bg-surface-300/10 border border-slate-200 dark:border-surface-400 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p>
+            <span className="font-bold text-slate-900 dark:text-white">Atenção:</span> O plano <span className="font-bold">STARTER</span> possui acesso ao Histórico por apenas <span className="text-green-500 font-bold">2 meses como teste</span>. 
+            Após esse período, as funcionalidades avançadas serão bloqueadas e o acesso será restrito à visualização do Dashboard inicial.
+          </p>
+        </div>
       </div>
 
       {/* COMPARISON TABLE */}

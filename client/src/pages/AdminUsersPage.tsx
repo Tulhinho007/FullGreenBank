@@ -28,7 +28,7 @@ export const AdminUsersPage = () => {
   const [newRole, setNewRole] = useState('')
 
   // Edit form
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', username: '', password: '', isTipster: false })
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '', username: '', password: '', isTipster: false, plan: 'STARTER' })
   const [showPass, setShowPass] = useState(false)
 
   const load = () => {
@@ -53,7 +53,7 @@ export const AdminUsersPage = () => {
       return
     }
     setSelected(u)
-    setEditForm({ name: u.name, email: u.email, phone: u.phone || '', username: u.username, password: '', isTipster: u.isTipster || false })
+    setEditForm({ name: u.name, email: u.email, phone: u.phone || '', username: u.username, password: '', isTipster: u.isTipster || false, plan: u.plan || 'STARTER' })
     setModalType('edit')
   }
 
@@ -84,7 +84,8 @@ export const AdminUsersPage = () => {
         email: editForm.email,
         phone: editForm.phone,
         username: editForm.username,
-        isTipster: editForm.isTipster as any
+        isTipster: editForm.isTipster as any,
+        plan: editForm.plan
       }
       if (editForm.password) payload.password = editForm.password
       await usersService.updateProfileById(selected.id, payload)
@@ -289,7 +290,7 @@ export const AdminUsersPage = () => {
                 </div>
               </div>
 
-              <div className="col-span-2 pt-1">
+              <div className="col-span-2 pt-1 flex flex-col gap-3">
                 <label className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-400 bg-surface-300/30 cursor-pointer hover:bg-surface-300 transition-colors">
                   <input 
                     type="checkbox" 
@@ -302,6 +303,19 @@ export const AdminUsersPage = () => {
                     <span className="text-[10px] text-slate-500 tracking-tight">Permite realizar novos registros na Gestão de Tipsters</span>
                   </div>
                 </label>
+
+                <div>
+                  <label className="label">Plano de Assinatura</label>
+                  <select 
+                    className="input-field"
+                    value={editForm.plan}
+                    onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
+                  >
+                    <option value="STARTER">Starter</option>
+                    <option value="STANDARD">Standard</option>
+                    <option value="PRO">Pro</option>
+                  </select>
+                </div>
               </div>
             </div>
 

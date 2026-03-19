@@ -16,7 +16,7 @@ import { formatCurrency as fmt } from '../utils/formatters'
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
 type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'INATIVO' | 'TRIAL'
-type PlanType      = 'TRIAL' | 'BASICO' | 'PRO' | 'PREMIUM' | 'ADMIN'
+type PlanType      = 'TRIAL' | 'STARTER' | 'STANDARD' | 'PRO' | 'ADMIN'
 type PayMethod     = 'PIX' | 'CARTAO' | 'BOLETO' | 'TRANSFERENCIA' | ''
 
 interface UserPayment {
@@ -43,11 +43,11 @@ const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon:
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  TRIAL:   { label: 'Trial',        color: 'text-blue-400 bg-blue-900/30 border-blue-800/50'       },
-  BASICO:  { label: 'Básico',       color: 'text-slate-300 bg-surface-300 border-surface-400'      },
-  PRO:     { label: 'Pro',          color: 'text-green-400 bg-green-900/40 border-green-800/50'    },
-  PREMIUM: { label: 'Premium',      color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50' },
-  ADMIN:   { label: 'Administrador',color: 'text-purple-400 bg-purple-900/30 border-purple-800/50' },
+  TRIAL:    { label: 'Trial',          color: 'text-blue-400 bg-blue-900/30 border-blue-800/50'       },
+  STARTER:  { label: 'Starter',        color: 'text-slate-300 bg-surface-300 border-surface-400'      },
+  STANDARD: { label: 'Standard',       color: 'text-green-400 bg-green-900/40 border-green-800/50'    },
+  PRO:      { label: 'Pro',            color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50' },
+  ADMIN:    { label: 'Administrador',  color: 'text-purple-400 bg-purple-900/30 border-purple-800/50' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -64,7 +64,7 @@ const formatDate = (d: string | null) =>
 // ─── Formulário vazio ────────────────────────────────────────────────────────
 
 const emptyEdit = {
-  plan: 'TRIAL' as PlanType,
+  plan: 'STARTER' as PlanType,
   value: '',
   payMethod: '' as PayMethod,
   dueDate: '',
