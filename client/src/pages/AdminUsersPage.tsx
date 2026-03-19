@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext'
 interface User {
   id: string; name: string; email: string; phone?: string
   username: string; role: string; active: boolean; isTipster?: boolean; createdAt: string
+  plan?: string
 }
 
 type ModalType = 'edit' | 'role' | null
@@ -131,7 +132,7 @@ export const AdminUsersPage = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-surface-300">
-                  {['Usuário', 'Email', 'Telefone', 'Role', 'Cadastro', 'Status', 'Ações'].map(h => (
+                  {['Usuário', 'Email', 'Telefone', 'Plano', 'Role', 'Cadastro', 'Status', 'Ações'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -155,6 +156,11 @@ export const AdminUsersPage = () => {
                       </td>
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.email}</td>
                       <td className="px-4 py-3 text-slate-500 text-xs">{u.phone || '—'}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-300 text-slate-400 border border-surface-400">
+                          {u.plan || 'Free'}
+                        </span>
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-0.5">
                           <span className={`text-xs font-semibold ${roleInfo.color}`}>{roleInfo.label}</span>

@@ -150,7 +150,7 @@ export const Sidebar = () => {
         <NavItem icon={<BookOpen size={16} />}    label="Apostas Escola" placeholder />
         <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
         <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
-        <NavItem icon={<Settings size={16} />}    label="Configurações"  placeholder />
+        <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
 
       </nav>
 

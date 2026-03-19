@@ -1,9 +1,9 @@
 import { useState, FormEvent } from 'react'
-import { useAuth, User } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/AuthContext'
 import { usersService } from '../services/users.service'
-import { roleLabelMap, formatDateTime } from '../utils/formatters'
+import { formatDateTime } from '../utils/formatters'
 import { 
-  User as UserIcon, Mail, Phone, AtSign, Shield, Calendar, Eye, EyeOff, 
+  User as UserIcon, Mail, Phone, AtSign, Calendar, Eye, EyeOff, 
   Settings, Lock, Globe, Coins, Moon, Sun, Monitor, CreditCard, CheckCircle2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -68,8 +68,8 @@ export const ProfilePage = () => {
     <div className="max-w-4xl flex flex-col gap-8 pb-10">
       {/* Header Contextual */}
       <div className="flex flex-col gap-1">
-        <h2 className="font-display font-bold text-white text-2xl">Minha Conta</h2>
-        <p className="text-slate-500 text-sm italic">Gerencie seus dados, segurança e preferências de visualização.</p>
+        <h2 className="font-display font-semibold text-white">Perfil & Configurações</h2>
+        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Gerencie sua conta e preferências</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
