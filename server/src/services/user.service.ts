@@ -12,6 +12,12 @@ export const getAllUsers = async () => {
       role: true,
       active: true,
       isTipster: true,
+      plan: true,
+      currency: true,
+      language: true,
+      theme: true,
+      twoFactorEnabled: true,
+      avatarUrl: true,
       createdAt: true,
     },
     orderBy: { createdAt: 'desc' },
@@ -30,6 +36,12 @@ export const getUserById = async (id: string) => {
       role: true,
       active: true,
       isTipster: true,
+      plan: true,
+      currency: true,
+      language: true,
+      theme: true,
+      twoFactorEnabled: true,
+      avatarUrl: true,
       createdAt: true,
     },
   });
@@ -37,19 +49,27 @@ export const getUserById = async (id: string) => {
 
 export const updateUser = async (
   id: string,
-  data: { name?: string; email?: string; phone?: string; username?: string; password?: string; isTipster?: boolean }
+  data: { 
+    name?: string; email?: string; phone?: string; username?: string; 
+    password?: string; isTipster?: boolean; plan?: string; 
+    currency?: string; language?: string; theme?: string;
+    twoFactorEnabled?: boolean; avatarUrl?: string;
+  }
 ) => {
-  const updateData: {
-    name?: string; email?: string; phone?: string;
-    username?: string; password?: string; isTipster?: boolean;
-  } = {};
+  const updateData: any = {};
 
   if (data.name)     updateData.name     = data.name;
   if (data.email)    updateData.email    = data.email;
   if (data.phone)    updateData.phone    = data.phone;
   if (data.username) updateData.username = data.username;
   if (data.password) updateData.password = await hashPassword(data.password);
-  if (data.isTipster !== undefined) updateData.isTipster = data.isTipster;
+  if (data.isTipster !== undefined)   updateData.isTipster = data.isTipster;
+  if (data.plan)                updateData.plan = data.plan;
+  if (data.currency)            updateData.currency = data.currency;
+  if (data.language)            updateData.language = data.language;
+  if (data.theme)               updateData.theme = data.theme;
+  if (data.twoFactorEnabled !== undefined) updateData.twoFactorEnabled = data.twoFactorEnabled;
+  if (data.avatarUrl)           updateData.avatarUrl = data.avatarUrl;
 
   return prisma.user.update({
     where: { id },
@@ -62,6 +82,12 @@ export const updateUser = async (
       username: true,
       role: true,
       isTipster: true,
+      plan: true,
+      currency: true,
+      language: true,
+      theme: true,
+      twoFactorEnabled: true,
+      avatarUrl: true,
       createdAt: true,
     },
   });

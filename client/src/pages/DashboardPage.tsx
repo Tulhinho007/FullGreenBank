@@ -23,13 +23,16 @@ const mgmtCards = [
   { icon: <RefreshCw size={18} />, title: 'ROI & Revisão', desc: 'Monitore seu ROI mensalmente. Um ROI positivo de 5–10% já é excelente. Consistência é a meta.' },
   { icon: <BarChart3 size={18} />, title: 'Mercados Certos', desc: 'Especializar-se em 2-3 mercados/ligas melhora muito sua edge. Generalista perde, especialista lucra.' },
 ]
-const formatBRL = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
 export const DashboardPage = () => {
   const { user } = useAuth()
   const [tips,    setTips]    = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
+
+  const formatCurrency = (v: number) =>
+    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: user?.currency || 'BRL' 
+    })
 
   useEffect(() => {
     tipsService.getAll(1, 3)
@@ -56,10 +59,10 @@ export const DashboardPage = () => {
         />
         <StatCard
           title="Lucro"
-          value={profit >= 0 ? `+${formatBRL(profit)}` : formatBRL(profit)}
+          value={profit >= 0 ? `+${formatCurrency(profit)}` : formatCurrency(profit)}
           icon={<DollarSign size={18} />}
           accent={profit >= 0 ? 'green' : 'red'}
-          subtitle="Resultado em R$"
+          subtitle={`Resultado em ${user?.currency || 'BRL'}`}
         />
         <StatCard
           title="Win Rate"

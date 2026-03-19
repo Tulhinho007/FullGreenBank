@@ -26,6 +26,12 @@ router.patch(
     body('phone').optional().trim(),
     body('username').optional().trim().isLength({ min: 3 }).withMessage('Username muito curto'),
     body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
+    body('plan').optional().isIn(['FREE', 'PRO', 'MASTER']),
+    body('currency').optional().isIn(['BRL', 'USD', 'EUR']),
+    body('language').optional().isIn(['PT-BR', 'EN-US', 'ES-ES']),
+    body('theme').optional().isIn(['LIGHT', 'DARK', 'SYSTEM']),
+    body('twoFactorEnabled').optional().isBoolean(),
+    body('avatarUrl').optional().isURL(),
   ],
   validateRequest,
   userController.updateProfile
@@ -41,6 +47,10 @@ router.patch(
     body('phone').optional().trim(),
     body('username').optional().trim().isLength({ min: 3 }).withMessage('Username muito curto'),
     body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
+    body('plan').optional().isIn(['FREE', 'PRO', 'MASTER']),
+    body('currency').optional().isIn(['BRL', 'USD', 'EUR']),
+    body('language').optional().isIn(['PT-BR', 'EN-US', 'ES-ES']),
+    body('theme').optional().isIn(['LIGHT', 'DARK', 'SYSTEM']),
   ],
   validateRequest,
   userController.updateProfileById

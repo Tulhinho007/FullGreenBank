@@ -7,6 +7,7 @@ import {
   Activity,
   Calendar
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 import {
   AreaChart,
   Area,
@@ -66,6 +67,14 @@ const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
 )
 
 export const ReportsPage = () => {
+  const { user } = useAuth()
+  
+  const formatCurrency = (v: number) => 
+    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: user?.currency || 'BRL' 
+    })
+
   const chartColors = {
     stroke: '#22c55e',
     fill: 'url(#colorProfit)',
@@ -98,8 +107,8 @@ export const ReportsPage = () => {
         />
         <StatCard 
           title="Lucro Total" 
-          value="R$ 1.500,00" 
-          subValue="R$ 450,00 este mês" 
+          value={formatCurrency(1500)} 
+          subValue={`${formatCurrency(450)} este mês`} 
           trend="up" 
           icon={DollarSign} 
         />
@@ -148,7 +157,7 @@ export const ReportsPage = () => {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fill: chartColors.text, fontSize: 12 }}
-                  tickFormatter={(val) => `R$ ${val}`}
+                  tickFormatter={(val) => user?.currency === 'BRL' ? `R$ ${val}` : user?.currency === 'USD' ? `$${val}` : `€${val}`}
                 />
                 <Tooltip 
                   contentStyle={{ 
@@ -204,11 +213,11 @@ export const ReportsPage = () => {
               <div className="pt-4 border-t border-surface-400 space-y-4">
                 <div className="flex justify-between">
                   <span className="text-xs text-slate-400">Total Apostado</span>
-                  <span className="text-xs font-semibold text-white">R$ 12.450,00</span>
+                  <span className="text-xs font-semibold text-white">{formatCurrency(12450)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs text-slate-400">Média por Aposta</span>
-                  <span className="text-xs font-semibold text-white">R$ 150,00</span>
+                  <span className="text-xs font-semibold text-white">{formatCurrency(150)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs text-slate-400">Última Atualização</span>

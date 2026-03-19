@@ -42,8 +42,14 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!.userId;
-    const { name, phone, username, password, isTipster } = req.body;
-    const user = await userService.updateUser(userId, { name, phone, username, password, isTipster });
+    const { 
+      name, phone, username, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    } = req.body;
+    const user = await userService.updateUser(userId, { 
+      name, phone, username, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    });
     sendSuccess(res, user, 'Perfil atualizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
@@ -54,7 +60,10 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
 export const updateProfileById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, email, phone, username, password, isTipster } = req.body;
+    const { 
+      name, email, phone, username, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    } = req.body;
 
     const targetUser = await userService.getUserById(id);
     if (!targetUser) { sendError(res, 'Usuário não encontrado', 404); return; }
@@ -63,7 +72,10 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    const user = await userService.updateUser(id, { name, email, phone, username, password, isTipster });
+    const user = await userService.updateUser(id, { 
+      name, email, phone, username, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    });
     sendSuccess(res, user, 'Usuário atualizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar usuário';

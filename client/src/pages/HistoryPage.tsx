@@ -63,11 +63,15 @@ const STATUS_CONFIG: Record<ContractStatus, { label: string, color: string, icon
 
 // --- Utils ---
 
-const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 const fmtDate = (d: string) => new Date(d + (d.includes('T') ? '' : 'T00:00:00')).toLocaleDateString('pt-BR')
 
 export const HistoryPage = () => {
   const { user } = useAuth()
+
+  const fmt = (v: number) => v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', {
+    style: 'currency',
+    currency: user?.currency || 'BRL'
+  })
   const [contracts, setContracts] = useState<BancaContract[]>([])
   const [loading, setLoading] = useState(true)
   
@@ -334,7 +338,12 @@ export const HistoryPage = () => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
               <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(val) => `R$${val}`} />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#94a3b8', fontSize: 11 }} 
+                tickFormatter={(val) => user?.currency === 'BRL' ? `R$${val}` : user?.currency === 'USD' ? `$${val}` : `€${val}`} 
+              />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '11px' }}
                 itemStyle={{ color: '#4ade80' }}

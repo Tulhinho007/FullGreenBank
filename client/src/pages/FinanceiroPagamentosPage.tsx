@@ -57,9 +57,6 @@ const PAY_METHOD_LABEL: Record<PayMethod, string> = {
   '':           '—',
 }
 
-const formatCurrency = (v: number | null) =>
-  v == null ? '—' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
 const formatDate = (d: string | null) =>
   d ? new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') : '—'
 
@@ -93,18 +90,18 @@ export const FinanceiroPagamentosPage = () => {
   const [editTarget, setEditTarget] = useState<UserPayment | null>(null)
   const [editForm,   setEditForm]   = useState(emptyEdit)
 
+  const formatCurrency = (v: number | null) =>
+    v == null ? '—' : v.toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: me?.currency || 'BRL' 
+    })
+
   // ── Carregar usuários ──────────────────────────────────────────────────────
   const loadUsers = async () => {
     setLoading(true)
     try {
       const data = await usersService.getAll()
-      // Mapeia os dados do backend para o formato local
-      // O backend pode não ter todos esses campos ainda — usamos fallback
-      const mapped: UserPayment[] = data.map((u: {
-        id: string; name: string; email: string; role: string;
-        plan?: PlanType; value?: number; payMethod?: PayMethod;
-        dueDate?: string; paymentStatus?: PaymentStatus; notes?: string;
-      }) => ({
+      const mapped: UserPayment[] = data.map((u: any) => ({
         id:        u.id,
         name:      u.name,
         email:     u.email,
@@ -202,7 +199,7 @@ export const FinanceiroPagamentosPage = () => {
         @media print { body { -webkit-print-color-adjust: exact; } }
       </style></head><body>
       <h1>🟢 Relatório: Pagamentos — Full Green Bank</h1>
-      <p>Gerado em ${new Date().toLocaleString('pt-BR')} · ${filtered.length} usuários listados</p>
+      <p>Gerado em ${new Date().toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US')} · ${filtered.length} usuários listados</p>
       <table>
         <thead><tr>
           <th>Usuário / Email</th><th>Tipo</th><th>Plano</th>
@@ -405,7 +402,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {admins.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={formatCurrency} />
               ))}
             </>
           )}
@@ -420,7 +417,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {members.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={formatCurrency} />
               ))}
             </>
           )}
@@ -476,7 +473,7 @@ export const FinanceiroPagamentosPage = () => {
             {/* Valor + Forma de pagamento */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="label">Valor (R$)</label>
+                <label className="label">Valor ({me?.currency || 'R$'})</label>
                 <input
                   type="number"
                   min="0"
@@ -563,9 +560,10 @@ interface UserRowProps {
   user: UserPayment
   onEdit: (u: UserPayment) => void
   isReadOnly?: boolean
+  formatCurrency: (v: number | null) => string
 }
 
-const UserRow = ({ user, onEdit, isReadOnly }: UserRowProps) => {
+const UserRow = ({ user, onEdit, isReadOnly, formatCurrency }: UserRowProps) => {
   const status = STATUS_CONFIG[user.status]
   const plan   = PLAN_CONFIG[user.plan]
   const isAdmin = user.role === 'ADMIN' || user.role === 'MASTER'

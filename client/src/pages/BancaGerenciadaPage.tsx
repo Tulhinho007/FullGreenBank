@@ -43,10 +43,6 @@ const MOTIVO_LABEL: Record<MotivoFim, string> = {
   CANCELADO: 'Cancelado', OUTRO: 'Outro',
 }
 
-const fmt     = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-const fmtDate = (d: string) => new Date(d + (d.includes('T') ? '' : 'T00:00:00')).toLocaleDateString('pt-BR')
-const today   = () => new Date().toISOString().split('T')[0]
-
 const calcFields = (c: Omit<BancaContract, 'lucro'|'vlComissao'|'vlCliente'|'duracaoDias'>): BancaContract => {
   const lucro      = Math.max(0, c.bancaFinal - c.bancaInicial)
   const vlComissao = (lucro * c.comissaoPercent) / 100
@@ -61,205 +57,12 @@ export type ContractFormData = {
   status: ContractStatus; motivoFim: MotivoFim; observacoes: string
 }
 
+const today = () => new Date().toISOString().split('T')[0]
+
 export const emptyForm: ContractFormData = {
   userId: '', dataInicial: today(), dataFinal: '',
   bancaInicial: '', bancaFinal: '', comissaoPercent: '10',
   status: 'ATIVO', motivoFim: '', observacoes: '',
-}
-
-// ─── Preview de cálculos (fora do componente principal) ──────────────────────
-
-interface PreviewProps { bi: string; bf: string; cp: string; di: string; df: string }
-
-const PreviewCalc = ({ bi, bf, cp, di, df }: PreviewProps) => {
-  const bancaI = Number(bi)
-  const bancaF = Number(bf || bi)
-  const com    = Number(cp)
-  if (!bancaI) return null
-  const lucro = Math.max(0, bancaF - bancaI)
-  const vlCom = (lucro * com) / 100
-  const vlCli = bancaF - vlCom
-  const ms    = df && di ? new Date(df).getTime() - new Date(di).getTime() : 0
-  const dias  = ms > 0 ? Math.ceil(ms / 86_400_000) : null
-  return (
-    <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
-      <p className="text-xs text-slate-500 mb-2.5 font-semibold uppercase tracking-wide">Prévia dos Cálculos</p>
-      <div className="grid grid-cols-4 gap-3 text-xs">
-        <div>
-          <p className="text-slate-500 mb-0.5">Lucro</p>
-          <p className={`font-bold font-mono text-sm ${lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>{lucro > 0 ? '+' : ''}{fmt(lucro)}</p>
-        </div>
-        <div>
-          <p className="text-slate-500 mb-0.5">Vl. Comissão</p>
-          <p className="text-yellow-400 font-bold font-mono text-sm">{fmt(vlCom)}</p>
-        </div>
-        <div>
-          <p className="text-slate-500 mb-0.5">Vl. Cliente</p>
-          <p className="text-white font-bold font-mono text-sm">{fmt(vlCli)}</p>
-        </div>
-        <div>
-          <p className="text-slate-500 mb-0.5">Duração</p>
-          <p className="text-slate-300 font-bold text-sm">{dias ? `${dias} dias` : '—'}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Formulário de contrato (fora do componente principal) ───────────────────
-
-interface ContractFormProps {
-  form: ContractFormData
-  onChange: (field: keyof ContractFormData, value: string) => void
-  users: UserOption[]
-}
-
-const ContractForm = ({ form, onChange, users }: ContractFormProps) => (
-  <div className="flex flex-col gap-4">
-    <div>
-      <label className="label">Usuário *</label>
-      <select className="input-field" value={form.userId} onChange={e => onChange('userId', e.target.value)} required>
-        <option value="">— Selecione o usuário —</option>
-        {users.map(u => <option key={u.id} value={u.id}>{u.email} ({u.email})</option>)}
-      </select>
-    </div>
-    <div className="grid grid-cols-2 gap-3">
-      <div>
-        <label className="label">Data Inicial *</label>
-        <input type="date" className="input-field" value={form.dataInicial} onChange={e => onChange('dataInicial', e.target.value)} required />
-      </div>
-      <div>
-        <label className="label">Data Final</label>
-        <input type="date" className="input-field" value={form.dataFinal} onChange={e => onChange('dataFinal', e.target.value)} />
-      </div>
-    </div>
-    <div className="grid grid-cols-2 gap-3">
-      <div>
-        <label className="label">Banca Inicial (R$) *</label>
-        <input type="number" min="0.01" step="0.01" className="input-field" placeholder="Ex: 1000.00"
-          value={form.bancaInicial} onChange={e => onChange('bancaInicial', e.target.value)} required />
-      </div>
-      <div>
-        <label className="label">Banca Final (R$)</label>
-        <input type="number" min="0" step="0.01" className="input-field" placeholder="Ex: 1500.00"
-          value={form.bancaFinal} onChange={e => onChange('bancaFinal', e.target.value)} />
-      </div>
-    </div>
-    <div className="grid grid-cols-2 gap-3">
-      <div>
-        <label className="label">Comissão (%) *</label>
-        <input type="number" min="0" max="100" step="0.1" className="input-field"
-          value={form.comissaoPercent} onChange={e => onChange('comissaoPercent', e.target.value)} required />
-      </div>
-      <div>
-        <label className="label">Status *</label>
-        <select className="input-field" value={form.status} onChange={e => onChange('status', e.target.value)}>
-          {(Object.keys(STATUS_CONFIG) as ContractStatus[]).map(s => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-          ))}
-        </select>
-      </div>
-    </div>
-    <div>
-      <label className="label">Motivo do Fim</label>
-      <select className="input-field" value={form.motivoFim} onChange={e => onChange('motivoFim', e.target.value)}>
-        {(Object.keys(MOTIVO_LABEL) as MotivoFim[]).map(m => (
-          <option key={m} value={m}>{MOTIVO_LABEL[m]}</option>
-        ))}
-      </select>
-    </div>
-    <div>
-      <label className="label">Observações</label>
-      <textarea className="input-field resize-none" rows={3} placeholder="Anotações sobre o contrato..."
-        value={form.observacoes} onChange={e => onChange('observacoes', e.target.value)} />
-    </div>
-    <PreviewCalc bi={form.bancaInicial} bf={form.bancaFinal} cp={form.comissaoPercent} di={form.dataInicial} df={form.dataFinal} />
-  </div>
-)
-
-// ─── Row da tabela (fora do componente principal) ────────────────────────────
-
-interface RowProps {
-  contract: BancaContract
-  onEdit: (c: BancaContract) => void
-  onDelete: (c: BancaContract) => void
-  onRenew: (c: BancaContract) => void
-  isReadOnly?: boolean
-  isSubcontract?: boolean
-  hasChild?: boolean
-}
-
-const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isReadOnly, isSubcontract, hasChild }: RowProps) => {
-  const st = STATUS_CONFIG[c.status]
-  const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
-  const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
-  return (
-    <div className={`px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group ${isSubcontract ? 'pl-10 lg:pl-16 bg-surface-300/10 border-l-4 border-l-slate-700' : ''}`}>
-      <div className="flex flex-col xl:grid xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_160px] gap-2 xl:gap-3 xl:items-center">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            {c.identificacao && (
-              <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${isSubcontract ? 'bg-slate-700/50 border border-slate-600/50 text-slate-300' : 'bg-surface-400 border border-surface-500 text-white'}`}>
-                {c.identificacao}
-              </span>
-            )}
-            <p className="text-sm font-medium text-white truncate">{c.userName}</p>
-          </div>
-          <p className="text-xs text-slate-500 truncate">{c.userEmail}</p>
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-          <CalendarDays size={11} className="text-slate-600 shrink-0" />
-          <span>{fmtDate(c.dataInicial)}{c.dataFinal ? ` → ${fmtDate(c.dataFinal)}` : ''}</span>
-        </div>
-        <span className="text-sm text-slate-400 font-mono">{fmt(c.bancaInicial)}</span>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-sm text-white font-mono font-medium truncate">{fmt(c.bancaFinal)}</span>
-          {dobrouBanca && (
-            <span title="Banca Inicial Dobrada!" className="shrink-0 inline-flex items-center justify-center bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
-              🚀 100%
-            </span>
-          )}
-        </div>
-        <span className={`text-sm font-mono font-medium ${c.lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>
-          {c.lucro > 0 ? '+' : ''}{fmt(c.lucro)}
-        </span>
-        <span className="text-sm text-yellow-400 font-mono">
-          {fmt(c.vlComissao)}<span className="text-slate-600 text-xs ml-1">({c.comissaoPercent}%)</span>
-        </span>
-        <div>
-          <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${st.color}`}>
-            {st.icon}{st.label}
-          </span>
-          {c.motivoFim && <p className="text-[10px] text-slate-600 mt-1">{MOTIVO_LABEL[c.motivoFim]}</p>}
-        </div>
-        <div className="flex items-center gap-1.5 xl:justify-end">
-          {isReadOnly ? (
-            <button onClick={() => onEdit(c)} title="Visualizar"
-              className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
-              <Eye size={11} /><span className="hidden sm:inline">Visualizar</span>
-            </button>
-          ) : (
-            <>
-              <button onClick={() => onEdit(c)} title="Editar"
-                className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
-                <Edit2 size={11} /><span className="hidden sm:inline">Editar</span>
-              </button>
-              <button onClick={() => onDelete(c)} title="Excluir"
-                className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
-                <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
-              </button>
-              {!hasChild && !encerrado && (
-                <button onClick={() => onRenew(c)} title="Renovar Contrato"
-                  className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
-                  <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
-                </button>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  )
 }
 
 // ─── Componente principal ─────────────────────────────────────────────────────
@@ -282,6 +85,15 @@ export const BancaGerenciadaPage = () => {
 
   const [addForm,  setAddForm]  = useState<ContractFormData>(emptyForm)
   const [editForm, setEditForm] = useState<ContractFormData>(emptyForm)
+
+  const fmt = (v: number) => 
+    v.toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: me?.currency || 'BRL' 
+    })
+
+  const fmtDate = (d: string) => 
+    new Date(d + (d.includes('T') ? '' : 'T00:00:00')).toLocaleDateString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US')
 
   // ── Helpers de update de form ─────────────────────────────────────────────
   const updateAdd  = (field: keyof ContractFormData, value: string) =>
@@ -348,9 +160,9 @@ export const BancaGerenciadaPage = () => {
         <td>${c.identificacao || '-'}</td>
         <td>${c.userName}<br/><small>${c.userEmail}</small></td>
         <td>${fmtDate(c.dataInicial)} ${c.dataFinal ? 'ate ' + fmtDate(c.dataFinal) : ''}</td>
-        <td>${c.bancaInicial.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
-        <td>${c.bancaFinal.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
-        <td style="color:${c.lucro > 0 ? '#16a34a' : 'inherit'} font-weight:bold">${c.lucro.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</td>
+        <td>${fmt(c.bancaInicial)}</td>
+        <td>${fmt(c.bancaFinal)}</td>
+        <td style="color:${c.lucro > 0 ? '#16a34a' : 'inherit'}; font-weight:bold">${fmt(c.lucro)}</td>
         <td>${STATUS_CONFIG[c.status].label}</td>
       </tr>`).join('')
 
@@ -370,7 +182,7 @@ export const BancaGerenciadaPage = () => {
         @media print { body { -webkit-print-color-adjust: exact; } }
       </style></head><body>
       <h1>🟢 Relatório: Banca Gerenciada — Full Green Bank</h1>
-      <p>Gerado em ${new Date().toLocaleString('pt-BR')} · ${filtered.length} contratos listados</p>
+      <p>Gerado em ${new Date().toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US')} · ${filtered.length} contratos listados</p>
       <table>
         <thead><tr>
           <th>Id.</th><th>Usuário / Email</th><th>Período</th>
@@ -613,19 +425,19 @@ export const BancaGerenciadaPage = () => {
               const handled = new Set<string>();
               roots.forEach(r => {
                 const hasChild = contracts.some(x => x.parentId === r.id);
-                nodes.push(<ContractRow key={r.id} contract={r} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isReadOnly={isReadOnly} />);
+                nodes.push(<ContractRow key={r.id} contract={r} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isReadOnly={isReadOnly} fmt={fmt} fmtDate={fmtDate} />);
                 handled.add(r.id);
                 const subs = filtered.filter(c => c.parentId === r.id).sort((a,b) => new Date(a.dataInicial).getTime() - new Date(b.dataInicial).getTime());
                 subs.forEach(s => {
                   const hasGrandChild = contracts.some(x => x.parentId === s.id);
-                  nodes.push(<ContractRow key={s.id} contract={s} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasGrandChild} isSubcontract isReadOnly={isReadOnly} />);
+                  nodes.push(<ContractRow key={s.id} contract={s} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasGrandChild} isSubcontract isReadOnly={isReadOnly} fmt={fmt} fmtDate={fmtDate} />);
                   handled.add(s.id);
                 });
               });
               filtered.forEach(c => {
                 if (!handled.has(c.id)) {
                   const hasChild = contracts.some(x => x.parentId === c.id);
-                  nodes.push(<ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isSubcontract={!!c.parentId} isReadOnly={isReadOnly} />);
+                  nodes.push(<ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isSubcontract={!!c.parentId} isReadOnly={isReadOnly} fmt={fmt} fmtDate={fmtDate} />);
                 }
               });
               return nodes;
@@ -637,7 +449,7 @@ export const BancaGerenciadaPage = () => {
       {/* Modal Novo */}
       <Modal isOpen={addOpen} onClose={() => { setAddOpen(false); setAddForm(emptyForm) }} title="Novo Contrato de Banca" size="md">
         <form onSubmit={handleAdd} className="flex flex-col gap-4">
-          <ContractForm form={addForm} onChange={updateAdd} users={users} />
+          <ContractForm form={addForm} onChange={updateAdd} users={users} fmt={fmt} />
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={() => { setAddOpen(false); setAddForm(emptyForm) }} className="btn-secondary flex-1">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary flex-1 flex items-center justify-center gap-2">
@@ -651,7 +463,7 @@ export const BancaGerenciadaPage = () => {
       <Modal isOpen={!!editTarget} onClose={() => setEditTarget(null)} title="Editar Contrato" size="md">
         {editTarget && (
           <form onSubmit={handleEdit} className="flex flex-col gap-4">
-            <ContractForm form={editForm} onChange={updateEdit} users={users} />
+            <ContractForm form={editForm} onChange={updateEdit} users={users} fmt={fmt} />
             <div className="flex gap-3 pt-1">
               <button type="button" onClick={() => setEditTarget(null)} className="btn-secondary flex-1">
                 {isReadOnly ? 'Fechar' : 'Cancelar'}
@@ -721,6 +533,203 @@ export const BancaGerenciadaPage = () => {
           </div>
         )}
       </Modal>
+    </div>
+  )
+}
+
+// ─── Preview de cálculos ───────────────────────────────────────────────────
+
+interface PreviewProps { 
+  bi: string; bf: string; cp: string; di: string; df: string;
+  fmt: (v: number) => string 
+}
+
+const PreviewCalc = ({ bi, bf, cp, di, df, fmt }: PreviewProps) => {
+  const bancaI = Number(bi)
+  const bancaF = Number(bf || bi)
+  const com    = Number(cp)
+  if (!bancaI) return null
+  const lucro = Math.max(0, bancaF - bancaI)
+  const vlCom = (lucro * com) / 100
+  const vlCli = bancaF - vlCom
+  const ms    = df && di ? new Date(df).getTime() - new Date(di).getTime() : 0
+  const dias  = ms > 0 ? Math.ceil(ms / 86_400_000) : null
+  return (
+    <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
+      <p className="text-xs text-slate-500 mb-2.5 font-semibold uppercase tracking-wide">Prévia dos Cálculos</p>
+      <div className="grid grid-cols-4 gap-3 text-xs">
+        <div>
+          <p className="text-slate-500 mb-0.5">Lucro</p>
+          <p className={`font-bold font-mono text-sm ${lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>{lucro > 0 ? '+' : ''}{fmt(lucro)}</p>
+        </div>
+        <div>
+          <p className="text-slate-500 mb-0.5">Vl. Comissão</p>
+          <p className="text-yellow-400 font-bold font-mono text-sm">{fmt(vlCom)}</p>
+        </div>
+        <div>
+          <p className="text-slate-500 mb-0.5">Vl. Cliente</p>
+          <p className="text-white font-bold font-mono text-sm">{fmt(vlCli)}</p>
+        </div>
+        <div>
+          <p className="text-slate-500 mb-0.5">Duração</p>
+          <p className="text-slate-300 font-bold text-sm">{dias ? `${dias} dias` : '—'}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Formulário de contrato ──────────────────────────────────────────────────
+
+interface ContractFormProps {
+  form: ContractFormData
+  onChange: (field: keyof ContractFormData, value: string) => void
+  users: UserOption[]
+  fmt: (v: number) => string
+}
+
+const ContractForm = ({ form, onChange, users, fmt }: ContractFormProps) => (
+  <div className="flex flex-col gap-4">
+    <div>
+      <label className="label">Usuário *</label>
+      <select className="input-field" value={form.userId} onChange={e => onChange('userId', e.target.value)} required>
+        <option value="">— Selecione o usuário —</option>
+        {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
+      </select>
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <div>
+        <label className="label">Data Inicial *</label>
+        <input type="date" className="input-field" value={form.dataInicial} onChange={e => onChange('dataInicial', e.target.value)} required />
+      </div>
+      <div>
+        <label className="label">Data Final</label>
+        <input type="date" className="input-field" value={form.dataFinal} onChange={e => onChange('dataFinal', e.target.value)} />
+      </div>
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <div>
+        <label className="label">Banca Inicial *</label>
+        <input type="number" min="0.01" step="0.01" className="input-field" placeholder="Ex: 1000.00"
+          value={form.bancaInicial} onChange={e => onChange('bancaInicial', e.target.value)} required />
+      </div>
+      <div>
+        <label className="label">Banca Final</label>
+        <input type="number" min="0" step="0.01" className="input-field" placeholder="Ex: 1500.00"
+          value={form.bancaFinal} onChange={e => onChange('bancaFinal', e.target.value)} />
+      </div>
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <div>
+        <label className="label">Comissão (%) *</label>
+        <input type="number" min="0" max="100" step="0.1" className="input-field"
+          value={form.comissaoPercent} onChange={e => onChange('comissaoPercent', e.target.value)} required />
+      </div>
+      <div>
+        <label className="label">Status *</label>
+        <select className="input-field" value={form.status} onChange={e => onChange('status', e.target.value)}>
+          {(Object.keys(STATUS_CONFIG) as ContractStatus[]).map(s => (
+            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+    <div>
+      <label className="label">Motivo do Fim</label>
+      <select className="input-field" value={form.motivoFim} onChange={e => onChange('motivoFim', e.target.value)}>
+        {(Object.keys(MOTIVO_LABEL) as MotivoFim[]).map(m => (
+          <option key={m} value={m}>{MOTIVO_LABEL[m]}</option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <label className="label">Observações</label>
+      <textarea className="input-field resize-none" rows={3} placeholder="Anotações sobre o contrato..."
+        value={form.observacoes} onChange={e => onChange('observacoes', e.target.value)} />
+    </div>
+    <PreviewCalc bi={form.bancaInicial} bf={form.bancaFinal} cp={form.comissaoPercent} di={form.dataInicial} df={form.dataFinal} fmt={fmt} />
+  </div>
+)
+
+// ─── Row da tabela ───────────────────────────────────────────────────────────
+
+interface RowProps {
+  contract: BancaContract
+  onEdit: (c: BancaContract) => void
+  onDelete: (c: BancaContract) => void
+  onRenew: (c: BancaContract) => void
+  isReadOnly?: boolean
+  isSubcontract?: boolean
+  hasChild?: boolean
+  fmt: (v: number) => string
+  fmtDate: (d: string) => string
+}
+
+const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isReadOnly, isSubcontract, hasChild, fmt, fmtDate }: RowProps) => {
+  const st = STATUS_CONFIG[c.status]
+  const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
+  const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
+  return (
+    <div className={`px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group ${isSubcontract ? 'pl-10 lg:pl-16 bg-surface-300/10 border-l-4 border-l-slate-700' : ''}`}>
+      <div className="flex flex-col xl:grid xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_160px] gap-2 xl:gap-3 xl:items-center">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            {c.identificacao && (
+              <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${isSubcontract ? 'bg-slate-700/50 border border-slate-600/50 text-slate-300' : 'bg-surface-400 border border-surface-500 text-white'}`}>
+                {c.identificacao}
+              </span>
+            )}
+            <p className="text-sm font-medium text-white truncate">{c.userName}</p>
+          </div>
+          <p className="text-xs text-slate-500 truncate">{c.userEmail}</p>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <CalendarDays size={11} className="text-slate-600 shrink-0" />
+          <span>{fmtDate(c.dataInicial)}{c.dataFinal ? ` → ${fmtDate(c.dataFinal)}` : ''}</span>
+        </div>
+        <span className="text-sm text-slate-400 font-mono">{fmt(c.bancaInicial)}</span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-sm text-white font-mono font-medium truncate">{fmt(c.bancaFinal)}</span>
+          {dobrouBanca && (
+            <span title="Banca Inicial Dobrada!" className="shrink-0 inline-flex items-center justify-center bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
+              🚀 100%
+            </span>
+          )}
+        </div>
+        <span className={`text-sm font-mono font-medium ${c.lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>
+          {c.lucro > 0 ? '+' : ''}{fmt(c.lucro)}
+        </span>
+        <span className="text-sm text-yellow-400 font-mono">
+          {fmt(c.vlComissao)}<span className="text-slate-600 text-xs ml-1">({c.comissaoPercent}%)</span>
+        </span>
+        <div>
+          <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${st.color}`}>
+            {st.icon}{st.label}
+          </span>
+          {c.motivoFim && <p className="text-[10px] text-slate-600 mt-1">{MOTIVO_LABEL[c.motivoFim]}</p>}
+        </div>
+        <div className="flex items-center gap-1.5 xl:justify-end">
+          <button onClick={() => onEdit(c)} title={isReadOnly ? 'Visualizar' : 'Editar'}
+            className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
+            {isReadOnly ? <Eye size={11} /> : <Edit2 size={11} />}
+            <span className="hidden sm:inline">{isReadOnly ? 'Visualizar' : 'Editar'}</span>
+          </button>
+          {!isReadOnly && (
+            <>
+              <button onClick={() => onDelete(c)} title="Excluir"
+                className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
+                <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
+              </button>
+              {!hasChild && !encerrado && (
+                <button onClick={() => onRenew(c)} title="Renovar Contrato"
+                  className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
+                  <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

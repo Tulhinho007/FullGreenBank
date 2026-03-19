@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { X, Download, Share2, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface Tip {
   id: string
@@ -23,20 +24,27 @@ interface ShareTipModalProps {
   tip: Tip
 }
 
-const formatBRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-const formatDate = (iso: string) => {
-  const d = new Date(iso)
-  const day = d.getDate().toString().padStart(2, '0')
-  const m = d.toLocaleString('pt-BR', { month: 'short' }).replace('.', '').charAt(0).toUpperCase() + d.toLocaleString('pt-BR', { month: 'short' }).slice(1).replace('.', '')
-  const yr = d.getFullYear()
-  const hs = d.getHours().toString().padStart(2, '0')
-  const ms = d.getMinutes().toString().padStart(2, '0')
-  return `${day} ${m} ${yr} • ${hs}:${ms}`
-}
-
 export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
+  const { user } = useAuth()
   const cardRef = useRef<HTMLDivElement>(null)
   const [downloading, setDownloading] = useState(false)
+
+  const formatCurrency = (v: number) => 
+    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: user?.currency || 'BRL' 
+    })
+
+  const formatTipDate = (iso: string) => {
+    const d = new Date(iso)
+    const locale = user?.language === 'PT-BR' ? 'pt-BR' : 'en-US'
+    const day = d.getDate().toString().padStart(2, '0')
+    const m = d.toLocaleString(locale, { month: 'short' }).replace('.', '').charAt(0).toUpperCase() + d.toLocaleString(locale, { month: 'short' }).slice(1).replace('.', '')
+    const yr = d.getFullYear()
+    const hs = d.getHours().toString().padStart(2, '0')
+    const ms = d.getMinutes().toString().padStart(2, '0')
+    return `${day} ${m} ${yr} • ${hs}:${ms}`
+  }
 
   if (!isOpen) return null
 
@@ -78,10 +86,10 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
   const statusColor = isGreen ? '#00ff41' : isRed ? '#ff4d4d' : '#fbbf24'
   const statusLabel = isGreen ? '✓ GREEN' : isRed ? 'X RED' : isVoid ? '⚪ ANULADO' : 'PENDENTE'
   const profitLabel = isGreen
-    ? `+${formatBRL(tip.profit ?? (potentialReturn - tip.stake))}`
+    ? `+${formatCurrency(tip.profit ?? (potentialReturn - tip.stake))}`
     : isRed
-    ? `-${formatBRL(tip.stake)}`
-    : isVoid ? 'R$ 0,00' : 'Aguardando'
+    ? `-${formatCurrency(tip.stake)}`
+    : isVoid ? (user?.currency === 'USD' ? '$ 0.00' : user?.currency === 'EUR' ? '€ 0,00' : 'R$ 0,00') : 'Aguardando'
 
   return (
     <>
@@ -137,7 +145,7 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                     FullGreen
                   </div>
                   <div style={{ color: '#64856f', fontWeight: 500, fontSize: '0.875rem' }}>
-                    {formatDate(tip.tipDate)}
+                    {formatTipDate(tip.tipDate)}
                   </div>
                 </div>
 
@@ -155,7 +163,7 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                 <div style={{ padding: '8px 32px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', zIndex: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 500, fontSize: '0.9375rem', color: '#64856f' }}>Stake</span>
-                    <span style={{ fontWeight: 700, fontSize: '1.125rem', color: '#ffffff' }}>{formatBRL(tip.stake)}</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.125rem', color: '#ffffff' }}>{formatCurrency(tip.stake)}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 500, fontSize: '0.9375rem', color: '#64856f' }}>Odd</span>
@@ -163,7 +171,7 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
                     <span style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#8ba895' }}>Retorno Potencial</span>
-                    <span style={{ fontWeight: 700, fontSize: '1.25rem', color: '#ffffff' }}>{formatBRL(potentialReturn)}</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.25rem', color: '#ffffff' }}>{formatCurrency(potentialReturn)}</span>
                   </div>
                 </div>
 

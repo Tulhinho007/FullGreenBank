@@ -7,13 +7,15 @@ export const usersService = {
   },
 
   updateProfile: async (data: {
-    name?: string; phone?: string; username?: string; password?: string
+    name?: string; phone?: string; username?: string; password?: string;
+    plan?: string; currency?: string; language?: string; theme?: string;
+    twoFactorEnabled?: boolean; avatarUrl?: string;
   }) => {
     const res = await api.patch('/users/profile/me', data)
     return res.data.data
   },
 
-  updateProfileById: async (id: string, data: Record<string, string>) => {
+  updateProfileById: async (id: string, data: any) => {
     const res = await api.patch(`/users/${id}/profile`, data)
     return res.data.data
   },

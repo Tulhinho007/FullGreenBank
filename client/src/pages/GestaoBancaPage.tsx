@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import {
   Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 
@@ -223,7 +224,11 @@ export const GestaoBancaPage = () => {
     handleSaveConfigCarteira('perfilRisco', id)
   }
 
-  const formatCurrency = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+  const { user } = useAuth()
+  const formatCurrency = (val: number) => val.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+    style: 'currency', 
+    currency: user?.currency || 'BRL' 
+  })
 
   const handleCriarNovaBanca = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -282,7 +287,7 @@ export const GestaoBancaPage = () => {
             <TrendingUp size={16} className="text-green-400" />
             <span className="text-sm font-medium text-green-400/80 uppercase tracking-wider">Banca Atual</span>
             {bancaAtual > bancaInicialAtual && (
-             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{(bancaAtual - bancaInicialAtual).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</span>
+             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{(bancaAtual - bancaInicialAtual).toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', {style:'currency', currency: user?.currency || 'BRL'})}</span>
             )}
           </div>
           <p className="text-3xl font-bold text-green-400">{formatCurrency(bancaAtual)}</p>

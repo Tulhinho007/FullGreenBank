@@ -59,7 +59,8 @@ const placeholders = [
 ]
 
 const emptyForm = {
-  name: '', email: '', phone: '', username: '', password: '', confirmPassword: '', role: 'MEMBRO',
+  name: '', email: '', phone: '', username: '', password: '', confirmPassword: '', 
+  role: 'MEMBRO', plan: 'FREE', currency: 'BRL'
 }
 
 export const AdminCadastrosPage = () => {
@@ -137,6 +138,8 @@ export const AdminCadastrosPage = () => {
         phone:    form.phone,
         username: form.username,
         password: form.password,
+        plan:     form.plan,
+        currency: form.currency,
       })
 
       // Se role não for MEMBRO, atualiza após criar
@@ -396,12 +399,32 @@ export const AdminCadastrosPage = () => {
             </div>
 
             {/* Role */}
-            <div className="col-span-2">
+            <div>
               <label className="label">Tipo de conta</label>
               <select className="input-field" value={form.role} onChange={set('role')}>
                 <option value="MEMBRO">Membro</option>
                 <option value="ADMIN">Admin</option>
                 <option value="MASTER">Master</option>
+              </select>
+            </div>
+
+            {/* Plano */}
+            <div>
+              <label className="label">Plano</label>
+              <select className="input-field" value={form.plan} onChange={set('plan')}>
+                <option value="FREE">Free</option>
+                <option value="PRO">Pro</option>
+                <option value="MASTER">Master</option>
+              </select>
+            </div>
+
+            {/* Moeda */}
+            <div className="col-span-2">
+              <label className="label">Moeda Principal</label>
+              <select className="input-field" value={form.currency} onChange={set('currency')}>
+                <option value="BRL">R$ (Real - BRL)</option>
+                <option value="USD">$ (Dólar - USD)</option>
+                <option value="EUR">€ (Euro - EUR)</option>
               </select>
             </div>
           </div>

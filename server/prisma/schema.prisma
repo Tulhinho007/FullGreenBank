@@ -28,6 +28,15 @@ model User {
   role      UserRole @default(MEMBRO)
   active    Boolean  @default(true)
   isTipster Boolean  @default(false)
+  
+  // Settings & Preferences
+  plan              String   @default("FREE")    // FREE, PRO, MASTER
+  currency          String   @default("BRL")     // BRL, USD, EUR
+  language          String   @default("PT-BR")   // PT-BR, EN-US, ES-ES
+  theme             String   @default("DARK")    // LIGHT, DARK, SYSTEM
+  twoFactorEnabled  Boolean  @default(false)
+  avatarUrl        String?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

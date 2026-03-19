@@ -12,6 +12,12 @@ export interface User {
   role: 'MASTER' | 'ADMIN' | 'TESTER' | 'MEMBRO'
   active: boolean
   isTipster?: boolean
+  plan: string
+  currency: string
+  language: string
+  theme: string
+  twoFactorEnabled: boolean
+  avatarUrl?: string
   createdAt: string
 }
 

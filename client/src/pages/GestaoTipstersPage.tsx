@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, DollarSign, Target, User, Plus, X, AlertTriangle } from 'lucide-react'
+import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, Target, User, Plus, X, AlertTriangle } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -162,13 +162,13 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
               <input required value={form.market} onChange={e => setForm({ ...form, market: e.target.value })} className="input-field py-2" placeholder="Ex: Over 2.5 Gols" />
             </div>
 
-            <div className="flex gap-3">
+              <div className="flex gap-3">
               <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Investimento (R$)</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Investimento</label>
                 <input required type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} className="input-field py-2" placeholder="100.00" />
               </div>
               <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Lucro / Prej. (R$)</label>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Lucro / Prej.</label>
                 <input required type="number" step="0.01" value={form.profit} onChange={e => setForm({ ...form, profit: e.target.value })} className="input-field py-2" placeholder="Ex: 85.00 ou -50.00" />
               </div>
             </div>
@@ -188,6 +188,13 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
 export const GestaoTipstersPage = () => {
   const { user } = useAuth()
+  
+  const formatCurrency = (v: number) => 
+    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+      style: 'currency', 
+      currency: user?.currency || 'BRL' 
+    })
+
   const isTipster = user?.isTipster || user?.role === 'MASTER'
   const [tipsters, setTipsters] = useState<Tipster[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -329,8 +336,7 @@ export const GestaoTipstersPage = () => {
             <div>
               <p className="text-[10px] uppercase font-bold text-slate-400">Lucro Total</p>
               <p className={`text-lg font-bold flex items-center gap-1 ${totalProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                <DollarSign size={16} />
-                {totalProfit.toFixed(2)}
+                {formatCurrency(totalProfit)}
               </p>
             </div>
             <div className="w-px h-8 bg-slate-200 dark:bg-surface-300"></div>
@@ -428,7 +434,7 @@ export const GestaoTipstersPage = () => {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 12, fill: isDark ? '#94a3b8' : '#64748b' }} 
-                  tickFormatter={(val) => `R$ ${val}`}
+                  tickFormatter={(val) => user?.currency === 'BRL' ? `R$ ${val}` : user?.currency === 'USD' ? `$${val}` : `€${val}`}
                 />
                 <Tooltip 
                   contentStyle={{ 
@@ -439,7 +445,7 @@ export const GestaoTipstersPage = () => {
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                   }}
                   itemStyle={{ color: chartStroke, fontWeight: 'bold' }}
-                  formatter={(val: any) => [`R$ ${Number(val).toFixed(2)}`, 'Lucro Acumulado']}
+                  formatter={(val: any) => [formatCurrency(Number(val)), 'Lucro Acumulado']}
                   labelStyle={{ color: isDark ? '#94a3b8' : '#64748b', marginBottom: '4px' }}
                 />
                 <Area 
@@ -513,9 +519,9 @@ export const GestaoTipstersPage = () => {
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.market}</p>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="text-sm text-slate-800 dark:text-white">R$ {t.amount.toFixed(2)}</p>
+                        <p className="text-sm text-slate-800 dark:text-white">{formatCurrency(t.amount)}</p>
                         <p className={`text-xs font-medium mt-0.5 ${t.profit > 0 ? 'text-green-500' : t.profit < 0 ? 'text-red-500' : 'text-slate-500'}`}>
-                          {t.profit > 0 ? '+' : ''}{t.profit.toFixed(2)}
+                          {t.profit > 0 ? '+' : ''}{formatCurrency(t.profit)}
                         </p>
                       </td>
                       <td className="px-6 py-4">
