@@ -5,6 +5,7 @@ import { Modal } from '../components/ui/Modal'
 import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
+import { useTranslation } from '../utils/i18n'
 
 interface User {
   id: string; name: string; email: string; phone?: string
@@ -16,6 +17,7 @@ type ModalType = 'edit' | 'role' | null
 
 export const AdminUsersPage = () => {
   const { user: me, impersonateUser } = useAuth()
+  const { t } = useTranslation()
   const isMaster = me?.role === 'MASTER'
   const isAdmin  = me?.role === 'ADMIN' || me?.role === 'MASTER'
 
@@ -117,8 +119,8 @@ export const AdminUsersPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display font-semibold text-white">Usuários</h2>
-          <p className="text-xs text-slate-500">{users.length} usuários cadastrados</p>
+          <h2 className="font-display font-semibold text-white">{t('usuarios')}</h2>
+          <p className="text-xs text-slate-500">{users.length} {t('registered_at')?.replace(' em', 's') || 'usuários cadastrados'}</p>
         </div>
       </div>
 
@@ -132,8 +134,8 @@ export const AdminUsersPage = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-surface-300">
-                  {['Usuário', 'Email', 'Telefone', 'Plano', 'Role', 'Cadastro', 'Status', 'Ações'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
+                  {[t('usuarios'), t('email'), 'Telefone', 'Plano', t('role'), 'Cadastro', t('status'), t('actions')].map((h, i) => (
+                    <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -175,7 +177,7 @@ export const AdminUsersPage = () => {
                       <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt)}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-semibold ${u.active ? 'text-green-500' : 'text-red-500'}`}>
-                          {u.active ? 'Ativo' : 'Inativo'}
+                          {u.active ? t('active') : t('inactive')}
                         </span>
                       </td>
                       <td className="px-4 py-3">

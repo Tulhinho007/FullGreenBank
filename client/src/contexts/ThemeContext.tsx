@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { useAuth } from './AuthContext'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -10,9 +11,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth()
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('fgb_theme') as Theme) || 'system'
   })
+
+  // Sincronizar com o perfil do usuário quando carregar/mudar
+  useEffect(() => {
+    const userTheme = user?.theme?.toLowerCase() as Theme
+    if (userTheme && (userTheme === 'light' || userTheme === 'dark' || userTheme === 'system')) {
+      setTheme(userTheme)
+    }
+  }, [user?.theme])
 
   useEffect(() => {
     const applyTheme = (t: Theme) => {

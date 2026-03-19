@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
 import api from '../services/api'
 import toast from 'react-hot-toast'
+import { useTranslation } from '../utils/i18n'
 
 const SPORTS_KEY     = 'fgb_sports'
 const LEAGUES_KEY    = 'fgb_leagues'
@@ -65,6 +66,7 @@ const emptyForm = {
 
 export const AdminCadastrosPage = () => {
   const { user: me } = useAuth()
+  const { t } = useTranslation()
   const isReadOnly = me?.role === 'TESTER'
   const [userCount,    setUserCount]    = useState<number | null>(null)
   const [modalOpen,    setModalOpen]    = useState(false)
@@ -169,8 +171,8 @@ export const AdminCadastrosPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="font-display font-semibold text-white">Cadastros</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Gerenciamento de tabelas base do sistema</p>
+        <h2 className="font-display font-semibold text-white">{t('cadastros')}</h2>
+        <p className="text-xs text-slate-500 mt-0.5">{t('manage_base_tables')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -185,10 +187,10 @@ export const AdminCadastrosPage = () => {
               <Users size={16} className="text-green-400" />
             </div>
             <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
-              Ativo
+              {t('active')}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">Usuários</h3>
+          <h3 className="font-semibold text-white text-sm">{t('usuarios')}</h3>
           <p className="text-xs text-slate-500 mt-1">Cadastro e gestão de usuários do sistema</p>
           <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
             <span className="text-xs text-slate-500">
@@ -196,7 +198,7 @@ export const AdminCadastrosPage = () => {
             </span>
             {!isReadOnly && (
               <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
-                + Novo usuário
+                {t('new_user')}
               </span>
             )}
           </div>
@@ -212,17 +214,17 @@ export const AdminCadastrosPage = () => {
               <Dumbbell size={16} className="text-green-400" />
             </div>
             <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
-              Ativo
+              {t('active')}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">Esportes</h3>
+          <h3 className="font-semibold text-white text-sm">{t('sports')}</h3>
           <p className="text-xs text-slate-500 mt-1">Gerenciar esportes disponíveis no sistema</p>
           <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
             <span className="text-xs text-slate-500">
               {sports.length} {sports.length === 1 ? 'esporte' : 'esportes'}
             </span>
             <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
-              Gerenciar
+              {t('manage')}
             </span>
           </div>
         </div>
@@ -237,17 +239,17 @@ export const AdminCadastrosPage = () => {
               <Trophy size={16} className="text-green-400" />
             </div>
             <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
-              Ativo
+              {t('active')}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">Ligas / Campeonatos</h3>
+          <h3 className="font-semibold text-white text-sm">{t('leagues')}</h3>
           <p className="text-xs text-slate-500 mt-1">Competições e torneios disponíveis no sistema</p>
           <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
             <span className="text-xs text-slate-500">
               {leagues.length} {leagues.length === 1 ? 'liga' : 'ligas'}
             </span>
             <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
-              Gerenciar
+              {t('manage')}
             </span>
           </div>
         </div>
@@ -261,13 +263,13 @@ export const AdminCadastrosPage = () => {
             <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
               <Shield size={16} className="text-green-400" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">Ativo</span>
+            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">{t('active')}</span>
           </div>
-          <h3 className="font-semibold text-white text-sm">Times</h3>
+          <h3 className="font-semibold text-white text-sm">{t('teams')}</h3>
           <p className="text-xs text-slate-500 mt-1">Times e equipes esportivas do sistema</p>
           <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
             <span className="text-xs text-slate-500">1.382 times</span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">Gerenciar</span>
+            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">{t('manage')}</span>
           </div>
         </div>
 
@@ -280,13 +282,13 @@ export const AdminCadastrosPage = () => {
             <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
               <Star size={16} className="text-green-400" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">Ativo</span>
+            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">{t('active')}</span>
           </div>
-          <h3 className="font-semibold text-white text-sm">Casas de Apostas</h3>
+          <h3 className="font-semibold text-white text-sm">{t('bookmakers')}</h3>
           <p className="text-xs text-slate-500 mt-1">Bookmakers e plataformas disponíveis</p>
           <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
             <span className="text-xs text-slate-500">{bookmakers.length} {bookmakers.length === 1 ? 'casa' : 'casas'}</span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">Gerenciar</span>
+            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">{t('manage')}</span>
           </div>
         </div>
 
@@ -298,7 +300,7 @@ export const AdminCadastrosPage = () => {
                 <ClipboardList size={16} className="text-slate-500" />
               </div>
               <span className="text-xs bg-surface-300 text-slate-500 px-2 py-0.5 rounded-full border border-surface-400">
-                Em breve
+                {t('soon')}
               </span>
             </div>
             <h3 className="font-semibold text-sm">{s.title}</h3>
@@ -306,7 +308,7 @@ export const AdminCadastrosPage = () => {
             <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
               <span className="text-xs text-slate-600">0 registros</span>
               <button disabled className="text-xs text-slate-600 border border-surface-400 px-2.5 py-1 rounded cursor-not-allowed opacity-40">
-                Gerenciar
+                {t('manage')}
               </button>
             </div>
           </div>

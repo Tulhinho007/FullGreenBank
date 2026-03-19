@@ -136,21 +136,21 @@ export const ProfilePage = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2">
-                  <label className="label-sm">Nome</label>
-                  <input className="input-field-sm" value={form.name} onChange={(e) => set('name', e.target.value)} />
+                  <label className="label">Nome</label>
+                  <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="label-sm">{t('usuarios')}</label>
+                  <label className="label">{t('usuarios')}</label>
                   <div className="relative">
                     <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input className="input-field-sm pl-10" value={form.username} onChange={(e) => set('username', e.target.value)} />
+                    <input className="input-field pl-10" value={form.username} onChange={(e) => set('username', e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label className="label-sm">Telefone</label>
+                  <label className="label">Telefone</label>
                   <div className="relative">
                     <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input className="input-field-sm pl-10" placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => set('phone', e.target.value)} />
+                    <input className="input-field pl-10" placeholder="(11) 99999-9999" value={form.phone} onChange={(e) => set('phone', e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export const ProfilePage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Tema */}
                 <div>
-                  <label className="label-sm flex items-center gap-2 mb-2">
+                  <label className="label flex items-center gap-2 mb-2">
                     <Sun size={14} className="text-yellow-400" /> {t('theme')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -196,11 +196,11 @@ export const ProfilePage = () => {
 
                 {/* Idioma */}
                 <div>
-                  <label className="label-sm flex items-center gap-2 mb-2">
+                  <label className="label flex items-center gap-2 mb-2">
                     <Globe size={14} className="text-blue-400" /> {t('language')}
                   </label>
                   <select 
-                    className="input-field-sm" 
+                    className="input-field" 
                     value={form.language} 
                     onChange={(e) => set('language', e.target.value)}
                   >
@@ -212,11 +212,11 @@ export const ProfilePage = () => {
 
                 {/* Moeda */}
                 <div>
-                  <label className="label-sm flex items-center gap-2 mb-2">
+                  <label className="label flex items-center gap-2 mb-2">
                     <Coins size={14} className="text-yellow-500" /> {t('currency')}
                   </label>
                   <select 
-                    className="input-field-sm" 
+                    className="input-field" 
                     value={form.currency} 
                     onChange={(e) => set('currency', e.target.value)}
                   >
@@ -229,7 +229,7 @@ export const ProfilePage = () => {
 
                 {/* Plano / Stats (info) */}
                 <div className="md:col-span-1">
-                  <label className="label-sm flex items-center gap-2 mb-2">
+                  <label className="label flex items-center gap-2 mb-2">
                     <CreditCard size={14} className="text-purple-400" /> {t('current_subscription')}
                   </label>
                   <div className="p-3 bg-surface-300 border border-surface-400 rounded-lg flex items-center justify-between">
@@ -255,11 +255,11 @@ export const ProfilePage = () => {
               <div className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="label-sm">Nova senha</label>
+                    <label className="label">Nova senha</label>
                     <div className="relative">
                       <input
                         type={showPass ? 'text' : 'password'}
-                        className="input-field-sm pr-10"
+                        className="input-field pr-10"
                         placeholder="••••••••"
                         value={form.password}
                         onChange={(e) => set('password', e.target.value)}
@@ -270,10 +270,10 @@ export const ProfilePage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="label-sm">Confirmar senha</label>
+                    <label className="label">Confirmar senha</label>
                     <input
                       type={showPass ? 'text' : 'password'}
-                      className="input-field-sm"
+                      className="input-field"
                       placeholder="••••••••"
                       value={form.confirmPassword}
                       onChange={(e) => set('confirmPassword', e.target.value)}
