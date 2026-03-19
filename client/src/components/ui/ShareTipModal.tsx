@@ -50,7 +50,7 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
     try {
       const dataUrl = await toPng(cardRef.current, {
         cacheBust: true,
-        pixelRatio: 3, // High resolution matching standard photo size
+        pixelRatio: 3,
         style: {
           transform: 'scale(1)',
           transformOrigin: 'top left'
@@ -70,28 +70,18 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
     }
   }
 
-  // Visual Setup matching Photo 2
   const isGreen = status === 'GREEN'
   const isRed = status === 'RED'
   const isVoid = status === 'VOID'
 
-  let resultBg = 'bg-[#182e1e]/50 text-amber-400'
-  let resultText = 'PENDENTE'
-  let profitText = 'Aguardando'
-  
-  if (isGreen) {
-    resultBg = 'bg-[#0a2612]'
-    resultText = '✓ GREEN'
-    profitText = `+${formatBRL(tip.profit ?? (potentialReturn - tip.stake))}`
-  } else if (isRed) {
-    resultBg = 'bg-[#2a0e14]'
-    resultText = 'X RED'
-    profitText = `-${formatBRL(tip.stake)}`
-  } else if (isVoid) {
-    resultBg = 'bg-slate-800/40'
-    resultText = '⚪ ANULADO'
-    profitText = 'R$ 0,00'
-  }
+  const bannerBg = isGreen ? '#0a2612' : isRed ? '#2a0e14' : '#182e1e'
+  const statusColor = isGreen ? '#00ff41' : isRed ? '#ff4d4d' : '#fbbf24'
+  const statusLabel = isGreen ? '✓ GREEN' : isRed ? 'X RED' : isVoid ? '⚪ ANULADO' : 'PENDENTE'
+  const profitLabel = isGreen
+    ? `+${formatBRL(tip.profit ?? (potentialReturn - tip.stake))}`
+    : isRed
+    ? `-${formatBRL(tip.stake)}`
+    : isVoid ? 'R$ 0,00' : 'Aguardando'
 
   return (
     <>
@@ -114,75 +104,90 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
             </button>
           </div>
 
-          {/* Content area: Scaled wrapper for preview */}
+          {/* Content area */}
           <div className="p-8 bg-surface-300 flex-1 overflow-y-auto flex items-center justify-center relative">
             <div className="relative w-full max-w-[500px]">
-               {/* ───────────────────────────────────────────── */}
-               {/* THE ACTUAL SHARE CARD Node to capture */}
-               {/* ───────────────────────────────────────────── */}
-               <div
-                 ref={cardRef}
-                 className="relative w-full bg-[#08150c] border border-[#1b3623] flex flex-col font-sans rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
-                 style={{
-                   // Optional: subtle radial gradient to mimic the center glow from Photo 2
-                   backgroundImage: 'radial-gradient(circle at top right, #0b2213 0%, #08150c 60%)',
-                   color: '#ffffff'
-                 }}
-               >
-                 {/* Watermark */}
-                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-[1]">
-                   <span className="font-black tracking-widest text-[#ffffff] opacity-[0.03] transform -rotate-45 select-none" style={{ fontSize: '48px', whiteSpace: 'nowrap' }}>
-                     KamaelzinhoTips
-                   </span>
-                 </div>
-                 {/* Top Row: Logo and Date */}
-                 <div className="px-8 pt-8 flex items-center justify-between">
-                   <div className="font-extrabold text-[#00ff41] tracking-tighter text-xl">
-                     FullGreen
-                   </div>
-                   <div className="text-[#64856f] font-medium text-sm">
-                     {formatDate(tip.tipDate)}
-                   </div>
-                 </div>
+              {/* ── THE SHARE CARD NODE TO CAPTURE ── */}
+              <div
+                ref={cardRef}
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  background: 'radial-gradient(circle at top right, #0b2213 0%, #08150c 60%)',
+                  border: '1px solid #1b3623',
+                  borderRadius: '24px',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  fontFamily: 'sans-serif',
+                  color: '#ffffff',
+                }}
+              >
+                {/* Watermark */}
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
+                  <span style={{ fontWeight: 900, letterSpacing: '0.1em', color: '#ffffff', opacity: 0.04, transform: 'rotate(-45deg)', userSelect: 'none', fontSize: '48px', whiteSpace: 'nowrap' }}>
+                    KamaelzinhoTips
+                  </span>
+                </div>
 
-                 {/* Match Info */}
-                 <div className="px-8 pt-8 pb-6 border-b border-[#1b3623]/60 mb-2 relative z-10">
-                   <h1 className="font-bold text-3xl leading-tight tracking-tight mb-2" style={{ color: '#ffffff' }}>
-                     {tip.event}
-                   </h1>
-                   <div className="text-[15px] font-medium" style={{ color: '#64856f' }}>
-                     {tip.market} <span className="mx-1">•</span> {tip.title.split('—')[1]?.trim() || tip.sport}
-                   </div>
-                 </div>
+                {/* Top Row: Logo and Date */}
+                <div style={{ padding: '32px 32px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ fontWeight: 800, color: '#00ff41', letterSpacing: '-0.05em', fontSize: '1.25rem' }}>
+                    FullGreen
+                  </div>
+                  <div style={{ color: '#64856f', fontWeight: 500, fontSize: '0.875rem' }}>
+                    {formatDate(tip.tipDate)}
+                  </div>
+                </div>
 
-                 {/* Values Table */}
-                 <div className="px-8 py-2 flex flex-col gap-4 relative z-10">
-                   <div className="flex items-center justify-between">
-                     <span className="font-medium text-[15px]" style={{ color: '#64856f' }}>Stake</span>
-                     <span className="font-bold text-lg" style={{ color: '#ffffff' }}>{formatBRL(tip.stake)}</span>
-                   </div>
-                   <div className="flex items-center justify-between">
-                     <span className="font-medium text-[15px]" style={{ color: '#64856f' }}>Odd</span>
-                     <span className="font-bold text-lg" style={{ color: '#ffffff' }}>{tip.odds.toFixed(2)}</span>
-                   </div>
-                   <div className="flex items-center justify-between mt-2">
-                     <span className="font-semibold text-[15px]" style={{ color: '#8ba895' }}>Retorno Potencial</span>
-                     <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{formatBRL(potentialReturn)}</span>
-                   </div>
-                 </div>
+                {/* Match Info */}
+                <div style={{ padding: '32px 32px 24px', borderBottom: '1px solid rgba(27,54,35,0.6)', marginBottom: '8px', position: 'relative', zIndex: 10 }}>
+                  <h1 style={{ fontWeight: 700, fontSize: '1.875rem', lineHeight: 1.2, letterSpacing: '-0.02em', marginBottom: '8px', color: '#ffffff' }}>
+                    {tip.event}
+                  </h1>
+                  <div style={{ fontSize: '0.9375rem', fontWeight: 500, color: '#64856f' }}>
+                    {tip.market} <span style={{ margin: '0 4px' }}>•</span> {tip.title.split('—')[1]?.trim() || tip.sport}
+                  </div>
+                </div>
 
-                 {/* Bottom Banner (Green/Red/Pending) */}
-                 <div className="px-8 pt-6 pb-8 relative z-10">
-                   <div className={`w-full rounded-2xl py-5 flex items-center justify-center gap-3 ${resultBg}`}>
-                     <span className="font-black tracking-widest text-xl uppercase flex items-center gap-3">
-                       <span style={{ color: isGreen ? '#00ff41' : isRed ? '#ff003c' : '#fbbf24' }}>{resultText}</span>
-                       <span className="font-mono" style={{ color: '#ffffff' }}>{profitText}</span>
-                     </span>
-                   </div>
-                 </div>
-                 
-               </div>
-               {/* ───────────────────────────────────────────── */}
+                {/* Values Table */}
+                <div style={{ padding: '8px 32px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', zIndex: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: 500, fontSize: '0.9375rem', color: '#64856f' }}>Stake</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.125rem', color: '#ffffff' }}>{formatBRL(tip.stake)}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: 500, fontSize: '0.9375rem', color: '#64856f' }}>Odd</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.125rem', color: '#ffffff' }}>{tip.odds.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#8ba895' }}>Retorno Potencial</span>
+                    <span style={{ fontWeight: 700, fontSize: '1.25rem', color: '#ffffff' }}>{formatBRL(potentialReturn)}</span>
+                  </div>
+                </div>
+
+                {/* Bottom Banner */}
+                <div style={{ padding: '24px 32px 32px', position: 'relative', zIndex: 10 }}>
+                  <div style={{
+                    width: '100%',
+                    borderRadius: '1rem',
+                    padding: '20px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    backgroundColor: bannerBg,
+                  }}>
+                    <span style={{ fontWeight: 900, letterSpacing: '0.1em', fontSize: '1.2rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ color: statusColor }}>{statusLabel}</span>
+                      <span style={{ fontFamily: 'monospace', color: '#ffffff', fontWeight: 700 }}>{profitLabel}</span>
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+              {/* ── END SHARE CARD ── */}
             </div>
           </div>
 
