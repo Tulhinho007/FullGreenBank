@@ -133,7 +133,7 @@ export const Sidebar = () => {
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
         <NavItem icon={<History size={16} />}      label="Histórico"        placeholder />
-        <NavItem icon={<Trophy size={16} />}       label="Rankings"         placeholder />
+        <NavItem icon={<Trophy size={16} />}       label="Rankings"         to="/rankings" />
 
         {/* 4. FINANCEIRO */}
         <SectionLabel label="Financeiro" />
