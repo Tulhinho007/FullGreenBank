@@ -4,7 +4,7 @@ import {
   MessageCircle, 
   ShieldCheck, 
   AlertTriangle, 
-  MessageCircle
+  Twitter
 } from 'lucide-react'
 
 export const Footer = () => {
