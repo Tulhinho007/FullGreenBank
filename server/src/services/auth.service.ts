@@ -37,6 +37,7 @@ export const registerUser = async (data: RegisterData) => {
       phone: true,
       username: true,
       role: true,
+      isTipster: true,
       createdAt: true,
     },
   });

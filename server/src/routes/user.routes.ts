@@ -12,6 +12,9 @@ router.use(checkReadOnly);
 // GET all users - admin/master only
 router.get('/', authorizeRoles('ADMIN', 'MASTER'), userController.getAll);
 
+// GET own profile
+router.get('/profile/me', userController.getProfile);
+
 // GET single user - admin/master only
 router.get('/:id', authorizeRoles('ADMIN', 'MASTER'), userController.getById);
 

@@ -40,13 +40,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('fgb_token')
-    const savedUser  = localStorage.getItem('fgb_user')
-    if (savedToken && savedUser) {
-      setToken(savedToken)
-      setUser(JSON.parse(savedUser))
+    const initAuth = async () => {
+      const savedToken = localStorage.getItem('fgb_token')
+      const savedUser  = localStorage.getItem('fgb_user')
+      
+      if (savedToken && savedUser) {
+        setToken(savedToken)
+        setUser(JSON.parse(savedUser))
+        
+        try {
+          // Busca perfil atualizado do servidor
+          const freshUser = await authService.getMe()
+          if (freshUser) {
+            setUser(freshUser)
+            localStorage.setItem('fgb_user', JSON.stringify(freshUser))
+          }
+        } catch (err) {
+          console.error('Failed to refresh user', err)
+          // Se o token estiver expirado ou inválido, desloga
+          if ((err as any)?.response?.status === 401) {
+            logout()
+          }
+        }
+      }
+      setLoading(false)
     }
-    setLoading(false)
+
+    initAuth()
   }, [])
 
   const isImpersonating = !!localStorage.getItem('fgb_impersonate_id')

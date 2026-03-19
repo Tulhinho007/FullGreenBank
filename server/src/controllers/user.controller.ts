@@ -25,6 +25,20 @@ export const getById = async (req: AuthRequest, res: Response): Promise<void> =>
   }
 };
 
+export const getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user!.userId;
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      sendError(res, 'Usuário não encontrado', 404);
+      return;
+    }
+    sendSuccess(res, user);
+  } catch {
+    sendError(res, 'Erro ao buscar perfil', 500);
+  }
+};
+
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!.userId;
