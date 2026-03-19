@@ -18,20 +18,20 @@ export const Footer = () => {
           
           {/* Coluna 1: Institucional */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Suporte & Ajuda</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Suporte & Ajuda</h4>
             <ul className="space-y-2.5">
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Central de Ajuda / FAQ</a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors flex items-center gap-1.5">
+              <li><a href="#" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Central de Ajuda / FAQ</a></li>
+              <li><a href="#" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors flex items-center gap-1.5">
                 Status do Sistema <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
               </a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Reportar Bug / Feedback</a></li>
-              <li><a href="#" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Guia da Plataforma</a></li>
+              <li><a href="#" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Reportar Bug / Feedback</a></li>
+              <li><a href="#" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Guia da Plataforma</a></li>
             </ul>
           </div>
 
           {/* Coluna 2: Redes Sociais */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Comunidade</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Comunidade</h4>
             <div className="flex flex-wrap gap-4">
               <a href="https://www.instagram.com/kamaelzinhoo/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-500/10 transition-all border border-transparent hover:border-pink-500/20">
                 <Instagram size={16} />
@@ -46,17 +46,17 @@ export const Footer = () => {
                 <MessageCircle size={16} />
               </a>
             </div>
-            <p className="text-[10px] text-slate-600 dark:text-slate-500 max-w-[200px]">Siga nossas redes para atualizações em tempo real e novos palpites.</p>
+            <p className="text-[10px] text-slate-400 max-w-[200px]">Siga nossas redes para atualizações em tempo real e novos palpites.</p>
           </div>
 
           {/* Coluna 3: Legal */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Legal</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Legal</h4>
             <ul className="space-y-2.5">
-              <li><Link to="/legal/terms" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Termos de Uso</Link></li>
-              <li><Link to="/legal/privacy" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Privacidade</Link></li>
-              <li><Link to="/legal/cookies" className="text-slate-600 dark:text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Cookies</Link></li>
-              <li><Link to="/legal/responsible-gaming" className="text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 text-xs transition-colors flex items-center gap-1.5">
+              <li><Link to="/legal/terms" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Termos de Uso</Link></li>
+              <li><Link to="/legal/privacy" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Privacidade</Link></li>
+              <li><Link to="/legal/cookies" className="text-slate-400 hover:text-green-600 dark:hover:text-green-400 text-xs transition-colors">Política de Cookies</Link></li>
+              <li><Link to="/legal/responsible-gaming" className="text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-400 text-xs transition-colors flex items-center gap-1.5">
                 <ShieldCheck size={14} /> Jogo Responsável
               </Link></li>
             </ul>
@@ -64,7 +64,7 @@ export const Footer = () => {
 
           {/* Coluna 4: Aviso de Risco */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Aviso de Risco</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Aviso de Risco</h4>
             <div className="p-3 rounded-xl bg-orange-100 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/20 space-y-2">
               <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
                 <AlertTriangle size={14} />
@@ -74,7 +74,7 @@ export const Footer = () => {
                 Esportes e investimentos envolvem riscos significativos. Resultados passados não garantem ganhos futuros. Nunca utilize capital destinado a despesas essenciais.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-slate-500 font-bold text-xs">
+            <div className="flex items-center gap-2 text-slate-400 font-bold text-xs">
               <span className="px-1.5 py-0.5 rounded border border-slate-600">18+</span>
               <span>Proibido para menores.</span>
             </div>
