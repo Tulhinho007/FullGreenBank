@@ -323,7 +323,7 @@ export const HistoryPage = () => {
       <div className="card p-6 border border-surface-400 print:hidden">
         <h3 className="text-sm font-semibold text-white mb-6">Evolução de Patrimônio (Contratos Encerrados)</h3>
         <div className="h-[250px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorHistoryProfit" x1="0" y1="0" x2="0" y2="1">

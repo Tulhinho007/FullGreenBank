@@ -666,7 +666,7 @@ interface RowProps {
 }
 
 const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isReadOnly, isSubcontract, hasChild, fmt, fmtDate }: RowProps) => {
-  const st = STATUS_CONFIG[c.status]
+  const st = STATUS_CONFIG[c.status] || STATUS_CONFIG.ENCERRADO
   const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
   const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
   return (

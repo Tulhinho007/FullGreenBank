@@ -561,8 +561,8 @@ interface UserRowProps {
 }
 
 const UserRow = ({ user, onEdit, isReadOnly, formatCurrency }: UserRowProps) => {
-  const status = STATUS_CONFIG[user.status]
-  const plan   = PLAN_CONFIG[user.plan]
+  const status = STATUS_CONFIG[user.status] || STATUS_CONFIG.INATIVO
+  const plan   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.TRIAL
   const isAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
 
   return (
