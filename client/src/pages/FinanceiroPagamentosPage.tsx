@@ -2,9 +2,8 @@ import { useEffect, useState, FormEvent } from 'react'
 import { 
   CreditCard, Users, Clock, AlertTriangle, 
   TrendingUp, Edit2, ChevronDown, Search, 
-  CheckCircle, XCircle, Ban, Hourglass,
+  CheckCircle, Ban, Hourglass,
   FileSpreadsheet, FileText, Printer, Eye,
-  ExternalLink, Download, Coins, Trash2, Filter
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -12,7 +11,7 @@ import { addLog } from './SystemLogPage'
 import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
-import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
+import { formatCurrency as fmt } from '../utils/formatters'
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 

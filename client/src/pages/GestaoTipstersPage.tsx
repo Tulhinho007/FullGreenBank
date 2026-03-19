@@ -189,7 +189,6 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
 export const GestaoTipstersPage = () => {
   const { user } = useAuth()
-  const fmt = (v: number) => formatCurrency(v)
 
   const isTipster = user?.isTipster || user?.role === 'MASTER'
   const [tipsters, setTipsters] = useState<Tipster[]>([])
