@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { getRoleInfo } from '../../utils/formatters'
-import { useTranslation } from '../../utils/i18n'
 import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
@@ -83,9 +82,7 @@ const SectionLabel = ({ label }: { label: string }) => (
 )
 
 export const Sidebar = () => {
-  const { user, logout } = useAuth()
-  const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { user, logout } = useAuth()const navigate = useNavigate()
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
 
   const handleLogout = () => {
@@ -114,45 +111,45 @@ export const Sidebar = () => {
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
 
         {/* 1. PRINCIPAL */}
-        <SectionLabel label={t('principal')} />
-        <NavItem icon={<LayoutDashboard size={16} />} label={t('dashboard')} to="/dashboard" />
-        <NavItem icon={<TrendingUp size={16} />}      label={t('tips')} to="/tips" />
+        <SectionLabel label={'principal'} />
+        <NavItem icon={<LayoutDashboard size={16} />} label={'Dashboard'} to="/dashboard" />
+        <NavItem icon={<TrendingUp size={16} />}      label={'tips'} to="/tips" />
 
         {/* 2. ADMIN — só para admin/master */}
         {isAdmin && (
           <>
-            <SectionLabel label={t('admin')} />
-            <NavItem icon={<Users size={16} />}        label={t('usuarios')}       to="/admin/users" />
-            <NavItem icon={<ClipboardList size={16} />} label={t('cadastros')}     to="/admin/cadastros" />
-            <NavItem icon={<ScrollText size={16} />}   label={t('log')} to="/admin/log" />
+            <SectionLabel label={'admin'} />
+            <NavItem icon={<Users size={16} />}        label={'Usuários'}       to="/admin/users" />
+            <NavItem icon={<ClipboardList size={16} />} label={'Cadastros'}     to="/admin/cadastros" />
+            <NavItem icon={<ScrollText size={16} />}   label={'log'} to="/admin/log" />
           </>
         )}
 
         {/* 3. GESTÃO */}
-        <SectionLabel label={t('gestao')} />
-        <NavItem icon={<Wallet size={16} />}       label={t('banca')}            to="/gestao/banca" />
-        <NavItem icon={<Target size={16} />}       label={t('tipsters')}         to="/gestao/tipsters" />
+        <SectionLabel label={'gestao'} />
+        <NavItem icon={<Wallet size={16} />}       label={'banca'}            to="/gestao/banca" />
+        <NavItem icon={<Target size={16} />}       label={'tipsters'}         to="/gestao/tipsters" />
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-        <NavItem icon={<History size={16} />}      label={t('historico')}        to="/gestao/historico" />
+        <NavItem icon={<History size={16} />}      label={'historico'}        to="/gestao/historico" />
 
         {/* 4. FINANCEIRO */}
-        <SectionLabel label={t('financeiro')} />
+        <SectionLabel label={'financeiro'} />
         {isAdmin && (
           <>
-            <NavItem icon={<CreditCard size={16} />}  label={t('pagamentos')}       to="/financeiro/pagamentos" />
-            <NavItem icon={<Briefcase size={16} />}   label={t('banca_gerenciada')} to="/financeiro/banca-gerenciada" />
+            <NavItem icon={<CreditCard size={16} />}  label={'pagamentos'}       to="/financeiro/pagamentos" />
+            <NavItem icon={<Briefcase size={16} />}   label={'banca_gerenciada'} to="/financeiro/banca-gerenciada" />
           </>
         )}
         <NavItem icon={<DollarSign size={16} />} label="Fluxo de Caixa" placeholder />
-        <NavItem icon={<FileText size={16} />}   label={t('relatorios')}     to="/reports" />
+        <NavItem icon={<FileText size={16} />}   label={'relatorios'}     to="/reports" />
 
         {/* 5. OUTROS */}
-        <SectionLabel label={t('outros')} />
+        <SectionLabel label={'outros'} />
         <NavItem icon={<BookOpen size={16} />}    label="Apostas Escola" placeholder />
         <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
         <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
-        <NavItem icon={<Settings size={16} />}    label={t('configuracoes')}  to="/profile" />
+        <NavItem icon={<Settings size={16} />}    label={'Configurações'}  to="/profile" />
 
       </nav>
 
@@ -183,7 +180,7 @@ export const Sidebar = () => {
           className="mt-2 sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-900/20"
         >
           <LogOut size={15} />
-          {t('sair')}
+          {'sair'}
         </button>
       </div>
     </aside>

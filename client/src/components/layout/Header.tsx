@@ -1,6 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../contexts/ThemeContext'
-import { useTranslation } from '../../utils/i18n'
 import { Bell, Search, Sun, Moon } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
@@ -15,16 +14,14 @@ const routeTitles: Record<string, string> = {
 
 const greetings = (t: any) => {
   const h = new Date().getHours()
-  if (h < 12) return t('greeting_morning')
-  if (h < 18) return t('greeting_afternoon')
-  return t('greeting_evening')
+  if (h < 12) return 'greeting_morning'
+  if (h < 18) return 'greeting_afternoon'
+  return 'greeting_evening'
 }
 
 export const Header = () => {
   const { user } = useAuth()
-  const { theme, toggleTheme } = useTheme()
-  const { t } = useTranslation()
-  const location = useLocation()
+  const { theme, toggleTheme } = useTheme()const location = useLocation()
   
   const title = t(routeTitles[location.pathname]?.toLowerCase() || 'dashboard' as any) || routeTitles[location.pathname] || 'Full Green Bank'
   const firstName = user?.name.split(' ')[0] || ''
@@ -36,7 +33,7 @@ export const Header = () => {
         <h1 className="font-display font-semibold text-white text-base">{title}</h1>
         <p className="text-xs text-slate-400 mt-0.5">
           {greetings(t)}, <span className="text-green-400 font-medium">{firstName}</span>! 
-          {' '}<span className="text-slate-500">— {t('system_suggestion')} 📊</span>
+          {' '}<span className="text-slate-500">— {'Sugestão do sistema: analise suas entradas hoje'} 📊</span>
         </p>
       </div>
 
@@ -45,14 +42,14 @@ export const Header = () => {
         {/* Search */}
         <div className="hidden md:flex items-center gap-2 bg-surface-300 border border-surface-400 rounded-lg px-3 py-2 text-sm text-slate-500 w-52">
           <Search size={14} />
-          <span>{t('search')}</span>
+          <span>{'search'}</span>
         </div>
 
         {/* Theme toggle */}
         <button
           onClick={() => toggleTheme()}
           className="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-300 border border-surface-400 hover:border-green-700 transition-colors"
-          title={theme === 'dark' ? t('change_to_light_theme') : t('change_to_dark_theme')}
+          title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
         >
           {theme === 'dark'
             ? <Sun size={16} className="text-yellow-400" />

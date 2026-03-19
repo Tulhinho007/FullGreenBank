@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { usersService } from '../services/users.service'
 import { formatDateTime } from '../utils/formatters'
-import { useTranslation, Language } from '../utils/i18n'
 import { 
   User as UserIcon, Mail, Phone, AtSign, Calendar, Eye, EyeOff, 
   Settings, Lock, Globe, Coins, Moon, Sun, Monitor, CreditCard
@@ -21,11 +20,8 @@ export const ProfilePage = () => {
     confirmPassword: '',
     plan: user?.plan || 'FREE',
     currency: user?.currency || 'BRL',
-    language: (user?.language as Language) || 'pt-BR',
     theme: (user?.theme?.toLowerCase() as any) || 'dark',
   })
-  const { t } = useTranslation(form.language)
-
   const [showPass, setShowPass] = useState(false)
   const [loading,  setLoading]  = useState(false)
 
@@ -46,7 +42,6 @@ export const ProfilePage = () => {
         username: form.username,
         plan: form.plan,
         currency: form.currency,
-        language: form.language,
         theme: form.theme.toUpperCase(),
       }
       if (form.password) payload.password = form.password
@@ -59,7 +54,7 @@ export const ProfilePage = () => {
       else if (payload.theme === 'LIGHT') toggleTheme('light')
       else if (payload.theme === 'DARK') toggleTheme('dark')
 
-      toast.success(t('save_changes') + '! ✨')
+      toast.success('Salvar Alterações' + '! ✨')
       setForm(f => ({ ...f, password: '', confirmPassword: '' }))
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao atualizar'
@@ -76,10 +71,10 @@ export const ProfilePage = () => {
       {/* Header Contextual */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-4">
-          <h2 className="font-display font-semibold text-white">{t('perfil')} & {t('configuracoes')}</h2>
+          <h2 className="font-display font-semibold text-white">{'Perfil'} & {'Configurações'}</h2>
           <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">V2 UPDATED</span>
         </div>
-        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{t('perfil')} · {t('configuracoes')}</p>
+        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{'Perfil'} · {'Configurações'}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -131,7 +126,7 @@ export const ProfilePage = () => {
                 <div className="w-8 h-8 rounded-lg bg-green-900/30 flex items-center justify-center text-green-400">
                   <UserIcon size={18} />
                 </div>
-                <h3 className="font-display font-semibold text-white">{t('usuarios')}</h3>
+                <h3 className="font-display font-semibold text-white">{'Usuários'}</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -140,7 +135,7 @@ export const ProfilePage = () => {
                   <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="label">{t('usuarios')}</label>
+                  <label className="label">{'Usuários'}</label>
                   <div className="relative">
                     <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input className="input-field pl-10" value={form.username} onChange={(e) => set('username', e.target.value)} />
@@ -162,20 +157,20 @@ export const ProfilePage = () => {
                 <div className="w-8 h-8 rounded-lg bg-blue-900/30 flex items-center justify-center text-blue-400">
                   <Monitor size={18} />
                 </div>
-                <h3 className="font-display font-semibold text-white">{t('appearance')}</h3>
+                <h3 className="font-display font-semibold text-white">{'Aparência'}</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Tema */}
                 <div>
                   <label className="label flex items-center gap-2 mb-2">
-                    <Sun size={14} className="text-yellow-400" /> {t('theme')}
+                    <Sun size={14} className="text-yellow-400" /> {'Tema'}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { id: 'light',  icon: <Sun size={14} />, label: t('light') },
-                      { id: 'dark',   icon: <Moon size={14} />, label: t('dark') },
-                      { id: 'system', icon: <Monitor size={14} />, label: t('system') },
+                      { id: 'light',  icon: <Sun size={14} />, label: 'Claro' },
+                      { id: 'dark',   icon: <Moon size={14} />, label: 'Escuro' },
+                      { id: 'system', icon: <Monitor size={14} />, label: 'Auto (Sistema)' },
                     ].map(tk => (
                       <button
                         key={tk.id}
@@ -194,26 +189,12 @@ export const ProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Idioma */}
-                <div>
-                  <label className="label flex items-center gap-2 mb-2">
-                    <Globe size={14} className="text-blue-400" /> {t('language')}
-                  </label>
-                  <select 
-                    className="input-field" 
-                    value={form.language} 
-                    onChange={(e) => set('language', e.target.value)}
-                  >
-                    <option value="pt-BR">Português (BR)</option>
-                    <option value="en-US">English (US)</option>
-                    <option value="es-ES">Español (ES)</option>
-                  </select>
-                </div>
+
 
                 {/* Moeda */}
                 <div>
                   <label className="label flex items-center gap-2 mb-2">
-                    <Coins size={14} className="text-yellow-500" /> {t('currency')}
+                    <Coins size={14} className="text-yellow-500" /> {'Moeda Base'}
                   </label>
                   <select 
                     className="input-field" 
@@ -224,13 +205,13 @@ export const ProfilePage = () => {
                     <option value="USD">$ (Dólar Americano)</option>
                     <option value="EUR">€ (Euro)</option>
                   </select>
-                  <p className="text-[10px] text-slate-500 mt-1.5">{t('currency_display_info')}</p>
+                  <p className="text-[10px] text-slate-500 mt-1.5">{'A moeda escolhida será refletida em todo o sistema.'}</p>
                 </div>
 
                 {/* Plano / Stats (info) */}
                 <div className="md:col-span-1">
                   <label className="label flex items-center gap-2 mb-2">
-                    <CreditCard size={14} className="text-purple-400" /> {t('current_subscription')}
+                    <CreditCard size={14} className="text-purple-400" /> {'Assinatura Atual'}
                   </label>
                   <div className="p-3 bg-surface-300 border border-surface-400 rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -296,7 +277,7 @@ export const ProfilePage = () => {
                 ) : (
                   <Settings size={18} className="group-hover:rotate-90 transition-transform duration-500" />
                 )}
-                {loading ? '...' : t('save_changes')}
+                {loading ? '...' : 'Salvar Alterações'}
               </button>
             </div>
 
