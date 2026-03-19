@@ -3,6 +3,7 @@ import {
   History, 
   Search, 
   FileSpreadsheet, 
+  FileText,
   Printer, 
   Calendar,
   ChevronDown,
@@ -24,6 +25,7 @@ import {
 } from 'recharts'
 import api from '../services/api'
 import toast from 'react-hot-toast'
+import { useAuth } from '../contexts/AuthContext'
 
 // --- Types ---
 
@@ -65,6 +67,7 @@ const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', curren
 const fmtDate = (d: string) => new Date(d + (d.includes('T') ? '' : 'T00:00:00')).toLocaleDateString('pt-BR')
 
 export const HistoryPage = () => {
+  const { user } = useAuth()
   const [contracts, setContracts] = useState<BancaContract[]>([])
   const [loading, setLoading] = useState(true)
   
@@ -100,7 +103,13 @@ export const HistoryPage = () => {
 
   // Derived Data
   const filtered = useMemo(() => {
+    const isMasterOrAdmin = user?.role === 'MASTER' || user?.role === 'ADMIN'
+    
     return contracts.filter(c => {
+      // Role-based visibility
+      const isOwner = c.userId === user?.id
+      if (!isMasterOrAdmin && !isOwner) return false
+
       const matchSearch = !search || 
         c.userName.toLowerCase().includes(search.toLowerCase()) || 
         c.userEmail.toLowerCase().includes(search.toLowerCase()) ||
@@ -114,7 +123,7 @@ export const HistoryPage = () => {
 
       return matchSearch && matchStatus && matchMin && matchMax
     })
-  }, [contracts, search, statusFilter, minValue, maxValue])
+  }, [contracts, search, statusFilter, minValue, maxValue, user])
 
   const stats = useMemo(() => {
     const closed = filtered.filter(c => c.status === 'FINALIZADO' || c.status === 'ENCERRADO')
@@ -176,10 +185,74 @@ export const HistoryPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-8 pb-10 print:p-0">
+    <div className="flex flex-col gap-8 pb-10 print:p-0 relative">
+      
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 10mm; }
+          
+          /* Force Light Mode and Reset Layout */
+          body, html { 
+            background: white !important; 
+            color: #111 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+
+          /* Hide ALL layout elements from AppLayout */
+          aside, nav, header, .no-print, .btn-print-hide, 
+          .impersonation-banner, .Sidebar, .Header { 
+            display: none !important; 
+            width: 0 !important;
+            height: 0 !important;
+          }
+
+          /* Reset Container Flex and Overflows */
+          div.flex, div.min-h-screen, div.overflow-hidden {
+            display: block !important;
+            overflow: visible !important;
+            height: auto !important;
+            min-height: 0 !important;
+          }
+
+          .main-content, main { 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            width: 100% !important;
+            display: block !important;
+          }
+
+          .print-container {
+            display: block !important;
+            width: 100% !important;
+            position: relative !important;
+          }
+
+          /* Card Stylings for Print */
+          .card {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+            color: #1a202c !important;
+            margin-bottom: 20px !important;
+          }
+
+          .text-white { color: #1a202c !important; }
+          .text-slate-500, .text-slate-600 { color: #4a5568 !important; }
+          .text-green-400, .text-green-500 { color: #2f855a !important; }
+          .text-red-400, .text-red-500 { color: #c53030 !important; }
+          
+          /* Table Adjustments */
+          table { width: 100% !important; border-collapse: collapse !important; }
+          th { background-color: #f7fafc !important; color: #4a5568 !important; }
+          td, th { border: 1px solid #e2e8f0 !important; padding: 10px !important; }
+          tr { page-break-inside: avoid; }
+        }
+      `}</style>
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div>
           <h1 className="text-2xl font-display font-bold text-white flex items-center gap-2">
             <History size={24} className="text-green-500" />
@@ -188,17 +261,30 @@ export const HistoryPage = () => {
           <p className="text-sm text-slate-500 mt-1">Rastreabilidade completa de sessões finalizadas e encerradas</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={exportCSV} className="btn-secondary py-2 flex items-center gap-2 text-xs">
-            <FileSpreadsheet size={14} /> CSV
+          <button 
+            onClick={exportCSV} 
+            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl border border-green-600/40 bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-all"
+          >
+            <FileSpreadsheet size={16} /> Excel
           </button>
-          <button onClick={exportPDF} className="btn-secondary py-2 flex items-center gap-2 text-xs">
-            <Printer size={14} /> Imprimir / PDF
+          <button 
+            onClick={exportPDF} 
+            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl border border-red-600/40 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
+          >
+            <FileText size={16} /> PDF
+          </button>
+          <button 
+            onClick={() => window.print()} 
+            className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl border border-blue-600/40 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all"
+          >
+            <Printer size={16} /> Imprimir
           </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print:grid-cols-4">
+      <div className="print-container flex flex-col gap-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-5 border border-surface-400">
           <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-1">Total Liquidados</p>
           <div className="flex items-end justify-between">
@@ -410,6 +496,7 @@ export const HistoryPage = () => {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   )
