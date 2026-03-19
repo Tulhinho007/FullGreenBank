@@ -20,6 +20,7 @@ import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
 import { ReportsPage }                 from './pages/ReportsPage'
 import { HistoryPage }                 from './pages/HistoryPage'
 import { LegalPage }                   from './pages/LegalPage'
+import { PlanosPage }                  from './pages/PlanosPage'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
           <Route path="reports"   element={<ReportsPage />} />
+          <Route path="planos"    element={<PlanosPage />} />
           <Route path="legal/:type" element={<LegalPage />} />
 
           {/* Admin & Master only */}

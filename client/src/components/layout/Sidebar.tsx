@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  ClipboardList, ScrollText, CreditCard, Briefcase, Target
+  ClipboardList, ScrollText, CreditCard, Briefcase, Target, Star
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -113,8 +113,9 @@ export const Sidebar = () => {
 
         {/* 1. PRINCIPAL */}
         <SectionLabel label="Principal" />
-        <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard" to="/dashboard" />
-        <NavItem icon={<TrendingUp size={16} />}      label="Dicas" to="/tips" />
+        <NavItem icon={<Star size={16} />}            label="Nossos Planos"   to="/planos" />
+        <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
+        <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
 
         {/* 2. ADMIN — só para admin/master */}
         {isAdmin && (
