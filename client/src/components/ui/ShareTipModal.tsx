@@ -75,23 +75,19 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
   const isRed = status === 'RED'
   const isVoid = status === 'VOID'
 
-  let resultColor = 'text-amber-400'
   let resultBg = 'bg-[#182e1e]/50 text-amber-400'
   let resultText = 'PENDENTE'
   let profitText = 'Aguardando'
   
   if (isGreen) {
-    resultColor = 'text-[#00ff41]' 
     resultBg = 'bg-[#0a2612]'
     resultText = '✓ GREEN'
     profitText = `+${formatBRL(tip.profit ?? (potentialReturn - tip.stake))}`
   } else if (isRed) {
-    resultColor = 'text-[#ff003c]'
     resultBg = 'bg-[#2a0e14]'
     resultText = 'X RED'
     profitText = `-${formatBRL(tip.stake)}`
   } else if (isVoid) {
-    resultColor = 'text-slate-400'
     resultBg = 'bg-slate-800/40'
     resultText = '⚪ ANULADO'
     profitText = 'R$ 0,00'
@@ -178,8 +174,9 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                  {/* Bottom Banner (Green/Red/Pending) */}
                  <div className="px-8 pt-6 pb-8 relative z-10">
                    <div className={`w-full rounded-2xl py-5 flex items-center justify-center gap-3 ${resultBg}`}>
-                     <span className={`font-black tracking-widest text-xl uppercase ${resultColor}`}>
-                       {resultText} <span className="ml-2 font-mono" style={{ color: '#ffffff' }}>{profitText}</span>
+                     <span className="font-black tracking-widest text-xl uppercase flex items-center gap-3">
+                       <span style={{ color: isGreen ? '#00ff41' : isRed ? '#ff003c' : '#fbbf24' }}>{resultText}</span>
+                       <span className="font-mono" style={{ color: '#ffffff' }}>{profitText}</span>
                      </span>
                    </div>
                  </div>
