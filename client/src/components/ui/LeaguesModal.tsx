@@ -10,6 +10,7 @@ export interface League { id: string; name: string; category: string; featured?:
 interface LeaguesModalProps {
   isOpen: boolean; onClose: () => void
   leagues: League[]; onSave: (leagues: League[]) => void
+  readOnly?: boolean
 }
 
 type ActionType = 'addLeague' | 'addCategory' | 'removeLeague' | 'removeCategory' | 'editLeague' | null
@@ -124,7 +125,7 @@ const ActionBtn = ({ icon, label, color, onClick }: { icon:React.ReactNode; labe
 )
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
-export const LeaguesModal = ({ isOpen, onClose, leagues, onSave }: LeaguesModalProps) => {
+export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: LeaguesModalProps) => {
   // ── All hooks first ──
   const [search,     setSearch]     = useState('')
   const [openCats,   setOpenCats]   = useState<Set<string>>(new Set(['Elite Global']))
@@ -406,7 +407,7 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave }: LeaguesModalP
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {history.length > 0 && (
+              {history.length > 0 && !readOnly && (
                 <button onClick={()=>setUndoPrompt(true)}
                   className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-amber-500 border border-slate-200 dark:border-surface-400 hover:border-amber-400 px-2 py-1 rounded-lg transition-colors"
                   title="Desfazer última alteração">
@@ -429,18 +430,20 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave }: LeaguesModalP
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-wrap gap-1.5">
-              <ActionBtn icon={<Plus size={12}/>}       label="Liga"       onClick={()=>setAction(a=>a==='addLeague'?null:'addLeague')}
-                color={action==='addLeague'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
-              <ActionBtn icon={<FolderPlus size={12}/>} label="Categoria"  onClick={()=>setAction(a=>a==='addCategory'?null:'addCategory')}
-                color={action==='addCategory'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
-              <ActionBtn icon={<Pencil size={12}/>}     label="Editar"     onClick={()=>setAction(a=>a==='editLeague'?null:'editLeague')}
-                color={action==='editLeague'?'bg-blue-500 border-blue-500 text-white':'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'}/>
-              <ActionBtn icon={<Trash2 size={12}/>}     label="Liga"       onClick={()=>setAction(a=>a==='removeLeague'?null:'removeLeague')}
-                color={action==='removeLeague'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
-              <ActionBtn icon={<Trash2 size={12}/>}     label="Categoria"  onClick={()=>setAction(a=>a==='removeCategory'?null:'removeCategory')}
-                color={action==='removeCategory'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
-            </div>
+            {!readOnly && (
+              <div className="flex flex-wrap gap-1.5">
+                <ActionBtn icon={<Plus size={12}/>}       label="Liga"       onClick={()=>setAction(a=>a==='addLeague'?null:'addLeague')}
+                  color={action==='addLeague'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
+                <ActionBtn icon={<FolderPlus size={12}/>} label="Categoria"  onClick={()=>setAction(a=>a==='addCategory'?null:'addCategory')}
+                  color={action==='addCategory'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
+                <ActionBtn icon={<Pencil size={12}/>}     label="Editar"     onClick={()=>setAction(a=>a==='editLeague'?null:'editLeague')}
+                  color={action==='editLeague'?'bg-blue-500 border-blue-500 text-white':'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'}/>
+                <ActionBtn icon={<Trash2 size={12}/>}     label="Liga"       onClick={()=>setAction(a=>a==='removeLeague'?null:'removeLeague')}
+                  color={action==='removeLeague'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
+                <ActionBtn icon={<Trash2 size={12}/>}     label="Categoria"  onClick={()=>setAction(a=>a==='removeCategory'?null:'removeCategory')}
+                  color={action==='removeCategory'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
+              </div>
+            )}
 
             {/* Sub-panel */}
             {renderPanel()}

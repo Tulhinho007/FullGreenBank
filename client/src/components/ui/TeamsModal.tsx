@@ -8,6 +8,7 @@ import { teamsService, Team } from '../../services/teams.service'
 interface TeamsModalProps {
   isOpen: boolean
   onClose: () => void
+  readOnly?: boolean
 }
 
 // ── Confirm popup ─────────────────────────────────────────────────────────────
@@ -145,7 +146,7 @@ const TeamSearchInput = ({
 }
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
-export const TeamsModal = ({ isOpen, onClose }: TeamsModalProps) => {
+export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
   const [teams,       setTeams]       = useState<Team[]>([])
   const [total,       setTotal]       = useState(0)
   const [page,        setPage]        = useState(1)
@@ -319,109 +320,113 @@ export const TeamsModal = ({ isOpen, onClose }: TeamsModalProps) => {
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-1.5">
-              {(['add','edit','delete'] as const).map((mode) => {
-                const cfg = {
-                  add:    { icon: <Plus size={12}/>,   label: 'Adicionar time', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
-                  edit:   { icon: <Pencil size={12}/>, label: 'Editar',         active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-                  delete: { icon: <Trash2 size={12}/>, label: 'Remover',        active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
-                }[mode]
-                return (
-                  <button key={mode}
-                    onClick={() => { setActionMode(a => a === mode ? null : mode); closeAction(); if (actionMode !== mode) setActionMode(mode) }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
-                    {cfg.icon}{cfg.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* ── ADD panel ── */}
-            {actionMode === 'add' && (
-              <div className={panelBase}>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Novo time</p>
-                <div className="flex gap-2">
-                  <input autoFocus value={addName} onChange={e => setAddName(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
-                    placeholder="Nome do time..."
-                    className="flex-1 text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" />
-                  <select value={addGroup} onChange={e => setAddGroup(e.target.value)}
-                    className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-green-500 transition-all">
-                    {groups.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
+            {!readOnly && (
+              <>
+                <div className="flex gap-1.5">
+                  {(['add','edit','delete'] as const).map((mode) => {
+                    const cfg = {
+                      add:    { icon: <Plus size={12}/>,   label: 'Adicionar time', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
+                      edit:   { icon: <Pencil size={12}/>, label: 'Editar',         active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
+                      delete: { icon: <Trash2 size={12}/>, label: 'Remover',        active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
+                    }[mode]
+                    return (
+                      <button key={mode}
+                        onClick={() => { setActionMode(a => a === mode ? null : mode); closeAction(); if (actionMode !== mode) setActionMode(mode) }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
+                        {cfg.icon}{cfg.label}
+                      </button>
+                    )
+                  })}
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-                  <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
-                </div>
-              </div>
-            )}
 
-            {/* ── EDIT panel ── */}
-            {actionMode === 'edit' && (
-              <div className={panelBase}>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                  <Pencil size={12} className="text-blue-400"/>
-                  {editTarget ? `Editando: ${editTarget.name}` : 'Buscar time para editar'}
-                </p>
-                {!editTarget ? (
-                  <TeamSearchInput
-                    placeholder="Digite o nome do time..."
-                    groups={groups}
-                    extraTeams={customTeams}
-                    onSelect={t => { setEditTarget(t); setEditName(t.name); setEditGroup(t.group) }}
-                  />
-                ) : (
-                  <>
+                {/* ── ADD panel ── */}
+                {actionMode === 'add' && (
+                  <div className={panelBase}>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Novo time</p>
                     <div className="flex gap-2">
-                      <input autoFocus value={editName} onChange={e => setEditName(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
-                        placeholder="Novo nome..."
-                        className="flex-1 text-sm bg-white dark:bg-surface-200 border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all" />
-                      <select value={editGroup} onChange={e => setEditGroup(e.target.value)}
-                        className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-blue-400 transition-all">
+                      <input autoFocus value={addName} onChange={e => setAddName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
+                        placeholder="Nome do time..."
+                        className="flex-1 text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" />
+                      <select value={addGroup} onChange={e => setAddGroup(e.target.value)}
+                        className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-green-500 transition-all">
                         {groups.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => { setEditTarget(null); setEditName(''); setEditGroup('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
-                      <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
+                      <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                      <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
                     </div>
-                  </>
+                  </div>
                 )}
-                <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-              </div>
-            )}
 
-            {/* ── DELETE panel ── */}
-            {actionMode === 'delete' && (
-              <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
-                <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
-                  <Trash2 size={12}/>
-                  {delTarget ? `Remover: ${delTarget.name}` : 'Buscar time para remover'}
-                </p>
-                {!delTarget ? (
-                  <TeamSearchInput
-                    placeholder="Digite o nome do time..."
-                    groups={groups}
-                    extraTeams={customTeams}
-                    onSelect={t => setDelTarget(t)}
-                  />
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
-                      <Shield size={12} className="text-red-400 shrink-0" />
-                      <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
-                      <span className="text-[10px] text-red-400">{delTarget.group}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
-                      <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
-                    </div>
-                  </>
+                {/* ── EDIT panel ── */}
+                {actionMode === 'edit' && (
+                  <div className={panelBase}>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                      <Pencil size={12} className="text-blue-400"/>
+                      {editTarget ? `Editando: ${editTarget.name}` : 'Buscar time para editar'}
+                    </p>
+                    {!editTarget ? (
+                      <TeamSearchInput
+                        placeholder="Digite o nome do time..."
+                        groups={groups}
+                        extraTeams={customTeams}
+                        onSelect={t => { setEditTarget(t); setEditName(t.name); setEditGroup(t.group) }}
+                      />
+                    ) : (
+                      <>
+                        <div className="flex gap-2">
+                          <input autoFocus value={editName} onChange={e => setEditName(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
+                            placeholder="Novo nome..."
+                            className="flex-1 text-sm bg-white dark:bg-surface-200 border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                          <select value={editGroup} onChange={e => setEditGroup(e.target.value)}
+                            className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-blue-400 transition-all">
+                            {groups.map(g => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => { setEditTarget(null); setEditName(''); setEditGroup('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
+                          <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
+                        </div>
+                      </>
+                    )}
+                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                  </div>
                 )}
-                <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-              </div>
+
+                {/* ── DELETE panel ── */}
+                {actionMode === 'delete' && (
+                  <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
+                    <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
+                      <Trash2 size={12}/>
+                      {delTarget ? `Remover: ${delTarget.name}` : 'Buscar time para remover'}
+                    </p>
+                    {!delTarget ? (
+                      <TeamSearchInput
+                        placeholder="Digite o nome do time..."
+                        groups={groups}
+                        extraTeams={customTeams}
+                        onSelect={t => setDelTarget(t)}
+                      />
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
+                          <Shield size={12} className="text-red-400 shrink-0" />
+                          <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
+                          <span className="text-[10px] text-red-400">{delTarget.group}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
+                          <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
+                        </div>
+                      </>
+                    )}
+                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

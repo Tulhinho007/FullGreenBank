@@ -13,6 +13,7 @@ interface SportModalProps {
   onClose: () => void
   sports: Sport[]
   onSave: (sports: Sport[]) => void
+  readOnly?: boolean
 }
 
 // ── Emoji mapping ─────────────────────────────────────────────────────────────
@@ -133,7 +134,7 @@ const SportSearchInput = ({ sports, onSelect }: { sports: Sport[]; onSelect: (s:
 }
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
-export const SportsModal = ({ isOpen, onClose, sports, onSave }: SportModalProps) => {
+export const SportsModal = ({ isOpen, onClose, sports, onSave, readOnly }: SportModalProps) => {
   // All hooks first
   const [addName,    setAddName]    = useState('')
   const [editTarget, setEditTarget] = useState<Sport | null>(null)
@@ -224,110 +225,112 @@ export const SportsModal = ({ isOpen, onClose, sports, onSave }: SportModalProps
           </div>
 
           {/* Action buttons + panels */}
-          <div className="px-5 py-3 border-b border-slate-100 dark:border-surface-300 shrink-0 flex flex-col gap-2">
-            <div className="flex gap-1.5">
-              {(['add', 'edit', 'delete'] as const).map(mode => {
-                const cfg = {
-                  add:    { icon: <Plus size={12}/>,   label: 'Adicionar', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
-                  edit:   { icon: <Pencil size={12}/>, label: 'Editar',    active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-                  delete: { icon: <Trash2 size={12}/>, label: 'Remover',   active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
-                }[mode]
-                return (
-                  <button key={mode}
-                    onClick={() => { closeAction(); if (actionMode !== mode) setActionMode(mode) }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
-                    {cfg.icon}{cfg.label}
-                  </button>
-                )
-              })}
-            </div>
+          {!readOnly && (
+            <div className="px-5 py-3 border-b border-slate-100 dark:border-surface-300 shrink-0 flex flex-col gap-2">
+              <div className="flex gap-1.5">
+                {(['add', 'edit', 'delete'] as const).map(mode => {
+                  const cfg = {
+                    add:    { icon: <Plus size={12}/>,   label: 'Adicionar', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
+                    edit:   { icon: <Pencil size={12}/>, label: 'Editar',    active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
+                    delete: { icon: <Trash2 size={12}/>, label: 'Remover',   active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
+                  }[mode]
+                  return (
+                    <button key={mode}
+                      onClick={() => { closeAction(); if (actionMode !== mode) setActionMode(mode) }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
+                      {cfg.icon}{cfg.label}
+                    </button>
+                  )
+                })}
+              </div>
 
-            {/* ADD panel */}
-            {actionMode === 'add' && (
-              <div className={panelBase}>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Novo esporte</p>
-                <input
-                  ref={addRef}
-                  value={addName}
-                  onChange={e => setAddName(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
-                  placeholder="Nome do esporte... (ex: Futebol)"
-                  className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
-                />
-                {addName && (
-                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
-                    <span>Emoji detectado:</span>
-                    <span className="text-lg">{getEmoji(addName)}</span>
-                    <span className="text-slate-400">{addName.trim()}</span>
+              {/* ADD panel */}
+              {actionMode === 'add' && (
+                <div className={panelBase}>
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Novo esporte</p>
+                  <input
+                    ref={addRef}
+                    value={addName}
+                    onChange={e => setAddName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
+                    placeholder="Nome do esporte... (ex: Futebol)"
+                    className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
+                  />
+                  {addName && (
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
+                      <span>Emoji detectado:</span>
+                      <span className="text-lg">{getEmoji(addName)}</span>
+                      <span className="text-slate-400">{addName.trim()}</span>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                    <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
                   </div>
-                )}
-                <div className="flex gap-2">
-                  <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-                  <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* EDIT panel */}
-            {actionMode === 'edit' && (
-              <div className={panelBase}>
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                  <Pencil size={12} className="text-blue-400"/>
-                  {editTarget ? `Editando: ${editTarget.name}` : 'Buscar esporte para editar'}
-                </p>
-                {!editTarget ? (
-                  <SportSearchInput sports={sports} onSelect={s => { setEditTarget(s); setEditName(s.name) }} />
-                ) : (
-                  <>
-                    <input
-                      autoFocus
-                      value={editName}
-                      onChange={e => setEditName(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
-                      placeholder="Novo nome..."
-                      className="w-full text-sm bg-white dark:bg-surface-200 border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                    />
-                    {editName && (
-                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
-                        <span>Emoji detectado:</span>
-                        <span className="text-lg">{getEmoji(editName)}</span>
+              {/* EDIT panel */}
+              {actionMode === 'edit' && (
+                <div className={panelBase}>
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                    <Pencil size={12} className="text-blue-400"/>
+                    {editTarget ? `Editando: ${editTarget.name}` : 'Buscar esporte para editar'}
+                  </p>
+                  {!editTarget ? (
+                    <SportSearchInput sports={sports} onSelect={s => { setEditTarget(s); setEditName(s.name) }} />
+                  ) : (
+                    <>
+                      <input
+                        autoFocus
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
+                        placeholder="Novo nome..."
+                        className="w-full text-sm bg-white dark:bg-surface-200 border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      />
+                      {editName && (
+                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
+                          <span>Emoji detectado:</span>
+                          <span className="text-lg">{getEmoji(editName)}</span>
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <button onClick={() => { setEditTarget(null); setEditName('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
+                        <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
                       </div>
-                    )}
-                    <div className="flex gap-2">
-                      <button onClick={() => { setEditTarget(null); setEditName('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
-                      <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
-                    </div>
-                  </>
-                )}
-                <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-              </div>
-            )}
+                    </>
+                  )}
+                  <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                </div>
+              )}
 
-            {/* DELETE panel */}
-            {actionMode === 'delete' && (
-              <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
-                <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
-                  <Trash2 size={12}/>
-                  {delTarget ? `Remover: ${delTarget.name}` : 'Buscar esporte para remover'}
-                </p>
-                {!delTarget ? (
-                  <SportSearchInput sports={sports} onSelect={s => setDelTarget(s)} />
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
-                      <span className="text-lg">{delTarget.emoji}</span>
-                      <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
-                      <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
-                    </div>
-                  </>
-                )}
-                <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-              </div>
-            )}
-          </div>
+              {/* DELETE panel */}
+              {actionMode === 'delete' && (
+                <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
+                  <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
+                    <Trash2 size={12}/>
+                    {delTarget ? `Remover: ${delTarget.name}` : 'Buscar esporte para remover'}
+                  </p>
+                  {!delTarget ? (
+                    <SportSearchInput sports={sports} onSelect={s => setDelTarget(s)} />
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
+                        <span className="text-lg">{delTarget.emoji}</span>
+                        <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
+                        <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
+                      </div>
+                    </>
+                  )}
+                  <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* List */}
           <div className="flex-1 overflow-y-auto">
