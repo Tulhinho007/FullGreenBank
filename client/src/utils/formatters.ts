@@ -28,3 +28,6 @@ export const roleLabelMap: Record<string, { label: string; color: string }> = {
   TESTER: { label: 'Visualizador', color: 'text-purple-400' },
   MEMBRO: { label: 'Membro',       color: 'text-slate-400'  },
 }
+
+export const getRoleInfo = (role?: string) => 
+  roleLabelMap[role || 'MEMBRO'] || roleLabelMap['MEMBRO']

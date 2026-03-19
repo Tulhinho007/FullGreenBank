@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTranslation } from '../utils/i18n'
 import { StatCard } from '../components/ui/StatCard'
 import { tipsService } from '../services/tips.service'
 import { TipCard } from '../components/ui/TipCard'
@@ -25,11 +26,12 @@ const mgmtCards = [
 ]
 export const DashboardPage = () => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [tips,    setTips]    = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
 
   const formatCurrency = (v: number) =>
-    v.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+    v.toLocaleString(user?.language === 'en-US' ? 'en-US' : (user?.language === 'es-ES' ? 'es-ES' : 'pt-BR'), { 
       style: 'currency', 
       currency: user?.currency || 'BRL' 
     })
@@ -43,8 +45,9 @@ export const DashboardPage = () => {
 
   const greens   = tips.filter(t => t.result === 'GREEN').length
   const reds     = tips.filter(t => t.result === 'RED').length
-  const profit   = tips.reduce((a, t) => a + (t.profit || 0), 0)
+  const profit   = tips.reduce((a: number, t: Tip) => a + (t.profit || 0), 0)
   const winRate  = tips.length > 0 ? ((greens / (greens + reds || 1)) * 100).toFixed(0) : '--'
+  const totalStake = tips.reduce((a: number, t: Tip) => a + t.stake, 0)
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,11 +61,11 @@ export const DashboardPage = () => {
           subtitle="Dicas registradas"
         />
         <StatCard
-          title="Lucro"
+          title={t('profit')}
           value={profit >= 0 ? `+${formatCurrency(profit)}` : formatCurrency(profit)}
           icon={<DollarSign size={18} />}
           accent={profit >= 0 ? 'green' : 'red'}
-          subtitle={`Resultado em ${user?.currency || 'BRL'}`}
+          subtitle={`${t('result')} em ${user?.currency || 'BRL'}`}
         />
         <StatCard
           title="Win Rate"
@@ -73,7 +76,7 @@ export const DashboardPage = () => {
         />
         <StatCard
           title="ROI Estimado"
-          value={tips.length > 0 ? `${((profit / tips.reduce((a, t) => a + t.stake, 0)) * 100).toFixed(1)}%` : '--'}
+          value={tips.length > 0 ? `${((profit / totalStake) * 100).toFixed(1)}%` : '--'}
           icon={<BarChart3 size={18} />}
           accent="yellow"
           subtitle="Retorno sobre investido"
@@ -84,8 +87,8 @@ export const DashboardPage = () => {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-display font-semibold text-white">Gestão de Banca</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Princípios essenciais para o apostador profissional</p>
+            <h2 className="font-display font-semibold text-white">{t('gestao')}</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{t('dashboard_subtitle')}</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -106,8 +109,8 @@ export const DashboardPage = () => {
       {/* Recent tips */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-white">Dicas Recentes</h2>
-          <a href="/tips" className="text-xs text-green-400 hover:text-green-300">Ver todas →</a>
+          <h2 className="font-display font-semibold text-white">{t('tips_recent')}</h2>
+          <a href="/tips" className="text-xs text-green-400 hover:text-green-300">{t('view_all')} →</a>
         </div>
         {loading ? (
           <div className="flex items-center justify-center py-12">

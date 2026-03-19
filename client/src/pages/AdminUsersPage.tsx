@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
-import { roleLabelMap, formatDateTime } from '../utils/formatters'
+import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
 import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -139,7 +139,6 @@ export const AdminUsersPage = () => {
               </thead>
               <tbody className="divide-y divide-surface-300">
                 {users.map(u => {
-                  const roleInfo = roleLabelMap[u.role]
                   const editable = canEdit(u)
                   return (
                     <tr key={u.id} className="hover:bg-surface-300/50 transition-colors">
@@ -163,7 +162,9 @@ export const AdminUsersPage = () => {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-0.5">
-                          <span className={`text-xs font-semibold ${roleInfo.color}`}>{roleInfo.label}</span>
+                          <p className={`text-[11px] ${getRoleInfo(u.role).color}`}>
+                            {getRoleInfo(u.role).label}
+                          </p>
                           {u.isTipster && (
                             <span className="flex items-center gap-1 text-[9px] font-bold text-orange-500 uppercase tracking-tight">
                               <TrendingUp size={9} /> Tipster
@@ -252,8 +253,7 @@ export const AdminUsersPage = () => {
                 {selected.name[0].toUpperCase()}
               </div>
               <div>
-                <p className="text-white font-medium text-sm">{selected.name}</p>
-                <p className="text-slate-500 text-xs">@{selected.username} · <span className={roleLabelMap[selected.role]?.color}>{roleLabelMap[selected.role]?.label}</span></p>
+                <p className="text-slate-500 text-xs">@{selected.username} · <span className={getRoleInfo(selected.role).color}>{getRoleInfo(selected.role).label}</span></p>
               </div>
             </div>
 

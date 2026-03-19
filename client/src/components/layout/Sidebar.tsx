@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { roleLabelMap } from '../../utils/formatters'
+import { getRoleInfo } from '../../utils/formatters'
+import { useTranslation } from '../../utils/i18n'
 import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
@@ -83,6 +84,7 @@ const SectionLabel = ({ label }: { label: string }) => (
 
 export const Sidebar = () => {
   const { user, logout } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
 
@@ -112,45 +114,45 @@ export const Sidebar = () => {
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
 
         {/* 1. PRINCIPAL */}
-        <SectionLabel label="Principal" />
-        <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard" to="/dashboard" />
-        <NavItem icon={<TrendingUp size={16} />}      label="Dicas do Dia" to="/tips" />
+        <SectionLabel label={t('principal')} />
+        <NavItem icon={<LayoutDashboard size={16} />} label={t('dashboard')} to="/dashboard" />
+        <NavItem icon={<TrendingUp size={16} />}      label={t('tips')} to="/tips" />
 
         {/* 2. ADMIN — só para admin/master */}
         {isAdmin && (
           <>
-            <SectionLabel label="Admin" />
-            <NavItem icon={<Users size={16} />}        label="Usuários"       to="/admin/users" />
-            <NavItem icon={<ClipboardList size={16} />} label="Cadastros"     to="/admin/cadastros" />
-            <NavItem icon={<ScrollText size={16} />}   label="Log do Sistema" to="/admin/log" />
+            <SectionLabel label={t('admin')} />
+            <NavItem icon={<Users size={16} />}        label={t('usuarios')}       to="/admin/users" />
+            <NavItem icon={<ClipboardList size={16} />} label={t('cadastros')}     to="/admin/cadastros" />
+            <NavItem icon={<ScrollText size={16} />}   label={t('log')} to="/admin/log" />
           </>
         )}
 
         {/* 3. GESTÃO */}
-        <SectionLabel label="Gestão" />
-        <NavItem icon={<Wallet size={16} />}       label="Banca"            to="/gestao/banca" />
-        <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
+        <SectionLabel label={t('gestao')} />
+        <NavItem icon={<Wallet size={16} />}       label={t('banca')}            to="/gestao/banca" />
+        <NavItem icon={<Target size={16} />}       label={t('tipsters')}         to="/gestao/tipsters" />
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-        <NavItem icon={<History size={16} />}      label="Histórico"        to="/gestao/historico" />
+        <NavItem icon={<History size={16} />}      label={t('historico')}        to="/gestao/historico" />
 
         {/* 4. FINANCEIRO */}
-        <SectionLabel label="Financeiro" />
+        <SectionLabel label={t('financeiro')} />
         {isAdmin && (
           <>
-            <NavItem icon={<CreditCard size={16} />}  label="Pagamentos"       to="/financeiro/pagamentos" />
-            <NavItem icon={<Briefcase size={16} />}   label="Banca Gerenciada" to="/financeiro/banca-gerenciada" />
+            <NavItem icon={<CreditCard size={16} />}  label={t('pagamentos')}       to="/financeiro/pagamentos" />
+            <NavItem icon={<Briefcase size={16} />}   label={t('banca_gerenciada')} to="/financeiro/banca-gerenciada" />
           </>
         )}
         <NavItem icon={<DollarSign size={16} />} label="Fluxo de Caixa" placeholder />
-        <NavItem icon={<FileText size={16} />}   label="Relatórios"     to="/reports" />
+        <NavItem icon={<FileText size={16} />}   label={t('relatorios')}     to="/reports" />
 
         {/* 5. OUTROS */}
-        <SectionLabel label="Outros" />
+        <SectionLabel label={t('outros')} />
         <NavItem icon={<BookOpen size={16} />}    label="Apostas Escola" placeholder />
         <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
         <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
-        <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
+        <NavItem icon={<Settings size={16} />}    label={t('configuracoes')}  to="/profile" />
 
       </nav>
 
@@ -169,8 +171,8 @@ export const Sidebar = () => {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-            <p className={`text-[11px] ${roleLabelMap[user?.role || 'MEMBRO']?.color}`}>
-              {roleLabelMap[user?.role || 'MEMBRO']?.label}
+            <p className={`text-[11px] ${getRoleInfo(user?.role).color}`}>
+              {getRoleInfo(user?.role).label}
             </p>
           </div>
           <User size={14} className="text-sidebar-text shrink-0" />
@@ -181,7 +183,7 @@ export const Sidebar = () => {
           className="mt-2 sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-900/20"
         >
           <LogOut size={15} />
-          Sair
+          {t('sair')}
         </button>
       </div>
     </aside>

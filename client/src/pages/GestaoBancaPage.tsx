@@ -3,6 +3,7 @@ import {
   Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTranslation } from '../utils/i18n'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 
@@ -225,7 +226,8 @@ export const GestaoBancaPage = () => {
   }
 
   const { user } = useAuth()
-  const formatCurrency = (val: number) => val.toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', { 
+  const { t } = useTranslation()
+  const formatCurrency = (val: number) => val.toLocaleString(user?.language === 'en-US' ? 'en-US' : (user?.language === 'es-ES' ? 'es-ES' : 'pt-BR'), { 
     style: 'currency', 
     currency: user?.currency || 'BRL' 
   })
@@ -266,7 +268,7 @@ export const GestaoBancaPage = () => {
           <div className="flex items-center justify-between mb-2 z-10 relative">
             <div className="flex items-center gap-2">
               <Wallet size={16} className="text-slate-400" />
-              <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">Banca Inicial (R$)</span>
+              <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">{t('banca_inicial')}</span>
             </div>
             <Edit2 size={13} className="text-slate-500 group-hover:text-green-400 transition-colors" />
           </div>
@@ -287,7 +289,7 @@ export const GestaoBancaPage = () => {
             <TrendingUp size={16} className="text-green-400" />
             <span className="text-sm font-medium text-green-400/80 uppercase tracking-wider">Banca Atual</span>
             {bancaAtual > bancaInicialAtual && (
-             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{(bancaAtual - bancaInicialAtual).toLocaleString(user?.language === 'PT-BR' ? 'pt-BR' : 'en-US', {style:'currency', currency: user?.currency || 'BRL'})}</span>
+             <span className="ml-auto text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full">+{formatCurrency(bancaAtual - bancaInicialAtual)}</span>
             )}
           </div>
           <p className="text-3xl font-bold text-green-400">{formatCurrency(bancaAtual)}</p>
