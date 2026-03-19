@@ -116,9 +116,9 @@ export const translations = {
   }
 }
 
-export const useTranslation = () => {
+export const useTranslation = (overrideLang?: Language) => {
   const { user } = useAuth()
-  const lang = (user?.language as Language) || 'pt-BR'
+  const lang = overrideLang || (user?.language as Language) || 'pt-BR'
   
   const t = (key: keyof typeof translations['pt-BR']) => {
     return translations[lang][key] || translations['pt-BR'][key] || key

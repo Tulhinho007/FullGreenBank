@@ -13,8 +13,6 @@ import toast from 'react-hot-toast'
 export const ProfilePage = () => {
   const { user, updateUser } = useAuth()
   const { toggleTheme } = useTheme()
-  const { t } = useTranslation()
-
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -26,6 +24,7 @@ export const ProfilePage = () => {
     language: (user?.language as Language) || 'pt-BR',
     theme: (user?.theme?.toLowerCase() as any) || 'dark',
   })
+  const { t } = useTranslation(form.language)
 
   const [showPass, setShowPass] = useState(false)
   const [loading,  setLoading]  = useState(false)
@@ -76,7 +75,10 @@ export const ProfilePage = () => {
     <div className="max-w-4xl flex flex-col gap-8 pb-10">
       {/* Header Contextual */}
       <div className="flex flex-col gap-1">
-        <h2 className="font-display font-semibold text-white">{t('perfil')} & {t('configuracoes')}</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="font-display font-semibold text-white">{t('perfil')} & {t('configuracoes')}</h2>
+          <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">V2 UPDATED</span>
+        </div>
         <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{t('perfil')} · {t('configuracoes')}</p>
       </div>
 
