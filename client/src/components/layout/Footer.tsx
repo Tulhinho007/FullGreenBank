@@ -4,7 +4,7 @@ import {
   MessageCircle, 
   ShieldCheck, 
   AlertTriangle, 
-  Twitter
+  AtSign
 } from 'lucide-react'
 
 export const Footer = () => {
@@ -36,7 +36,7 @@ export const Footer = () => {
                 <Instagram size={18} />
               </a>
               <a href="https://www.threads.com/?xmt=AQF0x2CFDo5k641Fl7nG-VSIVbtcbz1Nbh6baD6w7_u0n7E" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-white hover:bg-black transition-all border border-transparent hover:border-white/20">
-                <Send size={18} />
+                <AtSign size={18} />
               </a>
               <a href="#" className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-sky-500/10 transition-all border border-transparent hover:border-sky-500/20">
                 <Send size={18} />
