@@ -2,8 +2,9 @@ import { useEffect, useState, FormEvent } from 'react'
 import { 
   CreditCard, Users, Clock, AlertTriangle, 
   TrendingUp, Edit2, ChevronDown, Search, 
-  CheckCircle, XCircle, Ban, 
+  CheckCircle, XCircle, Ban, Hourglass,
   FileSpreadsheet, FileText, Printer, Eye,
+  ExternalLink, Download, Coins, Trash2, Filter
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -310,7 +311,7 @@ export const FinanceiroPagamentosPage = () => {
             <span className="text-xs text-slate-500 uppercase tracking-wide">Receita Mensal</span>
           </div>
                 <p className="text-xl font-bold font-mono text-emerald-400">
-                  {fmt(metrics.totalAtivo)}
+                  {fmt(receitaMes)}
                 </p>
         </div>
       </div>

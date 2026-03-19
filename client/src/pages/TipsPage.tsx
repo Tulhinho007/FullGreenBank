@@ -1,6 +1,7 @@
+import { useEffect, useState, useMemo } from 'react'
 import {
   TrendingUp, Target, BarChart3, Clock, AlertTriangle, CheckCircle, XCircle,
-  Plus, X, Edit2, Trash2, Info, Share2, Ban
+  Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { StatCard } from '../components/ui/StatCard'
