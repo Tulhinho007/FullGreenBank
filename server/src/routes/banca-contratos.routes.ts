@@ -7,12 +7,19 @@ import { validateRequest } from '../middlewares/validate.middleware'
 const prisma = new PrismaClient()
 const router = Router()
 router.use(authenticate)
-router.use(authorizeRoles('ADMIN', 'MASTER'))
 router.use(checkReadOnly)
 
-router.get('/', async (_req, res) => {
+router.get('/', async (req: any, res) => {
   try {
+    const userRole = req.user?.role
+    const userId = req.user?.id
+
+    const where = (userRole === 'ADMIN' || userRole === 'MASTER') 
+      ? {} 
+      : { userId }
+
     const contratos = await prisma.bancaContrato.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       include: { user: { select: { id: true, name: true, email: true } } },
     })
@@ -30,6 +37,7 @@ router.get('/', async (_req, res) => {
 })
 
 router.post('/',
+  authorizeRoles('ADMIN', 'MASTER'),
   [body('userId').notEmpty(), body('bancaInicial').isFloat({ min: 0.01 })],
   validateRequest,
   async (req: import('express').Request, res: import('express').Response) => {
@@ -54,6 +62,7 @@ router.post('/',
 )
 
 router.patch('/:id',
+  authorizeRoles('ADMIN', 'MASTER'),
   [
     body('bancaFinal').optional().isFloat({ min: 0 }),
     body('status').optional().isIn(['ATIVO', 'AGUARDANDO_SAQUE', 'FINALIZADO', 'ENCERRADO', 'CANCELADO']),
@@ -84,7 +93,9 @@ router.patch('/:id',
   }
 )
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', 
+  authorizeRoles('ADMIN', 'MASTER'), 
+  async (req, res) => {
   try {
     await prisma.bancaContrato.delete({ where: { id: req.params.id } })
     res.json({ message: 'Contrato excluido.' })
