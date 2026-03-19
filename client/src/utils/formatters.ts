@@ -1,17 +1,5 @@
-export const formatCurrency = (value: number, currency = 'BRL', locale = 'pt-BR') => {
-  let converted = value
-  let loc = locale
-  
-  // Realiza conversão aproximada (como se BRL fosse a moeda base do sistema)
-  if (currency === 'USD') {
-    converted = value / 5.0
-    loc = 'en-US'
-  } else if (currency === 'EUR') {
-    converted = value / 5.5
-    loc = 'en-IE'
-  }
-  
-  return new Intl.NumberFormat(loc, { style: 'currency', currency }).format(converted)
+export const formatCurrency = (value: number, _ignoredCurrency?: string, _ignoredLocale?: string) => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
 export const formatDate = (dateStr: string) =>

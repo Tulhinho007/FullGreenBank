@@ -5,7 +5,7 @@ import { usersService } from '../services/users.service'
 import { formatDateTime } from '../utils/formatters'
 import { 
   User as UserIcon, Mail, Phone, AtSign, Calendar, Eye, EyeOff, 
-  Settings, Lock, Globe, Coins, Moon, Sun, Monitor, CreditCard
+  Settings, Lock, Moon, Sun, Monitor, CreditCard
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -19,7 +19,7 @@ export const ProfilePage = () => {
     password: '',
     confirmPassword: '',
     plan: user?.plan || 'FREE',
-    currency: user?.currency || 'BRL',
+
     theme: (user?.theme?.toLowerCase() as any) || 'dark',
   })
   const [showPass, setShowPass] = useState(false)
@@ -41,7 +41,7 @@ export const ProfilePage = () => {
         phone: form.phone, 
         username: form.username,
         plan: form.plan,
-        currency: form.currency,
+
         theme: form.theme.toUpperCase(),
       }
       if (form.password) payload.password = form.password
@@ -191,22 +191,7 @@ export const ProfilePage = () => {
 
 
 
-                {/* Moeda */}
-                <div>
-                  <label className="label flex items-center gap-2 mb-2">
-                    <Coins size={14} className="text-yellow-500" /> {'Moeda Base'}
-                  </label>
-                  <select 
-                    className="input-field" 
-                    value={form.currency} 
-                    onChange={(e) => set('currency', e.target.value)}
-                  >
-                    <option value="BRL">R$ (Real Brasileiro)</option>
-                    <option value="USD">$ (Dólar Americano)</option>
-                    <option value="EUR">€ (Euro)</option>
-                  </select>
-                  <p className="text-[10px] text-slate-500 mt-1.5">{'A moeda escolhida será refletida em todo o sistema.'}</p>
-                </div>
+
 
                 {/* Plano / Stats (info) */}
                 <div className="md:col-span-1">
