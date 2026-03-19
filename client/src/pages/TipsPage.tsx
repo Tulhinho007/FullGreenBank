@@ -641,7 +641,9 @@ export const TipsPage = () => {
   const [page,       setPage]       = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [selected,   setSelected]   = useState<Tip | null>(null)
-  const [resultForm, setResultForm] = useState({ result: 'GREEN', profit: '' })
+  const [editForm,   setEditForm]   = useState({
+    title: '', event: '', market: '', odds: '', stake: '', tipDate: '', result: 'PENDING', profit: ''
+  })
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
@@ -668,19 +670,46 @@ export const TipsPage = () => {
     }
   }
 
-  const handleUpdateResult = async () => {
+  const handleUpdateTip = async () => {
     if (!selected) return
     setSaving(true)
     try {
-      await tipsService.updateResult(selected.id, resultForm.result, Number(resultForm.profit))
-      toast.success('Resultado atualizado! 🎯'); setSelected(null); load(page)
-    } catch { toast.error('Erro ao atualizar resultado') }
-    finally { setSaving(false) }
+      // Update result and profit first using specific endpoint if needed, 
+      // OR just use the new generic update for everything.
+      // The user wants to edit everything, so I'll send all data.
+      await tipsService.update(selected.id, {
+        title:       editForm.title,
+        event:       editForm.event,
+        market:      editForm.market,
+        odds:        Number(editForm.odds),
+        stake:       Number(editForm.stake),
+        tipDate:     new Date(editForm.tipDate).toISOString(),
+      })
+
+      // Also update result if it was changed
+      await tipsService.updateResult(selected.id, editForm.result, Number(editForm.profit))
+
+      toast.success('Dica atualizada com sucesso! 🎯')
+      setSelected(null); load(page)
+    } catch {
+      toast.error('Erro ao atualizar dica')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const openResultModal = (tip: Tip) => {
     setSelected(tip)
-    setResultForm({ result: tip.result || 'GREEN', profit: tip.profit?.toString() || '' })
+    setEditForm({
+      title:   tip.title,
+      event:   tip.event,
+      market:  tip.market,
+      odds:    tip.odds.toString(),
+      stake:   tip.stake.toString(),
+      tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
+      result:  tip.result || 'PENDING',
+      profit:  tip.profit?.toString() || '',
+    })
   }
 
   const metrics = useMemo(() => {
@@ -844,37 +873,68 @@ export const TipsPage = () => {
         </button>
       )}
 
-      {/* Modal — Atualizar resultado */}
-      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Atualizar Resultado" size="sm">
+      {/* Modal — Editar Tip */}
+      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Editar Informações da Tip" size="md">
         {selected && (
-          <div className="flex flex-col gap-4">
-            <div className="rounded-lg p-3 bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400">
-              <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">{selected.title}</p>
-              {/* ALTERADO: Adicionado 'Odd @' */}
-              <p className="text-xs text-slate-400 mt-0.5">{selected.event} · Odd @{selected.odds.toFixed(2)} · {formatBRL(selected.stake)}</p>
-            </div>
+          <div className="flex flex-col gap-5">
+            {/* Linha 1: Evento */}
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Resultado</label>
-              <select className={inp} value={resultForm.result} onChange={e => setResultForm(f => ({ ...f, result: e.target.value }))}>
-                {[{ v: 'GREEN', l: '🟢 Green' }, { v: 'RED', l: '🔴 Red' }, { v: 'VOID', l: '⚪ Anulado' }]
-                  .map(({ v, l }) => <option key={v} value={v}>{l}</option>)}
-              </select>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Evento / Partida</label>
+              <input className={inp} value={editForm.event} onChange={e => setEditForm(f => ({ ...f, event: e.target.value }))} />
             </div>
+
+            {/* Linha 2: Título Complementar */}
             <div>
-              {/* ALTERADO: Label de Profit (unidades) para Profit (R$) */}
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Profit (R$)</label>
-              <input type="number" step="0.01" className={`${inp} font-mono`} placeholder="Ex: +0.85 ou -1.00"
-                value={resultForm.profit} onChange={e => setResultForm(f => ({ ...f, profit: e.target.value }))} />
-              
-              {/* ALTERADO: Cálculo do retorno potencial real (Odd * Stake) */}
-              <p className="text-[10px] text-slate-400 mt-1">
-                Retorno potencial: {formatBRL(selected.odds * selected.stake)}
-              </p>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Título do Card (Ex: Campeonato)</label>
+              <input className={inp} value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} />
             </div>
-            <div className="flex gap-3 pt-1">
-              <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
-              <button onClick={handleUpdateResult} disabled={saving} className="btn-primary flex-1">
-                {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block mr-2" />Salvando...</> : 'Salvar Resultado'}
+
+            {/* Linha 3: Mercado */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Mercado</label>
+              <input className={inp} value={editForm.market} onChange={e => setEditForm(f => ({ ...f, market: e.target.value }))} />
+            </div>
+
+            {/* Linha 4: Odds e Stake */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Odd</label>
+                <input type="number" step="0.01" className={`${inp} font-mono`} value={editForm.odds} onChange={e => setEditForm(f => ({ ...f, odds: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Stake (R$)</label>
+                <input type="number" step="0.5" className={`${inp} font-mono`} value={editForm.stake} onChange={e => setEditForm(f => ({ ...f, stake: e.target.value }))} />
+              </div>
+            </div>
+
+            {/* Linha 5: Data e Hora */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Data/Hora do Evento</label>
+              <input type="datetime-local" className={inp} value={editForm.tipDate} onChange={e => setEditForm(f => ({ ...f, tipDate: e.target.value }))} />
+            </div>
+
+            <div className="h-px bg-slate-100 dark:bg-surface-400 my-1" />
+
+            {/* Linha 6: Resultado e Profit */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Resultado</label>
+                <select className={inp} value={editForm.result} onChange={e => setEditForm(f => ({ ...f, result: e.target.value }))}>
+                  {[{ v: 'PENDING', l: '🟡 Pendente' }, { v: 'GREEN', l: '🟢 Green' }, { v: 'RED', l: '🔴 Red' }, { v: 'VOID', l: '⚪ Anulado' }]
+                    .map(({ v, l }) => <option key={v} value={v}>{l}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Lucro/Prejuízo (R$)</label>
+                <input type="number" step="0.01" className={`${inp} font-mono`} placeholder="Ex: +50.00"
+                  value={editForm.profit} onChange={e => setEditForm(f => ({ ...f, profit: e.target.value }))} />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setSelected(null)} className="btn-secondary flex-1 py-3">Cancelar</button>
+              <button onClick={handleUpdateTip} disabled={saving} className="btn-primary flex-1 py-3 bg-green-600 hover:bg-green-500 shadow-lg shadow-green-500/20">
+                {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block mr-2" />Salvando...</> : 'Salvar Alterações'}
               </button>
             </div>
           </div>

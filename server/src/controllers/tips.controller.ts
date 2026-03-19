@@ -49,6 +49,16 @@ export const updateResult = async (req: AuthRequest, res: Response): Promise<voi
   }
 };
 
+export const update = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const tip = await tipsService.updateTip(req.params.id, req.body);
+    sendSuccess(res, tip, 'Dica atualizada com sucesso!');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao atualizar dica';
+    sendError(res, message, 400);
+  }
+};
+
 export const deleteTip = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const tip = await tipsService.getTipById(req.params.id);

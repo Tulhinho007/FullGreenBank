@@ -62,6 +62,21 @@ export const updateTipResult = async (
     data: { result, profit },
   });
 };
+
+export const updateTip = async (
+  id: string,
+  data: Partial<CreateTipData>
+) => {
+  return prisma.tip.update({
+    where: { id },
+    data,
+    include: {
+      author: {
+        select: { id: true, name: true, username: true },
+      },
+    },
+  });
+};
 export const deleteTip = async (id: string): Promise<void> => {
   await prisma.tip.delete({
     where: { id },

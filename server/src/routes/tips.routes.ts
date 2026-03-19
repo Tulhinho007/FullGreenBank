@@ -45,6 +45,24 @@ router.patch(
   tipsController.updateResult
 );
 
+// PATCH update tip - admin and master only
+router.patch(
+  '/:id',
+  authorizeRoles('ADMIN', 'MASTER'),
+  [
+    body('title').optional().trim().notEmpty().withMessage('Título não pode ser vazio'),
+    body('description').optional().trim().notEmpty().withMessage('Descrição não pode ser vazia'),
+    body('sport').optional().trim().notEmpty().withMessage('Esporte não pode ser vazio'),
+    body('event').optional().trim().notEmpty().withMessage('Evento não pode ser vazio'),
+    body('market').optional().trim().notEmpty().withMessage('Mercado não pode ser vazio'),
+    body('odds').optional().isFloat({ min: 1.01 }).withMessage('Odd inválida'),
+    body('stake').optional().isFloat({ min: 0.1 }).withMessage('Stake inválida'),
+    body('tipDate').optional().isISO8601().withMessage('Data inválida'),
+  ],
+  validateRequest,
+  tipsController.update
+);
+
 
 // DELETE tip - admin and master only
 router.delete(

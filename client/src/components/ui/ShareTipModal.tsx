@@ -135,7 +135,7 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                >
                  {/* Watermark */}
                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-[1]">
-                   <span className="font-black tracking-widest text-[#ffffff] opacity-[0.03] transform -rotate-45 select-none" style={{ fontSize: '80px', whiteSpace: 'nowrap' }}>
+                   <span className="font-black tracking-widest text-[#ffffff] opacity-[0.03] transform -rotate-45 select-none" style={{ fontSize: '48px', whiteSpace: 'nowrap' }}>
                      KamaelzinhoTips
                    </span>
                  </div>
@@ -176,10 +176,10 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
                  </div>
 
                  {/* Bottom Banner (Green/Red/Pending) */}
-                 <div className="px-8 pt-6 pb-8">
+                 <div className="px-8 pt-6 pb-8 relative z-10">
                    <div className={`w-full rounded-2xl py-5 flex items-center justify-center gap-3 ${resultBg}`}>
                      <span className={`font-black tracking-widest text-xl uppercase ${resultColor}`}>
-                       {resultText} <span className="ml-2 font-mono">{profitText}</span>
+                       {resultText} <span className="ml-2 font-mono" style={{ color: '#ffffff' }}>{profitText}</span>
                      </span>
                    </div>
                  </div>
