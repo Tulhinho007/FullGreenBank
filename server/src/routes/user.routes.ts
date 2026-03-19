@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import * as userController from '../controllers/user.controller';
-import { authenticate, authorizeRoles } from '../middlewares/auth.middleware';
+import { authenticate, authorizeRoles, checkReadOnly } from '../middlewares/auth.middleware';
 import { validateRequest } from '../middlewares/validate.middleware';
 
 const router = Router();
 
 router.use(authenticate);
+router.use(checkReadOnly);
 
 // GET all users - admin/master only
 router.get('/', authorizeRoles('ADMIN', 'MASTER'), userController.getAll);

@@ -1,13 +1,14 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
 import { PrismaClient } from '@prisma/client'
-import { authenticate, authorizeRoles } from '../middlewares/auth.middleware'
+import { authenticate, authorizeRoles, checkReadOnly } from '../middlewares/auth.middleware'
 import { validateRequest } from '../middlewares/validate.middleware'
 
 const prisma = new PrismaClient()
 const router = Router()
 router.use(authenticate)
 router.use(authorizeRoles('ADMIN', 'MASTER'))
+router.use(checkReadOnly)
 
 router.get('/', async (_req, res) => {
   try {

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import * as authController from '../controllers/auth.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import { authenticate, checkReadOnly } from '../middlewares/auth.middleware';
 import { validateRequest } from '../middlewares/validate.middleware';
 
 const router = Router();
@@ -21,6 +21,7 @@ router.post(
     body('phone').optional().trim(),
   ],
   validateRequest,
+  checkReadOnly,
   authController.register
 );
 
