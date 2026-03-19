@@ -1,11 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
-  TrendingUp, Target, BarChart3, Clock, AlertTriangle, CheckCircle, XCircle,
+  TrendingUp, Target, Clock, CheckCircle, XCircle,
   Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
-import { StatCard } from '../components/ui/StatCard'
-import { formatCurrency as fmt, formatDate as fmtDate, calcROI } from '../utils/formatters'
+import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 import { tipsService } from '../services/tips.service'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
@@ -120,6 +119,26 @@ export const TipsPage = () => {
     } catch { toast.error('Erro ao atualizar') }
     finally { setSaving(false) }
   }
+
+  const handleResultChange = (newResult: string) => {
+    setEditForm(f => {
+      const stakeVal = Number(f.stake) || 0;
+      const oddsVal = Number(f.odds) || 1;
+      let newProfit = f.profit;
+
+      if (newResult === 'GREEN') {
+        newProfit = (stakeVal * (oddsVal - 1)).toFixed(2);
+      } else if (newResult === 'RED') {
+        newProfit = (-stakeVal).toFixed(2);
+      } else if (newResult === 'VOID') {
+        newProfit = '0';
+      } else {
+        newProfit = '';
+      }
+
+      return { ...f, result: newResult, profit: newProfit };
+    });
+  };
 
   const openEdit = (tip: Tip) => {
     setSelected(tip)
@@ -284,22 +303,46 @@ export const TipsPage = () => {
       )}
 
       {/* Modal Editar */}
-      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Editar Resultado da Tip" size="md">
+      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Editar Dica / Resultado" size="md">
         {selected && (
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
-                <label className="label">Resultado</label>
-                <select className="input-field" value={editForm.result} onChange={e => setEditForm(f => ({ ...f, result: e.target.value }))}>
-                  <option value="PENDING">🟡 Pendente</option>
-                  <option value="GREEN">🟢 Green</option>
-                  <option value="RED">🔴 Red</option>
-                  <option value="VOID">⚪ Anulado</option>
-                </select>
+                <label className="label">Evento</label>
+                <input className="input-field" value={editForm.event} onChange={e => setEditForm(f => ({ ...f, event: e.target.value }))} />
               </div>
               <div>
-                <label className="label">Lucro/Prejuízo ({me?.currency || 'BRL'})</label>
-                <input type="number" step="0.01" className="input-field font-mono" value={editForm.profit} onChange={e => setEditForm(f => ({ ...f, profit: e.target.value }))} />
+                <label className="label">Mercado</label>
+                <input className="input-field" value={editForm.market} onChange={e => setEditForm(f => ({ ...f, market: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Odd</label>
+                  <input type="number" step="0.01" className="input-field" value={editForm.odds} onChange={e => setEditForm(f => ({ ...f, odds: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="label">Stake</label>
+                  <input type="number" step="0.5" className="input-field" value={editForm.stake} onChange={e => setEditForm(f => ({ ...f, stake: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 border-t border-surface-400 pt-4 mt-4">
+                <div>
+                  <label className="label">Resultado</label>
+                  <select className="input-field" value={editForm.result} onChange={e => handleResultChange(e.target.value)}>
+                    <option value="PENDING">🟡 Pendente</option>
+                    <option value="GREEN">🟢 Green</option>
+                    <option value="RED">🔴 Red</option>
+                    <option value="VOID">⚪ Anulado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label">Lucro/Prejuízo ({me?.currency || 'BRL'})</label>
+                  <input type="number" step="0.01" className="input-field font-mono" value={editForm.profit} onChange={e => setEditForm(f => ({ ...f, profit: e.target.value }))} />
+                </div>
+              </div>
+              <div>
+                <label className="label">Data/Hora</label>
+                <input type="datetime-local" className="input-field" value={editForm.tipDate} onChange={e => setEditForm(f => ({ ...f, tipDate: e.target.value }))} />
               </div>
             </div>
             <div className="flex gap-3 pt-2">
