@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
   DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Trophy, Bell, BookOpen,
-  ClipboardList, ScrollText, CreditCard, Briefcase,
+  ClipboardList, ScrollText, CreditCard, Briefcase, Target
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -129,6 +129,7 @@ export const Sidebar = () => {
         {/* 3. GESTÃO */}
         <SectionLabel label="Gestão" />
         <NavItem icon={<Wallet size={16} />}       label="Banca"            to="/gestao/banca" />
+        <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
         <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
         <NavItem icon={<History size={16} />}      label="Histórico"        placeholder />
