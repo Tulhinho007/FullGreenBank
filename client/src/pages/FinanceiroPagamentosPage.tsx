@@ -173,7 +173,7 @@ export const FinanceiroPagamentosPage = () => {
         <td>${u.name}<br/><small>${u.email}</small></td>
         <td>${(u.role === 'ADMIN' || u.role === 'MASTER') ? 'Admin' : 'Membro'}</td>
         <td>${PLAN_CONFIG[u.plan].label}</td>
-        <td>${u.value != null ? formatCurrency(u.value) : '-'}</td>
+        <td>${u.value != null ? fmt(u.value) : '-'}</td>
         <td>${PAY_METHOD_LABEL[u.payMethod] || '-'}</td>
         <td>${u.dueDate ? formatDate(u.dueDate) : '-'}</td>
         <td>${STATUS_CONFIG[u.status].label}</td>
@@ -400,7 +400,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {admins.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={formatCurrency} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={fmt} />
               ))}
             </>
           )}
@@ -415,7 +415,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {members.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={formatCurrency} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={fmt} />
               ))}
             </>
           )}
