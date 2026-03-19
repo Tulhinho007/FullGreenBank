@@ -72,9 +72,9 @@ export const ProfilePage = () => {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-4">
           <h2 className="font-display font-semibold text-white">{'Perfil'} & {'Configurações'}</h2>
-          <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">V2 UPDATED</span>
+          <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">V3 FINAL CLEANUP</span>
         </div>
-        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{'Perfil'} · {'Configurações'}</p>
+        <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">{'Perfil'} · {'Configurações'} (Seletores Removidos)</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
