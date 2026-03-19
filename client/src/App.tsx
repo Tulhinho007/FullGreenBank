@@ -17,7 +17,6 @@ import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
 import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
 import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
-import { RankingPage }                 from './pages/RankingPage'
 
 function App() {
   return (
@@ -85,7 +84,6 @@ function App() {
           />
           <Route path="gestao/banca" element={<GestaoBancaPage />} />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
-          <Route path="rankings" element={<RankingPage />} />
         </Route>
 
         {/* Catch-all */}
