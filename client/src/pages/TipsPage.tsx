@@ -4,10 +4,11 @@ import { tipsService } from '../services/tips.service'
 import { Modal } from '../components/ui/Modal'
 import {
   TrendingUp, Target, DollarSign,
-  Edit2, Trash2, Info, X, Plus,
+  Edit2, Trash2, Info, X, Plus, Share2,
   ChevronUp, ChevronDown, CalendarDays, ChevronLeft, ChevronRight as ChevronRightIcon,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { ShareTipModal } from '../components/ui/ShareTipModal'
 
 // ─────────────────────────────────────────────
 // Types
@@ -156,11 +157,12 @@ function StatusBadge({ tip }: { tip: Tip }) {
 // Tip Card
 // ─────────────────────────────────────────────
 
-function TipCard({ tip, isAdmin, onUpdateResult, onDelete }: {
+function TipCard({ tip, isAdmin, onUpdateResult, onDelete, onShare }: {
   tip: Tip
   isAdmin: boolean
   onUpdateResult: (t: Tip) => void
   onDelete: (id: string) => void
+  onShare: (t: Tip) => void
 }) {
   const c = scfg(tip)
   return (
@@ -177,6 +179,10 @@ function TipCard({ tip, isAdmin, onUpdateResult, onDelete }: {
         </h3>
         {isAdmin && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+            <button onClick={() => onShare(tip)} title="Compartilhar"
+              className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors">
+              <Share2 size={13} />
+            </button>
             <button onClick={() => onUpdateResult(tip)} title="Editar resultado"
               className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-surface-400 transition-colors">
               <Edit2 size={13} />
@@ -639,6 +645,7 @@ export const TipsPage = () => {
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
+  const [sharingTip, setSharingTip] = useState<Tip | null>(null)
 
   const load = async (p = 1) => {
     setLoading(true)
@@ -811,7 +818,7 @@ export const TipsPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(tip => (
-            <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onUpdateResult={openResultModal} onDelete={handleDelete} />
+            <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onUpdateResult={openResultModal} onDelete={handleDelete} onShare={setSharingTip} />
           ))}
         </div>
       )}
@@ -876,6 +883,11 @@ export const TipsPage = () => {
 
       {/* Modal — Nova Dica */}
       {newTipOpen && <NewTipModal onClose={() => setNewTipOpen(false)} onSaved={() => load(1)} />}
+
+      {/* Modal — Compartilhar (Share) */}
+      {sharingTip && (
+        <ShareTipModal isOpen={!!sharingTip} onClose={() => setSharingTip(null)} tip={sharingTip} />
+      )}
     </div>
   )
 }
