@@ -43,3 +43,11 @@ export const authorizeRoles = (...roles: string[]) => {
     next();
   };
 };
+
+export const checkReadOnly = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  if (req.user?.role === 'TESTER' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    sendError(res, 'Conta de visualização não permite alterações', 403);
+    return;
+  }
+  next();
+};
