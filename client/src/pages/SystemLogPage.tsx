@@ -63,6 +63,7 @@ const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin'
 
 export const SystemLogPage = () => {
   const { user } = useAuth()
+  const isReadOnly = user?.role === 'TESTER'
   const [logs,       setLogs]       = useState<LogEntry[]>([])
   const [filterUser, setFilterUser] = useState('Todos os usuários')
   const [filterCat,  setFilterCat]  = useState('Todas as categorias')
@@ -257,13 +258,15 @@ export const SystemLogPage = () => {
           </button>
 
           {/* Limpar */}
-          <button
-            onClick={handleClear}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/40 text-red-400 hover:bg-red-800/50 transition-colors"
-            title="Limpar log"
-          >
-            <Trash2 size={13} />Limpar Log
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={handleClear}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/40 text-red-400 hover:bg-red-800/50 transition-colors"
+              title="Limpar log"
+            >
+              <Trash2 size={13} />Limpar Log
+            </button>
+          )}
         </div>
       </div>
 

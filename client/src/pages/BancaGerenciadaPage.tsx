@@ -3,7 +3,7 @@ import {
   Briefcase, TrendingUp, DollarSign, Percent,
   Plus, Edit2, Trash2, RefreshCw, AlertTriangle,
   CheckCircle, XCircle, Clock, Search, Ban, Users,
-  CalendarDays, FileSpreadsheet, FileText, Printer,
+  CalendarDays, FileSpreadsheet, FileText, Printer, Eye,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -184,11 +184,12 @@ interface RowProps {
   onEdit: (c: BancaContract) => void
   onDelete: (c: BancaContract) => void
   onRenew: (c: BancaContract) => void
+  isReadOnly?: boolean
   isSubcontract?: boolean
   hasChild?: boolean
 }
 
-const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isSubcontract, hasChild }: RowProps) => {
+const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isReadOnly, isSubcontract, hasChild }: RowProps) => {
   const st = STATUS_CONFIG[c.status]
   const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
   const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
@@ -232,19 +233,28 @@ const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isSubcontract, ha
           {c.motivoFim && <p className="text-[10px] text-slate-600 mt-1">{MOTIVO_LABEL[c.motivoFim]}</p>}
         </div>
         <div className="flex items-center gap-1.5 xl:justify-end">
-          <button onClick={() => onEdit(c)} title="Editar"
-            className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
-            <Edit2 size={11} /><span className="hidden sm:inline">Editar</span>
-          </button>
-          <button onClick={() => onDelete(c)} title="Excluir"
-            className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
-            <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
-          </button>
-          {!hasChild && !encerrado && (
-            <button onClick={() => onRenew(c)} title="Renovar Contrato"
-              className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
-              <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
+          {isReadOnly ? (
+            <button onClick={() => onEdit(c)} title="Visualizar"
+              className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
+              <Eye size={11} /><span className="hidden sm:inline">Visualizar</span>
             </button>
+          ) : (
+            <>
+              <button onClick={() => onEdit(c)} title="Editar"
+                className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
+                <Edit2 size={11} /><span className="hidden sm:inline">Editar</span>
+              </button>
+              <button onClick={() => onDelete(c)} title="Excluir"
+                className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
+                <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
+              </button>
+              {!hasChild && !encerrado && (
+                <button onClick={() => onRenew(c)} title="Renovar Contrato"
+                  className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
+                  <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -256,6 +266,7 @@ const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isSubcontract, ha
 
 export const BancaGerenciadaPage = () => {
   const { user: me } = useAuth()
+  const isReadOnly = me?.role === 'TESTER'
 
   const [contracts,    setContracts]    = useState<BancaContract[]>([])
   const [users,        setUsers]        = useState<UserOption[]>([])
@@ -496,9 +507,11 @@ export const BancaGerenciadaPage = () => {
           <h2 className="font-display font-semibold text-white">Banca Gerenciada</h2>
           <p className="text-xs text-slate-500 mt-0.5">Gestão de contratos de banca com comissão automática</p>
         </div>
-        <button onClick={() => setAddOpen(true)} className="btn-primary flex items-center gap-2 shrink-0">
-          <Plus size={15} />Novo Contrato
-        </button>
+        {!isReadOnly && (
+          <button onClick={() => setAddOpen(true)} className="btn-primary flex items-center gap-2 shrink-0">
+            <Plus size={15} />Novo Contrato
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -600,19 +613,19 @@ export const BancaGerenciadaPage = () => {
               const handled = new Set<string>();
               roots.forEach(r => {
                 const hasChild = contracts.some(x => x.parentId === r.id);
-                nodes.push(<ContractRow key={r.id} contract={r} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} />);
+                nodes.push(<ContractRow key={r.id} contract={r} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isReadOnly={isReadOnly} />);
                 handled.add(r.id);
                 const subs = filtered.filter(c => c.parentId === r.id).sort((a,b) => new Date(a.dataInicial).getTime() - new Date(b.dataInicial).getTime());
                 subs.forEach(s => {
                   const hasGrandChild = contracts.some(x => x.parentId === s.id);
-                  nodes.push(<ContractRow key={s.id} contract={s} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasGrandChild} isSubcontract />);
+                  nodes.push(<ContractRow key={s.id} contract={s} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasGrandChild} isSubcontract isReadOnly={isReadOnly} />);
                   handled.add(s.id);
                 });
               });
               filtered.forEach(c => {
                 if (!handled.has(c.id)) {
                   const hasChild = contracts.some(x => x.parentId === c.id);
-                  nodes.push(<ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isSubcontract={!!c.parentId} />);
+                  nodes.push(<ContractRow key={c.id} contract={c} onEdit={openEdit} onDelete={setDeleteTarget} onRenew={setRenewTarget} hasChild={hasChild} isSubcontract={!!c.parentId} isReadOnly={isReadOnly} />);
                 }
               });
               return nodes;
@@ -640,10 +653,14 @@ export const BancaGerenciadaPage = () => {
           <form onSubmit={handleEdit} className="flex flex-col gap-4">
             <ContractForm form={editForm} onChange={updateEdit} users={users} />
             <div className="flex gap-3 pt-1">
-              <button type="button" onClick={() => setEditTarget(null)} className="btn-secondary flex-1">Cancelar</button>
-              <button type="submit" disabled={saving} className="btn-primary flex-1 flex items-center justify-center gap-2">
-                {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</> : '✓ Salvar Contrato'}
+              <button type="button" onClick={() => setEditTarget(null)} className="btn-secondary flex-1">
+                {isReadOnly ? 'Fechar' : 'Cancelar'}
               </button>
+              {!isReadOnly && (
+                <button type="submit" disabled={saving} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                  {saving ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</> : '✓ Salvar Contrato'}
+                </button>
+              )}
             </div>
           </form>
         )}

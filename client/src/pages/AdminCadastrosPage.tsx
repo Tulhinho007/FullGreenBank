@@ -64,6 +64,7 @@ const emptyForm = {
 
 export const AdminCadastrosPage = () => {
   const { user: me } = useAuth()
+  const isReadOnly = me?.role === 'TESTER'
   const [userCount,    setUserCount]    = useState<number | null>(null)
   const [modalOpen,    setModalOpen]    = useState(false)
   const [sportsOpen,   setSportsOpen]   = useState(false)
@@ -108,7 +109,7 @@ export const AdminCadastrosPage = () => {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm(f => ({ ...f, [field]: e.target.value }))
 
-  const openModal = () => { setForm(emptyForm); setShowPass(false); setModalOpen(true) }
+  const openModal = () => { if (isReadOnly) return; setForm(emptyForm); setShowPass(false); setModalOpen(true) }
   const closeModal = () => setModalOpen(false)
 
   const handleSubmit = async (e: FormEvent) => {
@@ -174,7 +175,7 @@ export const AdminCadastrosPage = () => {
         {/* ── Card USUÁRIOS — funcional ── */}
         <div
           onClick={openModal}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className={`card p-5 border border-surface-400 transition-all duration-200 group ${isReadOnly ? 'opacity-75 cursor-default' : 'hover:border-green-600/60 hover:shadow-green-glow cursor-pointer'}`}
         >
           <div className="flex items-start justify-between mb-3">
             <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
@@ -190,9 +191,11 @@ export const AdminCadastrosPage = () => {
             <span className="text-xs text-slate-500">
               {userCount === null ? '...' : `${userCount} ${userCount === 1 ? 'usuário' : 'usuários'}`}
             </span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
-              + Novo usuário
-            </span>
+            {!isReadOnly && (
+              <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
+                + Novo usuário
+              </span>
+            )}
           </div>
         </div>
 
@@ -429,6 +432,7 @@ export const AdminCadastrosPage = () => {
         onClose={() => setSportsOpen(false)}
         sports={sports}
         onSave={saveSports}
+        readOnly={isReadOnly}
       />
 
       {/* ── Modal Casas de Apostas ── */}
@@ -437,10 +441,11 @@ export const AdminCadastrosPage = () => {
         onClose={() => setBookmakersOpen(false)}
         bookmakers={bookmakers}
         onSave={saveBookmakers}
+        readOnly={isReadOnly}
       />
 
       {/* ── Modal Times ── */}
-      <TeamsModal isOpen={teamsOpen} onClose={() => setTeamsOpen(false)} />
+      <TeamsModal isOpen={teamsOpen} onClose={() => setTeamsOpen(false)} readOnly={isReadOnly} />
 
       {/* ── Modal Ligas ── */}
       <LeaguesModal
@@ -448,6 +453,7 @@ export const AdminCadastrosPage = () => {
         onClose={() => setLeaguesOpen(false)}
         leagues={leagues}
         onSave={saveLeagues}
+        readOnly={isReadOnly}
       />
     </div>
   )

@@ -3,7 +3,7 @@ import {
   CreditCard, Users, Clock, AlertTriangle,
   TrendingUp, Edit2, ChevronDown, Search,
   CheckCircle, XCircle, Hourglass, Ban,
-  FileSpreadsheet, FileText, Printer,
+  FileSpreadsheet, FileText, Printer, Eye,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -78,6 +78,7 @@ const emptyEdit = {
 
 export const FinanceiroPagamentosPage = () => {
   const { user: me } = useAuth()
+  const isReadOnly = me?.role === 'TESTER'
 
   const [users,       setUsers]       = useState<UserPayment[]>([])
   const [loading,     setLoading]     = useState(true)
@@ -216,6 +217,7 @@ export const FinanceiroPagamentosPage = () => {
 
   // ── Modal edição ───────────────────────────────────────────────────────────
   const openEdit = (u: UserPayment) => {
+    if (isReadOnly) return
     setEditTarget(u)
     setEditForm({
       plan:      u.plan,
@@ -403,7 +405,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {admins.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} />
               ))}
             </>
           )}
@@ -418,7 +420,7 @@ export const FinanceiroPagamentosPage = () => {
                 </span>
               </div>
               {members.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} />
+                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} />
               ))}
             </>
           )}
@@ -533,18 +535,20 @@ export const FinanceiroPagamentosPage = () => {
             {/* Ações */}
             <div className="flex gap-3 pt-1">
               <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
-                Cancelar
+                {isReadOnly ? 'Fechar' : 'Cancelar'}
               </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="btn-primary flex-1 flex items-center justify-center gap-2"
-              >
-                {saving
-                  ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</>
-                  : '✓ Salvar alterações'
-                }
-              </button>
+              {!isReadOnly && (
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  {saving
+                    ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</>
+                    : '✓ Salvar alterações'
+                  }
+                </button>
+              )}
             </div>
           </form>
         )}
@@ -558,9 +562,10 @@ export const FinanceiroPagamentosPage = () => {
 interface UserRowProps {
   user: UserPayment
   onEdit: (u: UserPayment) => void
+  isReadOnly?: boolean
 }
 
-const UserRow = ({ user, onEdit }: UserRowProps) => {
+const UserRow = ({ user, onEdit, isReadOnly }: UserRowProps) => {
   const status = STATUS_CONFIG[user.status]
   const plan   = PLAN_CONFIG[user.plan]
   const isAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
@@ -609,24 +614,18 @@ const UserRow = ({ user, onEdit }: UserRowProps) => {
 
       {/* Ações */}
       <div className="flex items-center justify-end gap-2">
-        {/* Admin — só desativar (sem edição de pagamento) */}
-        {isAdmin ? (
           <button
-            onClick={() => toast('Conta administrativa não pode ser editada aqui.', { icon: '🛡️' })}
-            className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded hover:bg-green-800/50 transition-colors"
+            onClick={() => isReadOnly ? null : onEdit(user)}
+            className={`flex items-center gap-1.5 text-xs border px-2.5 py-1 rounded transition-colors ${isAdmin ? 'text-green-400 border-green-800/50 bg-green-900/30 hover:bg-green-800/50' : isReadOnly ? 'text-slate-500 border-surface-400 bg-surface-300 cursor-default' : 'text-green-400 border-green-800/50 bg-green-900/30 hover:bg-green-800/50 opacity-0 group-hover:opacity-100 md:opacity-100'}`}
           >
-            <CheckCircle size={12} />
-            Ativo
+            {isAdmin ? (
+              <><CheckCircle size={12} /> Ativo</>
+            ) : isReadOnly ? (
+              <><Eye size={12} /> Visualizar</>
+            ) : (
+              <><Edit2 size={12} /> Editar</>
+            )}
           </button>
-        ) : (
-          <button
-            onClick={() => onEdit(user)}
-            className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded hover:bg-green-800/50 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100 transition-opacity"
-          >
-            <Edit2 size={12} />
-            Editar
-          </button>
-        )}
       </div>
     </div>
   )

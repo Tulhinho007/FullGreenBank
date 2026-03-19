@@ -42,6 +42,7 @@ export const AdminUsersPage = () => {
 
   // Guard: Admin não pode mexer em Master
   const canEdit = (u: User) => {
+    if (me?.role === 'TESTER') return false
     if (u.role === 'MASTER' && !isMaster) return false  // Admin não edita Master
     return isAdmin
   }
@@ -285,6 +286,7 @@ export const AdminUsersPage = () => {
               <label className="label">Novo Role</label>
               <select className="input-field" value={newRole} onChange={e => setNewRole(e.target.value)}>
                 <option value="MEMBRO">Membro</option>
+                <option value="TESTER">Visualizador</option>
                 <option value="ADMIN">Admin</option>
                 <option value="MASTER">Master</option>
               </select>
