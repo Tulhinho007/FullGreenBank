@@ -35,7 +35,7 @@ const buildRanking = (tipsters: Tipster[], transactions: Transaction[], period: 
       const d = new Date(tx.date)
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
     }
-    return true // Geral
+    return true
   })
 
   return tipsters.map(tipster => {
@@ -48,25 +48,20 @@ const buildRanking = (tipsters: Tipster[], transactions: Transaction[], period: 
     const profit = txs.reduce((acc, tx) => acc + tx.profit, 0)
     const invested = txs.reduce((acc, tx) => acc + tx.amount, 0)
     const roi = invested > 0 ? Number(((profit / invested) * 100).toFixed(1)) : 0
-
     return {
       id: tipster.id,
       name: tipster.name,
       specialty: [tipster.sport1, tipster.sport2].filter(Boolean).join(' / '),
-      greens,
-      reds,
-      voids,
+      greens, reds, voids,
       total: txs.length,
-      winRate,
-      profit,
-      roi,
+      winRate, profit, roi,
     }
   })
     .filter(r => r.total > 0)
     .sort((a, b) => b.winRate - a.winRate || b.greens - a.greens)
 }
 
-// ── Mock Users for "Melhores Usuários" tab ───────────────────────────────────
+// ── Mock Users ─────────────────────────────────────────────────────────────
 
 const MOCK_USERS = [
   { id: 'u1', name: 'Carlos Magro', role: 'Membro Premium', winRate: 72, greens: 36, reds: 14, profit: 1240 },
@@ -78,32 +73,13 @@ const MOCK_USERS = [
 
 // ── Podium Card ───────────────────────────────────────────────────────────────
 
-const RANK_CONFIG: Record<number, { icon: React.ReactNode; glow: string; border: string; badge: string; size: string }> = {
-  1: {
-    icon: <Crown size={22} className="text-yellow-400" />,
-    glow: 'shadow-[0_0_30px_rgba(0,255,127,0.25)]',
-    border: 'border-[#00ff7f]/40',
-    badge: 'bg-yellow-500 text-black',
-    size: 'md:scale-105 md:-mt-4',
-  },
-  2: {
-    icon: <Medal size={20} className="text-slate-300" />,
-    glow: 'shadow-[0_0_18px_rgba(0,255,127,0.12)]',
-    border: 'border-[#00ff7f]/20',
-    badge: 'bg-slate-400 text-white',
-    size: '',
-  },
-  3: {
-    icon: <Medal size={20} className="text-amber-700" />,
-    glow: 'shadow-[0_0_14px_rgba(0,255,127,0.08)]',
-    border: 'border-[#00ff7f]/10',
-    badge: 'bg-amber-700 text-white',
-    size: '',
-  },
+const RANK_CONFIG: Record<number, { icon: React.ReactNode; glow: string; border: string; badgeBg: string; size: string }> = {
+  1: { icon: <Crown size={22} style={{ color: '#facc15' }} />, glow: 'shadow-[0_0_30px_rgba(0,255,127,0.25)]', border: 'border-[#00ff7f]/40', badgeBg: '#eab308', size: 'md:scale-105 md:-mt-4' },
+  2: { icon: <Medal size={20} style={{ color: '#cbd5e1' }} />, glow: 'shadow-[0_0_18px_rgba(0,255,127,0.12)]', border: 'border-[#00ff7f]/20', badgeBg: '#94a3b8', size: '' },
+  3: { icon: <Medal size={20} style={{ color: '#92400e' }} />, glow: 'shadow-[0_0_14px_rgba(0,255,127,0.08)]', border: 'border-[#00ff7f]/10', badgeBg: '#b45309', size: '' },
 }
 
-const initials = (name: string) =>
-  name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+const initials = (name: string) => name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
 const winRateColor = (rate: number) => {
   if (rate >= 65) return '#00ff7f'
@@ -117,55 +93,79 @@ const PodiumCard = ({ rank, entry }: PodiumCardProps) => {
   const cfg = RANK_CONFIG[rank]
   return (
     <div
-      className={`relative flex flex-col items-center gap-3 p-6 rounded-3xl border bg-[#0d1f14] transition-all ${cfg.glow} ${cfg.border} ${cfg.size}`}
+      className={`relative flex flex-col items-center gap-3 p-6 rounded-3xl border transition-all ${cfg.glow} ${cfg.border} ${cfg.size}`}
+      style={{ background: '#0d1f14' }}
     >
-      {/* Rank Badge */}
-      <span className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-black ${cfg.badge}`}>
+      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-black"
+        style={{ backgroundColor: cfg.badgeBg, color: rank === 1 ? '#000' : '#fff' }}>
         #{rank}
       </span>
-
-      {/* Crown / Medal */}
       <div className="mt-2">{cfg.icon}</div>
-
-      {/* Avatar */}
-      <div className="w-16 h-16 rounded-full bg-[#142a1c] border-2 border-[#00ff7f]/50 flex items-center justify-center text-xl font-black text-[#00ff7f]">
+      <div className="w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl font-black"
+        style={{ background: '#142a1c', borderColor: 'rgba(0,255,127,0.5)', color: '#00ff7f' }}>
         {initials(entry.name)}
       </div>
-
-      {/* Name */}
       <div className="text-center">
-        <p className="font-bold text-white text-base leading-tight">{entry.name}</p>
-        <p className="text-[11px] text-slate-400 mt-0.5">{entry.specialty}</p>
+        <p className="font-bold text-base leading-tight" style={{ color: '#ffffff' }}>{entry.name}</p>
+        <p className="text-[11px] mt-0.5" style={{ color: '#94a3b8' }}>{entry.specialty}</p>
       </div>
-
-      {/* Win Rate big */}
       <div className="text-center">
-        <p className="text-3xl font-black" style={{ color: winRateColor(entry.winRate) }}>
-          {entry.winRate}%
-        </p>
-        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Taxa de Acerto</p>
+        <p className="text-3xl font-black" style={{ color: winRateColor(entry.winRate) }}>{entry.winRate}%</p>
+        <p className="text-[10px] uppercase tracking-wider" style={{ color: '#64748b' }}>Taxa de Acerto</p>
       </div>
-
-      {/* Stats Row */}
       <div className="flex items-center gap-4 text-sm">
-        <span className="flex items-center gap-1 text-green-400 font-bold">
+        <span className="flex items-center gap-1 font-bold" style={{ color: '#4ade80' }}>
           <CheckCircle size={13} /> {entry.greens}
         </span>
-        <span className="text-slate-600">|</span>
-        <span className="flex items-center gap-1 text-red-400 font-bold">
+        <span style={{ color: '#475569' }}>|</span>
+        <span className="flex items-center gap-1 font-bold" style={{ color: '#f87171' }}>
           <XCircle size={13} /> {entry.reds}
         </span>
-        <span className="text-slate-600">|</span>
-        <span className="text-slate-400 font-medium text-xs">{entry.total} tips</span>
+        <span style={{ color: '#475569' }}>|</span>
+        <span className="font-medium text-xs" style={{ color: '#94a3b8' }}>{entry.total} tips</span>
       </div>
-
-      {/* Profit */}
-      <div className={`text-sm font-bold ${entry.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+      <div className="text-sm font-bold" style={{ color: entry.profit >= 0 ? '#4ade80' : '#f87171' }}>
         {entry.profit >= 0 ? '+' : ''}R$ {entry.profit.toFixed(2)}
       </div>
     </div>
   )
 }
+
+// ── Shared Leaderboard Row ─────────────────────────────────────────────────
+
+const TableRow = ({ rank, name, sub, winRate, greens, reds, total, profit, roi }: {
+  rank: number; name: string; sub: string; winRate: number; greens: number; reds: number; total?: number; profit: number; roi?: number
+}) => (
+  <tr className="hover:bg-[#0d1f14]/80 transition-colors">
+    <td className="px-6 py-4 font-bold text-sm" style={{ color: '#64748b' }}>#{rank}</td>
+    <td className="px-6 py-4">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full border flex items-center justify-center text-xs font-black"
+          style={{ background: '#142a1c', borderColor: 'rgba(0,255,127,0.3)', color: '#00ff7f' }}>
+          {initials(name)}
+        </div>
+        <div>
+          <p className="text-sm font-semibold" style={{ color: '#ffffff' }}>{name}</p>
+          <p className="text-[11px]" style={{ color: '#64748b' }}>{sub}</p>
+        </div>
+      </div>
+    </td>
+    <td className="px-6 py-4 text-right">
+      <span className="font-black text-base" style={{ color: winRateColor(winRate) }}>{winRate}%</span>
+    </td>
+    <td className="px-6 py-4 text-right font-bold" style={{ color: '#4ade80' }}>{greens}</td>
+    <td className="px-6 py-4 text-right font-bold" style={{ color: '#f87171' }}>{reds}</td>
+    {total !== undefined && <td className="px-6 py-4 text-right" style={{ color: '#94a3b8' }}>{total}</td>}
+    <td className="px-6 py-4 text-right font-bold" style={{ color: profit >= 0 ? '#4ade80' : '#f87171' }}>
+      {profit >= 0 ? '+' : ''}R$ {profit.toFixed(2)}
+    </td>
+    {roi !== undefined && (
+      <td className="px-6 py-4 text-right font-semibold" style={{ color: roi >= 0 ? '#00ff7f' : '#f87171' }}>
+        {roi >= 0 ? '+' : ''}{roi}%
+      </td>
+    )}
+  </tr>
+)
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -185,85 +185,69 @@ export const RankingPage = () => {
   }, [])
 
   const ranking = useMemo(() => buildRanking(tipsters, transactions, period), [tipsters, transactions, period])
-
   const top3 = ranking.slice(0, 3)
-  const rest = ranking.slice(3)
 
   const periods: Period[] = ['Geral', 'Mensal', 'Semanal']
-  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'tipsters', label: 'Top Tipsters', icon: <Target size={15} /> },
-    { key: 'usuarios', label: 'Melhores Usuários', icon: <Users size={15} /> },
-  ]
 
   return (
     <div className="flex flex-col gap-8 w-full pb-10">
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-display font-bold text-white flex items-center gap-2">
+        <h1 className="text-2xl font-display font-bold flex items-center gap-2 text-slate-900 dark:text-white">
           <Trophy className="text-yellow-400" size={24} />
           Rankings
         </h1>
-        <p className="text-sm text-slate-400">Melhores desempenhos baseados em Taxa de Acerto</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Melhores desempenhos baseados em Taxa de Acerto</p>
       </div>
 
-      {/* ── Tabs + Period Filters ── */}
+      {/* Tabs + Period Filters */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Tabs */}
-        <div className="flex p-1 gap-1 rounded-xl bg-[#0d1f14] border border-[#1a3622]">
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                tab === t.key
-                  ? 'bg-[#00ff7f] text-black shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
+        <div className="flex p-1 gap-1 rounded-xl" style={{ background: '#0d1f14', border: '1px solid #1a3622' }}>
+          {[
+            { key: 'tipsters' as Tab, label: 'Top Tipsters', icon: <Target size={15} /> },
+            { key: 'usuarios' as Tab, label: 'Melhores Usuários', icon: <Users size={15} /> },
+          ].map(t => (
+            <button key={t.key} onClick={() => setTab(t.key)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+              style={tab === t.key
+                ? { background: '#00ff7f', color: '#000' }
+                : { color: '#94a3b8' }}>
               {t.icon} {t.label}
             </button>
           ))}
         </div>
-
-        {/* Period Filters */}
         <div className="flex gap-2">
           {periods.map(p => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                period === p
-                  ? 'border-[#00ff7f] bg-[#00ff7f]/10 text-[#00ff7f]'
-                  : 'border-[#1a3622] text-slate-400 hover:border-slate-400'
-              }`}
-            >
+            <button key={p} onClick={() => setPeriod(p)}
+              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+              style={period === p
+                ? { border: '1px solid #00ff7f', background: 'rgba(0,255,127,0.1)', color: '#00ff7f' }
+                : { border: '1px solid #1a3622', color: '#94a3b8' }}>
               {p}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── TIPSTERS TAB ── */}
+      {/* TIPSTERS TAB */}
       {tab === 'tipsters' && (
         <>
           {ranking.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4 text-slate-500">
               <Trophy size={48} className="opacity-20" />
               <p className="text-sm font-medium">Nenhum registro encontrado para este período.</p>
-              <p className="text-xs text-slate-600">Registre apostas na página de Gestão de Tipsters.</p>
+              <p className="text-xs text-slate-400">Registre apostas na página de Gestão de Tipsters.</p>
             </div>
           ) : (
             <>
-              {/* Podium */}
               {top3.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <Star size={16} className="text-yellow-400" />
-                    <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Pódio</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#cbd5e1' }}>Pódio</h2>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* Reorder: 2nd, 1st, 3rd for visual podium effect */}
                     {[
                       top3[1] ? { rank: 2, entry: top3[1] } : null,
                       top3[0] ? { rank: 1, entry: top3[0] } : null,
@@ -275,190 +259,80 @@ export const RankingPage = () => {
                 </div>
               )}
 
-              {/* Full Leaderboard */}
-              {rest.length > 0 && (
-                <div className="rounded-2xl border border-[#1a3622] bg-[#0a1a10] overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#1a3622] bg-[#0d1f14] flex items-center gap-2">
-                    <TrendingUp size={16} className="text-[#00ff7f]" />
-                    <h2 className="text-sm font-bold text-white">Classificação Geral</h2>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b border-[#1a3622] text-[11px] uppercase tracking-wider text-slate-500">
-                          <th className="px-6 py-3">#</th>
-                          <th className="px-6 py-3">Tipster</th>
-                          <th className="px-6 py-3 text-right">Taxa de Acerto</th>
-                          <th className="px-6 py-3 text-right">Greens</th>
-                          <th className="px-6 py-3 text-right">Reds</th>
-                          <th className="px-6 py-3 text-right">Total</th>
-                          <th className="px-6 py-3 text-right">Lucro</th>
-                          <th className="px-6 py-3 text-right">ROI</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#1a3622]">
-                        {rest.map((entry, idx) => (
-                          <tr key={entry.id} className="hover:bg-[#0d1f14]/80 transition-colors">
-                            <td className="px-6 py-4 text-slate-500 font-bold text-sm">#{idx + 4}</td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-[#142a1c] border border-[#00ff7f]/30 flex items-center justify-center text-xs font-black text-[#00ff7f]">
-                                  {initials(entry.name)}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-white">{entry.name}</p>
-                                  <p className="text-[11px] text-slate-500">{entry.specialty}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              <span className="font-black text-base" style={{ color: winRateColor(entry.winRate) }}>
-                                {entry.winRate}%
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-right text-green-400 font-bold">{entry.greens}</td>
-                            <td className="px-6 py-4 text-right text-red-400 font-bold">{entry.reds}</td>
-                            <td className="px-6 py-4 text-right text-slate-400">{entry.total}</td>
-                            <td className={`px-6 py-4 text-right font-bold ${entry.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {entry.profit >= 0 ? '+' : ''}R$ {entry.profit.toFixed(2)}
-                            </td>
-                            <td className={`px-6 py-4 text-right font-semibold ${entry.roi >= 0 ? 'text-[#00ff7f]' : 'text-red-400'}`}>
-                              {entry.roi >= 0 ? '+' : ''}{entry.roi}%
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+              <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #1a3622', background: '#0a1a10' }}>
+                <div className="px-6 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid #1a3622', background: '#0d1f14' }}>
+                  <TrendingUp size={16} style={{ color: '#00ff7f' }} />
+                  <h2 className="text-sm font-bold" style={{ color: '#ffffff' }}>Classificação Geral</h2>
                 </div>
-              )}
-
-              {/* If only 3 tipsters, show leaderboard anyway with all */}
-              {rest.length === 0 && top3.length > 0 && (
-                <div className="rounded-2xl border border-[#1a3622] bg-[#0a1a10] overflow-hidden">
-                  <div className="px-6 py-4 border-b border-[#1a3622] bg-[#0d1f14] flex items-center gap-2">
-                    <TrendingUp size={16} className="text-[#00ff7f]" />
-                    <h2 className="text-sm font-bold text-white">Classificação Geral</h2>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b border-[#1a3622] text-[11px] uppercase tracking-wider text-slate-500">
-                          <th className="px-6 py-3">#</th>
-                          <th className="px-6 py-3">Tipster</th>
-                          <th className="px-6 py-3 text-right">Taxa de Acerto</th>
-                          <th className="px-6 py-3 text-right">Greens</th>
-                          <th className="px-6 py-3 text-right">Reds</th>
-                          <th className="px-6 py-3 text-right">Total</th>
-                          <th className="px-6 py-3 text-right">Lucro</th>
-                          <th className="px-6 py-3 text-right">ROI</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#1a3622]">
-                        {ranking.map((entry, idx) => (
-                          <tr key={entry.id} className="hover:bg-[#0d1f14]/80 transition-colors">
-                            <td className="px-6 py-4 text-slate-500 font-bold text-sm">#{idx + 1}</td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-[#142a1c] border border-[#00ff7f]/30 flex items-center justify-center text-xs font-black text-[#00ff7f]">
-                                  {initials(entry.name)}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-white">{entry.name}</p>
-                                  <p className="text-[11px] text-slate-500">{entry.specialty}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              <span className="font-black text-base" style={{ color: winRateColor(entry.winRate) }}>
-                                {entry.winRate}%
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-right text-green-400 font-bold">{entry.greens}</td>
-                            <td className="px-6 py-4 text-right text-red-400 font-bold">{entry.reds}</td>
-                            <td className="px-6 py-4 text-right text-slate-400">{entry.total}</td>
-                            <td className={`px-6 py-4 text-right font-bold ${entry.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {entry.profit >= 0 ? '+' : ''}R$ {entry.profit.toFixed(2)}
-                            </td>
-                            <td className={`px-6 py-4 text-right font-semibold ${entry.roi >= 0 ? 'text-[#00ff7f]' : 'text-red-400'}`}>
-                              {entry.roi >= 0 ? '+' : ''}{entry.roi}%
-                            </td>
-                          </tr>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid #1a3622' }}>
+                        {['#', 'Tipster', 'Taxa de Acerto', 'Greens', 'Reds', 'Total', 'Lucro', 'ROI'].map(h => (
+                          <th key={h} className={`px-6 py-3 text-[11px] uppercase tracking-wider font-bold ${h !== '#' && h !== 'Tipster' ? 'text-right' : ''}`}
+                            style={{ color: '#64748b' }}>{h}</th>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </tr>
+                    </thead>
+                    <tbody style={{ borderTop: 'none' }}>
+                      {ranking.map((entry, idx) => (
+                        <TableRow key={entry.id} rank={idx + 1}
+                          name={entry.name} sub={entry.specialty}
+                          winRate={entry.winRate} greens={entry.greens} reds={entry.reds}
+                          total={entry.total} profit={entry.profit} roi={entry.roi} />
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
+              </div>
             </>
           )}
         </>
       )}
 
-      {/* ── USUÁRIOS TAB ── */}
+      {/* USUÁRIOS TAB */}
       {tab === 'usuarios' && (
         <>
-          {/* Podium */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Star size={16} className="text-yellow-400" />
-              <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Pódio</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#cbd5e1' }}>Pódio</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                MOCK_USERS[1] ? { rank: 2, entry: { ...MOCK_USERS[1], reds: MOCK_USERS[1].greens - MOCK_USERS[1].reds, voids: 0, total: MOCK_USERS[1].greens + MOCK_USERS[1].reds, roi: 0, specialty: MOCK_USERS[1].role } } : null,
-                MOCK_USERS[0] ? { rank: 1, entry: { ...MOCK_USERS[0], reds: MOCK_USERS[0].reds, voids: 0, total: MOCK_USERS[0].greens + MOCK_USERS[0].reds, roi: 0, specialty: MOCK_USERS[0].role } } : null,
-                MOCK_USERS[2] ? { rank: 3, entry: { ...MOCK_USERS[2], reds: MOCK_USERS[2].reds, voids: 0, total: MOCK_USERS[2].greens + MOCK_USERS[2].reds, roi: 0, specialty: MOCK_USERS[2].role } } : null,
+                MOCK_USERS[1] ? { rank: 2, entry: { id: MOCK_USERS[1].id, name: MOCK_USERS[1].name, specialty: MOCK_USERS[1].role, winRate: MOCK_USERS[1].winRate, greens: MOCK_USERS[1].greens, reds: MOCK_USERS[1].reds, voids: 0, total: MOCK_USERS[1].greens + MOCK_USERS[1].reds, profit: MOCK_USERS[1].profit, roi: 0 } } : null,
+                MOCK_USERS[0] ? { rank: 1, entry: { id: MOCK_USERS[0].id, name: MOCK_USERS[0].name, specialty: MOCK_USERS[0].role, winRate: MOCK_USERS[0].winRate, greens: MOCK_USERS[0].greens, reds: MOCK_USERS[0].reds, voids: 0, total: MOCK_USERS[0].greens + MOCK_USERS[0].reds, profit: MOCK_USERS[0].profit, roi: 0 } } : null,
+                MOCK_USERS[2] ? { rank: 3, entry: { id: MOCK_USERS[2].id, name: MOCK_USERS[2].name, specialty: MOCK_USERS[2].role, winRate: MOCK_USERS[2].winRate, greens: MOCK_USERS[2].greens, reds: MOCK_USERS[2].reds, voids: 0, total: MOCK_USERS[2].greens + MOCK_USERS[2].reds, profit: MOCK_USERS[2].profit, roi: 0 } } : null,
               ].filter(Boolean).map(item => (
                 <PodiumCard key={item!.rank} rank={item!.rank} entry={item!.entry as TipsterRank} />
               ))}
             </div>
           </div>
 
-          {/* Leaderboard table */}
-          <div className="rounded-2xl border border-[#1a3622] bg-[#0a1a10] overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#1a3622] bg-[#0d1f14] flex items-center gap-2">
-              <TrendingUp size={16} className="text-[#00ff7f]" />
-              <h2 className="text-sm font-bold text-white">Classificação de Usuários</h2>
+          <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #1a3622', background: '#0a1a10' }}>
+            <div className="px-6 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid #1a3622', background: '#0d1f14' }}>
+              <TrendingUp size={16} style={{ color: '#00ff7f' }} />
+              <h2 className="text-sm font-bold" style={{ color: '#ffffff' }}>Classificação de Usuários</h2>
+            </div>
+            <div className="text-center px-6 py-3 text-xs" style={{ color: '#64748b', background: '#0a1a10', borderBottom: '1px solid #1a3622' }}>
+              ⚠️ Dados simulados — a aba de usuários será conectada ao banco de dados em breve.
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-[#1a3622] text-[11px] uppercase tracking-wider text-slate-500">
-                    <th className="px-6 py-3">#</th>
-                    <th className="px-6 py-3">Usuário</th>
-                    <th className="px-6 py-3 text-right">Taxa de Acerto</th>
-                    <th className="px-6 py-3 text-right">Greens</th>
-                    <th className="px-6 py-3 text-right">Reds</th>
-                    <th className="px-6 py-3 text-right">Lucro</th>
+                  <tr style={{ borderBottom: '1px solid #1a3622' }}>
+                    {['#', 'Usuário', 'Taxa de Acerto', 'Greens', 'Reds', 'Lucro'].map(h => (
+                      <th key={h} className={`px-6 py-3 text-[11px] uppercase tracking-wider font-bold ${h !== '#' && h !== 'Usuário' ? 'text-right' : ''}`}
+                        style={{ color: '#64748b' }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1a3622]">
+                <tbody>
                   {MOCK_USERS.map((user, idx) => (
-                    <tr key={user.id} className="hover:bg-[#0d1f14]/80 transition-colors">
-                      <td className="px-6 py-4 text-slate-500 font-bold text-sm">#{idx + 1}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-[#142a1c] border border-[#00ff7f]/30 flex items-center justify-center text-xs font-black text-[#00ff7f]">
-                            {initials(user.name)}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-white">{user.name}</p>
-                            <p className="text-[11px] text-slate-500">{user.role}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="font-black text-base" style={{ color: winRateColor(user.winRate) }}>
-                          {user.winRate}%
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right text-green-400 font-bold">{user.greens}</td>
-                      <td className="px-6 py-4 text-right text-red-400 font-bold">{user.reds}</td>
-                      <td className={`px-6 py-4 text-right font-bold ${user.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        +R$ {user.profit.toFixed(2)}
-                      </td>
-                    </tr>
+                    <TableRow key={user.id} rank={idx + 1}
+                      name={user.name} sub={user.role}
+                      winRate={user.winRate} greens={user.greens} reds={user.reds}
+                      profit={user.profit} />
                   ))}
                 </tbody>
               </table>
