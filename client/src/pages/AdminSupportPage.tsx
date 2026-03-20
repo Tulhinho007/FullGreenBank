@@ -32,7 +32,7 @@ export const AdminSupportPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('pending');
   const [adminResponses, setAdminResponses] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -77,7 +77,11 @@ export const AdminSupportPage = () => {
     const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          ticket.userEmail?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || ticket.type === filterType;
-    const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus;
+    const matchesStatus = filterStatus === 'all' 
+      ? true 
+      : (filterStatus === 'pending' 
+          ? (ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS') 
+          : ticket.status === filterStatus);
     
     return matchesSearch && matchesType && matchesStatus;
   });
@@ -147,6 +151,7 @@ export const AdminSupportPage = () => {
             onChange={(e) => setFilterStatus(e.target.value)}
             className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
           >
+            <option value="pending">Pendentes (Abertos / Em Andamento)</option>
             <option value="all">Todos os Status</option>
             <option value="OPEN">Abertos</option>
             <option value="IN_PROGRESS">Em Andamento</option>
