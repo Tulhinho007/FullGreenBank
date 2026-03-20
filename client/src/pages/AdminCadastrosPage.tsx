@@ -55,136 +55,72 @@ const loadBookmakers = (): Bookmaker[] => {
 }
 
 const DEFAULT_MARKETS: Market[] = [
-  // FUTEBOL - GOLS & GERAL
-  { id: 'm1', sportSlug: 'futebol', name: 'Ambas Marcam' },
-  { id: 'm2', sportSlug: 'futebol', name: 'Back Favorito' },
-  { id: 'm3', sportSlug: 'futebol', name: 'Lay Favorito' },
-  { id: 'm4', sportSlug: 'futebol', name: 'Futebol - Personalizada' },
-  { id: 'm5', sportSlug: 'futebol', name: 'DC - Casa ou Empate' },
-  { id: 'm6', sportSlug: 'futebol', name: 'DC - Casa ou Fora' },
-  { id: 'm7', sportSlug: 'futebol', name: 'DC - Fora ou Empate' },
-  { id: 'm8', sportSlug: 'futebol', name: 'Casa - Mais de 0.5 gols' },
-  { id: 'm9', sportSlug: 'futebol', name: 'Casa - Mais de 1.5 gols' },
-  { id: 'm10', sportSlug: 'futebol', name: 'Casa - Mais de 2.5 gols' },
-  { id: 'm11', sportSlug: 'futebol', name: 'Casa - Mais de 3.5 gols' },
-  { id: 'm12', sportSlug: 'futebol', name: 'Casa - Mais de 4.5 gols' },
-  { id: 'm13', sportSlug: 'futebol', name: 'Casa - Menos de 0.5 gols' },
-  { id: 'm14', sportSlug: 'futebol', name: 'Casa - Menos de 1.5 gols' },
-  { id: 'm15', sportSlug: 'futebol', name: 'Casa - Menos de 2.5 gols' },
-  { id: 'm16', sportSlug: 'futebol', name: 'Casa - Menos de 3.5 gols' },
-  { id: 'm17', sportSlug: 'futebol', name: 'Casa - Menos de 4.5 gols' },
-  { id: 'm18', sportSlug: 'futebol', name: 'Fora - Mais de 0.5 gols' },
-  { id: 'm19', sportSlug: 'futebol', name: 'Fora - Mais de 1.5 gols' },
-  { id: 'm20', sportSlug: 'futebol', name: 'Fora - Mais de 2.5 gols' },
-  { id: 'm21', sportSlug: 'futebol', name: 'Fora - Mais de 3.5 gols' },
-  { id: 'm22', sportSlug: 'futebol', name: 'Fora - Mais de 4.5 gols' },
-  { id: 'm23', sportSlug: 'futebol', name: 'Fora - Menos de 0.5 gols' },
-  { id: 'm24', sportSlug: 'futebol', name: 'Fora - Menos de 1.5 gols' },
-  { id: 'm25', sportSlug: 'futebol', name: 'Fora - Menos de 2.5 gols' },
-  { id: 'm26', sportSlug: 'futebol', name: 'Fora - Menos de 3.5 gols' },
-  { id: 'm27', sportSlug: 'futebol', name: 'Fora - Menos de 4.5 gols' },
-
-  // FUTEBOL - MAIS/MENOS GERAL
-  ...[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5].map((n, i) => ({ id: `mg${i}`, sportSlug: 'futebol', name: `Mais de ${n} gols` })),
-  ...[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5].map((n, i) => ({ id: `ml${i}`, sportSlug: 'futebol', name: `Menos de ${n} gols` })),
-
-  // FUTEBOL - ASIÁTICO GOLS
-  ...[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0].flatMap((n, i) => [
-    { id: `am${i}`, sportSlug: 'futebol', name: `Asiático - Mais de ${n} gols` },
-    { id: `an${i}`, sportSlug: 'futebol', name: `Asiático - Menos de ${n} gols` }
-  ]),
-
-  // FUTEBOL - ESCANTEIOS
-  { id: 'e1', sportSlug: 'futebol', name: 'Escanteios - Casa+' },
-  { id: 'e2', sportSlug: 'futebol', name: 'Escanteios - Fora+' },
-  { id: 'e3', sportSlug: 'futebol', name: 'Escanteios - Empate' },
-  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].flatMap((n, i) => [
-    { id: `ec${i}`, sportSlug: 'futebol', name: `Escanteios - Casa Mais de ${n}` },
-    { id: `ed${i}`, sportSlug: 'futebol', name: `Escanteios - Casa Menos de ${n}` },
-    { id: `ef${i}`, sportSlug: 'futebol', name: `Escanteios - Fora Mais de ${n}` },
-    { id: `eg${i}`, sportSlug: 'futebol', name: `Escanteios - Fora Menos de ${n}` }
-  ]),
-  ...[2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5].flatMap((n, i) => [
-    { id: `et${i}`, sportSlug: 'futebol', name: `Escanteios - Mais de ${n}` },
-    { id: `eu${i}`, sportSlug: 'futebol', name: `Escanteios - Menos de ${n}` }
-  ]),
-  ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((n, i) => [
-    { id: `er${i}c`, sportSlug: 'futebol', name: `Escanteios - Race ${n} - Casa` },
-    { id: `er${i}f`, sportSlug: 'futebol', name: `Escanteios - Race ${n} - Fora` }
-  ]),
-  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map((n, i) => ({ id: `eh1t${i}`, sportSlug: 'futebol', name: `Escanteios 1ºTempo - Mais de ${n}` })),
-
-  // FUTEBOL - CARTÕES
-  { id: 'c1', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 1 - Sim' },
-  { id: 'c2', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 1 - Não' },
-  { id: 'c3', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 2 ou mais - Sim' },
-  { id: 'c4', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 2 ou mais - Não' },
-  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].flatMap((n, i) => [
-    { id: `cm${i}`, sportSlug: 'futebol', name: `Cartões - Mais de ${n}` },
-    { id: `cn${i}`, sportSlug: 'futebol', name: `Cartões - Menos de ${n}` }
-  ]),
-  { id: 'cv1', sportSlug: 'futebol', name: 'Cartões Vermelhos - Mais de 0.5' },
-  { id: 'cv2', sportSlug: 'futebol', name: 'Cartões Vermelhos - Menos de 0.5' },
-
-  // FUTEBOL - HANDICAP ASIÁTICO (Extenso)
-  ...[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0].flatMap((n, i) => [
-    { id: `hac${i}n`, sportSlug: 'futebol', name: `Handicap Asiático Casa -${n}` },
-    { id: `hac${i}p`, sportSlug: 'futebol', name: `Handicap Asiático Casa +${n}` },
-    { id: `haf${i}n`, sportSlug: 'futebol', name: `Handicap Asiático Fora -${n}` },
-    { id: `haf${i}p`, sportSlug: 'futebol', name: `Handicap Asiático Fora +${n}` }
-  ]),
-  ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((n, i) => [
-    { id: `hc${i}n`, sportSlug: 'futebol', name: `Handicap Casa -${n}` },
-    { id: `hc${i}p`, sportSlug: 'futebol', name: `Handicap Casa +${n}` },
-    { id: `hf${i}n`, sportSlug: 'futebol', name: `Handicap Fora -${n}` },
-    { id: `hf${i}p`, sportSlug: 'futebol', name: `Handicap Fora +${n}` }
-  ]),
-
-  // BASQUETE
-  { id: 'b1', sportSlug: 'basquete', name: 'Basket - Casa' },
-  { id: 'b2', sportSlug: 'basquete', name: 'Basket - Fora' },
-  { id: 'b3', sportSlug: 'basquete', name: 'Basket - Mais Total Pontos' },
-  { id: 'b4', sportSlug: 'basquete', name: 'Basket - Menos Total Pontos' },
-  { id: 'b5', sportSlug: 'basquete', name: 'Basket - Handicap Mais Pontos Casa' },
-  { id: 'b6', sportSlug: 'basquete', name: 'Basket - Handicap Mais Pontos Fora' },
-  { id: 'b7', sportSlug: 'basquete', name: 'Basket - Handicap Menos Pontos Casa' },
-  { id: 'b8', sportSlug: 'basquete', name: 'Basket - Handicap Menos Pontos Fora' },
-  { id: 'b9', sportSlug: 'basquete', name: 'Basket - Personalizada' },
-  ...[1, 2, 3, 4].flatMap((q) => [
-    { id: `bq${q}c`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Casa` },
-    { id: `bq${q}e`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Empate` },
-    { id: `bq${q}f`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Fora` }
-  ]),
-  ...[1, 2].flatMap((int) => [
-    { id: `bi${int}c`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Casa` },
-    { id: `bi${int}e`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Empate` },
-    { id: `bi${int}f`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Fora` }
-  ]),
-
-  // VÔLEI
-  { id: 'v1', sportSlug: 'volei', name: 'Vôlei - Casa' },
-  { id: 'v2', sportSlug: 'volei', name: 'Vôlei - Fora' },
-  { id: 'v3', sportSlug: 'volei', name: 'Vôlei - 3x0' },
-  { id: 'v4', sportSlug: 'volei', name: 'Vôlei - 3x1' },
-  { id: 'v5', sportSlug: 'volei', name: 'Vôlei - 3x2' },
-  { id: 'v6', sportSlug: 'volei', name: 'Vôlei - 0x3' },
-  { id: 'v7', sportSlug: 'volei', name: 'Vôlei - 1x3' },
-  { id: 'v8', sportSlug: 'volei', name: 'Vôlei - 2x3' },
-  { id: 'v9', sportSlug: 'volei', name: 'Vôlei - 3 Sets' },
-  { id: 'v10', sportSlug: 'volei', name: 'Vôlei - 4 Sets' },
-  { id: 'v11', sportSlug: 'volei', name: 'Vôlei - 5 Sets' },
-  { id: 'v12', sportSlug: 'volei', name: 'Vôlei - Handicap -1.5 Casa' },
-  { id: 'v13', sportSlug: 'volei', name: 'Vôlei - Handicap -1.5 Fora' },
-  { id: 'v14', sportSlug: 'volei', name: 'Vôlei - Handicap +1.5 Casa' },
-  { id: 'v15', sportSlug: 'volei', name: 'Vôlei - Handicap +1.5 Fora' },
-  { id: 'v16', sportSlug: 'volei', name: 'Vôlei - Mais Pontos' },
-  { id: 'v17', sportSlug: 'volei', name: 'Vôlei - Menos Pontos' },
-  ...[1, 2, 3, 4, 5].flatMap((s) => [
-    { id: `vs${s}c`, sportSlug: 'volei', name: `Vôlei - Vencedor ${s}º Set Casa` },
-    { id: `vs${s}f`, sportSlug: 'volei', name: `Vôlei - Vencedor ${s}º Set Fora` }
-  ]),
-  { id: 'v18', sportSlug: 'volei', name: 'Vôlei - Personalizada' },
+  ...[
+    "Ambas Marcam",
+    "Asiático - Mais de 0.5 gols", "Asiático - Mais de 0.75 gols", "Asiático - Mais de 1.0 gols", "Asiático - Mais de 1.25 gols", "Asiático - Mais de 1.5 gols", "Asiático - Mais de 1.75 gols", "Asiático - Mais de 2.0 gols", "Asiático - Mais de 2.25 gols", "Asiático - Mais de 2.5 gols", "Asiático - Mais de 2.75 gols", "Asiático - Mais de 3.0 gols", "Asiático - Mais de 3.25 gols", "Asiático - Mais de 3.5 gols", "Asiático - Mais de 3.75 gols", "Asiático - Mais de 4.0 gols", "Asiático - Mais de 4.25 gols", "Asiático - Mais de 4.5 gols", "Asiático - Mais de 4.75 gols", "Asiático - Mais de 5.0 gols", "Asiático - Mais de 5.25 gols", "Asiático - Mais de 5.5 gols", "Asiático - Mais de 5.75 gols", "Asiático - Mais de 6.0 gols", "Asiático - Mais de 6.25 gols", "Asiático - Mais de 6.5 gols", "Asiático - Mais de 6.75 gols", "Asiático - Mais de 7.0 gols", "Asiático - Mais de 7.25 gols", "Asiático - Mais de 7.5 gols", "Asiático - Mais de 7.75 gols", "Asiático - Mais de 8.0 gols",
+    "Asiático - Menos  de 4.75 gols", "Asiático - Menos  de 6.5 gols", "Asiático - Menos  de 6.75 gols",
+    "Asiático - Menos de 0.5 gols", "Asiático - Menos de 0.75 gols", "Asiático - Menos de 1.0 gols", "Asiático - Menos de 1.25 gols", "Asiático - Menos de 1.5 gols", "Asiático - Menos de 1.75 gols", "Asiático - Menos de 2.0 gols", "Asiático - Menos de 2.25 gols", "Asiático - Menos de 2.5 gols", "Asiático - Menos de 2.75 gols", "Asiático - Menos de 3.0 gols", "Asiático - Menos de 3.25 gols", "Asiático - Menos de 3.5 gols", "Asiático - Menos de 3.75 gols", "Asiático - Menos de 4.0 gols", "Asiático - Menos de 4.25 gols", "Asiático - Menos de 4.5 gols", "Asiático - Menos de 5.0 gols", "Asiático - Menos de 5.25 gols", "Asiático - Menos de 5.5 gols", "Asiático - Menos de 5.75 gols", "Asiático - Menos de 6.0 gols", "Asiático - Menos de 6.25 gols", "Asiático - Menos de 7.0 gols", "Asiático - Menos de 7.25 gols", "Asiático - Menos de 7.5 gols", "Asiático - Menos de 7.75 gols", "Asiático - Menos de 8.0 gols",
+    "Back Favorito",
+    "Basket - Casa", "Basket - Fora", "Basket - Handicap Mais Pontos Casa", "Basket - Handicap Mais Pontos Fora", "Basket - Handicap Menos Pontos Casa", "Basket - Handicap Menos Pontos Fora", "Basket - Mais Total Pontos", "Basket - Menos Total Pontos", "Basket - Personalizada",
+    "Basket - Vencedor 1º Intervalo Casa", "Basket - Vencedor 1º Intervalo Empate", "Basket - Vencedor 1º Intervalo Fora",
+    "Basket - Vencedor 1º Quarto Casa", "Basket - Vencedor 1º Quarto Empate", "Basket - Vencedor 1º Quarto Fora",
+    "Basket - Vencedor 2º Intervalo Casa", "Basket - Vencedor 2º Intervalo Empate", "Basket - Vencedor 2º Intervalo Fora",
+    "Basket - Vencedor 2º Quarto Casa", "Basket - Vencedor 2º Quarto Empate", "Basket - Vencedor 2º Quarto Fora",
+    "Basket - Vencedor 3º Quarto Casa", "Basket - Vencedor 3º Quarto Empate", "Basket - Vencedor 3º Quarto Fora",
+    "Basket - Vencedor 4º Quarto Casa", "Basket - Vencedor 4º Quarto Empate", "Basket - Vencedor 4º Quarto Fora",
+    "Cartões - Ambas Recebem 1 - Não", "Cartões - Ambas Recebem 1 - Sim", "Cartões - Ambas Recebem 2 ou mais - Não", "Cartões - Ambas Recebem 2 ou mais - Sim",
+    "Cartões - Casa +", "Cartões - Empate", "Cartões - Fora +",
+    "Cartões - Mais de 1.5", "Cartões - Mais de 2.5", "Cartões - Mais de 3.5", "Cartões - Mais de 4.5", "Cartões - Mais de 5.5", "Cartões - Mais de 6.5", "Cartões - Mais de 7.5", "Cartões - Mais de 8.5", "Cartões - Mais de 9.5",
+    "Cartões - Menos de 1.5", "Cartões - Menos de 2.5", "Cartões - Menos de 3.5", "Cartões - Menos de 4.5", "Cartões - Menos de 5.5", "Cartões - Menos de 6.5", "Cartões - Menos de 7.5", "Cartões - Menos de 8.5", "Cartões - Menos de 9.5",
+    "Cartões Vermelhos - Mais de 0.5", "Cartões Vermelhos - Mais de 1.5", "Cartões Vermelhos - Menos de 0.5", "Cartões Vermelhos - Menos de 1.5",
+    "Casa - Mais de 0.5 gols", "Casa - Mais de 1.5 gols", "Casa - Mais de 2.5 gols", "Casa - Mais de 3.5 gols", "Casa - Mais de 4.5 gols",
+    "Casa - Menos de 0.5 gols", "Casa - Menos de 1.5 gols", "Casa - Menos de 2.5 gols", "Casa - Menos de 3.5 gols", "Casa - Menos de 4.5 gols",
+    "DC - Casa ou Empate", "DC - Casa ou Fora", "DC - Fora ou Empate",
+    "Escanteios - Casa Mais de 1.5", "Escanteios - Casa Mais de 2.5", "Escanteios - Casa Mais de 3.5", "Escanteios - Casa Mais de 4.5", "Escanteios - Casa Mais de 5.5", "Escanteios - Casa Mais de 6.5", "Escanteios - Casa Mais de 7.5", "Escanteios - Casa Mais de 8.5", "Escanteios - Casa Mais de 9.5",
+    "Escanteios - Casa Menos de 1.5", "Escanteios - Casa Menos de 2.5", "Escanteios - Casa Menos de 3.5", "Escanteios - Casa Menos de 4.5", "Escanteios - Casa Menos de 5.5", "Escanteios - Casa Menos de 6.5", "Escanteios - Casa Menos de 7.5", "Escanteios - Casa Menos de 8.5", "Escanteios - Casa Menos de 9.5",
+    "Escanteios - Casa+", "Escanteios - Empate",
+    "Escanteios - Fora Mais de 1.5", "Escanteios - Fora Mais de 2.5", "Escanteios - Fora Mais de 3.5", "Escanteios - Fora Mais de 4.5", "Escanteios - Fora Mais de 5.5", "Escanteios - Fora Mais de 6.5", "Escanteios - Fora Mais de 7.5", "Escanteios - Fora Mais de 8.5", "Escanteios - Fora Mais de 9.5",
+    "Escanteios - Fora Menos de 1.5", "Escanteios - Fora Menos de 2.5", "Escanteios - Fora Menos de 3.5", "Escanteios - Fora Menos de 4.5", "Escanteios - Fora Menos de 5.5", "Escanteios - Fora Menos de 6.5", "Escanteios - Fora Menos de 7.5", "Escanteios - Fora Menos de 8.5", "Escanteios - Fora Menos de 9.5",
+    "Escanteios - Fora+",
+    "Escanteios - Mais de 10.5", "Escanteios - Mais de 11.5", "Escanteios - Mais de 12.5", "Escanteios - Mais de 13.5", "Escanteios - Mais de 14.5", "Escanteios - Mais de 15.5", "Escanteios - Mais de 2.5", "Escanteios - Mais de 3.5", "Escanteios - Mais de 4.5", "Escanteios - Mais de 5.5", "Escanteios - Mais de 6.5", "Escanteios - Mais de 7.5", "Escanteios - Mais de 8.5", "Escanteios - Mais de 9.5",
+    "Escanteios - Menos de 10.5", "Escanteios - Menos de 11.5", "Escanteios - Menos de 12.5", "Escanteios - Menos de 13.5", "Escanteios - Menos de 14.5", "Escanteios - Menos de 15.5", "Escanteios - Menos de 2.5", "Escanteios - Menos de 3.5", "Escanteios - Menos de 4.5", "Escanteios - Menos de 5.5", "Escanteios - Menos de 6.5", "Escanteios - Menos de 7.5", "Escanteios - Menos de 8.5", "Escanteios - Menos de 9.5",
+    "Escanteios - Race 1 - Casa", "Escanteios - Race 1 - Fora", "Escanteios - Race 2 - Casa", "Escanteios - Race 2 - Fora", "Escanteios - Race 3 - Casa", "Escanteios - Race 3 - Fora", "Escanteios - Race 4 - Casa", "Escanteios - Race 4 - Fora", "Escanteios - Race 5 - Casa", "Escanteios - Race 5 - Fora", "Escanteios - Race 6 - Casa", "Escanteios - Race 6 - Fora", "Escanteios - Race 7 - Casa", "Escanteios - Race 7 - Fora", "Escanteios - Race 8 - Casa", "Escanteios - Race 8 - Fora", "Escanteios - Race 9 - Casa", "Escanteios - Race 9 - Fora",
+    "Escanteios 1ºTempo - Casa Mais de 1.5", "Escanteios 1ºTempo - Casa Mais de 2.5", "Escanteios 1ºTempo - Casa Mais de 3.5", "Escanteios 1ºTempo - Casa Mais de 4.5", "Escanteios 1ºTempo - Casa Mais de 5.5",
+    "Escanteios 1ºTempo - Casa Menos de 1.5", "Escanteios 1ºTempo - Casa Menos de 2.5", "Escanteios 1ºTempo - Casa Menos de 3.5", "Escanteios 1ºTempo - Casa Menos de 4.5", "Escanteios 1ºTempo - Casa Menos de 5.5",
+    "Escanteios 1ºTempo - Fora Mais de 1.5", "Escanteios 1ºTempo - Fora Mais de 2.5", "Escanteios 1ºTempo - Fora Mais de 3.5", "Escanteios 1ºTempo - Fora Mais de 4.5", "Escanteios 1ºTempo - Fora Mais de 5.5",
+    "Escanteios 1ºTempo - Fora Menos de 1.5", "Escanteios 1ºTempo - Fora Menos de 2.5", "Escanteios 1ºTempo - Fora Menos de 3.5", "Escanteios 1ºTempo - Fora Menos de 4.5", "Escanteios 1ºTempo - Fora Menos de 5.5",
+    "Escanteios 1ºTempo - Mais de 1.5", "Escanteios 1ºTempo - Mais de 2.5", "Escanteios 1ºTempo - Mais de 3.5", "Escanteios 1ºTempo - Mais de 4.5", "Escanteios 1ºTempo - Mais de 5.5", "Escanteios 1ºTempo - Mais de 6.5", "Escanteios 1ºTempo - Mais de 7.5",
+    "Fora - Mais de 0.5 gols", "Fora - Mais de 1.5 gols", "Fora - Mais de 2.5 gols", "Fora - Mais de 3.5 gols", "Fora - Mais de 4.5 gols",
+    "Fora - Menos de 0.5 gols", "Fora - Menos de 1.5 gols", "Fora - Menos de 2.5 gols", "Fora - Menos de 3.5 gols", "Fora - Menos de 4.5 gols",
+    "Futebol - Personalizada",
+    "Handicap Asiático Casa -0.5", "Handicap Asiático Casa -0.75", "Handicap Asiático Casa -1.0", "Handicap Asiático Casa -1.25", "Handicap Asiático Casa -1.5", "Handicap Asiático Casa -1.75", "Handicap Asiático Casa -2.0", "Handicap Asiático Casa -2.25", "Handicap Asiático Casa -2.5", "Handicap Asiático Casa -2.75", "Handicap Asiático Casa -3.0", "Handicap Asiático Casa -3.25", "Handicap Asiático Casa -3.5", "Handicap Asiático Casa -3.75", "Handicap Asiático Casa -4.0", "Handicap Asiático Casa -4.25", "Handicap Asiático Casa -4.5", "Handicap Asiático Casa -4.75", "Handicap Asiático Casa -5.0",
+    "Handicap Asiático Casa +0.5", "Handicap Asiático Casa +0.75", "Handicap Asiático Casa +1.0", "Handicap Asiático Casa +1.25", "Handicap Asiático Casa +1.5", "Handicap Asiático Casa +1.75", "Handicap Asiático Casa +2.0", "Handicap Asiático Casa +2.25", "Handicap Asiático Casa +2.5", "Handicap Asiático Casa +2.75", "Handicap Asiático Casa +3.0", "Handicap Asiático Casa +3.25", "Handicap Asiático Casa +3.5", "Handicap Asiático Casa +3.75", "Handicap Asiático Casa +4.0", "Handicap Asiático Casa +4.25", "Handicap Asiático Casa +4.5", "Handicap Asiático Casa +4.75", "Handicap Asiático Casa +5.0",
+    "Handicap Asiático Fora  -1.75", "Handicap Asiático Fora  +1.75", "Handicap Asiático Fora -0.5", "Handicap Asiático Fora -0.75", "Handicap Asiático Fora -1.0", "Handicap Asiático Fora -1.25", "Handicap Asiático Fora -1.5", "Handicap Asiático Fora -2.0", "Handicap Asiático Fora -2.25", "Handicap Asiático Fora -2.5", "Handicap Asiático Fora -2.75", "Handicap Asiático Fora -3.0", "Handicap Asiático Fora -3.25", "Handicap Asiático Fora -3.5", "Handicap Asiático Fora -3.75", "Handicap Asiático Fora -4.0", "Handicap Asiático Fora -4.25", "Handicap Asiático Fora -4.5", "Handicap Asiático Fora -4.75", "Handicap Asiático Fora -5.0",
+    "Handicap Asiático Fora +0.5", "Handicap Asiático Fora +0.75", "Handicap Asiático Fora +1.0", "Handicap Asiático Fora +1.25", "Handicap Asiático Fora +1.5", "Handicap Asiático Fora +2.0", "Handicap Asiático Fora +2.25", "Handicap Asiático Fora +2.5", "Handicap Asiático Fora +2.75", "Handicap Asiático Fora +3.0", "Handicap Asiático Fora +3.25", "Handicap Asiático Fora +3.5", "Handicap Asiático Fora +3.75", "Handicap Asiático Fora +4.0", "Handicap Asiático Fora +4.25", "Handicap Asiático Fora +4.5", "Handicap Asiático Fora +4.75", "Handicap Asiático Fora +5.0",
+    "Handicap Casa -1", "Handicap Casa -2", "Handicap Casa -3", "Handicap Casa -4", "Handicap Casa -5", "Handicap Casa -6", "Handicap Casa -7", "Handicap Casa -8", "Handicap Casa -9",
+    "Handicap Casa +1", "Handicap Casa +2", "Handicap Casa +3", "Handicap Casa +4", "Handicap Casa +5", "Handicap Casa +6", "Handicap Casa +7", "Handicap Casa +8", "Handicap Casa +9",
+    "Handicap Fora -1", "Handicap Fora -2", "Handicap Fora -3", "Handicap Fora -4", "Handicap Fora -5", "Handicap Fora -6", "Handicap Fora -7", "Handicap Fora -8", "Handicap Fora -9",
+    "Handicap Fora +1", "Handicap Fora +2", "Handicap Fora +3", "Handicap Fora +4", "Handicap Fora +5", "Handicap Fora +6", "Handicap Fora +7", "Handicap Fora +8", "Handicap Fora +9",
+    "Lay Favorito",
+    "Mais de 0.5 gols", "Mais de 1.5 gols", "Mais de 10.5 gols", "Mais de 2.5 gols", "Mais de 3.5 gols", "Mais de 4.5 gols", "Mais de 5.5 gols", "Mais de 6.5 gols", "Mais de 7.5 gols", "Mais de 8.5 gols", "Mais de 9.5 gols",
+    "Menos de 0.5 gols", "Menos de 1.5 gols", "Menos de 10.5 gols", "Menos de 2.5 gols", "Menos de 3.5 gols", "Menos de 4.5 gols", "Menos de 5.5 gols", "Menos de 6.5 gols", "Menos de 7.5 gols", "Menos de 8.5 gols", "Menos de 9.5 gols",
+    "Vôlei - 0x3", "Vôlei - 1x3", "Vôlei - 2x3", "Vôlei - 3 Sets", "Vôlei - 3x0", "Vôlei - 3x1", "Vôlei - 3x2", "Vôlei - 4 Sets", "Vôlei - 5 Sets", "Vôlei - Casa", "Vôlei - Fora",
+    "Vôlei - Handicap -1.5 Casa", "Vôlei - Handicap -1.5 Fora", "Vôlei - Handicap -2.5 Casa", "Vôlei - Handicap -2.5 Fora",
+    "Vôlei - Handicap +1.5 Casa", "Vôlei - Handicap +1.5 Fora", "Vôlei - Handicap +2.5 Casa", "Vôlei - Handicap +2.5 Fora",
+    "Vôlei - Mais Pontos", "Vôlei - Menos Pontos", "Vôlei - Personalizada",
+    "Vôlei - Vencedor 1º Set Casa", "Vôlei - Vencedor 1º Set Fora",
+    "Vôlei - Vencedor 2º Set Casa", "Vôlei - Vencedor 2º Set Fora",
+    "Vôlei - Vencedor 3º Set Casa", "Vôlei - Vencedor 3º Set Fora",
+    "Vôlei - Vencedor 4º Set Casa", "Vôlei - Vencedor 4º Set Fora",
+    "Vôlei - Vencedor 5º Set Casa", "Vôlei - Vencedor 5º Set Fora"
+  ].map((name, i) => {
+    let sportSlug = 'futebol';
+    if (name.startsWith('Basket -')) sportSlug = 'basquete';
+    if (name.startsWith('Vôlei -')) sportSlug = 'volei';
+    return { id: `mx${i + 1}`, sportSlug, name };
+  })
 ]
+
 
 const loadMarkets = (): Market[] => {
   try {
