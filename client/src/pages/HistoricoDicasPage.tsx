@@ -249,7 +249,7 @@ export const HistoricoDicasPage = () => {
                 <th className="px-5 py-4 font-bold">Data</th>
                 <th className="px-5 py-4 font-bold">Evento / Descrição</th>
                 <th className="px-5 py-4 font-bold">Odd</th>
-                <th className="px-5 py-4 font-bold">Stake</th>
+                <th className="px-5 py-4 font-bold">VALOR</th>
                 <th className="px-5 py-4 font-bold">Lucro Líquido</th>
                 <th className="px-5 py-4 font-bold">Status</th>
                 <th className="px-5 py-4 font-bold text-center">Ações</th>
