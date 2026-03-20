@@ -68,7 +68,9 @@ export const HistoricoDicasPage = () => {
     try {
       setLoading(true)
       const data = await tipsService.getAll(1, 100)
-      setTips(Array.isArray(data.tips) ? data.tips : [])
+      // Robust extraction covering all possible API response formats
+      const ts = Array.isArray(data?.tips) ? data.tips : (Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []));
+      setTips(ts)
     } catch {
       toast.error('Erro ao buscar histórico de dicas')
     } finally {

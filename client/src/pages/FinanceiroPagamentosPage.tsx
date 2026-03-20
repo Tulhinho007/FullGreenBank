@@ -99,7 +99,7 @@ export const FinanceiroPagamentosPage = () => {
     try {
       const data = await usersService.getAll()
       // Filtro: Apenas usuários "MEMBRO"
-      const dataArray = Array.isArray(data) ? data : []
+      const dataArray = Array.isArray(data) ? data : (Array.isArray(data?.users) ? data.users : [])
       const members = dataArray.filter((u: any) => u.role === 'MEMBRO' || (!u.role && u.email !== 'admin@fullgreenbank.com'))
       
       const mapped: UserPayment[] = members.map((u: any) => {

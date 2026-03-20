@@ -31,7 +31,11 @@ export const DashboardPage = () => {
 
   useEffect(() => {
     tipsService.getAll(1, 50)
-      .then(data => setTips(Array.isArray(data.tips) ? data.tips : []))
+      .then(resp => {
+        // Robust extraction covering all possible API response formats
+        const ts = Array.isArray(resp?.tips) ? resp.tips : (Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []));
+        setTips(ts);
+      })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])

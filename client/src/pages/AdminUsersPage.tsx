@@ -38,7 +38,10 @@ export const AdminUsersPage = () => {
 
   const load = () => {
     usersService.getAll()
-      .then(setUsers)
+      .then(data => {
+        const arr = Array.isArray(data) ? data : (Array.isArray(data?.users) ? data.users : [])
+        setUsers(arr)
+      })
       .catch(() => toast.error('Erro ao carregar usuários'))
       .finally(() => setLoading(false))
   }

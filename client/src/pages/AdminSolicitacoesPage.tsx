@@ -33,7 +33,8 @@ export const AdminSolicitacoesPage = () => {
     setLoading(true)
     try {
       const { data } = await api.get('/solicitacoes')
-      setSolicitacoes(data)
+      const arr = Array.isArray(data) ? data : (Array.isArray(data?.solicitacoes) ? data.solicitacoes : (Array.isArray(data?.data) ? data.data : []))
+      setSolicitacoes(arr)
     } catch {
       toast.error('Erro ao carregar solicitações')
     } finally {
