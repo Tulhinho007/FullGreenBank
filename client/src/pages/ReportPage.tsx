@@ -1,16 +1,48 @@
 import { useState } from 'react';
 import { Bug, MessageSquare, Send, Paperclip, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export const ReportPage = () => {
-  const [type, setType] = useState<'bug' | 'feedback'>('bug'); // bug ou feedback
+  const [type, setType] = useState<'bug' | 'feedback'>('bug');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('Média (Funcionalidade com erro)');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // Aqui entraria sua lógica de envio para o Supabase ou API
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    setLoading(true);
+
+    try {
+      const userStr = localStorage.getItem('fgb_user');
+      const user = userStr ? JSON.parse(userStr) : null;
+
+      await api.post('/support', {
+        type,
+        title,
+        description,
+        priority,
+        userEmail: user?.email || 'Visitante Anônimo',
+        userId: user?.id || null
+      });
+
+      setSubmitted(true);
+      toast.success('Relatório enviado com sucesso!');
+      
+      // Limpar campos
+      setTitle('');
+      setDescription('');
+      
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Erro ao enviar suporte:', error);
+      toast.error('Erro ao enviar relatório. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +75,7 @@ export const ReportPage = () => {
         {/* Seletor de Tipo */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <button
+            type="button"
             onClick={() => setType('bug')}
             className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
               type === 'bug' 
@@ -55,6 +88,7 @@ export const ReportPage = () => {
           </button>
           
           <button
+            type="button"
             onClick={() => setType('feedback')}
             className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
               type === 'feedback' 
@@ -78,6 +112,8 @@ export const ReportPage = () => {
               </label>
               <input 
                 type="text" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder={type === 'bug' ? "Ex: Erro ao renovar contrato" : "Ex: Sugestão de novo gráfico"}
                 className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-green-500 outline-none transition-all dark:text-white"
                 required
@@ -88,7 +124,11 @@ export const ReportPage = () => {
             {type === 'bug' && (
               <div>
                 <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Urgência</label>
-                <select className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 dark:text-zinc-900 dark:bg-zinc-100 outline-none">
+                <select 
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 dark:text-zinc-900 dark:bg-zinc-100 outline-none"
+                >
                   <option>Baixa (Visual / Estético)</option>
                   <option>Média (Funcionalidade com erro)</option>
                   <option>Alta (Impossibilitado de usar o sistema)</option>
@@ -102,6 +142,8 @@ export const ReportPage = () => {
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Descrição</label>
               <textarea 
                 rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Descreva com detalhes o que aconteceu ou sua ideia..."
                 className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-green-500 outline-none transition-all dark:text-white"
                 required
@@ -111,20 +153,22 @@ export const ReportPage = () => {
             {/* Upload Mockup */}
             <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-6 text-center hover:border-green-500 transition-colors cursor-pointer group">
               <Paperclip className="mx-auto text-zinc-400 group-hover:text-green-500 mb-2" />
-              <p className="text-xs text-zinc-500">Clique para anexar um print ou arraste o arquivo aqui</p>
+              <p className="text-xs text-zinc-500">Dica: Anexe imagens no Discord de Suporte para análise detalhada.</p>
             </div>
 
             {/* Botão Enviar */}
             <button 
               type="submit"
-              disabled={submitted}
+              disabled={loading || submitted}
               className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                 submitted 
                 ? 'bg-green-100 text-green-700 dark:bg-green-900/30' 
                 : 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20'
-              }`}
+              } ${loading ? 'opacity-70 cursor-wait' : ''}`}
             >
-              {submitted ? (
+              {loading ? (
+                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              ) : submitted ? (
                 <><CheckCircle2 size={20} /> Recebido com sucesso!</>
               ) : (
                 <><Send size={20} /> Enviar Relatório</>
@@ -150,3 +194,4 @@ export const ReportPage = () => {
     </div>
   );
 }
+

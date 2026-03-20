@@ -175,6 +175,7 @@ export const Sidebar = () => {
             <NavItem icon={<Settings size={16} />} label="Sistema" children={[
               { label: 'Usuários', to: '/admin/users' },
               { label: 'Cadastros', to: '/admin/cadastros' },
+              { label: 'Suporte & Feedback', to: '/admin/support' },
               { label: 'Logs / Eventos', to: '/admin/log' }
             ]} />
           </>

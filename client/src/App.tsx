@@ -12,6 +12,7 @@ import { TipsPage }           from './pages/TipsPage'
 import { ProfilePage }        from './pages/ProfilePage'
 import { AdminUsersPage }     from './pages/AdminUsersPage'
 import { AdminCadastrosPage } from './pages/AdminCadastrosPage'
+import { AdminSupportPage }   from './pages/AdminSupportPage'
 import { SystemLogPage }               from './pages/SystemLogPage'
 import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
 import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
@@ -71,6 +72,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <AdminCadastrosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/support"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+                <AdminSupportPage />
               </ProtectedRoute>
             }
           />
