@@ -455,7 +455,7 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
               <div className="p-3">
                 {searchResults.length === 0
                   ? <p className="text-sm text-slate-400 text-center py-6">Nenhuma liga encontrada para "{search}"</p>
-                  : searchResults.map(l=>(
+                  : [...searchResults].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
                     <div key={l.id} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-300/30 transition-colors">
                       <span className="flex-1 text-xs text-slate-700 dark:text-slate-200">{l.name}</span>
                       <span className="text-[10px] text-slate-400 bg-slate-100 dark:bg-surface-300 px-2 py-0.5 rounded">{l.category}</span>
@@ -473,7 +473,7 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
                     <span className="text-[10px] bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-200 dark:border-yellow-800/50">Top {featured.length}</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    {featured.map(l=>(
+                    {[...featured].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
                       <div key={l.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30">
                         <Star size={11} className="text-yellow-400 shrink-0"/>
                         <span className="text-xs font-medium text-slate-700 dark:text-slate-200 flex-1">{l.name}</span>
@@ -502,9 +502,9 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
                           <div className="ml-4 pl-3 border-l border-slate-100 dark:border-surface-300 mb-2">
                             {items.length === 0 ? (
                               <p className="text-xs text-slate-400 dark:text-slate-500 italic py-2 px-2">
-                                Nenhuma liga nesta categoria ainda.
+                                Nenhum liga nesta categoria ainda.
                               </p>
-                            ) : items.map(l=>(
+                            ) : [...items].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
                               <div key={l.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-300/30 transition-colors">
                                 <span className="flex-1 text-xs text-slate-700 dark:text-slate-200">{l.name}</span>
                               </div>

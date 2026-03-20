@@ -328,7 +328,7 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
                   </tr>
                 </thead>
                 <tbody>
-                  {bookmakers.map((b, i) => (
+                  {[...bookmakers].sort((a, b) => a.name.localeCompare(b.name)).map((b, i) => (
                     <tr key={b.id} className={`border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-surface-300/10'}`}>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-2">

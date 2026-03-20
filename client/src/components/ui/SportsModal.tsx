@@ -340,7 +340,7 @@ export const SportsModal = ({ isOpen, onClose, sports, onSave, readOnly }: Sport
                 <p className="text-sm text-slate-400 dark:text-slate-500">Nenhum esporte cadastrado</p>
               </div>
             ) : (
-              sports.map(s => (
+              [...sports].sort((a, b) => a.name.localeCompare(b.name)).map(s => (
                 <div key={s.id} className="flex items-center gap-3 px-5 py-3 border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
                   <span className="text-xl w-8 text-center select-none">{s.emoji}</span>
                   <span className="flex-1 text-sm font-medium text-slate-800 dark:text-white">{s.name}</span>

@@ -221,7 +221,8 @@ notes           String?    -- histórico de pagamentos em texto
 ### 12. Gestão de Mercados por Esporte
 - Admin: Novo card em "Cadastros" para gerenciamento de mercados de apostas.
 - Interface: Modal para Adicionar, Editar e Excluir mercados vinculados a esportes (slug-based).
-- Dados: Injeção de mais de 100 mercados padrão (Futebol, Basquete, Vôlei) para agilizar o uso.
+- Dados: Injeção de cerca de 300 mercados padrão (Futebol, Basquete, Vôlei) para agilizar o uso.
+- UX: Implementação de ordenação alfabética automática em todas as tabelas de cadastro (Esportes, Ligas, Mercados, Times, Casas de Apostas).
 - Persistência: Armazenamento em `localStorage` para consistência com o restante da página de cadastros.
 
 ### 13. Correções de Deploy (Vercel)

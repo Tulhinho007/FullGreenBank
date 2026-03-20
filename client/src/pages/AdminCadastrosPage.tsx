@@ -55,93 +55,111 @@ const loadBookmakers = (): Bookmaker[] => {
 }
 
 const DEFAULT_MARKETS: Market[] = [
-  // FUTEBOL - GOLS
+  // FUTEBOL - GOLS & GERAL
   { id: 'm1', sportSlug: 'futebol', name: 'Ambas Marcam' },
-  { id: 'm2', sportSlug: 'futebol', name: 'Mais de 0.5 gols' },
-  { id: 'm3', sportSlug: 'futebol', name: 'Mais de 1.5 gols' },
-  { id: 'm4', sportSlug: 'futebol', name: 'Mais de 2.5 gols' },
-  { id: 'm5', sportSlug: 'futebol', name: 'Mais de 3.5 gols' },
-  { id: 'm6', sportSlug: 'futebol', name: 'Mais de 4.5 gols' },
-  { id: 'm7', sportSlug: 'futebol', name: 'Mais de 5.5 gols' },
-  { id: 'm8', sportSlug: 'futebol', name: 'Mais de 6.5 gols' },
-  { id: 'm9', sportSlug: 'futebol', name: 'Mais de 7.5 gols' },
-  { id: 'm10', sportSlug: 'futebol', name: 'Mais de 8.5 gols' },
-  { id: 'm11', sportSlug: 'futebol', name: 'Mais de 9.5 gols' },
-  { id: 'm12', sportSlug: 'futebol', name: 'Mais de 10.5 gols' },
-  { id: 'm13', sportSlug: 'futebol', name: 'Menos de 0.5 gols' },
-  { id: 'm14', sportSlug: 'futebol', name: 'Menos de 1.5 gols' },
-  { id: 'm15', sportSlug: 'futebol', name: 'Menos de 2.5 gols' },
-  { id: 'm16', sportSlug: 'futebol', name: 'Menos de 3.5 gols' },
-  { id: 'm17', sportSlug: 'futebol', name: 'Menos de 4.5 gols' },
-  { id: 'm18', sportSlug: 'futebol', name: 'Menos de 5.5 gols' },
-  { id: 'm19', sportSlug: 'futebol', name: 'Menos de 6.5 gols' },
-  { id: 'm20', sportSlug: 'futebol', name: 'Menos de 7.5 gols' },
-  { id: 'm21', sportSlug: 'futebol', name: 'Menos de 8.5 gols' },
-  { id: 'm22', sportSlug: 'futebol', name: 'Menos de 9.5 gols' },
-  { id: 'm23', sportSlug: 'futebol', name: 'Menos de 10.5 gols' },
+  { id: 'm2', sportSlug: 'futebol', name: 'Back Favorito' },
+  { id: 'm3', sportSlug: 'futebol', name: 'Lay Favorito' },
+  { id: 'm4', sportSlug: 'futebol', name: 'Futebol - Personalizada' },
+  { id: 'm5', sportSlug: 'futebol', name: 'DC - Casa ou Empate' },
+  { id: 'm6', sportSlug: 'futebol', name: 'DC - Casa ou Fora' },
+  { id: 'm7', sportSlug: 'futebol', name: 'DC - Fora ou Empate' },
+  { id: 'm8', sportSlug: 'futebol', name: 'Casa - Mais de 0.5 gols' },
+  { id: 'm9', sportSlug: 'futebol', name: 'Casa - Mais de 1.5 gols' },
+  { id: 'm10', sportSlug: 'futebol', name: 'Casa - Mais de 2.5 gols' },
+  { id: 'm11', sportSlug: 'futebol', name: 'Casa - Mais de 3.5 gols' },
+  { id: 'm12', sportSlug: 'futebol', name: 'Casa - Mais de 4.5 gols' },
+  { id: 'm13', sportSlug: 'futebol', name: 'Casa - Menos de 0.5 gols' },
+  { id: 'm14', sportSlug: 'futebol', name: 'Casa - Menos de 1.5 gols' },
+  { id: 'm15', sportSlug: 'futebol', name: 'Casa - Menos de 2.5 gols' },
+  { id: 'm16', sportSlug: 'futebol', name: 'Casa - Menos de 3.5 gols' },
+  { id: 'm17', sportSlug: 'futebol', name: 'Casa - Menos de 4.5 gols' },
+  { id: 'm18', sportSlug: 'futebol', name: 'Fora - Mais de 0.5 gols' },
+  { id: 'm19', sportSlug: 'futebol', name: 'Fora - Mais de 1.5 gols' },
+  { id: 'm20', sportSlug: 'futebol', name: 'Fora - Mais de 2.5 gols' },
+  { id: 'm21', sportSlug: 'futebol', name: 'Fora - Mais de 3.5 gols' },
+  { id: 'm22', sportSlug: 'futebol', name: 'Fora - Mais de 4.5 gols' },
+  { id: 'm23', sportSlug: 'futebol', name: 'Fora - Menos de 0.5 gols' },
+  { id: 'm24', sportSlug: 'futebol', name: 'Fora - Menos de 1.5 gols' },
+  { id: 'm25', sportSlug: 'futebol', name: 'Fora - Menos de 2.5 gols' },
+  { id: 'm26', sportSlug: 'futebol', name: 'Fora - Menos de 3.5 gols' },
+  { id: 'm27', sportSlug: 'futebol', name: 'Fora - Menos de 4.5 gols' },
+
+  // FUTEBOL - MAIS/MENOS GERAL
+  ...[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5].map((n, i) => ({ id: `mg${i}`, sportSlug: 'futebol', name: `Mais de ${n} gols` })),
+  ...[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5].map((n, i) => ({ id: `ml${i}`, sportSlug: 'futebol', name: `Menos de ${n} gols` })),
 
   // FUTEBOL - ASIÁTICO GOLS
-  { id: 'ma1', sportSlug: 'futebol', name: 'Asiático - Mais de 0.5 gols' },
-  { id: 'ma2', sportSlug: 'futebol', name: 'Asiático - Mais de 0.75 gols' },
-  { id: 'ma3', sportSlug: 'futebol', name: 'Asiático - Mais de 1.0 gols' },
-  { id: 'ma4', sportSlug: 'futebol', name: 'Asiático - Mais de 1.25 gols' },
-  { id: 'ma5', sportSlug: 'futebol', name: 'Asiático - Mais de 1.5 gols' },
-  { id: 'ma6', sportSlug: 'futebol', name: 'Asiático - Mais de 1.75 gols' },
-  { id: 'ma7', sportSlug: 'futebol', name: 'Asiático - Mais de 2.0 gols' },
-  { id: 'ma8', sportSlug: 'futebol', name: 'Asiático - Mais de 2.25 gols' },
-  { id: 'ma9', sportSlug: 'futebol', name: 'Asiático - Mais de 2.5 gols' },
-  { id: 'ma10', sportSlug: 'futebol', name: 'Asiático - Mais de 2.75 gols' },
-  { id: 'ma11', sportSlug: 'futebol', name: 'Asiático - Mais de 3.0 gols' },
-  { id: 'ma12', sportSlug: 'futebol', name: 'Asiático - Mais de 3.25 gols' },
-  { id: 'ma13', sportSlug: 'futebol', name: 'Asiático - Mais de 3.5 gols' },
-  { id: 'ma14', sportSlug: 'futebol', name: 'Asiático - Mais de 3.75 gols' },
-  { id: 'ma15', sportSlug: 'futebol', name: 'Asiático - Mais de 4.0 gols' },
-  { id: 'ma16', sportSlug: 'futebol', name: 'Asiático - Mais de 4.25 gols' },
-  { id: 'ma17', sportSlug: 'futebol', name: 'Asiático - Mais de 4.5 gols' },
-  { id: 'ma18', sportSlug: 'futebol', name: 'Asiático - Mais de 4.75 gols' },
-  { id: 'ma19', sportSlug: 'futebol', name: 'Asiático - Mais de 5.0 gols' },
-  { id: 'ma20', sportSlug: 'futebol', name: 'Asiático - Mais de 5.25 gols' },
-  { id: 'ma21', sportSlug: 'futebol', name: 'Asiático - Mais de 5.5 gols' },
-  { id: 'ma22', sportSlug: 'futebol', name: 'Asiático - Mais de 5.75 gols' },
-  { id: 'ma23', sportSlug: 'futebol', name: 'Asiático - Mais de 6.0 gols' },
-  { id: 'ma24', sportSlug: 'futebol', name: 'Asiático - Mais de 6.25 gols' },
-  { id: 'ma25', sportSlug: 'futebol', name: 'Asiático - Mais de 6.5 gols' },
-  { id: 'ma26', sportSlug: 'futebol', name: 'Asiático - Mais de 6.75 gols' },
-  { id: 'ma27', sportSlug: 'futebol', name: 'Asiático - Mais de 7.0 gols' },
-  { id: 'ma28', sportSlug: 'futebol', name: 'Asiático - Mais de 7.25 gols' },
-  { id: 'ma29', sportSlug: 'futebol', name: 'Asiático - Mais de 7.5 gols' },
-  { id: 'ma30', sportSlug: 'futebol', name: 'Asiático - Mais de 7.75 gols' },
-  { id: 'ma31', sportSlug: 'futebol', name: 'Asiático - Mais de 8.0 gols' },
-
-  // FUTEBOL - HANDICAP ASIÁTICO
-  { id: 'ha1', sportSlug: 'futebol', name: 'Handicap Asiático Casa -0.5' },
-  { id: 'ha2', sportSlug: 'futebol', name: 'Handicap Asiático Casa -0.75' },
-  { id: 'ha3', sportSlug: 'futebol', name: 'Handicap Asiático Casa -1.0' },
-  { id: 'ha4', sportSlug: 'futebol', name: 'Handicap Asiático Casa +0.5' },
-  { id: 'ha5', sportSlug: 'futebol', name: 'Handicap Asiático Casa +0.75' },
-  { id: 'ha6', sportSlug: 'futebol', name: 'Handicap Asiático Casa +1.0' },
-  { id: 'ha7', sportSlug: 'futebol', name: 'Handicap Asiático Fora -0.5' },
-  { id: 'ha8', sportSlug: 'futebol', name: 'Handicap Asiático Fora -0.75' },
-  { id: 'ha9', sportSlug: 'futebol', name: 'Handicap Asiático Fora -1.0' },
-  { id: 'ha10', sportSlug: 'futebol', name: 'Handicap Asiático Fora +0.5' },
-  { id: 'ha11', sportSlug: 'futebol', name: 'Handicap Asiático Fora +0.75' },
-  { id: 'ha12', sportSlug: 'futebol', name: 'Handicap Asiático Fora +1.0' },
+  ...[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0].flatMap((n, i) => [
+    { id: `am${i}`, sportSlug: 'futebol', name: `Asiático - Mais de ${n} gols` },
+    { id: `an${i}`, sportSlug: 'futebol', name: `Asiático - Menos de ${n} gols` }
+  ]),
 
   // FUTEBOL - ESCANTEIOS
-  { id: 'e1', sportSlug: 'futebol', name: 'Escanteios - Mais de 7.5' },
-  { id: 'e2', sportSlug: 'futebol', name: 'Escanteios - Mais de 8.5' },
-  { id: 'e3', sportSlug: 'futebol', name: 'Escanteios - Mais de 9.5' },
-  { id: 'e4', sportSlug: 'futebol', name: 'Escanteios - Mais de 10.5' },
-  { id: 'e5', sportSlug: 'futebol', name: 'Escanteios - Menos de 9.5' },
-  { id: 'e6', sportSlug: 'futebol', name: 'Escanteios - Menos de 10.5' },
+  { id: 'e1', sportSlug: 'futebol', name: 'Escanteios - Casa+' },
+  { id: 'e2', sportSlug: 'futebol', name: 'Escanteios - Fora+' },
+  { id: 'e3', sportSlug: 'futebol', name: 'Escanteios - Empate' },
+  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].flatMap((n, i) => [
+    { id: `ec${i}`, sportSlug: 'futebol', name: `Escanteios - Casa Mais de ${n}` },
+    { id: `ed${i}`, sportSlug: 'futebol', name: `Escanteios - Casa Menos de ${n}` },
+    { id: `ef${i}`, sportSlug: 'futebol', name: `Escanteios - Fora Mais de ${n}` },
+    { id: `eg${i}`, sportSlug: 'futebol', name: `Escanteios - Fora Menos de ${n}` }
+  ]),
+  ...[2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5].flatMap((n, i) => [
+    { id: `et${i}`, sportSlug: 'futebol', name: `Escanteios - Mais de ${n}` },
+    { id: `eu${i}`, sportSlug: 'futebol', name: `Escanteios - Menos de ${n}` }
+  ]),
+  ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((n, i) => [
+    { id: `er${i}c`, sportSlug: 'futebol', name: `Escanteios - Race ${n} - Casa` },
+    { id: `er${i}f`, sportSlug: 'futebol', name: `Escanteios - Race ${n} - Fora` }
+  ]),
+  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5].map((n, i) => ({ id: `eh1t${i}`, sportSlug: 'futebol', name: `Escanteios 1ºTempo - Mais de ${n}` })),
+
+  // FUTEBOL - CARTÕES
+  { id: 'c1', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 1 - Sim' },
+  { id: 'c2', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 1 - Não' },
+  { id: 'c3', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 2 ou mais - Sim' },
+  { id: 'c4', sportSlug: 'futebol', name: 'Cartões - Ambas Recebem 2 ou mais - Não' },
+  ...[1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].flatMap((n, i) => [
+    { id: `cm${i}`, sportSlug: 'futebol', name: `Cartões - Mais de ${n}` },
+    { id: `cn${i}`, sportSlug: 'futebol', name: `Cartões - Menos de ${n}` }
+  ]),
+  { id: 'cv1', sportSlug: 'futebol', name: 'Cartões Vermelhos - Mais de 0.5' },
+  { id: 'cv2', sportSlug: 'futebol', name: 'Cartões Vermelhos - Menos de 0.5' },
+
+  // FUTEBOL - HANDICAP ASIÁTICO (Extenso)
+  ...[0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0].flatMap((n, i) => [
+    { id: `hac${i}n`, sportSlug: 'futebol', name: `Handicap Asiático Casa -${n}` },
+    { id: `hac${i}p`, sportSlug: 'futebol', name: `Handicap Asiático Casa +${n}` },
+    { id: `haf${i}n`, sportSlug: 'futebol', name: `Handicap Asiático Fora -${n}` },
+    { id: `haf${i}p`, sportSlug: 'futebol', name: `Handicap Asiático Fora +${n}` }
+  ]),
+  ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((n, i) => [
+    { id: `hc${i}n`, sportSlug: 'futebol', name: `Handicap Casa -${n}` },
+    { id: `hc${i}p`, sportSlug: 'futebol', name: `Handicap Casa +${n}` },
+    { id: `hf${i}n`, sportSlug: 'futebol', name: `Handicap Fora -${n}` },
+    { id: `hf${i}p`, sportSlug: 'futebol', name: `Handicap Fora +${n}` }
+  ]),
 
   // BASQUETE
   { id: 'b1', sportSlug: 'basquete', name: 'Basket - Casa' },
   { id: 'b2', sportSlug: 'basquete', name: 'Basket - Fora' },
   { id: 'b3', sportSlug: 'basquete', name: 'Basket - Mais Total Pontos' },
   { id: 'b4', sportSlug: 'basquete', name: 'Basket - Menos Total Pontos' },
-  { id: 'b5', sportSlug: 'basquete', name: 'Basket - Vencedor 1º Quarto Casa' },
-  { id: 'b6', sportSlug: 'basquete', name: 'Basket - Vencedor 1º Quarto Fora' },
+  { id: 'b5', sportSlug: 'basquete', name: 'Basket - Handicap Mais Pontos Casa' },
+  { id: 'b6', sportSlug: 'basquete', name: 'Basket - Handicap Mais Pontos Fora' },
+  { id: 'b7', sportSlug: 'basquete', name: 'Basket - Handicap Menos Pontos Casa' },
+  { id: 'b8', sportSlug: 'basquete', name: 'Basket - Handicap Menos Pontos Fora' },
+  { id: 'b9', sportSlug: 'basquete', name: 'Basket - Personalizada' },
+  ...[1, 2, 3, 4].flatMap((q) => [
+    { id: `bq${q}c`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Casa` },
+    { id: `bq${q}e`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Empate` },
+    { id: `bq${q}f`, sportSlug: 'basquete', name: `Basket - Vencedor ${q}º Quarto Fora` }
+  ]),
+  ...[1, 2].flatMap((int) => [
+    { id: `bi${int}c`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Casa` },
+    { id: `bi${int}e`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Empate` },
+    { id: `bi${int}f`, sportSlug: 'basquete', name: `Basket - Vencedor ${int}º Intervalo Fora` }
+  ]),
 
   // VÔLEI
   { id: 'v1', sportSlug: 'volei', name: 'Vôlei - Casa' },
@@ -149,8 +167,23 @@ const DEFAULT_MARKETS: Market[] = [
   { id: 'v3', sportSlug: 'volei', name: 'Vôlei - 3x0' },
   { id: 'v4', sportSlug: 'volei', name: 'Vôlei - 3x1' },
   { id: 'v5', sportSlug: 'volei', name: 'Vôlei - 3x2' },
-  { id: 'v6', sportSlug: 'volei', name: 'Vôlei - Mais Pontos' },
-  { id: 'v7', sportSlug: 'volei', name: 'Vôlei - Menos Pontos' },
+  { id: 'v6', sportSlug: 'volei', name: 'Vôlei - 0x3' },
+  { id: 'v7', sportSlug: 'volei', name: 'Vôlei - 1x3' },
+  { id: 'v8', sportSlug: 'volei', name: 'Vôlei - 2x3' },
+  { id: 'v9', sportSlug: 'volei', name: 'Vôlei - 3 Sets' },
+  { id: 'v10', sportSlug: 'volei', name: 'Vôlei - 4 Sets' },
+  { id: 'v11', sportSlug: 'volei', name: 'Vôlei - 5 Sets' },
+  { id: 'v12', sportSlug: 'volei', name: 'Vôlei - Handicap -1.5 Casa' },
+  { id: 'v13', sportSlug: 'volei', name: 'Vôlei - Handicap -1.5 Fora' },
+  { id: 'v14', sportSlug: 'volei', name: 'Vôlei - Handicap +1.5 Casa' },
+  { id: 'v15', sportSlug: 'volei', name: 'Vôlei - Handicap +1.5 Fora' },
+  { id: 'v16', sportSlug: 'volei', name: 'Vôlei - Mais Pontos' },
+  { id: 'v17', sportSlug: 'volei', name: 'Vôlei - Menos Pontos' },
+  ...[1, 2, 3, 4, 5].flatMap((s) => [
+    { id: `vs${s}c`, sportSlug: 'volei', name: `Vôlei - Vencedor ${s}º Set Casa` },
+    { id: `vs${s}f`, sportSlug: 'volei', name: `Vôlei - Vencedor ${s}º Set Fora` }
+  ]),
+  { id: 'v18', sportSlug: 'volei', name: 'Vôlei - Personalizada' },
 ]
 
 const loadMarkets = (): Market[] => {

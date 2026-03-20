@@ -446,7 +446,7 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{groupFilter} — {total} times</span>
                   </div>
                 )}
-                {allDisplayed.map((team, i) => {
+                {allDisplayed.sort((a, b) => a.name.localeCompare(b.name)).map((team, i) => {
                   const custom = isCustom(team)
                   return (
                     <div key={`${team.id}-${i}`}
