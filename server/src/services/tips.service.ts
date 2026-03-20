@@ -10,6 +10,7 @@ interface CreateTipData {
   stake: number;
   tipDate: Date;
   authorId: string;
+  mercados?: string[];
 }
 
 export const createTip = async (data: CreateTipData) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   TrendingUp, Target, Clock, CheckCircle, XCircle,
-  Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign
+  Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign, ChevronDown
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
@@ -9,6 +9,7 @@ import { tipsService } from '../services/tips.service'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 import { ShareTipModal } from '../components/ui/ShareTipModal'
+import { ModalCriarAposta } from '../components/ui/ModalCriarAposta'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 
@@ -20,6 +21,7 @@ interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
   result?: string; profit?: number; tipDate: string
+  mercados?: string[]
 }
 
 type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING'
@@ -103,6 +105,7 @@ export const TipsPage = () => {
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
+  const [isCriarApostaModalOpen, setIsCriarApostaModalOpen] = useState(false)
   const [sharingTip, setSharingTip] = useState<Tip | null>(null)
 
   const load = async (p = 1) => {
@@ -162,6 +165,11 @@ export const TipsPage = () => {
     });
   };
 
+  const handleSaveNovoBilhete = async (data: any) => {
+    await tipsService.create(data)
+    load(1)
+  }
+
   const openEdit = (tip: Tip) => {
     setSelected(tip)
     setEditForm({
@@ -195,49 +203,95 @@ export const TipsPage = () => {
   // ─── Sub-componentes internos para acessar fmt/fmtDate ───────────────────────
 
   const TipCard = ({ tip }: { tip: Tip }) => {
-    const c = STATUS_CONFIG[tip.result || 'PENDING'] || STATUS_CONFIG.PENDING
+    const [isExpanded, setIsExpanded] = useState(false);
+    const c = STATUS_CONFIG[tip.result || 'PENDING'] || STATUS_CONFIG.PENDING;
+    const temMercados = tip.mercados && tip.mercados.length > 0;
+
     return (
-      <div className={`border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm group transition-all bg-surface-200 border-surface-400 hover:border-surface-300`}>
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 flex-1">{tip.title}</h3>
-          {isMaster && (
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => setSharingTip(tip)} className="p-1.5 text-slate-400 hover:text-green-400 transition-colors"><Share2 size={13} /></button>
-              <button onClick={() => openEdit(tip)} className="p-1.5 text-slate-400 hover:text-white transition-colors"><Edit2 size={13} /></button>
-              <button onClick={() => handleDelete(tip.id)} className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
-            </div>
-          )}
+      <div className={`border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm bg-surface-200 border-surface-400 group flex flex-col`}>
+        {/* HEADER DO CARD (Sempre visível) */}
+        <div 
+          className="flex justify-between items-start cursor-pointer w-full"
+          onClick={() => temMercados && setIsExpanded(!isExpanded)}
+        >
+          <div className="flex-1 pr-4">
+            <h3 className="font-bold text-sm text-white leading-snug break-words">
+              {tip.title}
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {tip.sport} {tip.event ? `· ${tip.event}` : ''}
+              {!temMercados && tip.market && ` · ${tip.market}`}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {isMaster && (
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2" onClick={e => e.stopPropagation()}>
+                <button onClick={() => setSharingTip(tip)} className="p-1.5 text-slate-400 hover:text-green-400 transition-colors"><Share2 size={13} /></button>
+                <button onClick={() => openEdit(tip)} className="p-1.5 text-slate-400 hover:text-white transition-colors"><Edit2 size={13} /></button>
+                <button onClick={() => handleDelete(tip.id)} className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
+              </div>
+            )}
+            {temMercados && (
+              <span className={`text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+                <ChevronDown size={18} />
+              </span>
+            )}
+          </div>
         </div>
-        <p className="text-xs text-slate-400 mb-1">{tip.sport} · {tip.event}</p>
-        <p className="text-xs text-slate-500 mb-4">{tip.market}</p>
-        <div className="flex items-center justify-between mb-4 gap-2">
-          <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase mb-0.5">Odd</p>
-            <p className="text-base font-bold font-mono text-white">@{tip.odds.toFixed(2)}</p>
+
+        {/* Divisor */}
+        <hr className="border-surface-400 my-4" />
+
+        {/* Células de Dados (Odd, Valor, Profit, Status e Data) */}
+        <div className="flex items-center justify-between text-center gap-2">
+          <div className="text-left">
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Odd</p>
+            <p className="text-[15px] font-bold font-mono text-white">@{tip.odds.toFixed(2)}</p>
           </div>
           <div className="h-8 w-px bg-surface-400" />
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase mb-0.5">Valor</p>
-            <p className="text-base font-bold font-mono text-emerald-400">{fmt(tip.stake)}</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Valor</p>
+            <p className="text-[15px] font-bold font-mono text-white">{fmt(tip.stake)}</p>
           </div>
           {tip.profit !== undefined && (
             <>
               <div className="h-8 w-px bg-surface-400" />
               <div className="text-center">
-                <p className="text-[10px] text-slate-500 uppercase mb-0.5">Profit</p>
-                <p className={`text-base font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {tip.profit >= 0 ? '+' : ''}{fmt(tip.profit)}
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Profit</p>
+                <p className={`text-[15px] font-bold font-mono ${tip.profit >=  0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {tip.profit >=  0 ? '+' : ''}{fmt(tip.profit)}
                 </p>
               </div>
             </>
           )}
+
+          <div className="h-8 w-px bg-surface-400 hidden sm:block" />
+          <div className="flex flex-col items-end gap-1.5 flex-[1.5] text-right">
+            <StatusBadge tip={tip} />
+            <span className="text-[10px] text-slate-500 font-mono">{fmtDate(tip.tipDate)}</span>
+          </div>
         </div>
-        <div className="flex items-center justify-between pt-3 border-t border-surface-400">
-          <StatusBadge tip={tip} />
-          <span className="text-[10px] text-slate-500 font-mono">{fmtDate(tip.tipDate)}</span>
-        </div>
+
+        {/* CORPO EXPANSÍVEL (Mercados do Bilhete) */}
+        {isExpanded && temMercados && (
+          <div className="mt-5 pt-4 border-t border-surface-400 space-y-2">
+            <div className="flex items-center gap-1.5 text-yellow-400 mb-3">
+              <span className="text-xs">★</span>
+              <h4 className="font-bold uppercase text-[10px] tracking-wider">Mercados do Bilhete</h4>
+            </div>
+
+            {tip.mercados!.map((mercado, index) => (
+              <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex items-center gap-3 border border-surface-300">
+                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">
+                  {index + 1}
+                </span>
+                <p className="text-[13px] text-slate-200 flex-1 leading-snug">{mercado}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    )
+    );
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -262,9 +316,14 @@ export const TipsPage = () => {
           <p className="text-xs text-slate-500 uppercase tracking-widest">{tips.length} dicas carregadas</p>
         </div>
         {isMaster && (
-          <button onClick={() => setNewTipOpen(true)} className="btn-primary flex items-center gap-2">
-            <Plus size={16} />Nova Dica
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setIsCriarApostaModalOpen(true)} className="bg-[#00c58e] hover:bg-[#00b57e] transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-emerald-500/20 text-sm">
+              <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Criar aposta
+            </button>
+            <button onClick={() => setNewTipOpen(true)} className="btn-primary flex items-center gap-1.5 text-sm py-2 bg-surface-300 hover:bg-surface-400 text-white shadow-none">
+              <Plus size={16} />Nova Dica Simples
+            </button>
+          </div>
         )}
       </div>
 
@@ -416,6 +475,13 @@ export const TipsPage = () => {
 
       {/* Modal Compartilhar */}
       {sharingTip && <ShareTipModal isOpen={!!sharingTip} onClose={() => setSharingTip(null)} tip={sharingTip} />}
+
+      {/* NOVO Modal Criar Aposta Multi-Mercados */}
+      <ModalCriarAposta 
+        isOpen={isCriarApostaModalOpen} 
+        onClose={() => setIsCriarApostaModalOpen(false)} 
+        onSave={handleSaveNovoBilhete} 
+      />
     </div>
   )
 }

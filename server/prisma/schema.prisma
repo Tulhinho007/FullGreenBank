@@ -69,6 +69,7 @@ model Tip {
   result      String?  // GREEN, RED, VOID, PENDING
   profit      Float?
   tipDate     DateTime
+  mercados    String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
