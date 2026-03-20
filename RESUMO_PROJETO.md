@@ -142,6 +142,8 @@ notes           String?    -- histórico de pagamentos em texto
 | Histórico de Contratos | `/gestao/historico` | Contratos de banca com clientes |
 | Performance | `/reports` | Análise de performance por período |
 | Nossos Planos | `/planos` | Página pública de planos disponíveis |
+| FAQ | `/faq` | Central de Ajuda com acordeão |
+| Legal | `/legal/:type` | Termos, Privacidade, Cookies |
 | Perfil | `/profile` | Configurações pessoais, senha, tema |
 
 ### Área de Administração
