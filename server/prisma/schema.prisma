@@ -52,6 +52,7 @@ model User {
   tips                 Tip[]
   bancaContratos       BancaContrato[]
   bancaCarteiras       BancaCarteira[]
+  solicitacoesInv      SolicitacaoInvestimento[]
 
   @@map("users")
 }
@@ -163,4 +164,16 @@ model SupportTicket {
   updatedAt   DateTime @updatedAt
 
   @@map("support_tickets")
+}
+
+model SolicitacaoInvestimento {
+  id           String   @id @default(uuid())
+  userId       String
+  usuario      User     @relation(fields: [userId], references: [id])
+  valorAporte  Float
+  dataPedido   DateTime @default(now())
+  status       String   @default("EM_ANALISE") // "EM_ANALISE", "ACEITO", "RECUSADO"
+  termoAceito  Boolean  @default(true)
+
+  @@map("solicitacoes_investimento")
 }

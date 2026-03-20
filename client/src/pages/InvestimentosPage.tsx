@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { CheckCircle2, Briefcase, Bot, ShieldCheck, LineChart, Info, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, ShieldAlert } from 'lucide-react'
 import toast from 'react-hot-toast'
+import api from '../services/api'
 
 export const InvestimentosPage = () => {
   const [aceitoTermos, setAceitoTermos] = useState(false)
   const [valorAporte, setValorAporte] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSolicitar = (e: React.FormEvent) => {
+  const handleSolicitar = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!aceitoTermos) {
       toast.error('Você precisa aceitar os termos para prosseguir.')
@@ -18,10 +20,17 @@ export const InvestimentosPage = () => {
       return
     }
 
-    // Lógica futura de integração
-    toast.success('Solicitação enviada com sucesso! Nossa equipe entrará em contato.')
-    setValorAporte('')
-    setAceitoTermos(false)
+    setLoading(true)
+    try {
+      await api.post('/solicitacoes', { valorAporte: valor, termoAceito: true })
+      toast.success('Sua solicitação foi enviada e está em análise pela nossa equipe técnica.')
+      setValorAporte('')
+      setAceitoTermos(false)
+    } catch {
+      toast.error('Erro ao enviar solicitação.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -29,61 +38,16 @@ export const InvestimentosPage = () => {
       {/* 1. Header */}
       <div>
         <h2 className="font-display font-semibold text-white">Investimento em Banca Gerenciada</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Evolua sua gestão com nossa operação automatizada e profissional.</p>
+        <p className="text-xs text-slate-500 mt-0.5">Leia atentamente o contrato e defina o valor do seu aporte.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Card Resumo 1: Saldo Disponível (Mock) */}
-        <div className="card p-5 relative overflow-hidden">
-          <div className="flex items-center gap-2 mb-2">
-            <Briefcase size={16} className="text-slate-400" />
-            <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">Saldo Disponível na Corretora</span>
-          </div>
-          <p className="text-3xl font-bold text-white">R$ 0,00</p>
-        </div>
 
-        {/* Card Resumo 2: Total Investido (Mock) */}
-        <div className="card p-5 bg-gradient-to-br from-green-900/40 to-surface-100 border-green-900/50 relative overflow-hidden">
-          <div className="flex items-center gap-2 mb-2">
-            <LineChart size={16} className="text-green-400" />
-            <span className="text-sm font-medium text-green-400/80 uppercase tracking-wider">Total em Gestão</span>
-          </div>
-          <p className="text-3xl font-bold text-green-400">R$ 0,00</p>
-        </div>
-      </div>
 
-      {/* 2. Como Funciona */}
-      <div>
-        <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-          <Info size={16} className="text-blue-400" /> Como Funciona o Serviço
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="card p-4 border-l-2 border-l-blue-500">
-            <Briefcase size={20} className="text-blue-400 mb-2" />
-            <h4 className="font-semibold text-white text-sm">1. Aporte de Capital</h4>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">Você define o valor que deseja colocar sob gestão técnica na nossa plataforma.</p>
-          </div>
-          <div className="card p-4 border-l-2 border-l-purple-500">
-            <Bot size={20} className="text-purple-400 mb-2" />
-            <h4 className="font-semibold text-white text-sm">2. Operação Automatizada</h4>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">Nossa inteligência e traders executam as ordens sem que você precise abrir a corretora.</p>
-          </div>
-          <div className="card p-4 border-l-2 border-l-red-500">
-            <ShieldCheck size={20} className="text-red-400 mb-2" />
-            <h4 className="font-semibold text-white text-sm">3. Gestão de Risco</h4>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">Aplicamos critérios rigorosos de stake e stop-loss para proteger seu patrimônio.</p>
-          </div>
-          <div className="card p-4 border-l-2 border-l-green-500">
-            <LineChart size={20} className="text-green-400 mb-2" />
-            <h4 className="font-semibold text-white text-sm">4. Acompanhamento</h4>
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed">Você visualiza os resultados em tempo real através do dashboard de relatórios.</p>
-          </div>
-        </div>
-      </div>
 
-      {/* 3. O Termo de Adesão */}
-      <div className="card p-6 flex flex-col lg:flex-row gap-6 border-surface-300">
-        <div className="flex-1 flex flex-col">
+
+      {/* 2. O Termo de Adesão e Formulário */}
+      <div className="card p-6 flex flex-col lg:flex-row gap-8 border-surface-300">
+        <div className="flex-1 flex flex-col xl:mr-10">
           <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
             <ShieldAlert size={16} className="text-amber-500" /> Termo de Adesão e Ciência
           </h3>
@@ -155,10 +119,10 @@ export const InvestimentosPage = () => {
 
              <button 
                type="submit"
-               disabled={!aceitoTermos || !valorAporte || parseFloat(valorAporte) <= 0}
+               disabled={!aceitoTermos || !valorAporte || parseFloat(valorAporte) <= 0 || loading}
                className="w-full mt-2 bg-green-600 hover:bg-green-500 disabled:bg-surface-400 disabled:text-slate-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg hover:shadow-green-900/40 disabled:shadow-none flex items-center justify-center gap-2"
              >
-               SOLICITAR ADERÊNCIA
+               {loading ? 'ENVIANDO...' : 'SOLICITAR ADERÊNCIA'}
              </button>
            </form>
         </div>
