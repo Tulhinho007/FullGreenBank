@@ -31,7 +31,7 @@ export const DashboardPage = () => {
 
   useEffect(() => {
     tipsService.getAll(1, 50)
-      .then(data => setTips(Array.isArray(data) ? data : []))
+      .then(data => setTips(Array.isArray(data.tips) ? data.tips : []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])

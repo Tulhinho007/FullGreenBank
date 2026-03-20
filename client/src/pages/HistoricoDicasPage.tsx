@@ -67,8 +67,8 @@ export const HistoricoDicasPage = () => {
   const fetchTips = async () => {
     try {
       setLoading(true)
-      const data = await tipsService.getAll()
-      setTips(data)
+      const data = await tipsService.getAll(1, 100)
+      setTips(Array.isArray(data.tips) ? data.tips : [])
     } catch {
       toast.error('Erro ao buscar histórico de dicas')
     } finally {
