@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { getRoleInfo } from '../../utils/formatters'
 import {
@@ -13,41 +13,58 @@ interface NavItemProps {
   icon: React.ReactNode
   label: string
   to?: string
-  children?: { label: string; to: string }[]
+  children?: { label: string; to?: string; placeholder?: boolean }[]
   placeholder?: boolean
 }
 
 const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
   const [open, setOpen] = useState(false)
+  const location = useLocation()
 
   if (children) {
+    const isChildActive = children.some(c => c.to && (location.pathname === c.to || location.pathname.startsWith(c.to + '/')))
+    
     return (
-      <div>
+      <div className="mb-1">
         <button
           onClick={() => setOpen(!open)}
-          className="sidebar-link w-full justify-between"
+          className={`sidebar-link w-full justify-between group ${isChildActive ? 'bg-sidebar-active/50 ring-1 ring-white/5 text-white' : ''}`}
         >
           <span className="flex items-center gap-3">
-            <span className="text-green-500/80">{icon}</span>
-            {label}
+            <span className={`transition-colors ${isChildActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
+              {icon}
+            </span>
+            <span>{label}</span>
           </span>
-          {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          <span className="text-slate-500">
+            {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </span>
         </button>
         {open && (
-          <div className="ml-9 mt-1 flex flex-col gap-0.5 border-l border-surface-300 pl-3">
-            {children.map((c) => (
-              <NavLink
-                key={c.to}
-                to={c.to}
-                className={({ isActive }) =>
-                  `text-xs py-2 px-2 rounded-md transition-colors duration-150 ${
-                    isActive ? 'text-green-400 font-semibold' : 'text-sidebar-text hover:text-white'
-                  }`
-                }
-              >
-                {c.label}
-              </NavLink>
-            ))}
+          <div className="ml-10 mr-4 mt-1 mb-2 flex flex-col gap-0.5 border-l border-surface-300 pl-3">
+            {children.map((c, i) => {
+              if (c.placeholder || !c.to) {
+                return (
+                  <div key={i} className="text-xs py-2 px-3 rounded-md flex justify-between items-center opacity-60 cursor-not-allowed select-none text-slate-500">
+                    <span>{c.label}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500" title="Em breve"></span>
+                  </div>
+                )
+              }
+              return (
+                <NavLink
+                  key={c.to}
+                  to={c.to}
+                  className={({ isActive }) =>
+                    `text-xs py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
+                      isActive ? 'text-green-400 font-semibold bg-green-500/5' : 'text-slate-400 hover:text-white hover:bg-surface-300/30'
+                    }`
+                  }
+                >
+                  {c.label}
+                </NavLink>
+              )
+            })}
           </div>
         )}
       </div>
@@ -56,10 +73,12 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
 
   if (placeholder || !to) {
     return (
-      <div className="sidebar-link opacity-50 cursor-not-allowed select-none">
-        <span className="text-green-500/60">{icon}</span>
-        <span>{label}</span>
-        <span className="ml-auto text-[10px] bg-surface-400 px-1.5 py-0.5 rounded text-slate-500">Em breve</span>
+      <div className="sidebar-link opacity-60 cursor-not-allowed select-none group">
+        <span className="text-slate-500 transition-colors flex items-center gap-3">
+          {icon}
+          <span>{label}</span>
+        </span>
+        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-slate-500" title="Em breve"></span>
       </div>
     )
   }
@@ -67,16 +86,22 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+      className={({ isActive }) => `sidebar-link group ${isActive ? 'active' : ''}`}
     >
-      <span className="text-green-500/80">{icon}</span>
-      {label}
+      {({ isActive }) => (
+        <>
+          <span className={`transition-colors flex-shrink-0 ${isActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
+            {icon}
+          </span>
+          <span className="truncate flex-1">{label}</span>
+        </>
+      )}
     </NavLink>
   )
 }
 
 const SectionLabel = ({ label }: { label: string }) => (
-  <p className="text-[10px] font-semibold text-sidebar-text/60 uppercase tracking-widest px-4 mt-4 mb-1">
+  <p className="text-[10px] font-semibold text-sidebar-text/60 uppercase tracking-widest px-4 mt-5 mb-2">
     {label}
   </p>
 )
@@ -94,7 +119,7 @@ export const Sidebar = () => {
   const initials = user?.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col">
+    <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
@@ -109,45 +134,43 @@ export const Sidebar = () => {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto custom-scrollbar">
 
-        {/* 1. PRINCIPAL */}
-        <SectionLabel label="Principal" />
-        <NavItem icon={<Star size={16} />}            label="Nossos Planos"   to="/planos" />
+        {/* ANÁLISE */}
+        <SectionLabel label="Análise" />
         <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
         <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
+        <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
+          { label: 'Histórico', to: '/gestao/historico' },
+          { label: 'Performance', to: '/reports' }
+        ]} />
 
-        {/* 2. ADMIN — só para admin/master */}
-        {isAdmin && (
-          <>
-            <SectionLabel label="Admin" />
-            <NavItem icon={<Users size={16} />}        label="Usuários"       to="/admin/users" />
-            <NavItem icon={<ClipboardList size={16} />} label="Cadastros"     to="/admin/cadastros" />
-            <NavItem icon={<ScrollText size={16} />}   label="Logs" to="/admin/log" />
-          </>
-        )}
-
-        {/* 3. GESTÃO */}
+        {/* GESTÃO */}
         <SectionLabel label="Gestão" />
-        <NavItem icon={<Wallet size={16} />}       label="Banca"            to="/gestao/banca" />
+        <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
         <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
-        <NavItem icon={<CalendarDays size={16} />} label="Calendário"       placeholder />
         <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-        <NavItem icon={<History size={16} />}      label="Histórico"        to="/gestao/historico" />
 
-        {/* 4. FINANCEIRO */}
-        <SectionLabel label="Financeiro" />
+        {/* ADMINISTRAÇÃO */}
         {isAdmin && (
           <>
-            <NavItem icon={<CreditCard size={16} />}  label="Pagamentos"       to="/financeiro/pagamentos" />
-            <NavItem icon={<Briefcase size={16} />}   label="Banca Gerenciada" to="/financeiro/banca-gerenciada" />
+            <SectionLabel label="Administração" />
+            <NavItem icon={<DollarSign size={16} />} label="Financeiro" children={[
+              { label: 'Pagamentos', to: '/financeiro/pagamentos' },
+              { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada' },
+              { label: 'Fluxo de Caixa', placeholder: true }
+            ]} />
+            <NavItem icon={<Settings size={16} />} label="Sistema" children={[
+              { label: 'Usuários', to: '/admin/users' },
+              { label: 'Cadastros', to: '/admin/cadastros' },
+              { label: 'Logs / Eventos', to: '/admin/log' }
+            ]} />
           </>
         )}
-        <NavItem icon={<DollarSign size={16} />} label="Fluxo de Caixa" placeholder />
-        <NavItem icon={<FileText size={16} />}   label="Relatórios"     to="/reports" />
 
-        {/* 5. OUTROS */}
+        {/* OUTROS */}
         <SectionLabel label="Outros" />
+        <NavItem icon={<Star size={16} />}        label="Nossos Planos"  to="/planos" />
         <NavItem icon={<BookOpen size={16} />}    label="Apostas Escola" placeholder />
         <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
         <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
