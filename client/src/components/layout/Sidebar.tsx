@@ -140,7 +140,7 @@ export const Sidebar = () => {
         <SectionLabel label="Análise" />
         <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
         
-        {!(user?.role === 'MEMBRO' && user?.paymentStatus === 'PENDENTE') ? (
+        {!(user?.role === 'MEMBRO' && !user?.isActive) ? (
           <>
             <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
             <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
@@ -156,7 +156,9 @@ export const Sidebar = () => {
           </>
         ) : (
           <div className="px-4 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mx-2 mt-4">
-            <p className="text-[10px] text-yellow-500 font-bold uppercase mb-1">Assinatura Expirada</p>
+            <p className="text-[10px] text-yellow-500 font-bold uppercase mb-1">
+              {user.paymentStatus === 'ATRASADO' ? 'Assinatura Atrasada' : 'Assinatura Expirada'}
+            </p>
             <p className="text-[10px] text-slate-400 leading-tight">Sua conta está em modo de visualização. Regularize para acessar todas as ferramentas.</p>
           </div>
         )}

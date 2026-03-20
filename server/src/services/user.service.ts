@@ -15,8 +15,11 @@ export const getAllUsers = async () => {
       plan: true,
       value: true,
       payMethod: true,
+      purchaseDate: true,
+      lastPaymentDate: true,
       dueDate: true,
       paymentStatus: true,
+      isActive: true,
       notes: true,
       currency: true,
       language: true,
@@ -44,8 +47,11 @@ export const getUserById = async (id: string) => {
       plan: true,
       value: true,
       payMethod: true,
+      purchaseDate: true,
+      lastPaymentDate: true,
       dueDate: true,
       paymentStatus: true,
+      isActive: true,
       notes: true,
       currency: true,
       language: true,
@@ -62,8 +68,9 @@ export const updateUser = async (
   data: { 
     name?: string; email?: string; phone?: string; username?: string; 
     password?: string; isTipster?: boolean; 
-    plan?: string; value?: number; payMethod?: string; 
-    dueDate?: string; paymentStatus?: string; notes?: string;
+    plan?: string; value?: number; payMethod?: string;
+    purchaseDate?: string; lastPaymentDate?: string;
+    dueDate?: string; paymentStatus?: string; isActive?: boolean; notes?: string;
     currency?: string; language?: string; theme?: string;
     twoFactorEnabled?: boolean; avatarUrl?: string;
   }
@@ -77,16 +84,19 @@ export const updateUser = async (
   if (data.password) updateData.password = await hashPassword(data.password);
   if (data.isTipster !== undefined)   updateData.isTipster = data.isTipster;
   
-  if (data.plan)                updateData.plan = data.plan;
-  if (data.value !== undefined)      updateData.value = data.value;
-  if (data.payMethod)           updateData.payMethod = data.payMethod;
-  if (data.dueDate)             updateData.dueDate = data.dueDate;
-  if (data.paymentStatus)       updateData.paymentStatus = data.paymentStatus;
-  if (data.notes !== undefined) updateData.notes = data.notes;
+  if (data.plan)                     updateData.plan          = data.plan;
+  if (data.value !== undefined)      updateData.value         = data.value;
+  if (data.payMethod)                updateData.payMethod     = data.payMethod;
+  if (data.purchaseDate)             updateData.purchaseDate  = data.purchaseDate;
+  if (data.lastPaymentDate)          updateData.lastPaymentDate = data.lastPaymentDate;
+  if (data.dueDate)                  updateData.dueDate       = data.dueDate;
+  if (data.paymentStatus)            updateData.paymentStatus = data.paymentStatus;
+  if (data.isActive !== undefined)   updateData.isActive      = data.isActive;
+  if (data.notes !== undefined)      updateData.notes         = data.notes;
 
   if (data.currency)            updateData.currency = data.currency;
   if (data.language)            updateData.language = data.language;
-  if (data.theme)               updateData.theme = data.theme;
+  if (data.theme)               updateData.theme    = data.theme;
   if (data.twoFactorEnabled !== undefined) updateData.twoFactorEnabled = data.twoFactorEnabled;
   if (data.avatarUrl)           updateData.avatarUrl = data.avatarUrl;
 
@@ -104,8 +114,11 @@ export const updateUser = async (
       plan: true,
       value: true,
       payMethod: true,
+      purchaseDate: true,
+      lastPaymentDate: true,
       dueDate: true,
       paymentStatus: true,
+      isActive: true,
       notes: true,
       currency: true,
       language: true,

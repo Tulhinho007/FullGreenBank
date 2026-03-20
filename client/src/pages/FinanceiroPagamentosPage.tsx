@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { 
-  Users, Clock, AlertTriangle, 
+  Users, AlertTriangle, 
   TrendingUp, Edit2, Search, 
   CheckCircle, Ban, Hourglass, ClipboardList,
   FileSpreadsheet, FileText, Printer,
@@ -13,11 +13,12 @@ import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { formatCurrency as fmt } from '../utils/formatters'
+import { checkSubscription, createPayment } from '../utils/subscription'
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
-type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'INATIVO' | 'TRIAL'
-type PlanType      = 'TRIAL' | 'STARTER' | 'STANDARD' | 'PRO' | 'ADMIN'
+type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'CANCELADO'
+type PlanType      = 'STARTER' | 'STANDARD' | 'PRO' | 'FREE'
 type PayMethod     = 'PIX' | 'CARTAO' | 'BOLETO' | 'TRANSFERENCIA' | ''
 
 interface UserPayment {
@@ -28,8 +29,9 @@ interface UserPayment {
   plan: PlanType
   value: number | null
   payMethod: PayMethod
+  purchaseDate: string | null
+  lastPaymentDate: string | null
   dueDate: string | null
-  paymentDate?: string | null
   status: PaymentStatus
   notes: string
 }
@@ -40,16 +42,14 @@ const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon:
   ATIVO:     { label: 'PAGO',      color: 'bg-green-500/10 text-green-500 border-green-500/20',  icon: <CheckCircle size={12} /> },
   PENDENTE:  { label: 'PENDENTE',  color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: <Hourglass size={12} /> },
   ATRASADO:  { label: 'ATRASADO',  color: 'bg-red-500/10 text-red-500 border-red-500/20',        icon: <AlertTriangle size={12} /> },
-  INATIVO:   { label: 'FINALIZADO',color: 'bg-surface-300 text-slate-400 border-surface-400',    icon: <Ban size={12} /> },
-  TRIAL:     { label: 'TRIAL',     color: 'bg-blue-500/10 text-blue-500 border-blue-500/20',     icon: <Clock size={12} /> },
+  CANCELADO: { label: 'CANCELADO', color: 'bg-surface-300 text-slate-400 border-surface-400',    icon: <Ban size={12} /> },
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  TRIAL:    { label: 'TRIAL',          color: 'bg-blue-500/10 text-blue-400 border-blue-500/20'       },
-  STARTER:  { label: 'STARTER',        color: 'bg-green-500/10 text-green-400 border-green-500/20'      },
-  STANDARD: { label: 'STANDARD',       color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
-  PRO:      { label: 'PRO',            color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
-  ADMIN:    { label: 'ADMIN',          color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+  FREE:     { label: 'FREE',    color: 'bg-slate-500/10 text-slate-400 border-slate-500/20'       },
+  STARTER:  { label: 'STARTER', color: 'bg-green-500/10 text-green-400 border-green-500/20'      },
+  STANDARD: { label: 'STANDARD',color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
+  PRO:      { label: 'PRO',     color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -66,11 +66,11 @@ const formatDate = (d: string | null) =>
 // ─── Formulário vazio ────────────────────────────────────────────────────────
 
 const emptyEdit = {
-  plan: 'STARTER' as PlanType,
+  plan: 'FREE' as PlanType,
   value: '',
   payMethod: '' as PayMethod,
   dueDate: '',
-  status: 'TRIAL' as PaymentStatus,
+  status: 'PENDENTE' as PaymentStatus,
   notes: '',
 }
 
@@ -103,27 +103,26 @@ export const FinanceiroPagamentosPage = () => {
       const members = data.filter((u: any) => u.role === 'MEMBRO' || (!u.role && u.email !== 'admin@fullgreenbank.com'))
       
       const mapped: UserPayment[] = members.map((u: any) => {
-        let status = (u.paymentStatus ?? 'PENDENTE') as PaymentStatus
-        
-        // Automação Frontend: Se for ATIVO mas o vencimento já passou, vira PENDENTE
-        if (status === 'ATIVO' && u.dueDate) {
-          const due = new Date(u.dueDate + 'T23:59:59'); // Fim do dia
-          if (due < new Date()) {
-            status = 'PENDENTE';
-          }
-        }
+        // RULE 2 & 5: Use checkSubscription for consistent status logic
+        const { status } = checkSubscription({
+          role: u.role,
+          paymentStatus: u.paymentStatus,
+          dueDate: u.dueDate,
+        })
 
         return {
-          id:        u.id,
-          name:      u.name,
-          email:     u.email,
-          role:      u.role || 'MEMBRO',
-          plan:      (u.plan ?? 'TRIAL') as PlanType,
-          value:     u.value ?? null,
-          payMethod: (u.payMethod ?? '') as PayMethod,
-          dueDate:   u.dueDate    ?? null,
-          status,
-          notes:     u.notes      ?? '',
+          id:              u.id,
+          name:            u.name,
+          email:           u.email,
+          role:            u.role || 'MEMBRO',
+          plan:            (u.plan ?? 'FREE') as PlanType,
+          value:           u.value ?? null,
+          payMethod:       (u.payMethod ?? '') as PayMethod,
+          purchaseDate:    u.purchaseDate    ?? null,
+          lastPaymentDate: u.lastPaymentDate ?? null,
+          dueDate:         u.dueDate         ?? null,
+          status:          status as PaymentStatus,
+          notes:           u.notes           ?? '',
         }
       })
       setUsers(mapped)
@@ -247,33 +246,37 @@ export const FinanceiroPagamentosPage = () => {
     setSaving(true)
     
     try {
-      let finalDueDate = editForm.dueDate;
-      let notesUpdate = editForm.notes;
-
-      // Automação: Se mudou para PAGO (ATIVO) e não estava ativo antes, ou mudou apenas o status
-      // O requisito diz: Ao alterar manualmente o status para PAGO, gravar timestamp e +30 dias.
-      if (editForm.status === 'ATIVO' && editTarget.status !== 'ATIVO') {
-        const now = new Date();
-        const future = new Date();
-        future.setDate(now.getDate() + 30);
-        
-        const dateStr = now.toISOString().split('T')[0];
-        const futureStr = future.toISOString().split('T')[0];
-        
-        finalDueDate = futureStr;
-        // Gravar no log/notes para o histórico simplificado
-        const historyEntry = `PAG:${dateStr}|VENC:${futureStr}|PLAN:${editForm.plan}`;
-        notesUpdate = notesUpdate ? `${notesUpdate}\n${historyEntry}` : historyEntry;
+      let payload: Record<string, any> = {
+        plan:      editForm.plan,
+        value:     editForm.value !== '' ? Number(editForm.value) : null,
+        payMethod: editForm.payMethod || null,
+        dueDate:   editForm.dueDate   || null,
+        paymentStatus: editForm.status,
+        notes:     editForm.notes,
       }
 
-      await api.patch(`/users/${editTarget.id}/profile`, {
-        plan:          editForm.plan,
-        value:         editForm.value !== '' ? Number(editForm.value) : null,
-        payMethod:     editForm.payMethod || null,
-        dueDate:       finalDueDate       || null,
-        paymentStatus: editForm.status,
-        notes:         notesUpdate,
-      })
+      // RULE 1 & 3: Use createPayment() when confirming payment (ATIVO)
+      if (editForm.status === 'ATIVO') {
+        const paymentData = createPayment({
+          plan:      editForm.plan,
+          value:     editForm.value !== '' ? Number(editForm.value) : null,
+          payMethod: editForm.payMethod || undefined,
+          notes:     editForm.notes,
+        })
+        // Append payment history entry to notes
+        const today = new Date().toISOString().split('T')[0]
+        const historyEntry = `PAG:${today}|VENC:${paymentData.dueDate}|PLAN:${editForm.plan}`
+        paymentData.notes = paymentData.notes
+          ? `${paymentData.notes}\n${historyEntry}`
+          : historyEntry
+
+        payload = { ...payload, ...paymentData }
+      } else {
+        // RULE 2: If setting non-ATIVO status, clear isActive
+        payload.isActive = false
+      }
+
+      await api.patch(`/users/${editTarget.id}/profile`, payload)
       
       toast.success('Pagamento atualizado com sucesso! ✓')
       if (me) addLog({
@@ -647,7 +650,7 @@ interface UserRowProps {
 
 const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
   const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.PENDENTE
-  const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.TRIAL
+  const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.FREE
 
   // Helper para ícones de pagamento
   const getPayIcon = (method: PayMethod) => {

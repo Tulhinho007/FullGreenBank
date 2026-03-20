@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { authService } from '../services/auth.service'
 import toast from 'react-hot-toast'
 import { addLog } from '../pages/SystemLogPage'
+import { checkSubscription } from '../utils/subscription'
 
 export interface User {
   id: string
@@ -18,8 +19,15 @@ export interface User {
   theme: string
   twoFactorEnabled: boolean
   avatarUrl?: string
+  // Subscription fields
   paymentStatus?: string
-  dueDate?: string
+  purchaseDate?: string | null
+  lastPaymentDate?: string | null
+  dueDate?: string | null
+  isActive?: boolean
+  value?: number | null
+  payMethod?: string
+  notes?: string
   createdAt: string
 }
 
@@ -60,12 +68,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Busca perfil atualizado do servidor
           const freshUser = await authService.getMe()
           if (freshUser) {
-            setUser(freshUser)
-            localStorage.setItem('fgb_user', JSON.stringify(freshUser))
+            // RULE 2: Check subscription status on every load
+            const { status, isActive } = checkSubscription(freshUser)
+            const userWithStatus = { ...freshUser, paymentStatus: status, isActive }
+            setUser(userWithStatus)
+            localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
           }
         } catch (err) {
           console.error('Failed to refresh user', err)
-          // Se o token estiver expirado ou inválido, desloga
           if ((err as any)?.response?.status === 401) {
             logout()
           }
@@ -81,10 +91,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const res = await authService.login({ email, password })
+    // RULE 2: Check subscription status on login
+    const { status, isActive } = checkSubscription(res.user)
+    const userWithStatus = { ...res.user, paymentStatus: status, isActive }
     setToken(res.token)
-    setUser(res.user)
+    setUser(userWithStatus)
     localStorage.setItem('fgb_token', res.token)
-    localStorage.setItem('fgb_user',  JSON.stringify(res.user))
+    localStorage.setItem('fgb_user',  JSON.stringify(userWithStatus))
     addLog({ userEmail: res.user.email, userName: res.user.name, userRole: res.user.role, category: 'Auth', action: 'Login realizado', detail: 'Acesso ao sistema' })
     toast.success(`Bem-vindo, ${res.user.name}! 🟢`)
   }

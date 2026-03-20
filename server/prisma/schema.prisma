@@ -30,11 +30,14 @@ model User {
   isTipster Boolean  @default(false)
   
   // Settings & Preferences
-  plan              String   @default("FREE")    // TRIAL, STARTER, STANDARD, PRO, FREE, MASTER
+  plan              String   @default("FREE")    // STARTER, STANDARD, PRO, FREE
   value             Float?
   payMethod         String?
-  dueDate           String?
-  paymentStatus     String   @default("PENDENTE")
+  purchaseDate      String?                      // Data da compra (YYYY-MM-DD)
+  lastPaymentDate   String?                      // Data do último pagamento (YYYY-MM-DD)
+  dueDate           String?                      // Data de vencimento (YYYY-MM-DD)
+  paymentStatus     String   @default("PENDENTE") // ATIVO, PENDENTE, ATRASADO, CANCELADO
+  isActive          Boolean  @default(false)     // Acesso liberado?
   notes            String?  @db.Text
   
   currency          String   @default("BRL")     // BRL, USD, EUR

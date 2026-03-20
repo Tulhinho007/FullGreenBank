@@ -62,7 +62,8 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
     const { id } = req.params;
     const { 
       name, email, phone, username, password, isTipster,
-      plan, value, payMethod, dueDate, paymentStatus, notes,
+      plan, value, payMethod, purchaseDate, lastPaymentDate,
+      dueDate, paymentStatus, isActive, notes,
       currency, language, theme, twoFactorEnabled, avatarUrl 
     } = req.body;
 
@@ -75,7 +76,8 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
 
     const user = await userService.updateUser(id, { 
       name, email, phone, username, password, isTipster,
-      plan, value, payMethod, dueDate, paymentStatus, notes,
+      plan, value, payMethod, purchaseDate, lastPaymentDate,
+      dueDate, paymentStatus, isActive, notes,
       currency, language, theme, twoFactorEnabled, avatarUrl 
     });
     sendSuccess(res, user, 'Usuário atualizado com sucesso!');
