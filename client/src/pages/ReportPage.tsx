@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Bug, MessageSquare, Send, Paperclip, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Bug, MessageSquare, Send, Paperclip, AlertCircle, CheckCircle2, ChevronRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -11,6 +11,19 @@ export const ReportPage = () => {
   const [priority, setPriority] = useState('Média (Funcionalidade com erro)');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -20,13 +33,15 @@ export const ReportPage = () => {
       const userStr = localStorage.getItem('fgb_user');
       const user = userStr ? JSON.parse(userStr) : null;
 
+      // Nota: Em um sistema real, aqui você usaria FormData para enviar o arquivo
       await api.post('/support', {
         type,
         title,
         description,
         priority,
         userEmail: user?.email || 'Visitante Anônimo',
-        userId: user?.id || null
+        userId: user?.id || null,
+        fileName: selectedFile?.name || null // Simulando o envio do nome do arquivo
       });
 
       setSubmitted(true);
@@ -35,6 +50,7 @@ export const ReportPage = () => {
       // Limpar campos
       setTitle('');
       setDescription('');
+      setSelectedFile(null);
       
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
@@ -150,10 +166,40 @@ export const ReportPage = () => {
               ></textarea>
             </div>
 
-            {/* Upload Mockup */}
-            <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-6 text-center hover:border-green-500 transition-colors cursor-pointer group">
-              <Paperclip className="mx-auto text-zinc-400 group-hover:text-green-500 mb-2" />
-              <p className="text-xs text-zinc-500">Dica: Anexe imagens no Discord de Suporte para análise detalhada.</p>
+            {/* Upload funcional */}
+            <div 
+              onClick={handleFileClick}
+              className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer group ${
+                selectedFile ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : 'border-zinc-200 dark:border-zinc-700 hover:border-green-500'
+              }`}
+            >
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+                accept="image/*"
+              />
+              {selectedFile ? (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex items-center gap-2 text-green-600 font-medium">
+                    <CheckCircle2 size={18} />
+                    <span className="text-sm truncate max-w-[200px]">{selectedFile.name}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={(e) => { e.stopPropagation(); setSelectedFile(null); }}
+                    className="p-1 hover:bg-red-100 text-red-500 rounded-full transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Paperclip className="mx-auto text-zinc-400 group-hover:text-green-500 mb-2" />
+                  <p className="text-xs text-zinc-500">Clique para anexar um print ou arraste o arquivo aqui</p>
+                </>
+              )}
             </div>
 
             {/* Botão Enviar */}
@@ -185,6 +231,22 @@ export const ReportPage = () => {
           </p>
         </div>
 
+        {/* Action Footer */}
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+          <div className="text-center md:text-left space-y-1">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-white">Dúvidas sobre o Reporte?</p>
+            <p className="text-xs text-zinc-500">Entre em contato com nosso suporte especializado.</p>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all flex items-center gap-2">
+              <ChevronRight size={16} className="rotate-180" /> Voltar
+            </Link>
+            <a href="mailto:suporte@fullgreenbank.com" className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20">
+              Falar com Suporte
+            </a>
+          </div>
+        </div>
+
       </div>
 
       {/* Disclaimer */}
@@ -194,4 +256,5 @@ export const ReportPage = () => {
     </div>
   );
 }
+
 

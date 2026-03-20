@@ -5,8 +5,7 @@ import {
   ShieldCheck, 
   CreditCard, 
   Lightbulb, 
-  ChevronRight,
-  ArrowRight
+  ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -135,15 +134,20 @@ export const GuidePage = () => {
         </div>
       </div>
 
-      {/* Footer Shortcut */}
+      {/* Action Footer */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50">
-        <div className="text-center md:text-left">
-          <p className="text-sm font-semibold text-white">Ainda tem dúvidas?</p>
+        <div className="text-center md:text-left space-y-1">
+          <p className="text-sm font-semibold text-white">Dúvidas sobre o nosso Guia?</p>
           <p className="text-xs text-slate-500">Nossa Central de Ajuda tem todas as respostas detalhadas.</p>
         </div>
-        <Link to="/faq" className="btn-primary flex items-center gap-2 px-8">
-          Ver FAQ <ArrowRight size={16} />
-        </Link>
+        <div className="flex gap-3">
+          <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-surface-300 border border-white/5 text-white font-bold text-sm hover:bg-surface-400 transition-all flex items-center gap-2">
+            <ChevronRight size={16} className="rotate-180" /> Voltar
+          </Link>
+          <Link to="/faq" className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20">
+            Ver FAQ
+          </Link>
+        </div>
       </div>
 
       {/* Credits */}

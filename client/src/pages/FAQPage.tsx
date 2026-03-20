@@ -99,13 +99,20 @@ export const FAQPage = () => {
           ))}
         </div>
 
-        {/* Call to Action Final */}
-        <div className="mt-12 text-center p-8 bg-green-600 rounded-2xl">
-          <h3 className="text-white font-bold text-lg mb-2">Ainda tem dúvidas?</h3>
-          <p className="text-green-50 mb-6">Nosso suporte técnico está disponível 24/7 para membros Pro.</p>
-          <a href="mailto:suporte@fullgreenbank.com" className="bg-white text-green-600 px-8 py-3 rounded-xl font-bold hover:bg-zinc-100 transition-colors inline-block">
-            Abrir Chamado
-          </a>
+        {/* Action Footer */}
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+          <div className="text-center md:text-left space-y-1">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-white">Dúvidas sobre o nosso FAQ?</p>
+            <p className="text-xs text-zinc-500">Entre em contato com nosso suporte especializado.</p>
+          </div>
+          <div className="flex gap-3">
+            <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all flex items-center gap-2">
+              <ChevronRight size={16} className="rotate-180" /> Voltar
+            </Link>
+            <a href="mailto:suporte@fullgreenbank.com" className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20">
+              Falar com Suporte
+            </a>
+          </div>
         </div>
       </div>
 
