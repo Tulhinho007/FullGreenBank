@@ -7,8 +7,7 @@
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "build:server": "npm run build --prefix server",
-    "build:client": "npm run build --prefix client",
+    "build": "npm run build --prefix client",
     "prisma:generate": "npm run prisma:generate --prefix server",
     "prisma:migrate": "npm run prisma:migrate --prefix server",
     "prisma:studio": "npm run prisma:studio --prefix server"
