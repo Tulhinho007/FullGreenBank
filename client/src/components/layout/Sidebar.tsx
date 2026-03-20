@@ -143,6 +143,7 @@ export const Sidebar = () => {
         {!(user?.role === 'MEMBRO' && !user?.isActive) ? (
           <>
             <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
+            <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
               { label: 'Histórico de Contratos', to: '/gestao/historico' },
               { label: 'Performance', to: '/reports' }
@@ -152,7 +153,6 @@ export const Sidebar = () => {
             <SectionLabel label="Gestão" />
             <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
             <NavItem icon={<Briefcase size={16} />}    label="Investimentos"     to="/gestao/investimentos" />
-            <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
           </>
         ) : (
