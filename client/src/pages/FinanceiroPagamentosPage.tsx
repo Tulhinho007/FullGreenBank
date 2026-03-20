@@ -1,9 +1,9 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { 
-  CreditCard, Users, Clock, AlertTriangle, 
+  Users, Clock, AlertTriangle, 
   TrendingUp, Edit2, ChevronDown, Search, 
-  CheckCircle, Ban, Hourglass,
-  FileSpreadsheet, FileText, Printer, Eye,
+  CheckCircle, Ban, Hourglass, ClipboardList,
+  FileSpreadsheet, FileText, Printer,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -28,6 +28,7 @@ interface UserPayment {
   value: number | null
   payMethod: PayMethod
   dueDate: string | null
+  paymentDate?: string | null
   status: PaymentStatus
   notes: string
 }
@@ -35,19 +36,19 @@ interface UserPayment {
 // ─── Helpers visuais ─────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ATIVO:     { label: 'Ativo',     color: 'text-green-400 bg-green-900/40 border-green-800/50',  icon: <CheckCircle size={12} /> },
-  PENDENTE:  { label: 'Pendente',  color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50', icon: <Clock size={12} /> },
+  ATIVO:     { label: 'Pago',      color: 'text-green-400 bg-green-900/40 border-green-800/50',  icon: <CheckCircle size={12} /> },
+  PENDENTE:  { label: 'Pendente',  color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50', icon: <Hourglass size={12} /> },
   ATRASADO:  { label: 'Atrasado',  color: 'text-red-400 bg-red-900/30 border-red-800/50',        icon: <AlertTriangle size={12} /> },
-  INATIVO:   { label: 'Inativo',   color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <Ban size={12} /> },
+  INATIVO:   { label: 'Finalizado',color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <Ban size={12} /> },
   TRIAL:     { label: 'Trial',     color: 'text-blue-400 bg-blue-900/30 border-blue-800/50',     icon: <Clock size={12} /> },
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
   TRIAL:    { label: 'Trial',          color: 'text-blue-400 bg-blue-900/30 border-blue-800/50'       },
   STARTER:  { label: 'Starter',        color: 'text-slate-300 bg-surface-300 border-surface-400'      },
-  STANDARD: { label: 'Standard',       color: 'text-green-400 bg-green-900/40 border-green-800/50'    },
-  PRO:      { label: 'Pro',            color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50' },
-  ADMIN:    { label: 'Administrador',  color: 'text-purple-400 bg-purple-900/30 border-purple-800/50' },
+  STANDARD: { label: 'Standard',       color: 'text-emerald-400 bg-emerald-900/40 border-emerald-800/50' },
+  PRO:      { label: 'Pro Full',       color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50' },
+  ADMIN:    { label: 'Admin',          color: 'text-purple-400 bg-purple-900/30 border-purple-800/50' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -91,24 +92,40 @@ export const FinanceiroPagamentosPage = () => {
   const [editTarget, setEditTarget] = useState<UserPayment | null>(null)
   const [editForm,   setEditForm]   = useState(emptyEdit)
   const [activeTab,  setActiveTab]  = useState<'pagamento' | 'plano'>('pagamento')
+  const [historyTarget, setHistoryTarget] = useState<UserPayment | null>(null)
 
   // ── Carregar usuários ──────────────────────────────────────────────────────
   const loadUsers = async () => {
     setLoading(true)
     try {
       const data = await usersService.getAll()
-      const mapped: UserPayment[] = data.map((u: any) => ({
-        id:        u.id,
-        name:      u.name,
-        email:     u.email,
-        role:      u.role,
-        plan:      u.plan       ?? 'TRIAL',
-        value:     u.value      ?? null,
-        payMethod: u.payMethod  ?? '',
-        dueDate:   u.dueDate    ?? null,
-        status:    u.paymentStatus ?? 'TRIAL',
-        notes:     u.notes      ?? '',
-      }))
+      // Filtro: Apenas usuários "MEMBRO"
+      const members = data.filter((u: any) => u.role === 'MEMBRO' || (!u.role && u.email !== 'admin@fullgreenbank.com'))
+      
+      const mapped: UserPayment[] = members.map((u: any) => {
+        let status = (u.paymentStatus ?? 'PENDENTE') as PaymentStatus
+        
+        // Automação Frontend: Se for ATIVO mas o vencimento já passou, vira PENDENTE
+        if (status === 'ATIVO' && u.dueDate) {
+          const due = new Date(u.dueDate + 'T23:59:59'); // Fim do dia
+          if (due < new Date()) {
+            status = 'PENDENTE';
+          }
+        }
+
+        return {
+          id:        u.id,
+          name:      u.name,
+          email:     u.email,
+          role:      u.role || 'MEMBRO',
+          plan:      u.plan       ?? 'TRIAL',
+          value:     u.value      ?? null,
+          payMethod: u.payMethod  ?? '',
+          dueDate:   u.dueDate    ?? null,
+          status,
+          notes:     u.notes      ?? '',
+        }
+      })
       setUsers(mapped)
     } catch {
       toast.error('Erro ao carregar usuários.')
@@ -136,10 +153,6 @@ export const FinanceiroPagamentosPage = () => {
     const matchPlan   = !filterPlan   || u.plan   === filterPlan
     return matchSearch && matchStatus && matchPlan
   })
-
-  // Separar por tipo de conta
-  const admins  = filtered.filter(u => u.role === 'ADMIN' || u.role === 'MASTER')
-  const members = filtered.filter(u => u.role !== 'ADMIN' && u.role !== 'MASTER')
 
   // ── Exportar CSV ──────────────────────────────────────────────────────────
   const exportCSV = () => {
@@ -232,15 +245,36 @@ export const FinanceiroPagamentosPage = () => {
     e.preventDefault()
     if (!editTarget) return
     setSaving(true)
+    
     try {
-      await api.patch(`/users/${editTarget.id}/payment`, {
+      let finalDueDate = editForm.dueDate;
+      let notesUpdate = editForm.notes;
+
+      // Automação: Se mudou para PAGO (ATIVO) e não estava ativo antes, ou mudou apenas o status
+      // O requisito diz: Ao alterar manualmente o status para PAGO, gravar timestamp e +30 dias.
+      if (editForm.status === 'ATIVO' && editTarget.status !== 'ATIVO') {
+        const now = new Date();
+        const future = new Date();
+        future.setDate(now.getDate() + 30);
+        
+        const dateStr = now.toISOString().split('T')[0];
+        const futureStr = future.toISOString().split('T')[0];
+        
+        finalDueDate = futureStr;
+        // Gravar no log/notes para o histórico simplificado
+        const historyEntry = `PAG:${dateStr}|VENC:${futureStr}|PLAN:${editForm.plan}`;
+        notesUpdate = notesUpdate ? `${notesUpdate}\n${historyEntry}` : historyEntry;
+      }
+
+      await api.patch(`/users/${editTarget.id}/profile`, {
         plan:          editForm.plan,
         value:         editForm.value !== '' ? Number(editForm.value) : null,
         payMethod:     editForm.payMethod || null,
-        dueDate:       editForm.dueDate   || null,
+        dueDate:       finalDueDate       || null,
         paymentStatus: editForm.status,
-        notes:         editForm.notes,
+        notes:         notesUpdate,
       })
+      
       toast.success('Pagamento atualizado com sucesso! ✓')
       if (me) addLog({
         userEmail: me.email,
@@ -252,7 +286,8 @@ export const FinanceiroPagamentosPage = () => {
       })
       closeEdit()
       loadUsers()
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error('Erro ao salvar alterações.')
     } finally {
       setSaving(false)
@@ -379,57 +414,97 @@ export const FinanceiroPagamentosPage = () => {
         </div>
       ) : (
         <div className="card overflow-hidden">
-          {/* Header da tabela */}
-          <div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_80px] gap-4 px-5 py-3 border-b border-surface-300 text-xs text-slate-500 uppercase tracking-wide">
+          {/* Header da tabela consolidado */}
+          <div className="hidden md:grid grid-cols-[2.5fr_1.5fr_1.5fr_1.5fr_120px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[10px] font-bold text-slate-500 uppercase tracking-widest items-center">
             <span>Usuário</span>
-            <span>Tipo / Plano</span>
-            <span>Valor</span>
-            <span>Forma de Pag.</span>
-            <span>Vencimento</span>
-            <span>Status</span>
-            <span className="text-right">Ações</span>
+            <span>Plano</span>
+            <span>Financeiro</span>
+            <span>Datas</span>
+            <span className="text-right pr-4">Ações</span>
           </div>
 
-          {/* Grupo: Admins */}
-          {admins.length > 0 && (
-            <>
-              <div className="px-5 py-2 bg-surface-300/50 border-b border-surface-300 flex items-center gap-2">
-                <CreditCard size={12} className="text-purple-400" />
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                  Contas Administrativas
-                </span>
-              </div>
-              {admins.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={fmt} />
-              ))}
-            </>
-          )}
-
-          {/* Grupo: Membros */}
-          {members.length > 0 && (
-            <>
-              <div className="px-5 py-2 bg-surface-300/50 border-b border-surface-300 flex items-center gap-2">
-                <Users size={12} className="text-slate-400" />
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                  Membros
-                </span>
-              </div>
-              {members.map(u => (
-                <UserRow key={u.id} user={u} onEdit={openEdit} isReadOnly={isReadOnly} formatCurrency={fmt} />
-              ))}
-            </>
-          )}
+          <div className="divide-y divide-surface-300">
+            {filtered.map(u => (
+              <UserRow 
+                key={u.id} 
+                user={u} 
+                onEdit={openEdit} 
+                onHistory={() => setHistoryTarget(u)}
+                formatCurrency={fmt} 
+              />
+            ))}
+          </div>
 
           {/* Vazio */}
           {filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <Ban size={32} className="text-slate-600 mb-3" />
-              <p className="text-slate-400 text-sm">Nenhum usuário encontrado</p>
-              <p className="text-slate-600 text-xs mt-1">Tente ajustar os filtros de busca</p>
+              <Users size={32} className="text-slate-600 mb-3 opacity-20" />
+              <p className="text-slate-400 text-sm">Nenhum membro encontrado</p>
             </div>
           )}
         </div>
       )}
+
+      {/* ── Modal Histórico ────────────────────────────────────────────────── */}
+      <Modal 
+        isOpen={!!historyTarget} 
+        onClose={() => setHistoryTarget(null)} 
+        title={`Histórico: ${historyTarget?.name}`}
+        size="md"
+      >
+        <div className="flex flex-col gap-4">
+          <div className="overflow-hidden rounded-xl border border-surface-400 bg-surface-300/30">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-surface-400/50 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-400">
+                <tr>
+                  <th className="px-4 py-3">Pagamento</th>
+                  <th className="px-4 py-3">Vencimento</th>
+                  <th className="px-4 py-3">Plano</th>
+                  <th className="px-4 py-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface-400">
+                {(() => {
+                  const lines = historyTarget?.notes.split('\n').filter(l => l.includes('PAG:')) || [];
+                  if (lines.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-slate-500 italic">
+                          Nenhum registro de pagamento encontrado.
+                        </td>
+                      </tr>
+                    )
+                  }
+                  return lines.reverse().map((line, i) => {
+                    const pag = line.split('PAG:')[1]?.split('|')[0] || '—';
+                    const venc = line.split('VENC:')[1]?.split('|')[0] || '—';
+                    const plan = line.split('PLAN:')[1] || 'STANDARD';
+                    const isNewest = i === 0 && historyTarget?.status === 'ATIVO';
+                    
+                    return (
+                      <tr key={i} className="hover:bg-surface-400/20 transition-colors">
+                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{formatDate(pag)}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{formatDate(venc)}</td>
+                        <td className="px-4 py-3">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded border border-surface-400 text-slate-400">
+                            {plan}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isNewest ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'}`}>
+                            {isNewest ? 'ATIVA' : 'FINALIZADA'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
+              </tbody>
+            </table>
+          </div>
+          <button onClick={() => setHistoryTarget(null)} className="btn-secondary w-full py-2.5">Fechar</button>
+        </div>
+      </Modal>
 
       {/* ── Modal Editar Pagamento ────────────────────────────────────────────── */}
       <Modal
@@ -581,71 +656,79 @@ export const FinanceiroPagamentosPage = () => {
 interface UserRowProps {
   user: UserPayment
   onEdit: (u: UserPayment) => void
-  isReadOnly?: boolean
+  onHistory: () => void
   formatCurrency: (v: number | null) => string
 }
 
-const UserRow = ({ user, onEdit, isReadOnly, formatCurrency }: UserRowProps) => {
-  const status = STATUS_CONFIG[user.status] || STATUS_CONFIG.INATIVO
-  const plan   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.TRIAL
-  const isAdmin = user.role === 'ADMIN' || user.role === 'MASTER'
+const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
+  const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.INATIVO
+  const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.TRIAL
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_80px] gap-2 md:gap-4 px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group items-center">
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1.5fr_1.5fr_120px] gap-2 md:gap-4 px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group items-center">
 
       {/* Usuário */}
-      <div className="flex flex-col min-w-0">
-        <span className="text-sm font-medium text-white truncate">{user.name}</span>
-        <span className="text-xs text-slate-500 truncate">{user.email}</span>
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-white truncate">{user.name}</span>
+            <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border ${statusCfg.color}`}>
+              {statusCfg.label}
+            </span>
+          </div>
+          <span className="text-xs text-slate-500 truncate">{user.email}</span>
+        </div>
       </div>
 
-      {/* Tipo / Plano */}
-      <div className="flex flex-wrap gap-1.5 items-center">
-        <span className="text-xs text-slate-400">
-          {isAdmin ? 'Admin' : 'Membro'}
-        </span>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${plan.color}`}>
-          {plan.label}
-        </span>
-      </div>
-
-      {/* Valor */}
-      <span className="text-sm text-slate-300 font-mono">
-        {user.value != null ? formatCurrency(user.value) : <span className="text-slate-600">—</span>}
-      </span>
-
-      {/* Forma de pag. */}
-      <span className="text-sm text-slate-400">
-        {PAY_METHOD_LABEL[user.payMethod] || <span className="text-slate-600">— —</span>}
-      </span>
-
-      {/* Vencimento */}
-      <span className="text-sm text-slate-400">
-        {user.dueDate ? formatDate(user.dueDate) : <span className="text-slate-600">—</span>}
-      </span>
-
-      {/* Status */}
+      {/* Plano */}
       <div>
-        <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${status.color}`}>
-          {status.icon}
-          {status.label}
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${planCfg.color}`}>
+          {planCfg.label}
         </span>
+      </div>
+
+      {/* Financeiro (Valor + Forma) */}
+      <div className="flex flex-col">
+        <span className="text-sm text-slate-200 font-mono font-bold">
+          {user.value != null ? formatCurrency(user.value) : '—'}
+        </span>
+        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">
+          {PAY_METHOD_LABEL[user.payMethod] || 'N/A'}
+        </span>
+      </div>
+
+      {/* Datas (Pagamento + Vencimento) */}
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-bold text-slate-500 w-8">PAG:</span>
+          <span className="text-xs text-slate-300 font-mono">
+                                   {user.notes.includes('PAG:') ? user.notes.split('PAG:')[1].split('|')[0] : '—'}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-bold text-slate-500 w-8">VENC:</span>
+          <span className="text-xs font-mono text-yellow-500/80">
+             {user.dueDate ? formatDate(user.dueDate) : '—'}
+          </span>
+        </div>
       </div>
 
       {/* Ações */}
-      <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={() => isReadOnly ? null : onEdit(user)}
-            className={`flex items-center gap-1.5 text-xs border px-2.5 py-1 rounded transition-colors ${isAdmin ? 'text-green-400 border-green-800/50 bg-green-900/30 hover:bg-green-800/50' : isReadOnly ? 'text-slate-500 border-surface-400 bg-surface-300 cursor-default' : 'text-green-400 border-green-800/50 bg-green-900/30 hover:bg-green-800/50 opacity-0 group-hover:opacity-100 md:opacity-100'}`}
-          >
-            {isAdmin ? (
-              <><CheckCircle size={12} /> Ativo</>
-            ) : isReadOnly ? (
-              <><Eye size={12} /> Visualizar</>
-            ) : (
-              <><Edit2 size={12} /> Editar</>
-            )}
-          </button>
+      <div className="flex items-center justify-end gap-2 px-1">
+        <button
+          onClick={onHistory}
+          className="p-2 text-slate-400 hover:text-white hover:bg-surface-400 rounded-lg transition-all"
+          title="Histórico de Pagamentos"
+        >
+          <ClipboardList size={16} />
+        </button>
+        <button
+          onClick={() => onEdit(user)}
+          className="p-2 text-green-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+          title="Editar"
+        >
+          <Edit2 size={16} />
+        </button>
       </div>
     </div>
   )

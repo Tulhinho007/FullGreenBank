@@ -48,8 +48,30 @@ const DoughnutChart = ({ greens, reds, pending, voided }: any) => {
     }]
   }
   return (
-    <div className="h-16 w-16 mx-auto">
-      <Doughnut data={data} options={{ plugins: { legend: { display: false }, tooltip: { enabled: true } }, cutout: '70%' }} />
+    <div className="flex items-center gap-4">
+      <div className="h-16 w-16 shrink-0">
+        <Doughnut data={data} options={{ plugins: { legend: { display: false }, tooltip: { enabled: true } }, cutout: '70%', maintainAspectRatio: false }} />
+      </div>
+      <div className="flex flex-col gap-1 text-[10px] font-medium min-w-[80px]">
+        <div className="flex items-center gap-1.5 text-emerald-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>{greens} Green</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-rose-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+          <span>{reds} Red</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-amber-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span>{pending} Pend.</span>
+        </div>
+        {voided > 0 && (
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+            <span>{voided} Anul.</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
