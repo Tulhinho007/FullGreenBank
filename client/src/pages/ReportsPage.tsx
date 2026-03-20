@@ -7,8 +7,7 @@ import {
   Activity,
   Calendar
 } from 'lucide-react'
-import api from '../services/api'
-import toast from 'react-hot-toast'
+
 import { formatCurrency } from '../utils/formatters'
 import { useAuth } from '../contexts/AuthContext'
 import {
@@ -19,9 +18,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell
+
 } from 'recharts'
 
 // --- Mock Data ---
@@ -75,7 +72,7 @@ const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
 export const ReportsPage = () => {
   const { user } = useAuth()
 
-  const reports = [] // dummy for now
+
 
   const chartColors = {
     stroke: '#22c55e',

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { Users, ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, UserIcon } from 'lucide-react'
+import { ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -227,7 +227,7 @@ export const AdminUsersPage = () => {
                           )}
                           {isMaster && (
                             <button 
-                              onClick={() => impersonateUser(u.id)}
+                              onClick={() => impersonateUser(u as any)}
                               className="p-1.5 rounded-lg bg-surface-300 text-orange-400 hover:text-white hover:bg-orange-600/50 transition-all"
                               title="Acessar conta"
                             >
