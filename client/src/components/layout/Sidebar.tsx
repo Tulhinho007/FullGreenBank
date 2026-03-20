@@ -145,6 +145,7 @@ export const Sidebar = () => {
             <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
             <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
+              { label: 'Histórico de Dicas', to: '/reports/tips' },
               { label: 'Histórico de Contratos', to: '/gestao/historico' },
               { label: 'Performance', to: '/reports' }
             ]} />
