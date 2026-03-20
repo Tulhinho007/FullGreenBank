@@ -3,10 +3,10 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { getRoleInfo } from '../../utils/formatters'
 import {
-  LayoutDashboard, CalendarDays, TrendingUp, History, BarChart3,
-  DollarSign, FileText, Settings, Users, ShieldCheck, LogOut,
+  LayoutDashboard, TrendingUp, BarChart3,
+  DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  ClipboardList, ScrollText, CreditCard, Briefcase, Target, Star
+  Target, Star
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -139,17 +139,27 @@ export const Sidebar = () => {
         {/* ANÁLISE */}
         <SectionLabel label="Análise" />
         <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
-        <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
-        <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
-          { label: 'Histórico de Contratos', to: '/gestao/historico' },
-          { label: 'Performance', to: '/reports' }
-        ]} />
+        
+        {!(user?.role === 'MEMBRO' && user?.paymentStatus === 'PENDENTE') ? (
+          <>
+            <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
+            <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
+              { label: 'Histórico de Contratos', to: '/gestao/historico' },
+              { label: 'Performance', to: '/reports' }
+            ]} />
 
-        {/* GESTÃO */}
-        <SectionLabel label="Gestão" />
-        <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
-        <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
-        <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
+            {/* GESTÃO */}
+            <SectionLabel label="Gestão" />
+            <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
+            <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
+            <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
+          </>
+        ) : (
+          <div className="px-4 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mx-2 mt-4">
+            <p className="text-[10px] text-yellow-500 font-bold uppercase mb-1">Assinatura Expirada</p>
+            <p className="text-[10px] text-slate-400 leading-tight">Sua conta está em modo de visualização. Regularize para acessar todas as ferramentas.</p>
+          </div>
+        )}
 
         {/* ADMINISTRAÇÃO */}
         {isAdmin && (

@@ -1,9 +1,10 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { 
   Users, Clock, AlertTriangle, 
-  TrendingUp, Edit2, ChevronDown, Search, 
+  TrendingUp, Edit2, Search, 
   CheckCircle, Ban, Hourglass, ClipboardList,
   FileSpreadsheet, FileText, Printer,
+  CreditCard, Wallet, CircleEllipsis, RefreshCw,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -36,19 +37,19 @@ interface UserPayment {
 // ─── Helpers visuais ─────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ATIVO:     { label: 'Pago',      color: 'text-green-400 bg-green-900/40 border-green-800/50',  icon: <CheckCircle size={12} /> },
-  PENDENTE:  { label: 'Pendente',  color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50', icon: <Hourglass size={12} /> },
-  ATRASADO:  { label: 'Atrasado',  color: 'text-red-400 bg-red-900/30 border-red-800/50',        icon: <AlertTriangle size={12} /> },
-  INATIVO:   { label: 'Finalizado',color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <Ban size={12} /> },
-  TRIAL:     { label: 'Trial',     color: 'text-blue-400 bg-blue-900/30 border-blue-800/50',     icon: <Clock size={12} /> },
+  ATIVO:     { label: 'PAGO',      color: 'bg-green-500/10 text-green-500 border-green-500/20',  icon: <CheckCircle size={12} /> },
+  PENDENTE:  { label: 'PENDENTE',  color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: <Hourglass size={12} /> },
+  ATRASADO:  { label: 'ATRASADO',  color: 'bg-red-500/10 text-red-500 border-red-500/20',        icon: <AlertTriangle size={12} /> },
+  INATIVO:   { label: 'FINALIZADO',color: 'bg-surface-300 text-slate-400 border-surface-400',    icon: <Ban size={12} /> },
+  TRIAL:     { label: 'TRIAL',     color: 'bg-blue-500/10 text-blue-500 border-blue-500/20',     icon: <Clock size={12} /> },
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  TRIAL:    { label: 'Trial',          color: 'text-blue-400 bg-blue-900/30 border-blue-800/50'       },
-  STARTER:  { label: 'Starter',        color: 'text-slate-300 bg-surface-300 border-surface-400'      },
-  STANDARD: { label: 'Standard',       color: 'text-emerald-400 bg-emerald-900/40 border-emerald-800/50' },
-  PRO:      { label: 'Pro Full',       color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50' },
-  ADMIN:    { label: 'Admin',          color: 'text-purple-400 bg-purple-900/30 border-purple-800/50' },
+  TRIAL:    { label: 'TRIAL',          color: 'bg-blue-500/10 text-blue-400 border-blue-500/20'       },
+  STARTER:  { label: 'STARTER',        color: 'bg-green-500/10 text-green-400 border-green-500/20'      },
+  STANDARD: { label: 'STANDARD',       color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
+  PRO:      { label: 'PRO',            color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  ADMIN:    { label: 'ADMIN',          color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -118,9 +119,9 @@ export const FinanceiroPagamentosPage = () => {
           name:      u.name,
           email:     u.email,
           role:      u.role || 'MEMBRO',
-          plan:      u.plan       ?? 'TRIAL',
-          value:     u.value      ?? null,
-          payMethod: u.payMethod  ?? '',
+          plan:      (u.plan ?? 'TRIAL') as PlanType,
+          value:     u.value ?? null,
+          payMethod: (u.payMethod ?? '') as PayMethod,
           dueDate:   u.dueDate    ?? null,
           status,
           notes:     u.notes      ?? '',
@@ -351,58 +352,60 @@ export const FinanceiroPagamentosPage = () => {
         </div>
       </div>
 
-      {/* ── Filtros ──────────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-3 items-center">
-        {/* Busca */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+      {/* ── Filtros e Ações ─────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="relative flex-1 min-w-[280px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input
-            className="input-field pl-9 py-2 text-sm"
-            placeholder="Buscar por nome ou e-mail..."
+            type="text"
+            placeholder="Pesquise por nome, email ou ID..."
+            className="input-field pl-10 h-11 bg-surface-300/50 border-surface-300"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
-        {/* Filtro status */}
-        <div className="relative">
-          <select
-            className="input-field py-2 pr-8 text-sm appearance-none cursor-pointer"
-            value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value as PaymentStatus | '')}
-          >
-            <option value="">Todos os status</option>
-            {(Object.keys(STATUS_CONFIG) as PaymentStatus[]).map(s => (
-              <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-            ))}
-          </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-        </div>
+        <select 
+          className="input-field w-auto min-w-[150px] h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer" 
+          value={filterPlan} 
+          onChange={e => setFilterPlan(e.target.value as PlanType | '')}
+        >
+          <option value="">Todos os planos</option>
+          {Object.keys(PLAN_CONFIG).map(p => (
+            <option key={p} value={p}>{PLAN_CONFIG[p as PlanType].label}</option>
+          ))}
+        </select>
 
-        {/* Filtro plano */}
-        <div className="relative">
-          <select
-            className="input-field py-2 pr-8 text-sm appearance-none cursor-pointer"
-            value={filterPlan}
-            onChange={e => setFilterPlan(e.target.value as PlanType | '')}
-          >
-            <option value="">Todos os planos</option>
-            {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
-              <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
-            ))}
-          </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-        </div>
+        <select 
+          className="input-field w-auto min-w-[150px] h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer" 
+          value={filterStatus} 
+          onChange={e => setFilterStatus(e.target.value as PaymentStatus | '')}
+        >
+          <option value="">Todos os status</option>
+          {(Object.keys(STATUS_CONFIG) as PaymentStatus[]).map(s => (
+            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+          ))}
+        </select>
 
-        <div className="flex gap-2 ml-auto w-full md:w-auto mt-2 md:mt-0">
-          <button onClick={exportCSV} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors flex" title="Exportar Excel">
-            <FileSpreadsheet size={13} /> Excel
+        <select className="input-field w-auto h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer">
+          <option>Hoje</option>
+          <option>Ontem</option>
+          <option>Últimos 7 dias</option>
+          <option>Este mês</option>
+        </select>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-lg text-xs font-bold hover:bg-emerald-500/20 transition-colors h-11">
+            <FileSpreadsheet size={16} />
+            Excel
           </button>
-          <button onClick={exportPDF} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors flex" title="Exportar PDF">
-            <FileText size={13} /> PDF
+          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold hover:bg-rose-500/20 transition-colors h-11">
+            <FileText size={16} />
+            PDF
           </button>
-          <button onClick={() => window.print()} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors flex" title="Imprimir">
-            <Printer size={13} /> Imprimir
+          <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 rounded-lg text-xs font-bold hover:bg-indigo-500/20 transition-colors h-11">
+            <Printer size={16} />
+            Imprimir
           </button>
         </div>
       </div>
@@ -415,11 +418,14 @@ export const FinanceiroPagamentosPage = () => {
       ) : (
         <div className="card overflow-hidden">
           {/* Header da tabela consolidado */}
-          <div className="hidden md:grid grid-cols-[2.5fr_1.5fr_1.5fr_1.5fr_120px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[10px] font-bold text-slate-500 uppercase tracking-widest items-center">
+          <div className="hidden md:grid grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[10px] font-bold text-slate-500 uppercase tracking-widest items-center">
             <span>Usuário</span>
             <span>Plano</span>
-            <span>Financeiro</span>
-            <span>Datas</span>
+            <span>Valor</span>
+            <span>Forma de Pagamento</span>
+            <span>Status</span>
+            <span>Data de Compra</span>
+            <span>Próxima Mensalidade</span>
             <span className="text-right pr-4">Ações</span>
           </div>
 
@@ -661,70 +667,83 @@ interface UserRowProps {
 }
 
 const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
-  const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.INATIVO
+  const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.PENDENTE
   const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.TRIAL
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1.5fr_1.5fr_120px] gap-2 md:gap-4 px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group items-center">
+  // Helper para ícones de pagamento
+  const getPayIcon = (method: PayMethod) => {
+    if (method === 'CARTAO') return <CreditCard size={14} className="text-blue-400" />
+    if (method === 'PIX')    return <Wallet size={14} className="text-emerald-400" />
+    if (method === 'BOLETO') return <FileText size={14} className="text-yellow-400" />
+    return <CircleEllipsis size={14} className="text-slate-500" />
+  }
 
-      {/* Usuário */}
-      <div className="flex items-center gap-3">
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-white truncate">{user.name}</span>
-            <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border ${statusCfg.color}`}>
-              {statusCfg.label}
-            </span>
-          </div>
-          <span className="text-xs text-slate-500 truncate">{user.email}</span>
-        </div>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/20 transition-colors group items-center">
+      
+      {/* USUÁRIO */}
+      <div className="flex flex-col min-w-0">
+        <span className="text-sm font-bold text-white truncate">{user.name}</span>
+        <span className="text-[10px] text-slate-500 truncate mt-0.5">{user.email}</span>
       </div>
 
-      {/* Plano */}
+      {/* PLANO */}
       <div>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${planCfg.color}`}>
+        <span className={`text-[9px] font-black px-2.5 py-1 rounded border tracking-tighter ${planCfg.color}`}>
           {planCfg.label}
         </span>
       </div>
 
-      {/* Financeiro (Valor + Forma) */}
-      <div className="flex flex-col">
-        <span className="text-sm text-slate-200 font-mono font-bold">
-          {user.value != null ? formatCurrency(user.value) : '—'}
-        </span>
-        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">
-          {PAY_METHOD_LABEL[user.payMethod] || 'N/A'}
+      {/* VALOR */}
+      <div className="text-sm font-bold text-white">
+        {user.value != null ? formatCurrency(user.value) : '—'}
+      </div>
+
+      {/* FORMA DE PAGAMENTO */}
+      <div className="flex items-center gap-2">
+        {getPayIcon(user.payMethod)}
+        <span className="text-xs text-slate-300 font-medium whitespace-nowrap">
+          {PAY_METHOD_LABEL[user.payMethod] || '—'}
+          {user.payMethod === 'CARTAO' && ' **** 1234'}
         </span>
       </div>
 
-      {/* Datas (Pagamento + Vencimento) */}
-      <div className="flex flex-col">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-bold text-slate-500 w-8">PAG:</span>
-          <span className="text-xs text-slate-300 font-mono">
-                                   {user.notes.includes('PAG:') ? user.notes.split('PAG:')[1].split('|')[0] : '—'}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-bold text-slate-500 w-8">VENC:</span>
-          <span className="text-xs font-mono text-yellow-500/80">
-             {user.dueDate ? formatDate(user.dueDate) : '—'}
-          </span>
+      {/* STATUS */}
+      <div>
+        <span className={`text-[9px] font-black px-2.5 py-1 rounded inline-flex items-center gap-1.5 ${statusCfg.color}`}>
+          <div className={`w-1.5 h-1.5 rounded-full bg-current`} />
+          {statusCfg.label}
+        </span>
+      </div>
+
+      {/* DATA DE COMPRA */}
+      <div className="flex flex-col gap-0.5">
+        <span className="text-xs text-slate-300 font-medium truncate">
+          {user.notes.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1].split('|')[0]) : formatDate(new Date().toISOString())} 14:32
+        </span>
+        <div className="flex items-center gap-1 text-[10px] text-slate-500">
+          <RefreshCw size={10} />
+          <span>R$E574 14:32</span>
         </div>
       </div>
 
-      {/* Ações */}
-      <div className="flex items-center justify-end gap-2 px-1">
+      {/* PRÓXIMA MENSALIDADE */}
+      <div className="text-sm font-bold text-slate-100">
+        {user.dueDate ? formatDate(user.dueDate) : '—'}
+      </div>
+
+      {/* AÇÕES */}
+      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={onHistory}
-          className="p-2 text-slate-400 hover:text-white hover:bg-surface-400 rounded-lg transition-all"
+          className="p-1.5 text-slate-400 hover:text-white hover:bg-surface-400 rounded transition-all"
           title="Histórico de Pagamentos"
         >
           <ClipboardList size={16} />
         </button>
         <button
           onClick={() => onEdit(user)}
-          className="p-2 text-green-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+          className="p-1.5 text-slate-400 hover:text-white hover:bg-surface-400 rounded transition-all"
           title="Editar"
         >
           <Edit2 size={16} />

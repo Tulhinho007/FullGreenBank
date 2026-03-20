@@ -30,7 +30,13 @@ model User {
   isTipster Boolean  @default(false)
   
   // Settings & Preferences
-  plan              String   @default("FREE")    // FREE, PRO, MASTER
+  plan              String   @default("FREE")    // TRIAL, STARTER, STANDARD, PRO, FREE, MASTER
+  value             Float?
+  payMethod         String?
+  dueDate           String?
+  paymentStatus     String   @default("PENDENTE")
+  notes            String?  @db.Text
+  
   currency          String   @default("BRL")     // BRL, USD, EUR
   language          String   @default("PT-BR")   // PT-BR, EN-US, ES-ES
   theme             String   @default("DARK")    // LIGHT, DARK, SYSTEM

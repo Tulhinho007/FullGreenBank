@@ -13,6 +13,11 @@ export const getAllUsers = async () => {
       active: true,
       isTipster: true,
       plan: true,
+      value: true,
+      payMethod: true,
+      dueDate: true,
+      paymentStatus: true,
+      notes: true,
       currency: true,
       language: true,
       theme: true,
@@ -37,6 +42,11 @@ export const getUserById = async (id: string) => {
       active: true,
       isTipster: true,
       plan: true,
+      value: true,
+      payMethod: true,
+      dueDate: true,
+      paymentStatus: true,
+      notes: true,
       currency: true,
       language: true,
       theme: true,
@@ -51,7 +61,9 @@ export const updateUser = async (
   id: string,
   data: { 
     name?: string; email?: string; phone?: string; username?: string; 
-    password?: string; isTipster?: boolean; plan?: string; 
+    password?: string; isTipster?: boolean; 
+    plan?: string; value?: number; payMethod?: string; 
+    dueDate?: string; paymentStatus?: string; notes?: string;
     currency?: string; language?: string; theme?: string;
     twoFactorEnabled?: boolean; avatarUrl?: string;
   }
@@ -64,7 +76,14 @@ export const updateUser = async (
   if (data.username) updateData.username = data.username;
   if (data.password) updateData.password = await hashPassword(data.password);
   if (data.isTipster !== undefined)   updateData.isTipster = data.isTipster;
+  
   if (data.plan)                updateData.plan = data.plan;
+  if (data.value !== undefined)      updateData.value = data.value;
+  if (data.payMethod)           updateData.payMethod = data.payMethod;
+  if (data.dueDate)             updateData.dueDate = data.dueDate;
+  if (data.paymentStatus)       updateData.paymentStatus = data.paymentStatus;
+  if (data.notes !== undefined) updateData.notes = data.notes;
+
   if (data.currency)            updateData.currency = data.currency;
   if (data.language)            updateData.language = data.language;
   if (data.theme)               updateData.theme = data.theme;
@@ -83,6 +102,11 @@ export const updateUser = async (
       role: true,
       isTipster: true,
       plan: true,
+      value: true,
+      payMethod: true,
+      dueDate: true,
+      paymentStatus: true,
+      notes: true,
       currency: true,
       language: true,
       theme: true,

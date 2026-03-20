@@ -18,6 +18,8 @@ export interface User {
   theme: string
   twoFactorEnabled: boolean
   avatarUrl?: string
+  paymentStatus?: string
+  dueDate?: string
   createdAt: string
 }
 
