@@ -243,7 +243,7 @@ export const TipsPage = () => {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col gap-6 relative pb-20">
+    <div className="flex flex-col gap-6 relative pb-32">
       {/* Banner */}
       {showBanner && (
         <div className="flex items-start gap-3 rounded-xl p-4 border bg-amber-500/10 border-amber-500/30">

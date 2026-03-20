@@ -34,7 +34,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
             <span className={`transition-colors ${isChildActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
               {icon}
             </span>
-            <span>{label}</span>
+            <span className="text-[14px] font-semibold">{label}</span>
           </span>
           <span className="text-slate-500">
             {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -57,7 +57,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
                   to={c.to}
                   className={({ isActive }) =>
                     `text-xs py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
-                      isActive ? 'text-green-400 font-semibold bg-green-500/5' : 'text-slate-400 hover:text-white hover:bg-surface-300/30'
+                      isActive ? 'text-green-400 font-bold bg-green-500/5' : 'text-slate-200 hover:text-white hover:bg-surface-300/30'
                     }`
                   }
                 >
