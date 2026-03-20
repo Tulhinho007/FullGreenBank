@@ -218,7 +218,13 @@ notes           String?    -- histórico de pagamentos em texto
 - Admin: Filtro padrão alterado para "Pendentes", ocultando automaticamente tickets resolvidos/fechados.
 - Usuário: Nova aba "Meus Chamados" em `/report` para acompanhar status e ler respostas da equipe.
 
-### 12. Correções de Deploy (Vercel)
+### 12. Gestão de Mercados por Esporte
+- Admin: Novo card em "Cadastros" para gerenciamento de mercados de apostas.
+- Interface: Modal para Adicionar, Editar e Excluir mercados vinculados a esportes (slug-based).
+- Dados: Injeção de mais de 100 mercados padrão (Futebol, Basquete, Vôlei) para agilizar o uso.
+- Persistência: Armazenamento em `localStorage` para consistência com o restante da página de cadastros.
+
+### 13. Correções de Deploy (Vercel)
 - Resolvidos erros de TypeScript em `AdminUsersPage.tsx` e `ReportsPage.tsx`.
 - Adicionado script `build` na raiz do monorepo para delegar o build ao client.
 - Instalada dependência ausente `date-fns` no frontend.
