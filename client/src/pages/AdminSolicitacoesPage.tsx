@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FileText, CheckCircle, XCircle, Search, Clock } from 'lucide-react'
+import { CheckCircle, XCircle, Search, Clock } from 'lucide-react'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { formatCurrency } from '../utils/formatters'
@@ -19,6 +19,7 @@ export const AdminSolicitacoesPage = () => {
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('TODOS')
 
   const fetchSolicitacoes = async () => {
     setLoading(true)
@@ -46,10 +47,12 @@ export const AdminSolicitacoesPage = () => {
     }
   }
 
-  const filteredData = solicitacoes.filter(s => 
-    s.usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    s.usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredData = solicitacoes.filter(s => {
+    const matchesSearch = s.usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          s.usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = statusFilter === 'TODOS' || s.status === statusFilter
+    return matchesSearch && matchesStatus
+  })
 
   const getStatusBadge = (status: string) => {
     if (status === 'ACEITO') return <span className="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400 border border-green-500/30 flex items-center gap-1 w-max"><CheckCircle size={12}/> Aceito</span>
@@ -64,15 +67,27 @@ export const AdminSolicitacoesPage = () => {
           <h2 className="font-display font-semibold text-white">Solicitações de Adesão</h2>
           <p className="text-xs text-slate-500 mt-0.5">Gerenciamento de aportes em Banca Gerenciada</p>
         </div>
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input 
-            type="text" 
-            placeholder="Buscar usuário..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="input-field pl-9 py-2 text-sm w-64 bg-surface-200"
-          />
+        <div className="flex items-center gap-3 relative">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input 
+              type="text" 
+              placeholder="Buscar usuário..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="input-field pl-9 py-2 text-sm w-48 sm:w-64 bg-surface-200"
+            />
+          </div>
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="input-field py-2 px-3 text-sm bg-surface-200 min-w-[140px]"
+          >
+            <option value="TODOS">Todos os Status</option>
+            <option value="EM_ANALISE">Em Análise</option>
+            <option value="ACEITO">Aceito</option>
+            <option value="RECUSADO">Recusado</option>
+          </select>
         </div>
       </div>
 
