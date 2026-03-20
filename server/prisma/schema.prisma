@@ -156,6 +156,9 @@ model SupportTicket {
   userEmail   String?
   userId      String?
   
+  adminResponse String?   @db.Text
+  respondedAt   DateTime?
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

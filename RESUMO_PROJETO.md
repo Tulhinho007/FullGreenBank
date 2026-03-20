@@ -207,6 +207,21 @@ notes           String?    -- histórico de pagamentos em texto
 ### 9. Tipster Dashboard
 - Página de gestão de Tipsters com filtros, KPI cards, área chart (Recharts) e tabela de dados
 
+### 10. Padronização de Páginas Institucionais
+- FAQ, Guia e Reportar Bug movidos para dentro do `AppLayout` (rotas protegidas).
+- Visual consistente com tema dark e sidebar sempre visível.
+- Rodapé de ação padronizado (`surface-200`) com botão "← Voltar para o Sistema".
+
+### 11. Sistema de Resposta em Tickets
+- Backend: Novos campos `adminResponse` e `respondedAt` no modelo `SupportTicket`.
+- Admin: Interface para redactar e enviar respostas diretamente pelo painel de tickets.
+- Usuário: Nova aba "Meus Chamados" em `/report` para acompanhar status e ler respostas da equipe.
+
+### 12. Correções de Deploy (Vercel)
+- Resolvidos erros de TypeScript em `AdminUsersPage.tsx` e `ReportsPage.tsx`.
+- Adicionado script `build` na raiz do monorepo para delegar o build ao client.
+- Instalada dependência ausente `date-fns` no frontend.
+
 ---
 
 ## 📡 API — Principais Endpoints
@@ -251,4 +266,7 @@ VITE_API_URL=        # URL base da API (ex: https://full-green-bank-backend.verc
 | `bb5f698` | feat: implement monthly subscription renewal logic |
 | `fb8c11d` | feat: refine Financeiro UI Phase 2 - unified modal, persistent buttons |
 | `3e28959` | feat: financial page full redesign + access control by payment status |
-| `f5fe198` | fix: 422 error on profile update, schema migration |
+| `1eafcce` | fix: move institutional pages inside AppLayout for sidebar and dark theme |
+| `f64696c` | fix: resolve TS build errors and missing dependencies for Vercel deploy |
+| `76650d6` | fix: add build script to root package.json for Vercel deploy |
+| `30c69b6` | feat: implement bidirectional support ticket response system |

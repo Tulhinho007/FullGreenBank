@@ -23,6 +23,8 @@ interface Ticket {
   userEmail: string | null;
   userId: string | null;
   createdAt: string;
+  adminResponse?: string;
+  respondedAt?: string;
 }
 
 export const AdminSupportPage = () => {
@@ -31,6 +33,7 @@ export const AdminSupportPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [adminResponses, setAdminResponses] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchTickets();
@@ -51,8 +54,18 @@ export const AdminSupportPage = () => {
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await api.patch(`/support/${id}/status`, { status: newStatus });
-      toast.success(`Ticket atualizado para ${newStatus}`);
+      const responseText = adminResponses[id];
+      await api.patch(`/support/${id}/status`, { 
+        status: newStatus,
+        adminResponse: responseText 
+      });
+      toast.success(`Ticket atualizado!`);
+      // Limpa a resposta local após enviar com sucesso
+      setAdminResponses(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       fetchTickets();
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
@@ -178,10 +191,38 @@ export const AdminSupportPage = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-surface-200/50 rounded-xl p-4 border border-white/5">
-                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line leading-relaxed">
-                      {ticket.description}
-                    </p>
+                  <div className="bg-surface-200/50 rounded-xl p-4 border border-white/5 space-y-4">
+                    <div>
+                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                        {ticket.description}
+                      </p>
+                    </div>
+
+                    {ticket.adminResponse && (
+                      <div className="pt-4 border-t border-white/5">
+                        <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                          <MessageSquare size={12} /> Sua Resposta Anterior
+                        </p>
+                        <p className="text-sm text-slate-400 italic bg-surface-300/30 p-3 rounded-lg border border-white/5">
+                          "{ticket.adminResponse}"
+                        </p>
+                        {ticket.respondedAt && (
+                          <p className="text-[10px] text-slate-600 mt-1">
+                            Respondido em {format(new Date(ticket.respondedAt), "dd/MM/yyyy HH:mm")}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Nova Resposta / Observação</label>
+                    <textarea 
+                      value={adminResponses[ticket.id] || ''}
+                      onChange={(e) => setAdminResponses(prev => ({ ...prev, [ticket.id]: e.target.value }))}
+                      placeholder="Digite aqui o que foi feito ou responda ao usuário..."
+                      className="w-full h-24 p-4 rounded-xl bg-surface-200 border border-surface-400 text-white text-sm outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans resize-none placeholder:text-slate-600"
+                    />
                   </div>
                 </div>
 

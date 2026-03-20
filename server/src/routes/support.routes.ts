@@ -21,6 +21,7 @@ router.post(
 // Admin/Master routes - Protected
 router.use(authenticate);
 
+router.get('/my-tickets', supportController.getUserTickets);
 router.get('/', authorizeRoles('ADMIN', 'MASTER'), supportController.getAll);
 router.patch('/:id/status', authorizeRoles('ADMIN', 'MASTER'), supportController.updateStatus);
 

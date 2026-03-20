@@ -30,6 +30,32 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserTickets = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    const userEmail = (req as any).user?.email;
+
+    if (!userId && !userEmail) {
+      return res.status(401).json({ error: 'Usuário não autenticado' });
+    }
+
+    const tickets = await prisma.supportTicket.findMany({
+      where: {
+        OR: [
+          { userId: userId },
+          { userEmail: userEmail }
+        ]
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(tickets);
+  } catch (error: any) {
+    console.error('Erro ao buscar tickets do usuário:', error);
+    res.status(500).json({ error: 'Erro interno ao buscar seus tickets' });
+  }
+};
+
 export const getAll = async (req: Request, res: Response) => {
   try {
     const tickets = await prisma.supportTicket.findMany({
@@ -45,15 +71,21 @@ export const getAll = async (req: Request, res: Response) => {
 export const updateStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, adminResponse } = req.body;
 
     if (!status) {
       return res.status(400).json({ error: 'Status é obrigatório' });
     }
 
+    const data: any = { status };
+    if (adminResponse !== undefined) {
+      data.adminResponse = adminResponse;
+      data.respondedAt = new Date();
+    }
+
     const ticket = await prisma.supportTicket.update({
       where: { id },
-      data: { status }
+      data
     });
 
     res.json(ticket);
