@@ -95,11 +95,11 @@ export const SystemLogPage = () => {
     return () => clearInterval(interval)
   }, [load, user])
 
-  const filtered = logs.filter(l => {
+  const filtered = Array.isArray(logs) ? logs.filter(l => {
     const byUser = filterUser === 'Todos os usuários' || l.userEmail === filterUser
     const byCat  = filterCat  === 'Todas as categorias' || l.category === filterCat
     return byUser && byCat
-  })
+  }) : []
 
   const grouped = groupByDate(filtered)
   const activeUsers = new Set(

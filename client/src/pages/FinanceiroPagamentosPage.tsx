@@ -99,7 +99,8 @@ export const FinanceiroPagamentosPage = () => {
     try {
       const data = await usersService.getAll()
       // Filtro: Apenas usuários "MEMBRO"
-      const members = data.filter((u: any) => u.role === 'MEMBRO' || (!u.role && u.email !== 'admin@fullgreenbank.com'))
+      const dataArray = Array.isArray(data) ? data : []
+      const members = dataArray.filter((u: any) => u.role === 'MEMBRO' || (!u.role && u.email !== 'admin@fullgreenbank.com'))
       
       const mapped: UserPayment[] = members.map((u: any) => {
         // RULE 2 & 5: Use checkSubscription for consistent status logic
@@ -135,16 +136,17 @@ export const FinanceiroPagamentosPage = () => {
   useEffect(() => { loadUsers() }, [])
 
   // ── Stats ──────────────────────────────────────────────────────────────────
-  const totalUsers  = users.length
-  const ativos      = users.filter(u => u.status === 'ATIVO').length
-  const pendentes   = users.filter(u => u.status === 'PENDENTE').length
-  const atrasados   = users.filter(u => u.status === 'ATRASADO').length
-  const receitaMes  = users
+  const safeUsers = Array.isArray(users) ? users : []
+  const totalUsers  = safeUsers.length
+  const ativos      = safeUsers.filter(u => u.status === 'ATIVO').length
+  const pendentes   = safeUsers.filter(u => u.status === 'PENDENTE').length
+  const atrasados   = safeUsers.filter(u => u.status === 'ATRASADO').length
+  const receitaMes  = safeUsers
     .filter(u => u.status === 'ATIVO' && u.value != null)
     .reduce((acc, u) => acc + (u.value ?? 0), 0)
 
   // ── Filtro ─────────────────────────────────────────────────────────────────
-  const filtered = users.filter(u => {
+  const filtered = safeUsers.filter(u => {
     const term = search.toLowerCase()
     const matchSearch = !term || u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)
     const matchStatus = !filterStatus || u.status === filterStatus

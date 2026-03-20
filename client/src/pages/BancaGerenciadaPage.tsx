@@ -120,13 +120,14 @@ export const BancaGerenciadaPage = () => {
   useEffect(() => { loadAll() }, [])
 
   // ── Stats ─────────────────────────────────────────────────────────────────
-  const ativos          = contracts.filter(c => c.status === 'ATIVO').length
-  const bancaTotal      = contracts.filter(c => c.status === 'ATIVO').reduce((a, c) => a + c.bancaFinal, 0)
-  const totalComissao   = contracts.reduce((a, c) => a + c.vlComissao, 0)
-  const lucroPlataforma = contracts.reduce((a, c) => a + c.lucro, 0)
-  const lucroClientes   = contracts.reduce((a, c) => a + (c.vlCliente - c.bancaInicial), 0)
+  const safeContracts = Array.isArray(contracts) ? contracts : []
+  const ativos          = safeContracts.filter(c => c.status === 'ATIVO').length
+  const bancaTotal      = safeContracts.filter(c => c.status === 'ATIVO').reduce((a, c) => a + c.bancaFinal, 0)
+  const totalComissao   = safeContracts.reduce((a, c) => a + c.vlComissao, 0)
+  const lucroPlataforma = safeContracts.reduce((a, c) => a + c.lucro, 0)
+  const lucroClientes   = safeContracts.reduce((a, c) => a + (c.vlCliente - c.bancaInicial), 0)
 
-  const filtered = contracts.filter(c => {
+  const filtered = safeContracts.filter(c => {
     const t = search.toLowerCase()
     return (!t || c.userName.toLowerCase().includes(t) || c.userEmail.toLowerCase().includes(t) || (c.identificacao && c.identificacao.toLowerCase().includes(t))) &&
            (!filterStatus || c.status === filterStatus)

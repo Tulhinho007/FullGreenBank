@@ -55,14 +55,14 @@ export const AdminSolicitacoesPage = () => {
     }
   }
 
-  const filteredData = solicitacoes.filter(s => {
-    const matchesSearch = s.usuario.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          s.usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = Array.isArray(solicitacoes) ? solicitacoes.filter(s => {
+    const matchesSearch = (s.usuario?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (s.usuario?.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'TODOS' || s.status === statusFilter
-    const matchesDate = !dataFilter || s.dataPedido.startsWith(dataFilter)
+    const matchesDate = !dataFilter || (s.dataPedido && s.dataPedido.startsWith(dataFilter))
     
     return matchesSearch && matchesStatus && matchesDate
-  })
+  }) : []
 
   const handleDelete = async () => {
     if (!selectedSolicitacao) return

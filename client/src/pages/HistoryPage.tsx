@@ -102,6 +102,7 @@ export const HistoryPage = () => {
 
   // Global filtered data for Stats and Chart
   const filtered = useMemo(() => {
+    if (!Array.isArray(contracts)) return []
     return contracts.filter(c => {
       const matchSearch = !search || 
         c.userName.toLowerCase().includes(search.toLowerCase()) || 
@@ -121,11 +122,13 @@ export const HistoryPage = () => {
   // Restricted data for the TABLE only
   const tableContracts = useMemo(() => {
     const isMasterOrAdmin = user?.role === 'MASTER' || user?.role === 'ADMIN'
+    if (!Array.isArray(filtered)) return []
     if (isMasterOrAdmin) return filtered
     return filtered.filter(c => c.userId === user?.id)
   }, [filtered, user])
 
   const stats = useMemo(() => {
+    if (!Array.isArray(filtered)) return { totalProfit: 0, totalComission: 0, successRate: 0, count: 0 }
     const closed = filtered.filter(c => c.status === 'FINALIZADO' || c.status === 'ENCERRADO')
     const totalProfit = closed.reduce((acc, c) => acc + c.lucro, 0)
     const totalComission = closed.reduce((acc, c) => acc + c.vlComissao, 0)
@@ -135,6 +138,7 @@ export const HistoryPage = () => {
   }, [filtered])
 
   const chartData = useMemo(() => {
+    if (!Array.isArray(filtered)) return []
     // Pegar contratos fechados ordenados por data final
     const closed = filtered
       .filter(c => c.status === 'FINALIZADO' || c.status === 'ENCERRADO')
