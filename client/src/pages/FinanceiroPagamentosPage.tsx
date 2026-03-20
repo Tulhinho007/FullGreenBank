@@ -4,7 +4,7 @@ import {
   TrendingUp, Edit2, Search, 
   CheckCircle, Ban, Hourglass, ClipboardList,
   FileSpreadsheet, FileText, Printer,
-  CreditCard, Wallet, CircleEllipsis, RefreshCw,
+  CreditCard, Wallet, CircleEllipsis,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
@@ -92,7 +92,6 @@ export const FinanceiroPagamentosPage = () => {
   // Modal edição
   const [editTarget, setEditTarget] = useState<UserPayment | null>(null)
   const [editForm,   setEditForm]   = useState(emptyEdit)
-  const [activeTab,  setActiveTab]  = useState<'pagamento' | 'plano'>('pagamento')
   const [historyTarget, setHistoryTarget] = useState<UserPayment | null>(null)
 
   // ── Carregar usuários ──────────────────────────────────────────────────────
@@ -236,7 +235,7 @@ export const FinanceiroPagamentosPage = () => {
     })
   }
 
-  const closeEdit = () => { setEditTarget(null); setEditForm(emptyEdit); setActiveTab('pagamento') }
+  const closeEdit = () => { setEditTarget(null); setEditForm(emptyEdit); }
 
   const setF = (field: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -520,7 +519,7 @@ export const FinanceiroPagamentosPage = () => {
         size="md"
       >
         {editTarget && (
-          <form onSubmit={handleSave} className="flex flex-col gap-4">
+          <form onSubmit={handleSave} className="flex flex-col gap-5">
 
             {/* Info do usuário */}
             <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
@@ -528,53 +527,37 @@ export const FinanceiroPagamentosPage = () => {
               <p className="text-xs text-slate-500 mt-0.5">{editTarget.email}</p>
             </div>
 
-            {/* TABS NAVIGATION */}
-            <div className="flex border-b border-surface-300">
-              <button 
-                type="button"
-                onClick={() => setActiveTab('pagamento')}
-                className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'pagamento' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
-              >
-                Pagamento
-              </button>
-              <button 
-                type="button"
-                onClick={() => setActiveTab('plano')}
-                className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'plano' ? 'border-green-500 text-green-500' : 'border-transparent text-slate-500 hover:text-slate-300'}`}
-              >
-                Plano & Status
-              </button>
-            </div>
-
-            {activeTab === 'pagamento' && (
-              <div className="flex flex-col gap-4">
-                {/* Valor + Forma de pagamento */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="label">Valor ({me?.currency || 'R$'})</label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      className="input-field"
-                      placeholder="Ex: 49.90"
-                      value={editForm.value}
-                      onChange={setF('value')}
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Forma de Pagamento</label>
-                    <select className="input-field" value={editForm.payMethod} onChange={setF('payMethod')}>
-                      <option value="">— Selecione —</option>
-                      <option value="PIX">PIX</option>
-                      <option value="CARTAO">Cartão</option>
-                      <option value="BOLETO">Boleto</option>
-                      <option value="TRANSFERENCIA">Transferência</option>
-                    </select>
-                  </div>
+            {/* Layout principal unificado */}
+            <div className="flex flex-col gap-4">
+              
+              {/* Row 1: Valor e Forma */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Valor ({me?.currency || 'R$'})</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    className="input-field"
+                    placeholder="Ex: 49.90"
+                    value={editForm.value}
+                    onChange={setF('value')}
+                  />
                 </div>
+                <div>
+                  <label className="label">Forma de Pagamento</label>
+                  <select className="input-field" value={editForm.payMethod} onChange={setF('payMethod')}>
+                    <option value="">— Selecione —</option>
+                    <option value="PIX">PIX</option>
+                    <option value="CARTAO">Cartão</option>
+                    <option value="BOLETO">Boleto</option>
+                    <option value="TRANSFERENCIA">Transferência</option>
+                  </select>
+                </div>
+              </div>
 
-                {/* Vencimento */}
+              {/* Row 2: Vencimento e Plano */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Vencimento</label>
                   <input
@@ -584,43 +567,18 @@ export const FinanceiroPagamentosPage = () => {
                     onChange={setF('dueDate')}
                   />
                 </div>
-
-                {/* Observações */}
                 <div>
-                  <label className="label">Observações</label>
-                  <textarea
-                    className="input-field resize-none"
-                    rows={3}
-                    placeholder="Ex: Pagamento via PIX confirmado em 10/03"
-                    value={editForm.notes}
-                    onChange={setF('notes')}
-                  />
+                  <label className="label">Plano de Assinatura</label>
+                  <select className="input-field text-green-400 font-bold" value={editForm.plan} onChange={setF('plan')}>
+                    {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
+                      <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-            )}
 
-            {activeTab === 'plano' && (
-              <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="label">Tipo de Conta</label>
-                    <input
-                      className="input-field bg-surface-300/60 cursor-not-allowed text-slate-400"
-                      value={editTarget.role === 'ADMIN' || editTarget.role === 'MASTER' ? 'Admin' : 'Membro'}
-                      disabled
-                      readOnly
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Plano de Assinatura</label>
-                    <select className="input-field text-green-400 font-bold" value={editForm.plan} onChange={setF('plan')}>
-                      {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
-                        <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
+              {/* Row 3: Status e Conta (Apenas visualização do tipo de conta) */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Status de Pagamento</label>
                   <select className="input-field" value={editForm.status} onChange={setF('status')}>
@@ -629,11 +587,32 @@ export const FinanceiroPagamentosPage = () => {
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label className="label">Tipo de Conta</label>
+                  <input
+                    className="input-field bg-surface-300/40 cursor-not-allowed text-slate-500"
+                    value={editTarget.role === 'ADMIN' || editTarget.role === 'MASTER' ? 'Admin' : 'Membro'}
+                    disabled
+                    readOnly
+                  />
+                </div>
               </div>
-            )}
+
+              {/* Row 4: Observações */}
+              <div>
+                <label className="label">Observações</label>
+                <textarea
+                  className="input-field resize-none"
+                  rows={4}
+                  placeholder="Ex: Pagamento via PIX confirmado em 10/03"
+                  value={editForm.notes}
+                  onChange={setF('notes')}
+                />
+              </div>
+            </div>
 
             {/* Ações */}
-            <div className="flex gap-3 pt-3 border-t border-surface-300 mt-2">
+            <div className="flex gap-3 pt-4 border-t border-surface-300">
               <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
                 {isReadOnly ? 'Fechar' : 'Cancelar'}
               </button>
@@ -679,7 +658,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/20 transition-colors group items-center">
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/20 transition-colors items-center group">
       
       {/* USUÁRIO */}
       <div className="flex flex-col min-w-0">
@@ -717,14 +696,12 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* DATA DE COMPRA */}
-      <div className="flex flex-col gap-0.5">
+      <div>
         <span className="text-xs text-slate-300 font-medium truncate">
-          {user.notes.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1].split('|')[0]) : formatDate(new Date().toISOString())} 14:32
+          {user.status !== 'PENDENTE' 
+            ? (user.notes.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1].split('|')[0]) : formatDate(new Date().toISOString()))
+            : '—'}
         </span>
-        <div className="flex items-center gap-1 text-[10px] text-slate-500">
-          <RefreshCw size={10} />
-          <span>R$E574 14:32</span>
-        </div>
       </div>
 
       {/* PRÓXIMA MENSALIDADE */}
@@ -733,7 +710,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* AÇÕES */}
-      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center justify-end gap-1">
         <button
           onClick={onHistory}
           className="p-1.5 text-slate-400 hover:text-white hover:bg-surface-400 rounded transition-all"
