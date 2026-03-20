@@ -95,7 +95,7 @@ export const HistoricoDicasPage = () => {
       const statusMatch = statusFiltro === 'TODOS' || (tip.result || 'PENDING') === statusFiltro
       
       const tipDateObj = new Date(tip.tipDate)
-      const tipDateStr = tipDateObj.toISOString().split('T')[0]
+      const tipDateStr = `${tipDateObj.getFullYear()}-${String(tipDateObj.getMonth() + 1).padStart(2, '0')}-${String(tipDateObj.getDate()).padStart(2, '0')}`
       const dateMatch = !dateFilter || tipDateStr === dateFilter
       
       return searchMatch && tipoMatch && statusMatch && dateMatch
@@ -178,7 +178,7 @@ export const HistoricoDicasPage = () => {
         <h1 className="text-xl font-display font-black text-white mb-6">Histórico Geral de Dicas</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative col-span-1 md:col-span-2">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
               type="text"
