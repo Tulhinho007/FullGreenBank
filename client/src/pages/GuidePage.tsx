@@ -6,9 +6,11 @@ import {
   CreditCard, 
   Lightbulb, 
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  MessageCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 export const GuidePage = () => {
   const sections = [
@@ -56,6 +58,8 @@ export const GuidePage = () => {
       ]
     }
   ];
+
+  const [showContact, setShowContact] = useState(false);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -113,7 +117,7 @@ export const GuidePage = () => {
         ))}
       </div>
 
-      {/* Dicas Importantes */}
+      {/* Dicas Importantíssimas */}
       <div className="card p-8 bg-amber-500/5 border-amber-500/20">
         <div className="flex items-center gap-3 mb-6">
           <Lightbulb className="text-amber-400" size={24} />
@@ -136,7 +140,7 @@ export const GuidePage = () => {
       </div>
 
       {/* Action Footer */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50 shadow-lg">
         <div className="text-center md:text-left space-y-1">
           <p className="text-sm font-semibold text-white">Dúvidas sobre o nosso Guia?</p>
           <p className="text-xs text-slate-500">Nossa Central de Ajuda tem todas as respostas detalhadas.</p>
@@ -145,14 +149,49 @@ export const GuidePage = () => {
           <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-surface-300 border border-white/5 text-white font-bold text-sm hover:bg-surface-400 transition-all flex items-center gap-2">
             <ArrowLeft size={16} /> Voltar
           </Link>
-          <Link to="/faq" className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20">
-            Ver FAQ
-          </Link>
+          <button 
+            onClick={() => setShowContact(true)}
+            className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+          >
+            Falar com Suporte
+          </button>
         </div>
       </div>
 
+      {/* Modal de Contato */}
+      {showContact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-surface-200 border border-surface-400 w-full max-w-sm rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                <MessageCircle className="text-green-500" size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Contato administrador</h3>
+                <p className="text-xs text-slate-400 font-medium">Suporte Direto WhatsApp</p>
+              </div>
+            </div>
+            
+            <div className="bg-surface-300/50 rounded-xl p-4 border border-white/5 mb-6 text-center">
+              <p className="text-green-400 font-mono font-bold text-xl tracking-tight">wpp: 81 995750402</p>
+            </div>
+
+            <p className="text-sm text-slate-300 text-center mb-6">
+              Entre em contato com ele para tirar suas dúvidas ou resolver problemas.
+            </p>
+
+            <button 
+              onClick={() => setShowContact(false)}
+              className="w-full py-3 rounded-xl bg-surface-400 text-white font-bold text-sm hover:bg-surface-500 transition-colors"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Credits */}
-      <p className="text-[10px] text-center text-slate-600 uppercase tracking-widest font-medium">
+      <p className="text-[10px] text-center text-slate-600 uppercase tracking-widest font-medium pb-12">
         © Full Green Bank · Sua Jornada Profissional Começa Aqui
       </p>
     </div>

@@ -46,6 +46,8 @@ export const FAQPage = () => {
     }
   ];
 
+  const [showContact, setShowContact] = useState(false);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
@@ -100,7 +102,7 @@ export const FAQPage = () => {
         </div>
 
         {/* Action Footer */}
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50">
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50 shadow-lg">
           <div className="text-center md:text-left space-y-1">
             <p className="text-sm font-semibold text-white">Dúvidas sobre o nosso FAQ?</p>
             <p className="text-xs text-slate-500">Entre em contato com nosso suporte especializado.</p>
@@ -109,17 +111,52 @@ export const FAQPage = () => {
             <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-surface-300 border border-white/5 text-white font-bold text-sm hover:bg-surface-400 transition-all flex items-center gap-2">
               <ArrowLeft size={16} /> Voltar
             </Link>
-            <a href="mailto:suporte@fullgreenbank.com" className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20">
+            <button 
+              onClick={() => setShowContact(true)}
+              className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+            >
               Falar com Suporte
-            </a>
+            </button>
           </div>
         </div>
       </div>
 
+      {/* Modal de Contato */}
+      {showContact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-surface-200 border border-surface-400 w-full max-w-sm rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                <MessageCircle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Contato administrador</h3>
+                <p className="text-xs text-slate-400 font-medium">Suporte Direto WhatsApp</p>
+              </div>
+            </div>
+            
+            <div className="bg-surface-300/50 rounded-xl p-4 border border-white/5 mb-6 text-center">
+              <p className="text-green-400 font-mono font-bold text-xl tracking-tight">wpp: 81 995750402</p>
+            </div>
+
+            <p className="text-sm text-slate-300 text-center mb-6">
+              Entre em contato com ele para tirar suas dúvidas ou resolver problemas.
+            </p>
+
+            <button 
+              onClick={() => setShowContact(false)}
+              className="w-full py-3 rounded-xl bg-surface-400 text-white font-bold text-sm hover:bg-surface-500 transition-colors"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Disclaimer */}
-      <p className="text-[10px] text-center text-slate-600 uppercase tracking-widest font-medium mt-12">
+      <p className="text-[10px] text-center text-slate-600 uppercase tracking-widest font-medium mt-12 pb-12">
         © Full Green Bank · Suporte e Transparência
       </p>
     </div>
   );
-}
+};
