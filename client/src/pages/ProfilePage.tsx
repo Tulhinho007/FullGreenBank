@@ -18,7 +18,7 @@ export const ProfilePage = () => {
     username: user?.username || '',
     password: '',
     confirmPassword: '',
-    plan: user?.plan || 'FREE',
+    plan: user?.plan || 'STARTER',
 
     theme: (user?.theme?.toLowerCase() as any) || 'dark',
   })
@@ -205,7 +205,7 @@ export const ProfilePage = () => {
                   <div className="p-3 bg-surface-300 border border-surface-400 rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-xs font-bold text-white uppercase">{user?.plan || 'FREE'}</span>
+                      <span className="text-xs font-bold text-white uppercase">{user?.plan || 'STARTER'}</span>
                     </div>
                     <button type="button" className="text-[10px] font-bold text-green-400 hover:underline">Ver planos</button>
                   </div>

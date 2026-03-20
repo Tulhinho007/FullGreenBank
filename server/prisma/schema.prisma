@@ -30,7 +30,7 @@ model User {
   isTipster Boolean  @default(false)
   
   // Settings & Preferences
-  plan              String   @default("FREE")    // STARTER, STANDARD, PRO, FREE
+  plan              String   @default("STARTER") // STARTER, STANDARD, PRO
   value             Float?
   payMethod         String?
   purchaseDate      String?                      // Data da compra (YYYY-MM-DD)

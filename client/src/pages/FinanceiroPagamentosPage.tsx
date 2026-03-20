@@ -18,7 +18,7 @@ import { checkSubscription, createPayment } from '../utils/subscription'
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
 type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'CANCELADO'
-type PlanType      = 'STARTER' | 'STANDARD' | 'PRO' | 'FREE'
+type PlanType      = 'STARTER' | 'STANDARD' | 'PRO'
 type PayMethod     = 'PIX' | 'CARTAO' | 'BOLETO' | 'TRANSFERENCIA' | ''
 
 interface UserPayment {
@@ -46,10 +46,9 @@ const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon:
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  FREE:     { label: 'FREE',    color: 'bg-slate-500/10 text-slate-400 border-slate-500/20'       },
-  STARTER:  { label: 'STARTER', color: 'bg-green-500/10 text-green-400 border-green-500/20'      },
-  STANDARD: { label: 'STANDARD',color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
-  PRO:      { label: 'PRO',     color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  STARTER:  { label: 'STARTER', color: 'bg-green-500/10 text-green-600 border-green-500/20 dark:text-green-400' },
+  STANDARD: { label: 'STANDARD',color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20 dark:text-indigo-400' },
+  PRO:      { label: 'PRO',     color: 'bg-orange-500/10 text-orange-600 border-orange-500/20 dark:text-orange-400' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -66,7 +65,7 @@ const formatDate = (d: string | null) =>
 // ─── Formulário vazio ────────────────────────────────────────────────────────
 
 const emptyEdit = {
-  plan: 'FREE' as PlanType,
+  plan: 'STARTER' as PlanType,
   value: '',
   payMethod: '' as PayMethod,
   dueDate: '',
@@ -115,7 +114,7 @@ export const FinanceiroPagamentosPage = () => {
           name:            u.name,
           email:           u.email,
           role:            u.role || 'MEMBRO',
-          plan:            (u.plan ?? 'FREE') as PlanType,
+          plan:            (u.plan ?? 'STARTER') as PlanType,
           value:           u.value ?? null,
           payMethod:       (u.payMethod ?? '') as PayMethod,
           purchaseDate:    u.purchaseDate    ?? null,
@@ -650,7 +649,7 @@ interface UserRowProps {
 
 const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
   const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.PENDENTE
-  const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.FREE
+  const planCfg   = PLAN_CONFIG[user.plan]     || PLAN_CONFIG.STARTER
 
   // Helper para ícones de pagamento
   const getPayIcon = (method: PayMethod) => {
@@ -700,7 +699,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
 
       {/* DATA DE COMPRA */}
       <div>
-        <span className="text-xs text-slate-300 font-medium truncate">
+        <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
           {user.status !== 'PENDENTE' 
             ? (user.notes.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1].split('|')[0]) : formatDate(new Date().toISOString()))
             : '—'}
@@ -708,7 +707,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* PRÓXIMA MENSALIDADE */}
-      <div className="text-sm font-bold text-slate-100">
+      <div className="text-sm font-bold text-slate-700 dark:text-slate-100">
         {user.dueDate ? formatDate(user.dueDate) : '—'}
       </div>
 

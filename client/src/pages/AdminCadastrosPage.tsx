@@ -59,7 +59,7 @@ const placeholders = [
 
 const emptyForm = {
   name: '', email: '', phone: '', username: '', password: '', confirmPassword: '', 
-  role: 'MEMBRO', plan: 'FREE', currency: 'BRL'
+  role: 'MEMBRO', plan: 'STARTER', currency: 'BRL'
 }
 
 export const AdminCadastrosPage = () => {
@@ -411,9 +411,9 @@ export const AdminCadastrosPage = () => {
             <div>
               <label className="label">Plano</label>
               <select className="input-field" value={form.plan} onChange={set('plan')}>
-                <option value="FREE">Free</option>
+                <option value="STARTER">Starter</option>
+                <option value="STANDARD">Standard</option>
                 <option value="PRO">Pro</option>
-                <option value="MASTER">Master</option>
               </select>
             </div>
 
