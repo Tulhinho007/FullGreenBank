@@ -125,9 +125,25 @@ const DEFAULT_MARKETS: Market[] = [
 const loadMarkets = (): Market[] => {
   try {
     const stored = localStorage.getItem(MARKETS_KEY)
-    if (stored) return JSON.parse(stored)
-    localStorage.setItem(MARKETS_KEY, JSON.stringify(DEFAULT_MARKETS))
-    return DEFAULT_MARKETS
+    const storedMarkets: Market[] = stored ? JSON.parse(stored) : []
+    
+    // Sincronização automática: Adiciona itens padrões que não existem na lista atual
+    const existingNames = new Set(storedMarkets.map(m => m.name.toLowerCase()))
+    
+    const missingDefaults = DEFAULT_MARKETS.filter(dm => !existingNames.has(dm.name.toLowerCase()))
+    
+    if (missingDefaults.length > 0) {
+      const merged = [...storedMarkets, ...missingDefaults]
+      localStorage.setItem(MARKETS_KEY, JSON.stringify(merged))
+      return merged
+    }
+
+    if (!stored) {
+      localStorage.setItem(MARKETS_KEY, JSON.stringify(DEFAULT_MARKETS))
+      return DEFAULT_MARKETS
+    }
+    
+    return storedMarkets
   } catch { return DEFAULT_MARKETS }
 }
 
