@@ -11,10 +11,7 @@ export const tipsService = {
     return res.data.data
   },
 
-  create: async (data: {
-    title: string; description: string; sport: string; event: string
-    market: string; odds: number; stake: number; tipDate: string
-  }) => {
+  create: async (data: any) => {
     const res = await api.post('/tips', data)
     return res.data.data
   },
@@ -24,10 +21,7 @@ export const tipsService = {
     return res.data
   },
 
-  update: async (id: string, data: Partial<{
-    title: string; description: string; sport: string; event: string
-    market: string; odds: number; stake: number; tipDate: string
-  }>) => {
+  update: async (id: string, data: any) => {
     const res = await api.patch(`/tips/${id}`, data)
     return res.data.data
   },

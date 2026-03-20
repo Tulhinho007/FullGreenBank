@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Plus, X, ListPlus } from 'lucide-react'
+import { useEffect, useState, useMemo } from 'react'
+import { Plus, X, ListPlus, Edit2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface JogoMultipla {
@@ -13,16 +13,43 @@ interface JogoMultipla {
 interface ModalCriarMultiplaProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: any) => Promise<void>
+  onSave: (data: any, id?: string) => Promise<void>
+  initialData?: any
 }
 
-export const ModalCriarMultipla = ({ isOpen, onClose, onSave }: ModalCriarMultiplaProps) => {
+const formatDateForInput = (dateString?: string) => {
+  if (!dateString) return ''
+  const d = new Date(dateString)
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0,16)
+}
+
+export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: ModalCriarMultiplaProps) => {
   const [dataAposta, setDataAposta] = useState('')
   const [stake, setStake] = useState('')
+  const [resultado, setResultado] = useState('PENDING')
+  const [profit, setProfit] = useState('')
   const [jogos, setJogos] = useState<JogoMultipla[]>([
     { mandante: '', visitante: '', mercado: '', odd: '', resultado: 'PENDING' }
   ])
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        setDataAposta(formatDateForInput(initialData.tipDate))
+        setStake(initialData.stake?.toString() || '')
+        setResultado(initialData.result || 'PENDING')
+        setProfit(initialData.profit !== null && initialData.profit !== undefined ? initialData.profit.toString() : '')
+        setJogos(initialData.jogos?.length > 0 ? initialData.jogos : [{ mandante: '', visitante: '', mercado: '', odd: '', resultado: 'PENDING' }])
+      } else {
+        setDataAposta('')
+        setStake('')
+        setResultado('PENDING')
+        setProfit('')
+        setJogos([{ mandante: '', visitante: '', mercado: '', odd: '', resultado: 'PENDING' }])
+      }
+    }
+  }, [isOpen, initialData])
 
   const oddTotal = useMemo(() => {
     return jogos.reduce((acc, jogo) => {
@@ -30,6 +57,21 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave }: ModalCriarMultip
       return (o > 0 && !isNaN(o)) ? acc * o : acc
     }, 1).toFixed(2)
   }, [jogos])
+
+  useEffect(() => {
+    if (resultado === 'GREEN') {
+      const s = Number(stake)
+      const o = Number(oddTotal)
+      if (s > 0 && o > 0) setProfit((s * (o - 1)).toFixed(2))
+    } else if (resultado === 'RED') {
+      const s = Number(stake)
+      if (s > 0) setProfit((-s).toFixed(2))
+    } else if (resultado === 'VOID') {
+      setProfit('0')
+    } else {
+      setProfit('')
+    }
+  }, [resultado, stake, oddTotal])
 
   if (!isOpen) return null
 
@@ -72,12 +114,13 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave }: ModalCriarMultip
         odds: Number(oddTotal),
         stake: Number(stake),
         tipDate: new Date(dataAposta).toISOString(),
-        result: 'PENDING', 
+        result: resultado,
+        profit: profit ? Number(profit) : null,
         isMultipla: true,
         jogos: jogos // Prisma Json handles this
-      })
+      }, initialData?.id)
       onClose()
-      toast.success('Bilhete salvo!')
+      toast.success(initialData ? 'Múltipla atualizada!' : 'Bilhete salvo!')
     } catch {
       toast.error('Erro ao salvar bilhete múltiplo')
     } finally {
@@ -91,8 +134,8 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave }: ModalCriarMultip
         {/* Header */}
         <div className="p-5 flex justify-between items-center border-b border-surface-300 shrink-0">
           <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
-            <ListPlus className="text-cyan-400" size={24} />
-            Novo Bilhete (Múltipla)
+            {initialData ? <Edit2 className="text-cyan-400" size={24} /> : <ListPlus className="text-cyan-400" size={24} />}
+            {initialData ? 'Editar Múltipla' : 'Novo Bilhete (Múltipla)'}
           </h3>
           <button onClick={onClose} className="p-2 -mr-2 text-slate-400 hover:text-white transition-colors">
             <X size={20} />
@@ -123,6 +166,30 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave }: ModalCriarMultip
                 placeholder="Ex: 50.00"
                 className="input-field py-2.5 px-3 w-full bg-surface-200" 
                 required 
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Resultado</label>
+              <select 
+                value={resultado}
+                onChange={e => setResultado(e.target.value)}
+                className="input-field py-2.5 px-3 w-full bg-surface-200"
+              >
+                <option value="PENDING">— Pendente —</option>
+                <option value="GREEN">Green</option>
+                <option value="RED">Red</option>
+                <option value="VOID">Anulado</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Lucro/Prejuízo (BRL)</label>
+              <input 
+                type="number" 
+                step="0.01" 
+                value={profit}
+                onChange={e => setProfit(e.target.value)}
+                placeholder="Auto"
+                className="input-field py-2.5 px-3 w-full bg-surface-200 text-cyan-400 font-bold font-mono placeholder:text-slate-600" 
               />
             </div>
           </div>

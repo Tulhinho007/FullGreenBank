@@ -111,6 +111,8 @@ export const TipsPage = () => {
   const [isCriarApostaModalOpen, setIsCriarApostaModalOpen] = useState(false)
   const [isCriarMultiplaModalOpen, setIsCriarMultiplaModalOpen] = useState(false)
   const [sharingTip, setSharingTip] = useState<Tip | null>(null)
+  const [editTipMultipla, setEditTipMultipla] = useState<Tip | null>(null)
+  const [editTipMultiMercado, setEditTipMultiMercado] = useState<Tip | null>(null)
 
   const load = async (p = 1) => {
     setLoading(true)
@@ -169,19 +171,37 @@ export const TipsPage = () => {
     });
   };
 
-  const handleSaveNovoBilhete = async (data: any) => {
-    await tipsService.create(data)
+  const handleSaveNovoBilhete = async (data: any, id?: string) => {
+    if (id) {
+      await tipsService.update(id, data)
+    } else {
+      await tipsService.create(data)
+    }
     load(1)
+    setEditTipMultipla(null)
+    setEditTipMultiMercado(null)
   }
 
   const openEdit = (tip: Tip) => {
-    setSelected(tip)
-    setEditForm({
-      title: tip.title, event: tip.event, market: tip.market,
-      odds: tip.odds.toString(), stake: tip.stake.toString(),
-      tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
-      result: tip.result || 'PENDING', profit: tip.profit?.toString() || '',
-    })
+    if (tip.isMultipla) {
+      setEditTipMultipla(tip)
+      setIsCriarMultiplaModalOpen(true)
+    } else if (tip.mercados && tip.mercados.length > 0) {
+      setEditTipMultiMercado(tip)
+      setIsCriarApostaModalOpen(true)
+    } else {
+      setSelected(tip)
+      setEditForm({
+        title: tip.title,
+        event: tip.event,
+        market: tip.market,
+        odds: tip.odds.toString(),
+        stake: tip.stake.toString(),
+        result: tip.result || 'PENDING',
+        profit: tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '',
+        tipDate: new Date(tip.tipDate).toISOString().slice(0, 16)
+      })
+    }
   }
 
   const metrics = useMemo(() => {
@@ -358,10 +378,10 @@ export const TipsPage = () => {
               <span className="text-[12px] font-bold relative top-[-1px]">M</span> Dicas - Múltiplas
             </button>
             <button onClick={() => setIsCriarApostaModalOpen(true)} className="bg-[#00c58e] hover:bg-[#00b57e] transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-emerald-500/20 text-sm">
-              <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Mercados
+              <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Criar apostas
             </button>
             <button onClick={() => setNewTipOpen(true)} className="btn-primary flex items-center gap-1.5 text-sm py-2 bg-surface-300 hover:bg-surface-400 text-white shadow-none">
-              <Plus size={16} />Simples
+              <Plus size={16} />Dicas simples
             </button>
           </div>
         )}
@@ -519,15 +539,17 @@ export const TipsPage = () => {
       {/* NOVO Modal Criar Aposta Multi-Mercados */}
       <ModalCriarAposta 
         isOpen={isCriarApostaModalOpen} 
-        onClose={() => setIsCriarApostaModalOpen(false)} 
+        onClose={() => { setIsCriarApostaModalOpen(false); setEditTipMultiMercado(null); }} 
         onSave={handleSaveNovoBilhete} 
+        initialData={editTipMultiMercado}
       />
 
       {/* NOVO Modal Criar Aposta Múltipla */}
       <ModalCriarMultipla 
         isOpen={isCriarMultiplaModalOpen} 
-        onClose={() => setIsCriarMultiplaModalOpen(false)} 
+        onClose={() => { setIsCriarMultiplaModalOpen(false); setEditTipMultipla(null); }} 
         onSave={handleSaveNovoBilhete} 
+        initialData={editTipMultipla}
       />
     </div>
   )
