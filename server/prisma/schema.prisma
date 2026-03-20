@@ -70,6 +70,8 @@ model Tip {
   profit      Float?
   tipDate     DateTime
   mercados    String[] @default([])
+  isMultipla  Boolean  @default(false)
+  jogos       Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

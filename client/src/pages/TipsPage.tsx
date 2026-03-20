@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 import { ShareTipModal } from '../components/ui/ShareTipModal'
 import { ModalCriarAposta } from '../components/ui/ModalCriarAposta'
+import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 
@@ -22,6 +23,8 @@ interface Tip {
   event: string; market: string; odds: number; stake: number
   result?: string; profit?: number; tipDate: string
   mercados?: string[]
+  isMultipla?: boolean
+  jogos?: any
 }
 
 type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING'
@@ -106,6 +109,7 @@ export const TipsPage = () => {
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
   const [isCriarApostaModalOpen, setIsCriarApostaModalOpen] = useState(false)
+  const [isCriarMultiplaModalOpen, setIsCriarMultiplaModalOpen] = useState(false)
   const [sharingTip, setSharingTip] = useState<Tip | null>(null)
 
   const load = async (p = 1) => {
@@ -206,21 +210,24 @@ export const TipsPage = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const c = STATUS_CONFIG[tip.result || 'PENDING'] || STATUS_CONFIG.PENDING;
     const temMercados = tip.mercados && tip.mercados.length > 0;
+    const isMultipla = tip.isMultipla && Array.isArray(tip.jogos) && tip.jogos.length > 0;
+    const eExpansivel = temMercados || isMultipla;
 
     return (
       <div className={`border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm bg-surface-200 border-surface-400 group flex flex-col`}>
         {/* HEADER DO CARD (Sempre visível) */}
         <div 
           className="flex justify-between items-start cursor-pointer w-full"
-          onClick={() => temMercados && setIsExpanded(!isExpanded)}
+          onClick={() => eExpansivel && setIsExpanded(!isExpanded)}
         >
           <div className="flex-1 pr-4">
             <h3 className="font-bold text-sm text-white leading-snug break-words">
               {tip.title}
+              {isMultipla && <span className="ml-2 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-bold uppercase tracking-wider">Múltipla</span>}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               {tip.sport} {tip.event ? `· ${tip.event}` : ''}
-              {!temMercados && tip.market && ` · ${tip.market}`}
+              {!eExpansivel && tip.market && ` · ${tip.market}`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -231,7 +238,7 @@ export const TipsPage = () => {
                 <button onClick={() => handleDelete(tip.id)} className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
               </div>
             )}
-            {temMercados && (
+            {eExpansivel && (
               <span className={`text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
                 <ChevronDown size={18} />
               </span>
@@ -272,22 +279,52 @@ export const TipsPage = () => {
           </div>
         </div>
 
-        {/* CORPO EXPANSÍVEL (Mercados do Bilhete) */}
-        {isExpanded && temMercados && (
+        {/* CORPO EXPANSÍVEL (Mercados do Bilhete ou Multiplos) */}
+        {isExpanded && eExpansivel && (
           <div className="mt-5 pt-4 border-t border-surface-400 space-y-2">
-            <div className="flex items-center gap-1.5 text-yellow-400 mb-3">
-              <span className="text-xs">★</span>
-              <h4 className="font-bold uppercase text-[10px] tracking-wider">Mercados do Bilhete</h4>
-            </div>
-
-            {tip.mercados!.map((mercado, index) => (
-              <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex items-center gap-3 border border-surface-300">
-                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">
-                  {index + 1}
-                </span>
-                <p className="text-[13px] text-slate-200 flex-1 leading-snug">{mercado}</p>
-              </div>
-            ))}
+            {isMultipla ? (
+              <>
+                <div className="flex items-center gap-1.5 text-cyan-400 mb-3">
+                  <span className="text-xs">★</span>
+                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Jogos do Bilhete (Mutlipla)</h4>
+                </div>
+                {tip.jogos!.map((jogo: any, index: number) => {
+                  const sC = STATUS_CONFIG[jogo.resultado || 'PENDING'] || STATUS_CONFIG.PENDING;
+                  return (
+                    <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex flex-col gap-1.5 border border-surface-300">
+                      <div className="flex items-center justify-between">
+                        <span className="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold rounded-full px-2 py-0.5 w-max">
+                          Jogo {index + 1}
+                        </span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${sC.text}`}>
+                          {sC.label}
+                        </span>
+                      </div>
+                      <p className="text-[13px] font-bold text-white flex-1 leading-snug">{jogo.mandante} x {jogo.visitante}</p>
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 pt-1 border-t border-surface-300/50">
+                        <span>{jogo.mercado}</span>
+                        <span className="font-mono text-emerald-400 font-bold">@{Number(jogo.odd).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-1.5 text-yellow-400 mb-3">
+                  <span className="text-xs">★</span>
+                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Mercados do Bilhete</h4>
+                </div>
+                {tip.mercados!.map((mercado, index) => (
+                  <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex items-center gap-3 border border-surface-300">
+                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">
+                      {index + 1}
+                    </span>
+                    <p className="text-[13px] text-slate-200 flex-1 leading-snug">{mercado}</p>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
       </div>
@@ -316,12 +353,15 @@ export const TipsPage = () => {
           <p className="text-xs text-slate-500 uppercase tracking-widest">{tips.length} dicas carregadas</p>
         </div>
         {isMaster && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+            <button onClick={() => setIsCriarMultiplaModalOpen(true)} className="bg-cyan-500 hover:bg-cyan-400 transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-cyan-500/20 text-sm">
+              <span className="text-[12px] font-bold relative top-[-1px]">M</span> Dicas - Múltiplas
+            </button>
             <button onClick={() => setIsCriarApostaModalOpen(true)} className="bg-[#00c58e] hover:bg-[#00b57e] transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-emerald-500/20 text-sm">
-              <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Criar aposta
+              <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Mercados
             </button>
             <button onClick={() => setNewTipOpen(true)} className="btn-primary flex items-center gap-1.5 text-sm py-2 bg-surface-300 hover:bg-surface-400 text-white shadow-none">
-              <Plus size={16} />Nova Dica Simples
+              <Plus size={16} />Simples
             </button>
           </div>
         )}
@@ -480,6 +520,13 @@ export const TipsPage = () => {
       <ModalCriarAposta 
         isOpen={isCriarApostaModalOpen} 
         onClose={() => setIsCriarApostaModalOpen(false)} 
+        onSave={handleSaveNovoBilhete} 
+      />
+
+      {/* NOVO Modal Criar Aposta Múltipla */}
+      <ModalCriarMultipla 
+        isOpen={isCriarMultiplaModalOpen} 
+        onClose={() => setIsCriarMultiplaModalOpen(false)} 
         onSave={handleSaveNovoBilhete} 
       />
     </div>

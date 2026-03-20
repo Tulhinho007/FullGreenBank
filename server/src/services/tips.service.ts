@@ -11,6 +11,8 @@ interface CreateTipData {
   tipDate: Date;
   authorId: string;
   mercados?: string[];
+  isMultipla?: boolean;
+  jogos?: any;
 }
 
 export const createTip = async (data: CreateTipData) => {
