@@ -1,7 +1,5 @@
 import { 
   Instagram, 
-  Send, 
-  MessageCircle, 
   ShieldCheck, 
   AlertTriangle, 
   AtSign
@@ -20,7 +18,7 @@ export const Footer = () => {
           <div className="space-y-6">
             <h4 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider">Suporte & Ajuda</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors">Central de Ajuda / FAQ</a></li>
+              <li><Link to="/faq" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors">Central de Ajuda / FAQ</Link></li>
               <li><a href="#" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors flex items-center gap-2">
                 Status do Sistema <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
               </a></li>
