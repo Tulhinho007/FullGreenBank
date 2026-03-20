@@ -46,6 +46,8 @@ export const GestaoBancaPage = () => {
   const [isModalEditBancaOpen, setIsModalEditBancaOpen] = useState(false)
   const [editBancaNome, setEditBancaNome] = useState('')
   const [isModalDeleteBancaOpen, setIsModalDeleteBancaOpen] = useState(false)
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
+  const [carteiraToDeleteId, setCarteiraToDeleteId] = useState<string | null>(null)
 
   const loadInitialData = async () => {
     setLoading(true)
@@ -251,16 +253,25 @@ export const GestaoBancaPage = () => {
     }
   }
 
-  const handleExcluirBanca = async (id: string) => {
+  const handleExcluirBanca = (id: string) => {
+    setCarteiraToDeleteId(id)
+    setIsConfirmDeleteOpen(true)
+  }
+
+  const confirmExcluirBanca = async () => {
+    if (!carteiraToDeleteId) return
+    const id = carteiraToDeleteId
     const carteira = todasCarteiras.find(c => c.id === id)
     if (!carteira) return
-    if (!window.confirm(`Tem certeza que deseja excluir a banca "${carteira.casaAposta} - ${carteira.nome}"? Todos os dados vinculados a ela serão perdidos.`)) return
+    
     try {
       await api.delete(`/gestao-banca/carteiras/${id}`)
       setTodasCarteiras(prev => prev.filter(c => c.id !== id))
       if (id === selectedCarteiraId) setSelectedCarteiraId('')
       toast.success('Banca excluída com sucesso!')
+      setIsConfirmDeleteOpen(false)
       setIsModalDeleteBancaOpen(false)
+      setCarteiraToDeleteId(null)
     } catch {
       toast.error('Erro ao excluir banca.')
     }
@@ -543,6 +554,40 @@ export const GestaoBancaPage = () => {
               </div>
               <div className="flex justify-end pt-2 border-t border-surface-300/50">
                 <button onClick={() => setIsModalDeleteBancaOpen(false)} className="px-4 py-2 rounded-lg text-sm text-slate-300 hover:bg-surface-300">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL CONFIRMAÇÃO DE EXCLUSÃO (PREMIUM) */}
+      {isConfirmDeleteOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[70] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-surface-200 border border-white/10 w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-6 border border-red-500/20">
+                <Trash2 size={32} className="text-red-500 animate-pulse" />
+              </div>
+              
+              <h3 className="text-xl font-bold text-white mb-2">Excluir Banca?</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                Tem certeza que deseja excluir a banca <span className="text-white font-semibold">"{todasCarteiras.find(c => c.id === carteiraToDeleteId)?.nome}"</span>? <br/>
+                <span className="text-red-400/80 font-medium">Essa ação não pode ser desfeita e todos os dados serão perdidos.</span>
+              </p>
+
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={confirmExcluirBanca}
+                  className="w-full py-4 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-bold transition-all active:scale-95 shadow-lg shadow-red-900/20"
+                >
+                  Sim, Excluir Agora
+                </button>
+                <button 
+                  onClick={() => { setIsConfirmDeleteOpen(false); setCarteiraToDeleteId(null); }}
+                  className="w-full py-4 rounded-2xl bg-surface-300 hover:bg-surface-400 text-slate-300 font-semibold transition-all"
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
           </div>
