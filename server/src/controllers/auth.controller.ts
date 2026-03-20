@@ -39,7 +39,7 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
     }
     sendSuccess(res, user);
   } catch (error) {
-  console.error("ERRO NO LOGIN:", error); // Isso vai imprimir o erro real nos Logs do Railway
-  res.status(422).json({ message: "Erro interno no servidor" });
+    console.error("ERRO NO GET ME:", error);
+    sendError(res, "Erro interno ao carregar perfil", 500);
   }
 };
