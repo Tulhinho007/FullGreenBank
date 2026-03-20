@@ -343,10 +343,10 @@ export const GestaoBancaPage = () => {
                 className="input-field py-2 pr-8 pl-3 text-sm appearance-none cursor-pointer bg-surface-300 outline-none focus:ring-1 ring-green-500/50"
                 value={selectedCarteiraId}
                 onChange={(e) => setSelectedCarteiraId(e.target.value)}
-                disabled={todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0}
+                disabled={!Array.isArray(todasCarteiras) || todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0}
               >
-                {todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0 && <option value="">Carregando Bancas...</option>}
-                {todasCarteiras.filter(c => c.casaAposta === casaAposta).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                {(!Array.isArray(todasCarteiras) || todasCarteiras.filter(c => c.casaAposta === casaAposta).length === 0) && <option value="">Carregando Bancas...</option>}
+                {Array.isArray(todasCarteiras) && todasCarteiras.filter(c => c.casaAposta === casaAposta).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
               </select>
               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             </div>

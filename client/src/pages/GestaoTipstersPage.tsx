@@ -204,6 +204,7 @@ export const GestaoTipstersPage = () => {
     // Busca usuários que são Tipsters do banco de dados
     usersService.getAll()
       .then(allUsers => {
+        if (!Array.isArray(allUsers)) return
         const activeTipsters = allUsers
           .filter((u: any) => u.isTipster)
           .map((u: any) => ({ id: u.id, name: u.name }))
@@ -252,6 +253,7 @@ export const GestaoTipstersPage = () => {
 
   // Derived Data
   const filteredTransactions = useMemo(() => {
+    if (!Array.isArray(transactions)) return []
     if (selectedTipsterId === 'all') return transactions
     return transactions.filter(t => t.tipsterId === selectedTipsterId)
   }, [selectedTipsterId, transactions])
@@ -403,13 +405,13 @@ export const GestaoTipstersPage = () => {
           </span>
         </div>
         
-        <div className="w-full h-[300px]">
+        <div className="w-full h-[300px] min-h-[300px]">
           {chartData.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center text-sm text-slate-400">
               Nenhum dado com lucro suficiente para montagem do gráfico.
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ResponsiveContainer width="99%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">

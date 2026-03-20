@@ -1,6 +1,6 @@
 # 📘 Full Green Bank — Resumo Completo do Projeto
 
-> Documento gerado em: 20/03/2026
+> Documento gerado em: 20/03/2026 (Atualizado)
 > Repositório: [github.com/Tulhinho007/FullGreenBank](https://github.com/Tulhinho007/FullGreenBank)
 
 ---
@@ -139,6 +139,7 @@ notes           String?    -- histórico de pagamentos em texto
 | Dicas | `/tips` | Lista de tips com filtros e resultados |
 | Bancas | `/gestao/banca` | Gestão de bankroll com múltiplas carteiras |
 | Tipsters | `/gestao/tipsters` | Dashboard de tipsters com área chart |
+| Histórico de Dicas | `/reports/tips` | Tabela unificada (Simples, Múltipla, Criar Aposta) |
 | Histórico de Contratos | `/gestao/historico` | Contratos de banca com clientes |
 | Performance | `/reports` | Análise de performance por período |
 | Nossos Planos | `/planos` | Página pública de planos disponíveis |
@@ -225,7 +226,21 @@ notes           String?    -- histórico de pagamentos em texto
 - UX: Implementação de ordenação alfabética automática em todas as tabelas de cadastro (Esportes, Ligas, Mercados, Times, Casas de Apostas).
 - Persistência: Armazenamento em `localStorage` para consistência com o restante da página de cadastros.
 
-### 13. Correções de Deploy (Vercel)
+### 13. Bilhetes Múltiplos e Criar Aposta (Redesign)
+- **ModalCriarMultipla**: Cadastro iterativo de múltiplos jogos com cálculo de Odd Total automática.
+- **ModalCriarAposta**: Suporte a múltiplos mercados no mesmo evento (Criar Aposta/Bet Builder).
+- **Pixel Perfect**: Layout totalmente fiel aos protótipos em 2 colunas e cartões agrupados.
+
+### 14. Edição Avançada de Bilhetes
+- Lógica inteligente que identifica o tipo de bilhete e abre o modal correto com dados pré-preenchidos.
+- Suporte a edição completa de jogos em múltiplas e mercados em criar aposta.
+
+### 15. Histórico Geral de Dicas (DataTable)
+- Centralização de todas as entradas em uma única tabela de alta performance.
+- Filtros dinâmicos por: Tipo (S, M, C), Status (Green, Red, Pendente) e Nome do Evento.
+- Ações de edição e exclusão integradas diretamente na linha da tabela.
+
+### 16. Correções de Deploy & TypeScript
 - Resolvidos erros de TypeScript em `AdminUsersPage.tsx` e `ReportsPage.tsx`.
 - Adicionado script `build` na raiz do monorepo para delegar o build ao client.
 - Instalada dependência ausente `date-fns` no frontend.
@@ -278,3 +293,6 @@ VITE_API_URL=        # URL base da API (ex: https://full-green-bank-backend.verc
 | `f64696c` | fix: resolve TS build errors and missing dependencies for Vercel deploy |
 | `76650d6` | fix: add build script to root package.json for Vercel deploy |
 | `30c69b6` | feat: implement bidirectional support ticket response system |
+| `f1cba9a` | feat: advanced edit mode for multi-markets and multiple tickets |
+| `106f0fb` | style(tips): perfect pixel redesign of complex ticket modals |
+| `2a666be` | feat: generate historical datatable with modular types |

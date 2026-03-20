@@ -30,17 +30,18 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    tipsService.getAll(1, 3)
-      .then(data => setTips(data.tips))
+    tipsService.getAll(1, 50)
+      .then(data => setTips(Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  const greens   = tips.filter(t => t.result === 'GREEN').length
-  const reds     = tips.filter(t => t.result === 'RED').length
-  const profit   = tips.reduce((a: number, t: Tip) => a + (t.profit || 0), 0)
-  const winRate  = tips.length > 0 ? ((greens / (greens + reds || 1)) * 100).toFixed(0) : '--'
-  const totalStake = tips.reduce((a: number, t: Tip) => a + t.stake, 0)
+  const ts = Array.isArray(tips) ? tips : []
+  const greens   = ts.filter(t => t.result === 'GREEN').length
+  const reds     = ts.filter(t => t.result === 'RED').length
+  const profit   = ts.reduce((a: number, t: Tip) => a + (t.profit || 0), 0)
+  const winRate  = ts.length > 0 ? ((greens / (greens + reds || 1)) * 100).toFixed(0) : '--'
+  const totalStake = ts.reduce((a: number, t: Tip) => a + t.stake, 0)
 
   return (
     <div className="flex flex-col gap-6">

@@ -83,6 +83,7 @@ export const HistoricoDicasPage = () => {
   }
 
   const filteredTips = useMemo(() => {
+    if (!Array.isArray(tips)) return []
     return tips.filter(tip => {
       const tipo = getTipo(tip)
       const searchMatch = (tip.event || '').toLowerCase().includes(search.toLowerCase()) ||
