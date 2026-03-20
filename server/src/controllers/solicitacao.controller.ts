@@ -68,3 +68,38 @@ export const updateSolicitacaoStatus = async (req: AuthRequest, res: Response): 
     res.status(500).json({ error: 'Erro ao atualizar status da solicitação' })
   }
 }
+
+export const updateSolicitacao = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params
+    const { valorAporte, observacoes } = req.body
+
+    const solicitacao = await prisma.solicitacaoInvestimento.update({
+      where: { id },
+      data: {
+        valorAporte: valorAporte ? Number(valorAporte) : undefined,
+        observacoes
+      }
+    })
+
+    res.json(solicitacao)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Erro ao atualizar a solicitação' })
+  }
+}
+
+export const deleteSolicitacao = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params
+
+    await prisma.solicitacaoInvestimento.delete({
+      where: { id }
+    })
+
+    res.json({ message: 'Solicitação excluída com sucesso' })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Erro ao excluir a solicitação' })
+  }
+}
