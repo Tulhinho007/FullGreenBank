@@ -28,6 +28,7 @@ import { PlanosPage }                  from './pages/PlanosPage'
 import { FAQPage }                     from './pages/FAQPage'
 import { ReportPage }                  from './pages/ReportPage'
 import { GuidePage }                   from './pages/GuidePage'
+import { AlavancagemPage } from './pages/AlavancagemPage'
 
 function App() {
   return (
@@ -122,6 +123,7 @@ function App() {
           <Route path="gestao/banca" element={<GestaoBancaPage />} />
           <Route path="gestao/investimentos" element={<InvestimentosPage />} />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
+          <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/historico" element={<HistoryPage />} />
         </Route>
 
