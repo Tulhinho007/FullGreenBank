@@ -117,7 +117,7 @@ export const TipsPage = () => {
   const load = async (p = 1) => {
     setLoading(true)
     try {
-      const data = await tipsService.getAll(p, 9)
+      const data = await tipsService.getAll(p, 12)
       const tipsRaw = Array.isArray(data.tips) ? data.tips : []
       setTips(tipsRaw)
       setPage(p)

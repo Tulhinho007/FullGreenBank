@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Search, Filter, Edit2, Trash2, CheckCircle, XCircle, Clock,
-  Layers, ListPlus, Target
+  Layers, ListPlus, Target, Calendar, X
 } from 'lucide-react'
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
@@ -44,6 +44,7 @@ export const HistoricoDicasPage = () => {
   const [search, setSearch] = useState('')
   const [tipoFiltro, setTipoFiltro] = useState<TipoFiltro>('TODAS')
   const [statusFiltro, setStatusFiltro] = useState<StatusFiltro>('TODOS')
+  const [dateFilter, setDateFilter] = useState('')
 
   // Modais de Edição
   const [isEditSimpleOpen, setIsEditSimpleOpen] = useState(false)
@@ -92,9 +93,14 @@ export const HistoricoDicasPage = () => {
                           (tip.market || '').toLowerCase().includes(search.toLowerCase())
       const tipoMatch = tipoFiltro === 'TODAS' || tipo === tipoFiltro
       const statusMatch = statusFiltro === 'TODOS' || (tip.result || 'PENDING') === statusFiltro
-      return searchMatch && tipoMatch && statusMatch
+      
+      const tipDateObj = new Date(tip.tipDate)
+      const tipDateStr = tipDateObj.toISOString().split('T')[0]
+      const dateMatch = !dateFilter || tipDateStr === dateFilter
+      
+      return searchMatch && tipoMatch && statusMatch && dateMatch
     }).sort((a, b) => new Date(b.tipDate).getTime() - new Date(a.tipDate).getTime())
-  }, [tips, search, tipoFiltro, statusFiltro])
+  }, [tips, search, tipoFiltro, statusFiltro, dateFilter])
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta dica?')) return
@@ -210,6 +216,24 @@ export const HistoricoDicasPage = () => {
               <option value="RED">Reds</option>
               <option value="VOID">Anuladas</option>
             </select>
+          </div>
+
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="w-full bg-surface-200 border border-surface-300 text-white text-sm rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-green-500 transition-colors [color-scheme:dark]"
+            />
+            {dateFilter && (
+              <button 
+                onClick={() => setDateFilter('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
       </div>

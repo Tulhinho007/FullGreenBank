@@ -30,7 +30,7 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    tipsService.getAll(1, 50)
+    tipsService.getAll(1, 12)
       .then(resp => {
         // Robust extraction covering all possible API response formats
         const ts = Array.isArray(resp?.tips) ? resp.tips : (Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []));
