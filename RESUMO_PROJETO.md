@@ -155,6 +155,7 @@ notes           String?    -- histórico de pagamentos em texto
 | Banca Gerenciada | `/financeiro/banca-gerenciada` | Visão consolidada de bancas |
 | Usuários | `/admin/users` | Listagem e gestão de usuários |
 | Cadastros | `/admin/cadastros` | Cadastro rápido de usuários, esportes, times |
+| Suporte & Feedback | `/admin/support` | Gestão de chamados e sugestões |
 | Logs / Eventos | `/admin/log` | Histórico de ações no sistema |
 
 ---
