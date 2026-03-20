@@ -15,21 +15,25 @@ interface CalculationRow {
 }
 
 export const AlavancagemPage = () => {
-  const [bancaInicial, setBancaInicial] = useState<number>(100)
+  const [bancaInicial, setBancaInicial] = useState<string>('100')
   const [tipoMeta, setTipoMeta] = useState<MetaType>('PERCENT')
-  const [valorMeta, setValorMeta] = useState<number>(10)
-  const [numEntradas, setNumEntradas] = useState<number>(10)
+  const [valorMeta, setValorMeta] = useState<string>('10')
+  const [numEntradas, setNumEntradas] = useState<string>('10')
 
   const results = useMemo(() => {
     const rows: CalculationRow[] = []
-    let current = bancaInicial
+    const bancaBase = Number(bancaInicial) || 0
+    const metaVal = Number(valorMeta.replace(',', '.')) || 0
+    const entradas = Math.min(Number(numEntradas) || 0, 100)
+    
+    let current = bancaBase
 
-    for (let i = 1; i <= numEntradas; i++) {
+    for (let i = 1; i <= entradas; i++) {
       let profit = 0
       if (tipoMeta === 'PERCENT') {
-        profit = current * (valorMeta / 100)
+        profit = current * (metaVal / 100)
       } else {
-        profit = current * (valorMeta - 1)
+        profit = current * (metaVal - 1)
       }
 
       const before = current
@@ -48,9 +52,10 @@ export const AlavancagemPage = () => {
     return rows
   }, [bancaInicial, tipoMeta, valorMeta, numEntradas])
 
-  const finalResult = results[results.length - 1]?.after || bancaInicial
-  const totalProfitValue = finalResult - bancaInicial
-  const totalProfitPercent = (totalProfitValue / bancaInicial) * 100
+  const bancaBase = Number(bancaInicial) || 0
+  const finalResult = results[results.length - 1]?.after || bancaBase
+  const totalProfitValue = finalResult - bancaBase
+  const totalProfitPercent = bancaBase > 0 ? (totalProfitValue / bancaBase) * 100 : 0
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,9 +78,10 @@ export const AlavancagemPage = () => {
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Banca Inicial (R$)</label>
             <input 
-              type="number" 
+              type="text" 
+              inputMode="decimal"
               value={bancaInicial} 
-              onChange={(e) => setBancaInicial(Number(e.target.value))}
+              onChange={(e) => setBancaInicial(e.target.value)}
               className="input-field w-full"
               placeholder="Ex: 100"
             />
@@ -85,13 +91,13 @@ export const AlavancagemPage = () => {
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Tipo de Meta</label>
             <div className="flex bg-surface-300 rounded-lg p-1">
               <button 
-                onClick={() => { setTipoMeta('PERCENT'); setValorMeta(10); }}
+                onClick={() => { setTipoMeta('PERCENT'); setValorMeta('10'); }}
                 className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${tipoMeta === 'PERCENT' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
               >
                 PORCENTAGEM (%)
               </button>
               <button 
-                onClick={() => { setTipoMeta('ODD'); setValorMeta(2.0); }}
+                onClick={() => { setTipoMeta('ODD'); setValorMeta('2.0'); }}
                 className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${tipoMeta === 'ODD' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
               >
                 POR ODD (@)
@@ -104,10 +110,10 @@ export const AlavancagemPage = () => {
               {tipoMeta === 'PERCENT' ? 'Meta por Entrada (%)' : 'Odd por Entrada (@)'}
             </label>
             <input 
-              type="number" 
-              step={tipoMeta === 'PERCENT' ? 1 : 0.01}
+              type="text" 
+              inputMode="decimal"
               value={valorMeta} 
-              onChange={(e) => setValorMeta(Number(e.target.value))}
+              onChange={(e) => setValorMeta(e.target.value)}
               className="input-field w-full"
               placeholder={tipoMeta === 'PERCENT' ? "Ex: 10" : "Ex: 1.50"}
             />
@@ -116,11 +122,11 @@ export const AlavancagemPage = () => {
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Número de Entradas</label>
             <input 
-              type="number" 
+              type="text" 
+              inputMode="numeric"
               value={numEntradas} 
-              onChange={(e) => setNumEntradas(Number(e.target.value))}
+              onChange={(e) => setNumEntradas(e.target.value)}
               className="input-field w-full"
-              max={100}
               placeholder="Ex: 10"
             />
           </div>
@@ -133,7 +139,7 @@ export const AlavancagemPage = () => {
           <div className="flex items-center gap-2">
             <List size={18} className="text-green-500" />
             <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-              Tabela de Alavancagem — {numEntradas} Entradas ({tipoMeta === 'PERCENT' ? `${valorMeta}% por aposta` : `@${valorMeta.toFixed(2)} por aposta`})
+              Tabela de Alavancagem — {numEntradas || 0} Entradas ({tipoMeta === 'PERCENT' ? `${valorMeta}% por aposta` : `@${valorMeta} por aposta`})
             </h2>
           </div>
         </div>
@@ -144,7 +150,7 @@ export const AlavancagemPage = () => {
               <tr>
                 <th className="px-6 py-4">Entrada</th>
                 <th className="px-6 py-4 text-center">Banca Antes</th>
-                <th className="px-6 py-4 text-center text-green-500">Meta {tipoMeta === 'PERCENT' ? `${valorMeta}%` : `@${valorMeta.toFixed(2)}`}</th>
+                <th className="px-6 py-4 text-center text-green-500">{tipoMeta === 'PERCENT' ? '%' : 'Odd'}</th>
                 <th className="px-6 py-4 text-right">Banca Depois</th>
               </tr>
             </thead>
