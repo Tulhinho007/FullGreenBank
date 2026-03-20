@@ -5,6 +5,7 @@ import { SportsModal, Sport } from '../components/ui/SportsModal'
 import { LeaguesModal, League, DEFAULT_LEAGUES } from '../components/ui/LeaguesModal'
 import { TeamsModal } from '../components/ui/TeamsModal'
 import { BookmakersModal, Bookmaker, DEFAULT_BOOKMAKERS } from '../components/ui/BookmakersModal'
+import { MarketsModal, Market } from '../components/ui/MarketsModal'
 import { usersService } from '../services/users.service'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
@@ -13,6 +14,7 @@ import toast from 'react-hot-toast'
 const SPORTS_KEY     = 'fgb_sports'
 const LEAGUES_KEY    = 'fgb_leagues'
 const BOOKMAKERS_KEY = 'fgb_bookmakers'
+const MARKETS_KEY    = 'fgb_markets'
 
 // Dados iniciais — carregados apenas na primeira vez (localStorage vazio)
 const DEFAULT_SPORTS: Sport[] = [
@@ -52,8 +54,115 @@ const loadBookmakers = (): Bookmaker[] => {
   } catch { return DEFAULT_BOOKMAKERS }
 }
 
+const DEFAULT_MARKETS: Market[] = [
+  // FUTEBOL - GOLS
+  { id: 'm1', sportSlug: 'futebol', name: 'Ambas Marcam' },
+  { id: 'm2', sportSlug: 'futebol', name: 'Mais de 0.5 gols' },
+  { id: 'm3', sportSlug: 'futebol', name: 'Mais de 1.5 gols' },
+  { id: 'm4', sportSlug: 'futebol', name: 'Mais de 2.5 gols' },
+  { id: 'm5', sportSlug: 'futebol', name: 'Mais de 3.5 gols' },
+  { id: 'm6', sportSlug: 'futebol', name: 'Mais de 4.5 gols' },
+  { id: 'm7', sportSlug: 'futebol', name: 'Mais de 5.5 gols' },
+  { id: 'm8', sportSlug: 'futebol', name: 'Mais de 6.5 gols' },
+  { id: 'm9', sportSlug: 'futebol', name: 'Mais de 7.5 gols' },
+  { id: 'm10', sportSlug: 'futebol', name: 'Mais de 8.5 gols' },
+  { id: 'm11', sportSlug: 'futebol', name: 'Mais de 9.5 gols' },
+  { id: 'm12', sportSlug: 'futebol', name: 'Mais de 10.5 gols' },
+  { id: 'm13', sportSlug: 'futebol', name: 'Menos de 0.5 gols' },
+  { id: 'm14', sportSlug: 'futebol', name: 'Menos de 1.5 gols' },
+  { id: 'm15', sportSlug: 'futebol', name: 'Menos de 2.5 gols' },
+  { id: 'm16', sportSlug: 'futebol', name: 'Menos de 3.5 gols' },
+  { id: 'm17', sportSlug: 'futebol', name: 'Menos de 4.5 gols' },
+  { id: 'm18', sportSlug: 'futebol', name: 'Menos de 5.5 gols' },
+  { id: 'm19', sportSlug: 'futebol', name: 'Menos de 6.5 gols' },
+  { id: 'm20', sportSlug: 'futebol', name: 'Menos de 7.5 gols' },
+  { id: 'm21', sportSlug: 'futebol', name: 'Menos de 8.5 gols' },
+  { id: 'm22', sportSlug: 'futebol', name: 'Menos de 9.5 gols' },
+  { id: 'm23', sportSlug: 'futebol', name: 'Menos de 10.5 gols' },
+
+  // FUTEBOL - ASIÁTICO GOLS
+  { id: 'ma1', sportSlug: 'futebol', name: 'Asiático - Mais de 0.5 gols' },
+  { id: 'ma2', sportSlug: 'futebol', name: 'Asiático - Mais de 0.75 gols' },
+  { id: 'ma3', sportSlug: 'futebol', name: 'Asiático - Mais de 1.0 gols' },
+  { id: 'ma4', sportSlug: 'futebol', name: 'Asiático - Mais de 1.25 gols' },
+  { id: 'ma5', sportSlug: 'futebol', name: 'Asiático - Mais de 1.5 gols' },
+  { id: 'ma6', sportSlug: 'futebol', name: 'Asiático - Mais de 1.75 gols' },
+  { id: 'ma7', sportSlug: 'futebol', name: 'Asiático - Mais de 2.0 gols' },
+  { id: 'ma8', sportSlug: 'futebol', name: 'Asiático - Mais de 2.25 gols' },
+  { id: 'ma9', sportSlug: 'futebol', name: 'Asiático - Mais de 2.5 gols' },
+  { id: 'ma10', sportSlug: 'futebol', name: 'Asiático - Mais de 2.75 gols' },
+  { id: 'ma11', sportSlug: 'futebol', name: 'Asiático - Mais de 3.0 gols' },
+  { id: 'ma12', sportSlug: 'futebol', name: 'Asiático - Mais de 3.25 gols' },
+  { id: 'ma13', sportSlug: 'futebol', name: 'Asiático - Mais de 3.5 gols' },
+  { id: 'ma14', sportSlug: 'futebol', name: 'Asiático - Mais de 3.75 gols' },
+  { id: 'ma15', sportSlug: 'futebol', name: 'Asiático - Mais de 4.0 gols' },
+  { id: 'ma16', sportSlug: 'futebol', name: 'Asiático - Mais de 4.25 gols' },
+  { id: 'ma17', sportSlug: 'futebol', name: 'Asiático - Mais de 4.5 gols' },
+  { id: 'ma18', sportSlug: 'futebol', name: 'Asiático - Mais de 4.75 gols' },
+  { id: 'ma19', sportSlug: 'futebol', name: 'Asiático - Mais de 5.0 gols' },
+  { id: 'ma20', sportSlug: 'futebol', name: 'Asiático - Mais de 5.25 gols' },
+  { id: 'ma21', sportSlug: 'futebol', name: 'Asiático - Mais de 5.5 gols' },
+  { id: 'ma22', sportSlug: 'futebol', name: 'Asiático - Mais de 5.75 gols' },
+  { id: 'ma23', sportSlug: 'futebol', name: 'Asiático - Mais de 6.0 gols' },
+  { id: 'ma24', sportSlug: 'futebol', name: 'Asiático - Mais de 6.25 gols' },
+  { id: 'ma25', sportSlug: 'futebol', name: 'Asiático - Mais de 6.5 gols' },
+  { id: 'ma26', sportSlug: 'futebol', name: 'Asiático - Mais de 6.75 gols' },
+  { id: 'ma27', sportSlug: 'futebol', name: 'Asiático - Mais de 7.0 gols' },
+  { id: 'ma28', sportSlug: 'futebol', name: 'Asiático - Mais de 7.25 gols' },
+  { id: 'ma29', sportSlug: 'futebol', name: 'Asiático - Mais de 7.5 gols' },
+  { id: 'ma30', sportSlug: 'futebol', name: 'Asiático - Mais de 7.75 gols' },
+  { id: 'ma31', sportSlug: 'futebol', name: 'Asiático - Mais de 8.0 gols' },
+
+  // FUTEBOL - HANDICAP ASIÁTICO
+  { id: 'ha1', sportSlug: 'futebol', name: 'Handicap Asiático Casa -0.5' },
+  { id: 'ha2', sportSlug: 'futebol', name: 'Handicap Asiático Casa -0.75' },
+  { id: 'ha3', sportSlug: 'futebol', name: 'Handicap Asiático Casa -1.0' },
+  { id: 'ha4', sportSlug: 'futebol', name: 'Handicap Asiático Casa +0.5' },
+  { id: 'ha5', sportSlug: 'futebol', name: 'Handicap Asiático Casa +0.75' },
+  { id: 'ha6', sportSlug: 'futebol', name: 'Handicap Asiático Casa +1.0' },
+  { id: 'ha7', sportSlug: 'futebol', name: 'Handicap Asiático Fora -0.5' },
+  { id: 'ha8', sportSlug: 'futebol', name: 'Handicap Asiático Fora -0.75' },
+  { id: 'ha9', sportSlug: 'futebol', name: 'Handicap Asiático Fora -1.0' },
+  { id: 'ha10', sportSlug: 'futebol', name: 'Handicap Asiático Fora +0.5' },
+  { id: 'ha11', sportSlug: 'futebol', name: 'Handicap Asiático Fora +0.75' },
+  { id: 'ha12', sportSlug: 'futebol', name: 'Handicap Asiático Fora +1.0' },
+
+  // FUTEBOL - ESCANTEIOS
+  { id: 'e1', sportSlug: 'futebol', name: 'Escanteios - Mais de 7.5' },
+  { id: 'e2', sportSlug: 'futebol', name: 'Escanteios - Mais de 8.5' },
+  { id: 'e3', sportSlug: 'futebol', name: 'Escanteios - Mais de 9.5' },
+  { id: 'e4', sportSlug: 'futebol', name: 'Escanteios - Mais de 10.5' },
+  { id: 'e5', sportSlug: 'futebol', name: 'Escanteios - Menos de 9.5' },
+  { id: 'e6', sportSlug: 'futebol', name: 'Escanteios - Menos de 10.5' },
+
+  // BASQUETE
+  { id: 'b1', sportSlug: 'basquete', name: 'Basket - Casa' },
+  { id: 'b2', sportSlug: 'basquete', name: 'Basket - Fora' },
+  { id: 'b3', sportSlug: 'basquete', name: 'Basket - Mais Total Pontos' },
+  { id: 'b4', sportSlug: 'basquete', name: 'Basket - Menos Total Pontos' },
+  { id: 'b5', sportSlug: 'basquete', name: 'Basket - Vencedor 1º Quarto Casa' },
+  { id: 'b6', sportSlug: 'basquete', name: 'Basket - Vencedor 1º Quarto Fora' },
+
+  // VÔLEI
+  { id: 'v1', sportSlug: 'volei', name: 'Vôlei - Casa' },
+  { id: 'v2', sportSlug: 'volei', name: 'Vôlei - Fora' },
+  { id: 'v3', sportSlug: 'volei', name: 'Vôlei - 3x0' },
+  { id: 'v4', sportSlug: 'volei', name: 'Vôlei - 3x1' },
+  { id: 'v5', sportSlug: 'volei', name: 'Vôlei - 3x2' },
+  { id: 'v6', sportSlug: 'volei', name: 'Vôlei - Mais Pontos' },
+  { id: 'v7', sportSlug: 'volei', name: 'Vôlei - Menos Pontos' },
+]
+
+const loadMarkets = (): Market[] => {
+  try {
+    const stored = localStorage.getItem(MARKETS_KEY)
+    if (stored) return JSON.parse(stored)
+    localStorage.setItem(MARKETS_KEY, JSON.stringify(DEFAULT_MARKETS))
+    return DEFAULT_MARKETS
+  } catch { return DEFAULT_MARKETS }
+}
+
 const placeholders = [
-  { title: 'Mercados',   desc: 'Mercados de apostas disponíveis' },
   { title: 'Categorias', desc: 'Categorias e tags de dicas'      },
 ]
 
@@ -74,6 +183,8 @@ export const AdminCadastrosPage = () => {
   const [teamsOpen,     setTeamsOpen]     = useState(false)
   const [bookmakers,    setBookmakers]    = useState<Bookmaker[]>(() => loadBookmakers())
   const [bookmakersOpen,setBookmakersOpen]= useState(false)
+  const [markets,       setMarkets]       = useState<Market[]>(() => loadMarkets())
+  const [marketsOpen,   setMarketsOpen]   = useState(false)
   const [form,       setForm]       = useState(emptyForm)
   const [showPass,   setShowPass]   = useState(false)
   const [loading,    setLoading]    = useState(false)
@@ -94,6 +205,12 @@ export const AdminCadastrosPage = () => {
     setBookmakers(updated)
     localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(updated))
     if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Casas de apostas atualizadas', detail: `${updated.length} casas na lista` })
+  }
+
+  const saveMarkets = (updated: Market[]) => {
+    setMarkets(updated)
+    localStorage.setItem(MARKETS_KEY, JSON.stringify(updated))
+    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Mercados atualizados', detail: `${updated.length} mercados na lista` })
   }
 
   // Carrega contagem de usuários
@@ -289,6 +406,31 @@ export const AdminCadastrosPage = () => {
           </div>
         </div>
 
+        {/* ── Card MERCADOS — funcional ── */}
+        <div
+          onClick={() => setMarketsOpen(true)}
+          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+        >
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
+              <ClipboardList size={16} className="text-green-400" />
+            </div>
+            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
+              {'Ativo'}
+            </span>
+          </div>
+          <h3 className="font-semibold text-white text-sm">{'Mercados'}</h3>
+          <p className="text-xs text-slate-500 mt-1">Mercados de apostas por esporte</p>
+          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
+            <span className="text-xs text-slate-500">
+              {markets.length} {markets.length === 1 ? 'mercado' : 'mercados'}
+            </span>
+            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
+              {'Gerenciar'}
+            </span>
+          </div>
+        </div>
+
         {/* ── Cards PLACEHOLDER ── */}
         {placeholders.map(s => (
           <div key={s.title} className="card p-5 border border-surface-400 hover:border-surface-300 transition-colors">
@@ -467,6 +609,16 @@ export const AdminCadastrosPage = () => {
         onClose={() => setLeaguesOpen(false)}
         leagues={leagues}
         onSave={saveLeagues}
+        readOnly={isReadOnly}
+      />
+
+      {/* ── Modal Mercados ── */}
+      <MarketsModal
+        isOpen={marketsOpen}
+        onClose={() => setMarketsOpen(false)}
+        markets={markets}
+        sports={sports.map(s => ({ name: s.name, slug: s.slug || '' }))}
+        onSave={saveMarkets}
         readOnly={isReadOnly}
       />
 

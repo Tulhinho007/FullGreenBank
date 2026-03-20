@@ -215,6 +215,7 @@ notes           String?    -- histórico de pagamentos em texto
 ### 11. Sistema de Resposta em Tickets
 - Backend: Novos campos `adminResponse` e `respondedAt` no modelo `SupportTicket`.
 - Admin: Interface para redactar e enviar respostas diretamente pelo painel de tickets.
+- Admin: Filtro padrão alterado para "Pendentes", ocultando automaticamente tickets resolvidos/fechados.
 - Usuário: Nova aba "Meus Chamados" em `/report` para acompanhar status e ler respostas da equipe.
 
 ### 12. Correções de Deploy (Vercel)
