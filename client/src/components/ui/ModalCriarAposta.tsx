@@ -116,8 +116,8 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
       <div className="bg-surface-100 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-5 flex justify-between items-center border-b border-surface-300 shrink-0">
-          <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
-            {initialData ? <Edit2 className="text-yellow-400" size={24} /> : <Star className="text-yellow-400 fill-yellow-400" size={24} />}
+          <h3 className="font-display font-black text-xl text-white flex items-center gap-2 italic">
+            {initialData ? <Edit2 className="text-yellow-400" size={20} /> : <Star className="text-yellow-400 fill-yellow-400" size={20} />}
             {initialData ? 'Editar Bilhete' : 'Novo Bilhete'}
           </h3>
           <button onClick={onClose} className="p-2 -mr-2 text-slate-400 hover:text-white transition-colors">
@@ -125,23 +125,11 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
           </button>
         </div>
 
-        {/* Body Form */}
-        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
-          
-          <div className="grid grid-cols-2 gap-4">
+        {/* Content */}
+        <div className="p-5 overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Evento</label>
-              <input 
-                type="text" 
-                value={event}
-                onChange={e => setEvent(e.target.value)}
-                placeholder="Ex: Chelsea x PSG"
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data</label>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data</label>
               <input 
                 type="datetime-local" 
                 value={dataAposta}
@@ -151,115 +139,108 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Odd Total</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                value={oddTotal}
-                onChange={e => setOddTotal(e.target.value)}
-                placeholder="Ex: 5.30"
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stake (R$)</label>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stake (R$)</label>
               <input 
                 type="number" 
                 step="0.01" 
                 value={stake}
                 onChange={e => setStake(e.target.value)}
-                placeholder="Ex: 10.00"
+                placeholder="Ex: 10"
                 className="input-field py-2.5 px-3 w-full bg-surface-200" 
                 required 
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Resultado</label>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Odd Total</label>
+              <input 
+                type="number" 
+                step="0.01" 
+                value={oddTotal}
+                onChange={e => setOddTotal(e.target.value)}
+                placeholder="Ex: 5,3"
+                className="input-field py-2.5 px-3 w-full bg-surface-200" 
+                required 
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Resultado</label>
               <select 
                 value={resultado}
                 onChange={e => setResultado(e.target.value)}
                 className="input-field py-2.5 px-3 w-full bg-surface-200"
               >
                 <option value="PENDING">— Pendente —</option>
-                <option value="GREEN">Green</option>
-                <option value="RED">Red</option>
-                <option value="VOID">Anulado</option>
+                <option value="GREEN">✅ Green</option>
+                <option value="RED">❌ Red</option>
+                <option value="VOID">⚪ Anulado</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Lucro/Prejuízo (BRL)</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                value={profit}
-                onChange={e => setProfit(e.target.value)}
-                placeholder="Auto"
-                className="input-field py-2.5 px-3 w-full bg-surface-200 text-emerald-400 font-bold font-mono placeholder:text-slate-600" 
-              />
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mx-1 mb-3">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                Mercados do Bilhete
-              </label>
-              <button 
-                type="button" 
-                onClick={handleAddMercado}
-                className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors"
-              >
-                <Plus size={14} /> Adicionar Mercado
-              </button>
-            </div>
-            <div className="space-y-3 p-4 bg-surface-200/50 border border-surface-300 rounded-xl">
-              {mercados.map((mercado, index) => (
-                <div key={index} className="flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
-                      Mercado {index + 1}
-                    </label>
-                    {mercados.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => handleRemoveMercado(index)}
-                        className="text-[10px] text-rose-500 hover:text-rose-400 flex items-center gap-0.5"
-                      >
-                        <X size={12} /> Remover
-                      </button>
-                    )}
-                  </div>
-                  <input 
-                    type="text" 
-                    value={mercado}
-                    onChange={e => handleMercadoChange(index, e.target.value)}
-                    placeholder="Ex: Arsenal - Resultado Final"
-                    className="input-field py-2.5 px-3 w-full bg-surface-100" 
-                    required 
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="pt-2 flex gap-3 shrink-0">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estratégias do Bilhete</label>
             <button 
               type="button" 
-              onClick={onClose} 
-              className="flex-[1] py-3 rounded-xl font-bold bg-surface-200 text-white hover:bg-surface-300 transition-colors"
+              onClick={handleAddMercado}
+              className="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-300 hover:bg-surface-300 transition-colors"
+            >
+              <Plus size={14} /> Adicionar Estratégia
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {mercados.map((m, idx) => (
+              <div key={idx} className="bg-surface-100/50 rounded-xl p-3 border border-surface-300">
+                <div className="flex justify-between flex-row items-center mb-2">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+                    Estratégia {idx + 1}
+                  </span>
+                  {mercados.length > 1 && (
+                    <button type="button" onClick={() => handleRemoveMercado(idx)} className="text-slate-500 hover:text-red-400 transition-colors">
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+                <input 
+                  type="text" 
+                  value={m}
+                  onChange={e => handleMercadoChange(idx, e.target.value)}
+                  placeholder="Ex: Arsenal - Resultado Final"
+                  className="input-field py-2.5 px-3 w-full bg-surface-200 text-sm" 
+                  required 
+                />
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t border-surface-300 shrink-0 bg-surface-100 rounded-b-2xl">
+          <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-4">
+            <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Lucro Potencial</span>
+            <div className="text-2xl font-black font-display tracking-tight text-emerald-400">
+              R$ {profit ? Number(profit).toFixed(2) : '0.00'}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button 
+              type="button" 
+              onClick={onClose}
+              className="flex-1 py-3 px-4 rounded-xl font-bold text-sm text-slate-300 border border-surface-300 hover:bg-surface-300 hover:text-white transition-all"
             >
               Cancelar
             </button>
             <button 
-              type="submit" 
-              disabled={saving} 
-              className="flex-[2] py-3 rounded-xl font-bold bg-emerald-500 text-white hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
+              onClick={handleSubmit}
+              disabled={saving}
+              className="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20 disabled:opacity-50 transition-all"
             >
               {saving ? 'Salvando...' : 'Salvar Bilhete'}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )
