@@ -29,6 +29,7 @@ import { FAQPage }                     from './pages/FAQPage'
 import { ReportPage }                  from './pages/ReportPage'
 import { GuidePage }                   from './pages/GuidePage'
 import { AlavancagemPage } from './pages/AlavancagemPage'
+import { CalculadoraPage } from './pages/CalculadoraPage'
 
 function App() {
   return (
@@ -124,6 +125,7 @@ function App() {
           <Route path="gestao/investimentos" element={<InvestimentosPage />} />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
+          <Route path="gestao/calculadora" element={<CalculadoraPage />} />
           <Route path="gestao/historico" element={<HistoryPage />} />
         </Route>
 
