@@ -27,8 +27,8 @@ export const CalculadoraPage = () => {
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-display font-bold text-white flex items-center gap-3">
+      <header className="flex flex-col items-center text-center gap-2 mb-2">
+        <h1 className="text-2xl font-display font-bold text-white flex items-center justify-center gap-3">
           <CalcIcon className="text-green-500" size={28} />
           Calculadora de Stake
         </h1>

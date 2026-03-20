@@ -59,8 +59,8 @@ export const AlavancagemPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-display font-bold text-white flex items-center gap-3">
+      <header className="flex flex-col items-center text-center gap-2 mb-2">
+        <h1 className="text-2xl font-display font-bold text-white flex items-center justify-center gap-3">
           <CalcIcon className="text-green-500" size={28} />
           Alavancagem Operacional
         </h1>

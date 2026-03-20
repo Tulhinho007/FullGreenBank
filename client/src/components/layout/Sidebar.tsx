@@ -156,7 +156,8 @@ export const Sidebar = () => {
             <NavItem icon={<Briefcase size={16} />}    label="Investimentos"     to="/gestao/investimentos" />
             <NavItem icon={<TrendingUp size={16} />}    label="Operacional"       children={[
               { label: 'Alavancagem', to: '/gestao/alavancagem' },
-              { label: 'Calculadora', to: '/gestao/calculadora' }
+              { label: 'Calculadora', to: '/gestao/calculadora' },
+              { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao' }
             ]} />
             <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
           </>

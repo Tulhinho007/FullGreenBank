@@ -30,6 +30,7 @@ import { ReportPage }                  from './pages/ReportPage'
 import { GuidePage }                   from './pages/GuidePage'
 import { AlavancagemPage } from './pages/AlavancagemPage'
 import { CalculadoraPage } from './pages/CalculadoraPage'
+import { DicasGestaoPage } from './pages/DicasGestaoPage'
 
 function App() {
   return (
@@ -126,6 +127,7 @@ function App() {
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/calculadora" element={<CalculadoraPage />} />
+          <Route path="gestao/dicas-gestao" element={<DicasGestaoPage />} />
           <Route path="gestao/historico" element={<HistoryPage />} />
         </Route>
 
