@@ -291,7 +291,7 @@ export const TipsPage = () => {
           </div>
           <div className="h-8 w-px bg-surface-400" />
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Valor</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">VALOR (R$)</p>
             <p className="text-[15px] font-bold font-mono text-white">{fmt(tip.stake)}</p>
           </div>
           {tip.profit !== undefined && (
