@@ -1,4 +1,4 @@
-import { resultLabel, formatDate } from '../../utils/formatters'
+import { resultLabel, formatDate, formatCurrency } from '../../utils/formatters'
 
 interface Tip {
   id: string
@@ -44,7 +44,7 @@ export const TipCard = ({ tip, onUpdateResult, isAdmin }: TipCardProps) => {
           { label: 'Esporte', value: tip.sport },
           { label: 'Mercado', value: tip.market },
           { label: 'Odd',     value: `@${tip.odds.toFixed(2)}` },
-          { label: 'Stake',   value: `${tip.stake}u` },
+          { label: 'Stake',   value: formatCurrency(tip.stake) },
         ].map(({ label, value }) => (
           <div key={label} className="bg-surface-300 rounded-lg p-2 text-center">
             <p className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</p>
