@@ -143,6 +143,7 @@ notes           String?    -- histórico de pagamentos em texto
 | Performance | `/reports` | Análise de performance por período |
 | Nossos Planos | `/planos` | Página pública de planos disponíveis |
 | FAQ | `/faq` | Central de Ajuda com acordeão |
+| Report Bug | `/report` | Relato de problemas e feedback |
 | Legal | `/legal/:type` | Termos, Privacidade, Cookies |
 | Perfil | `/profile` | Configurações pessoais, senha, tema |
 

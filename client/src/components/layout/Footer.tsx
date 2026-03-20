@@ -22,7 +22,7 @@ export const Footer = () => {
               <li><a href="#" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors flex items-center gap-2">
                 Status do Sistema <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
               </a></li>
-              <li><a href="#" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors">Reportar Bug / Feedback</a></li>
+              <li><Link to="/report" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors">Reportar Bug / Feedback</Link></li>
               <li><a href="#" className="text-zinc-600 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors">Guia da Plataforma</a></li>
             </ul>
           </div>

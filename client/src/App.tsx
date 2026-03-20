@@ -22,6 +22,7 @@ import { HistoryPage }                 from './pages/HistoryPage'
 import { LegalPage }                   from './pages/LegalPage'
 import { PlanosPage }                  from './pages/PlanosPage'
 import { FAQPage }                     from './pages/FAQPage'
+import { ReportPage }                  from './pages/ReportPage'
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route path="reports"   element={<ReportsPage />} />
           <Route path="planos"    element={<PlanosPage />} />
           <Route path="faq"       element={<FAQPage />} />
+          <Route path="report"    element={<ReportPage />} />
           <Route path="legal/:type" element={<LegalPage />} />
 
           {/* Admin & Master only */}
