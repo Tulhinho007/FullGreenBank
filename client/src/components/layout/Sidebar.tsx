@@ -6,7 +6,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart3,
   DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  Target, Star
+  Target, Star, Briefcase
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -151,6 +151,7 @@ export const Sidebar = () => {
             {/* GESTÃO */}
             <SectionLabel label="Gestão" />
             <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
+            <NavItem icon={<Briefcase size={16} />}    label="Investimentos"     to="/gestao/investimentos" />
             <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
           </>
