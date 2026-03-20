@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Search, Filter, Edit2, Trash2, CheckCircle, XCircle, Clock,
-  Layers, ListPlus, Target, Calendar, X
+  Layers, ListPlus, Target, Calendar, X, DollarSign
 } from 'lucide-react'
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
@@ -14,20 +14,21 @@ import { Modal } from '../components/ui/Modal'
 interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
-  result?: string; profit?: number; tipDate: string
+  result?: string; profit?: number; valorCashout?: number; tipDate: string
   mercados?: string[]
   isMultipla?: boolean
   jogos?: any
 }
 
 type TipoFiltro = 'TODAS' | 'S' | 'M' | 'C'
-type StatusFiltro = 'TODOS' | 'GREEN' | 'RED' | 'VOID' | 'PENDING'
+type StatusFiltro = 'TODOS' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
 
 const STATUS_CONFIG: Record<string, any> = {
   GREEN:   { bg: 'bg-emerald-500/10', text: 'text-emerald-500', label: 'Green', icon: <CheckCircle size={14} /> },
   RED:     { bg: 'bg-rose-500/10',    text: 'text-rose-500',    label: 'Red',   icon: <XCircle size={14} /> },
   VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   label: 'Anulada', icon: <XCircle size={14} /> },
   PENDING: { bg: 'bg-amber-500/10',   text: 'text-amber-500',   label: 'Pendente', icon: <Clock size={14} /> },
+  CASHOUT: { bg: 'bg-orange-500/10',  text: 'text-orange-500',  label: 'Cashout',  icon: <DollarSign size={14} /> },
 }
 
 const TIPO_CONFIG = {
@@ -149,16 +150,15 @@ export const HistoricoDicasPage = () => {
     
     try {
       await tipsService.update(editingTip.id, {
-        event: editTime,
         title: editTime,
-        description: 'Tip Simples Atualizada',
-        sport: 'Futebol',
+        event: editTime,
         market: editMercado,
         odds: Number(editOdd),
         stake: Number(editStake),
-        tipDate: new Date(editDataAposta).toISOString(),
         result: editResultado,
-        profit: editProfit ? Number(editProfit) : null
+        profit: Number(editProfit),
+        tipDate: new Date(editDataAposta).toISOString(),
+        valorCashout: editResultado === 'CASHOUT' ? Number(editProfit) : null
       })
       toast.success('Dica simples atualizada')
       setIsEditSimpleOpen(false)
@@ -215,6 +215,7 @@ export const HistoricoDicasPage = () => {
               <option value="GREEN">Greens</option>
               <option value="RED">Reds</option>
               <option value="VOID">Anuladas</option>
+              <option value="CASHOUT">Cashouts</option>
             </select>
           </div>
 
@@ -398,10 +399,13 @@ export const HistoricoDicasPage = () => {
                 <option value="GREEN">Green</option>
                 <option value="RED">Red</option>
                 <option value="VOID">Anulada</option>
+                <option value="CASHOUT">Cashout</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Lucro (Opcional)</label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">
+                {editResultado === 'CASHOUT' ? 'Recebido' : 'Lucro (Opcional)'}
+              </label>
               <input type="number" step="0.01" value={editProfit} onChange={e => setEditProfit(e.target.value)} placeholder="Ex: 50.00" className="input-field py-2 px-3 w-full" />
             </div>
           </div>

@@ -68,6 +68,7 @@ model Tip {
   stake       Float    // unidades
   result      String?  // GREEN, RED, VOID, PENDING
   profit      Float?
+  valorCashout Float?
   tipDate     DateTime
   mercados    String[] @default([])
   isMultipla  Boolean  @default(false)

@@ -34,6 +34,7 @@ export const resultLabel: Record<string, { label: string; cls: string }> = {
   RED:     { label: 'Red ❌',     cls: 'badge-red'    },
   VOID:    { label: 'Void ↩️',   cls: 'badge-yellow' },
   PENDING: { label: 'Pendente ⏳', cls: 'badge-gray'   },
+  CASHOUT: { label: 'Cashout 🟠', cls: 'badge-orange' },
 }
 
 export const roleLabelMap: Record<string, { label: string; color: string }> = {

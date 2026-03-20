@@ -12,7 +12,7 @@ import { formatCurrency } from '../utils/formatters'
 interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
-  result?: string; profit?: number; tipDate: string
+  result?: string; profit?: number; valorCashout?: number; tipDate: string
   author: { name: string; username: string }
 }
 
@@ -43,8 +43,15 @@ export const DashboardPage = () => {
   const ts = Array.isArray(tips) ? tips : []
   const greens   = ts.filter(t => t.result === 'GREEN').length
   const reds     = ts.filter(t => t.result === 'RED').length
+  const cashouts = ts.filter(t => t.result === 'CASHOUT')
+  const profitableCashouts = cashouts.filter(t => (t.profit || 0) > 0).length
+  
   const profit   = ts.reduce((a: number, t: Tip) => a + (t.profit || 0), 0)
-  const winRate  = ts.length > 0 ? ((greens / (greens + reds || 1)) * 100).toFixed(0) : '--'
+  
+  const winRateNumerator = greens + profitableCashouts
+  const winRateDenominator = greens + reds + profitableCashouts
+  const winRate = winRateDenominator > 0 ? ((winRateNumerator / winRateDenominator) * 100).toFixed(0) : '--'
+  
   const totalStake = ts.reduce((a: number, t: Tip) => a + t.stake, 0)
 
   return (
@@ -70,7 +77,7 @@ export const DashboardPage = () => {
           value={`${winRate}%`}
           icon={<Target size={18} />}
           accent="blue"
-          subtitle={`${greens} greens / ${reds} reds`}
+          subtitle={`${greens} G / ${reds} R / ${cashouts.length} C`}
         />
         <StatCard
           title="ROI Estimado"

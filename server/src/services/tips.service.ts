@@ -58,11 +58,12 @@ export const getTipById = async (id: string) => {
 export const updateTipResult = async (
   id: string,
   result: string,
-  profit: number
+  profit: number,
+  valorCashout?: number
 ) => {
   return prisma.tip.update({
     where: { id },
-    data: { result, profit },
+    data: { result, profit, valorCashout },
   });
 };
 

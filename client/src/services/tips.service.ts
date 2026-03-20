@@ -26,8 +26,8 @@ export const tipsService = {
     return res.data.data
   },
 
-  updateResult: async (id: string, result: string, profit: number) => {
-    const res = await api.patch(`/tips/${id}/result`, { result, profit })
+  updateResult: async (id: string, result: string, profit: number, valorCashout?: number) => {
+    const res = await api.patch(`/tips/${id}/result`, { result, profit, valorCashout })
     return res.data.data
   },
 }

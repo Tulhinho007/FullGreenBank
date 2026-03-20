@@ -21,17 +21,17 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
-  result?: string; profit?: number; tipDate: string
+  result?: string; profit?: number; valorCashout?: number; tipDate: string
   mercados?: string[]
   isMultipla?: boolean
   jogos?: any
 }
 
-type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING'
+type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
 
-const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID']
+const FILTERS: ResultFilter[] = ['Todos', 'PENDING', 'GREEN', 'RED', 'VOID', 'CASHOUT']
 const FILTER_LABELS: Record<ResultFilter, string> = {
-  Todos: 'Todas', PENDING: '⏳ Pendentes', GREEN: '✅ Greens', RED: '❌ Reds', VOID: '⚪ Anuladas'
+  Todos: 'Todas', PENDING: '⏳ Pendentes', GREEN: '✅ Greens', RED: '❌ Reds', VOID: '⚪ Anuladas', CASHOUT: '🟠 Cashout'
 }
 
 const STATUS_CONFIG: Record<string, any> = {
@@ -39,16 +39,17 @@ const STATUS_CONFIG: Record<string, any> = {
   RED:     { bg: 'bg-rose-500/10',    text: 'text-rose-500',    borderL: 'border-l-rose-500',    label: 'Red',   icon: <XCircle size={12} /> },
   VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   borderL: 'border-l-slate-500',   label: 'Anulada', icon: <XCircle size={12} /> },
   PENDING: { bg: 'bg-amber-500/10',   text: 'text-amber-500',   borderL: 'border-l-amber-500',   label: 'Pendente', icon: <Clock size={12} /> },
+  CASHOUT: { bg: 'bg-orange-500/10',  text: 'text-orange-500',  borderL: 'border-l-orange-500',  label: 'Cashout',  icon: <DollarSign size={12} /> },
 }
 
 // ─── Componentes Auxiliares (Fora para evitar recriação) ───────────────────────
 
-const DoughnutChart = ({ greens, reds, pending, voided }: any) => {
+const DoughnutChart = ({ greens, reds, pending, voided, cashout }: any) => {
   const data = {
-    labels: ['Green', 'Red', 'Pendente', 'Anulada'],
+    labels: ['Green', 'Red', 'Pendente', 'Anulada', 'Cashout'],
     datasets: [{
-      data: [greens, reds, pending, voided],
-      backgroundColor: ['#10b981', '#f43f5e', '#f59e0b', '#64748b'],
+      data: [greens, reds, pending, voided, cashout],
+      backgroundColor: ['#10b981', '#f43f5e', '#f59e0b', '#64748b', '#f97316'],
       borderWidth: 0,
     }]
   }
@@ -76,6 +77,10 @@ const DoughnutChart = ({ greens, reds, pending, voided }: any) => {
             <span>{voided} Anul.</span>
           </div>
         )}
+        <div className="flex items-center gap-1.5 text-orange-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+          <span>{cashout} Cash.</span>
+        </div>
       </div>
     </div>
   )
@@ -103,7 +108,7 @@ export const TipsPage = () => {
   const [page,       setPage]       = useState(1)
   const [selected,   setSelected]   = useState<Tip | null>(null)
   const [editForm,   setEditForm]   = useState({
-    title: '', event: '', market: '', odds: '', stake: '', tipDate: '', result: 'PENDING', profit: ''
+    title: '', event: '', market: '', odds: '', stake: '', result: 'PENDING', profit: '', tipDate: '', valorCashout: ''
   })
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
@@ -140,11 +145,16 @@ export const TipsPage = () => {
     setSaving(true)
     try {
       await tipsService.update(selected.id, {
-        title: editForm.title, event: editForm.event, market: editForm.market,
-        odds: Number(editForm.odds), stake: Number(editForm.stake),
+        title: editForm.title,
+        event: editForm.event,
+        market: editForm.market,
+        odds: Number(editForm.odds),
+        stake: Number(editForm.stake),
+        result: editForm.result,
+        profit: Number(editForm.profit),
         tipDate: new Date(editForm.tipDate).toISOString(),
+        valorCashout: editForm.result === 'CASHOUT' ? Number(editForm.valorCashout) : null
       })
-      await tipsService.updateResult(selected.id, editForm.result, Number(editForm.profit))
       toast.success('Dica atualizada! 🎯')
       setSelected(null); load(page)
     } catch { toast.error('Erro ao atualizar') }
@@ -163,6 +173,8 @@ export const TipsPage = () => {
         newProfit = (-stakeVal).toFixed(2);
       } else if (newResult === 'VOID') {
         newProfit = '0';
+      } else if (newResult === 'CASHOUT') {
+        newProfit = (Number(f.valorCashout || 0) - Number(f.stake || 0)).toFixed(2);
       } else {
         newProfit = '';
       }
@@ -199,7 +211,8 @@ export const TipsPage = () => {
         stake: tip.stake.toString(),
         result: tip.result || 'PENDING',
         profit: tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '',
-        tipDate: new Date(tip.tipDate).toISOString().slice(0, 16)
+        tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
+        valorCashout: tip.valorCashout?.toString() || ''
       })
     }
   }
@@ -210,12 +223,13 @@ export const TipsPage = () => {
     const reds    = ts.filter(t => t.result === 'RED')
     const voided  = ts.filter(t => t.result === 'VOID')
     const pending = ts.filter(t => !t.result || t.result === 'PENDING')
+    const cashout = ts.filter(t => t.result === 'CASHOUT')
     const pnl     = ts.reduce((acc, t) => acc + (t.profit ?? 0), 0)
     const volume  = ts.reduce((acc, t) => acc + t.stake, 0)
     const fin     = greens.length + reds.length
     return {
       pnl, volume, winRate: fin > 0 ? (greens.length / fin) * 100 : 0,
-      greens: greens.length, reds: reds.length, pending: pending.length, voided: voided.length,
+      greens: greens.length, reds: reds.length, pending: pending.length, voided: voided.length, cashout: cashout.length,
     }
   }, [tips])
 
@@ -418,7 +432,7 @@ export const TipsPage = () => {
           <p className="text-[10px] text-slate-600 mt-1">Total apostado</p>
         </div>
         <div className="card p-4 flex flex-col items-center justify-center">
-          <DoughnutChart greens={metrics.greens} reds={metrics.reds} pending={metrics.pending} voided={metrics.voided} />
+          <DoughnutChart greens={metrics.greens} reds={metrics.reds} pending={metrics.pending} voided={metrics.voided} cashout={metrics.cashout} />
         </div>
       </div>
 
@@ -469,16 +483,33 @@ export const TipsPage = () => {
               <div className="grid grid-cols-2 gap-3 border-t border-surface-400 pt-4 mt-4">
                 <div>
                   <label className="label">Resultado</label>
-                  <select className="input-field" value={editForm.result} onChange={e => handleResultChange(e.target.value)}>
-                    <option value="PENDING">🟡 Pendente</option>
-                    <option value="GREEN">🟢 Green</option>
-                    <option value="RED">🔴 Red</option>
-                    <option value="VOID">⚪ Anulado</option>
-                  </select>
+                 <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="input-field py-2 px-3 w-full text-white bg-surface-200">
+                <option value="PENDING">Pendente</option>
+                <option value="GREEN">Green</option>
+                <option value="RED">Red</option>
+                <option value="VOID">Anulada</option>
+                <option value="CASHOUT">Cashout</option>
+              </select>
                 </div>
                 <div>
-                  <label className="label">Lucro/Prejuízo ({me?.currency || 'BRL'})</label>
-                  <input type="number" step="0.01" className="input-field font-mono" value={editForm.profit} onChange={e => setEditForm(f => ({ ...f, profit: e.target.value }))} />
+                  <label className="label">
+                    {editForm.result === 'CASHOUT' ? 'Valor Recebido' : `Lucro/Prejuízo (${me?.currency || 'BRL'})`}
+                  </label>
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    className="input-field font-mono" 
+                    value={editForm.result === 'CASHOUT' ? editForm.valorCashout : editForm.profit} 
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (editForm.result === 'CASHOUT') {
+                        const prof = (Number(val) - Number(editForm.stake)).toFixed(2);
+                        setEditForm(f => ({ ...f, valorCashout: val, profit: prof }));
+                      } else {
+                        setEditForm(f => ({ ...f, profit: val }));
+                      }
+                    }} 
+                  />
                 </div>
               </div>
               <div>
