@@ -37,9 +37,6 @@ function App() {
 
         {/* Institutional - Publicly accessible */}
         <Route path="/planos"    element={<PlanosPage />} />
-        <Route path="/faq"       element={<FAQPage />} />
-        <Route path="/report"    element={<ReportPage />} />
-        <Route path="/guide"     element={<GuidePage />} />
         <Route path="/legal/:type" element={<LegalPage />} />
 
         {/* Protected - all authenticated users */}
@@ -56,6 +53,11 @@ function App() {
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
           <Route path="reports"   element={<ReportsPage />} />
+
+          {/* Institutional - inside layout */}
+          <Route path="faq"       element={<FAQPage />} />
+          <Route path="report"    element={<ReportPage />} />
+          <Route path="guide"     element={<GuidePage />} />
 
 
           {/* Admin & Master only */}
