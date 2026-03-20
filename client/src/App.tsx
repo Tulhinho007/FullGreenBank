@@ -34,6 +34,13 @@ function App() {
         <Route path="/login"    element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+        {/* Institutional - Publicly accessible */}
+        <Route path="/planos"    element={<PlanosPage />} />
+        <Route path="/faq"       element={<FAQPage />} />
+        <Route path="/report"    element={<ReportPage />} />
+        <Route path="/guide"     element={<GuidePage />} />
+        <Route path="/legal/:type" element={<LegalPage />} />
+
         {/* Protected - all authenticated users */}
         <Route
           path="/"
@@ -48,11 +55,7 @@ function App() {
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
           <Route path="reports"   element={<ReportsPage />} />
-          <Route path="planos"    element={<PlanosPage />} />
-          <Route path="faq"       element={<FAQPage />} />
-          <Route path="report"    element={<ReportPage />} />
-          <Route path="guide"     element={<GuidePage />} />
-          <Route path="legal/:type" element={<LegalPage />} />
+
 
           {/* Admin & Master only */}
           <Route
