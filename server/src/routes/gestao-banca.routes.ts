@@ -25,6 +25,29 @@ router.get('/carteiras', authenticate, async (req: any, res: any) => {
   }
 })
 
+// ── GET /gestao-banca/carteiras/:id
+router.get('/carteiras/:id', authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user!.userId
+    const { id } = req.params
+    const carteira = await prisma.bancaCarteira.findUnique({
+      where: { id }
+    })
+    
+    if (!carteira || carteira.userId !== userId) {
+      return res.status(404).json({ message: 'Banca não encontrada.' })
+    }
+
+    res.json({
+      ...carteira,
+      bancaInicial: Number(carteira.bancaInicial)
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar banca.' })
+  }
+})
+
+
 // ── GET /gestao-banca/bookmakers
 // ... pode deletar se o front não usar, mantivemos só pra clean code (não será acessado pq mudamos pro localstorage)
 router.get('/bookmakers', authenticate, async (req: any, res: any) => {
@@ -174,5 +197,27 @@ router.delete('/item/:id', authenticate, async (req: any, res: any) => {
     res.status(500).json({ message: 'Erro ao excluir.' })
   }
 })
+
+// ── DELETE /gestao-banca/carteiras/:id
+router.delete('/carteiras/:id', authenticate, async (req: any, res: any) => {
+  try {
+    const userId = req.user!.userId
+    const { id } = req.params
+
+    // Primeiro deleta os itens da carteira (onCascade faria isso, mas garantimos aqui)
+    await prisma.gestaoBancaItem.deleteMany({ where: { carteiraId: id } })
+    
+    // Deleta a carteira
+    await prisma.bancaCarteira.deleteMany({
+      where: { id, userId }
+    })
+
+    res.json({ success: true })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Erro ao excluir banca.' })
+  }
+})
+
 
 export default router
