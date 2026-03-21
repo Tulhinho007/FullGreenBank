@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   BadgeDollarSign,
   ArrowDownCircle,
@@ -6,8 +7,11 @@ import {
   Filter,
   Plus
 } from 'lucide-react'
+import { Modal } from '../components/ui/Modal'
 
 export const TransacoesPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   return (
     <div className="flex flex-col gap-6 pb-10">
 
@@ -19,7 +23,10 @@ export const TransacoesPage = () => {
             Controle financeiro completo por casa de apostas
           </p>
         </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-colors shadow-sm shadow-green-500/20">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
+        >
           <Plus size={18} />
           Nova Transação
         </button>
@@ -126,6 +133,97 @@ export const TransacoesPage = () => {
         </div>
 
       </div>
+
+      {/* ── Modal de Nova Transação ── */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Nova Transação"
+        size="md"
+      >
+        <form className="flex flex-col gap-4 text-slate-700 dark:text-slate-300">
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Data *</label>
+              <input type="date" className="input-field text-sm" defaultValue={new Date().toISOString().split('T')[0]} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo *</label>
+              <select className="input-field text-sm cursor-pointer">
+                <option value="DEPOSITO">Depósito</option>
+                <option value="SAQUE">Saque</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Valor (R$) *</label>
+            <input type="number" step="0.01" className="input-field text-sm" placeholder="0,00" />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Site / Casa *</label>
+            <select className="input-field text-sm cursor-pointer">
+              <option value="">Selecione...</option>
+              <option value="BET365">Bet365</option>
+              <option value="PINNACLE">Pinnacle</option>
+              <option value="BETANO">Betano</option>
+              <option value="FAIRLAY">Fairlay</option>
+              <option value="BETFAIR">Betfair</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Método *</label>
+            <select className="input-field text-sm cursor-pointer">
+              <option value="">Selecione...</option>
+              <option value="PIX">PIX</option>
+              <option value="CARTAO">Cartão de Crédito</option>
+              <option value="BOLETO">Boleto</option>
+              <option value="CARTEIRA">Carteira Digital (Skrill, Neteller)</option>
+              <option value="CRIPTO">Criptomoeda</option>
+              <option value="TRANSFERENCIA">Transferência Bancária</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</label>
+            <select className="input-field text-sm cursor-pointer">
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="PENDENTE">Pendente</option>
+              <option value="RECUSADO">Recusado</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Observação</label>
+            <textarea 
+              className="input-field text-sm resize-none" 
+              rows={3} 
+              placeholder="Ex: bônus, rollover, saque parcial..."
+            ></textarea>
+          </div>
+
+          {/* Botões do Rodapé */}
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            <button 
+              type="button" 
+              onClick={() => setIsModalOpen(false)}
+              className="btn-secondary py-3 text-sm font-bold border-slate-200 dark:border-surface-400"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              onClick={(e) => { e.preventDefault(); setIsModalOpen(false); }}
+              className="py-3 px-4 bg-[#0bb489] hover:bg-[#0aa07a] text-white font-bold rounded-lg transition-colors text-sm shadow-sm"
+            >
+              Registrar
+            </button>
+          </div>
+        </form>
+      </Modal>
 
     </div>
   )
