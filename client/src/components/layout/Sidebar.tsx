@@ -146,7 +146,6 @@ export const Sidebar = () => {
             <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
               { label: 'Histórico de Dicas', to: '/reports/tips' },
-              { label: 'Histórico de Contratos', to: '/gestao/historico' },
               { label: 'Performance', to: '/reports' }
             ]} />
 
@@ -177,6 +176,8 @@ export const Sidebar = () => {
             <NavItem icon={<DollarSign size={16} />} label="Financeiro" children={[
               { label: 'Assinaturas', to: '/financeiro/pagamentos' },
               { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada' },
+              { label: 'Histórico de Contratos', to: '/gestao/historico' },
+              { label: 'Histórico de Saques', to: '/financeiro/saques' },
               { label: 'Transações', to: '/financeiro/transacoes' },
               { label: 'Fluxo de Caixa', placeholder: true }
             ]} />

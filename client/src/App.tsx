@@ -32,6 +32,7 @@ import { AlavancagemPage } from './pages/AlavancagemPage'
 import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
+import { HistoricoSaquesPage } from './pages/HistoricoSaquesPage'
 
 function App() {
   return (
@@ -121,6 +122,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <TransacoesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="financeiro/saques"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
+                <HistoricoSaquesPage />
               </ProtectedRoute>
             }
           />
