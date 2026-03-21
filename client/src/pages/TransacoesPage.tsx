@@ -1,8 +1,9 @@
-import { 
-  BadgeDollarSign, 
-  ArrowDownCircle, 
-  Wallet, 
-  Hourglass, 
+import { useState } from 'react'
+import {
+  BadgeDollarSign,
+  HandCoins,
+  Wallet,
+  Hourglass,
   Filter,
   Plus
 } from 'lucide-react'
@@ -10,7 +11,7 @@ import {
 export const TransacoesPage = () => {
   return (
     <div className="flex flex-col gap-6 pb-10">
-      
+
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -27,7 +28,7 @@ export const TransacoesPage = () => {
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
+
         {/* Total Depósitos */}
         <div className="card p-5 flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
@@ -44,7 +45,7 @@ export const TransacoesPage = () => {
           <div className="flex items-start justify-between mb-4">
             <span className="text-sm font-semibold text-slate-500">Total Saques</span>
             <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center shrink-0">
-              <ArrowDownCircle className="text-pink-500" size={20} />
+              <HandCoins className="text-pink-500" size={20} />
             </div>
           </div>
           <p className="text-2xl font-bold text-red-500 tracking-tight">R$ 0,00</p>
@@ -79,11 +80,11 @@ export const TransacoesPage = () => {
         <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-surface-300/50 flex items-center justify-center shrink-0 border border-surface-300">
           <Filter size={18} className="text-slate-500" />
         </div>
-        
+
         <select className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300">
           <option value="">Todas as casas</option>
         </select>
-        
+
         <select className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300">
           <option value="">Todos os tipos</option>
           <option value="DEPOSITO">Depósito</option>
@@ -107,7 +108,7 @@ export const TransacoesPage = () => {
 
       {/* Área da Tabela */}
       <div className="card overflow-hidden bg-white dark:bg-surface-200">
-        
+
         {/* Cabeçalho da Tabela */}
         <div className="hidden md:grid grid-cols-[110px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
           <span>Data</span>
