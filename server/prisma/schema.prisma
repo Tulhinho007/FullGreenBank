@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -28,7 +28,7 @@ model User {
   role      UserRole @default(MEMBRO)
   active    Boolean  @default(true)
   isTipster Boolean  @default(false)
-  
+
   // Settings & Preferences
   plan              String   @default("STARTER") // STARTER, STANDARD, PRO
   value             Float?
@@ -38,44 +38,44 @@ model User {
   dueDate           String?                      // Data de vencimento (YYYY-MM-DD)
   paymentStatus     String   @default("PENDENTE") // ATIVO, PENDENTE, ATRASADO, CANCELADO
   isActive          Boolean  @default(false)     // Acesso liberado?
-  notes            String?  @db.Text
-  
+  notes             String?  @db.Text
+
   currency          String   @default("BRL")     // BRL, USD, EUR
   language          String   @default("PT-BR")   // PT-BR, EN-US, ES-ES
   theme             String   @default("DARK")    // LIGHT, DARK, SYSTEM
   twoFactorEnabled  Boolean  @default(false)
-  avatarUrl        String?
-  
+  avatarUrl         String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tips                 Tip[]
-  bancaContratos       BancaContrato[]
-  bancaCarteiras       BancaCarteira[]
-  solicitacoesInv      SolicitacaoInvestimento[]
-  saques               Saque[]
+  tips              Tip[]
+  bancaContratos    BancaContrato[]
+  bancaCarteiras    BancaCarteira[]
+  solicitacoesInv   SolicitacaoInvestimento[]
+  saques            Saque[]
 
   @@map("users")
 }
 
 model Tip {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  sport       String
-  event       String
-  market      String
-  odds        Float
-  stake       Float    // unidades
-  result      String?  // GREEN, RED, VOID, PENDING
-  profit      Float?
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  sport        String
+  event        String
+  market       String
+  odds         Float
+  stake        Float    // unidades
+  result       String?  // GREEN, RED, VOID, PENDING
+  profit       Float?
   valorCashout Float?
-  tipDate     DateTime
-  mercados    String[] @default([])
-  isMultipla  Boolean  @default(false)
-  jogos       Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  tipDate      DateTime
+  mercados     String[] @default([])
+  isMultipla   Boolean  @default(false)
+  jogos        Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
@@ -84,52 +84,52 @@ model Tip {
 }
 
 model BancaContrato {
-  id               String    @id @default(uuid())
-  userId           String
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  parentId         String?
-  parent           BancaContrato?  @relation("SubContratos", fields: [parentId], references: [id])
-  subContratos     BancaContrato[] @relation("SubContratos")
+  parentId        String?
+  parent          BancaContrato?  @relation("SubContratos", fields: [parentId], references: [id])
+  subContratos    BancaContrato[] @relation("SubContratos")
 
-  identificacao    String?   @db.VarChar(50)
+  identificacao   String?   @db.VarChar(50)
 
-  dataInicial      DateTime  @default(now())
-  dataFinal        DateTime?
+  dataInicial     DateTime  @default(now())
+  dataFinal       DateTime?
 
-  bancaInicial     Decimal   @db.Decimal(10, 2)
-  bancaFinal       Decimal   @db.Decimal(10, 2)
-  comissaoPercent  Decimal   @default(10) @db.Decimal(5, 2)
+  bancaInicial    Decimal   @db.Decimal(10, 2)
+  bancaFinal      Decimal   @db.Decimal(10, 2)
+  comissaoPercent Decimal   @default(10) @db.Decimal(5, 2)
 
   // ATIVO | AGUARDANDO_SAQUE | FINALIZADO | ENCERRADO | CANCELADO
-  status           String    @default("ATIVO")
+  status          String    @default("ATIVO")
 
   // FIM_DO_PRAZO | CLIENTE_ENCERROU | STOP_LOSS | META_ATINGIDA | SAQUE_TOTAL | CANCELADO | OUTRO
-  motivoFim        String?
+  motivoFim       String?
 
-  observacoes      String?   @db.Text
+  observacoes     String?   @db.Text
 
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@map("banca_contratos")
 }
 
 model BancaCarteira {
-  id             String            @id @default(uuid())
-  userId         String
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  nome           String            @db.VarChar(100)
-  casaAposta     String            
-  
-  bancaInicial   Decimal           @db.Decimal(10, 2) @default(0)
-  perfilRisco    String            @default("moderado")
-  
-  itens          GestaoBancaItem[]
+  id           String            @id @default(uuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  nome         String            @db.VarChar(100)
+  casaAposta   String
+
+  bancaInicial Decimal           @db.Decimal(10, 2) @default(0)
+  perfilRisco  String            @default("moderado")
+
+  itens        GestaoBancaItem[]
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@map("banca_carteiras")
 }
@@ -138,12 +138,12 @@ model GestaoBancaItem {
   id             String         @id @default(uuid())
   carteiraId     String?
   carteira       BancaCarteira? @relation(fields: [carteiraId], references: [id], onDelete: Cascade)
-  dataReferencia DateTime @db.Date // Salva apenas a data (YYYY-MM-DD)
-  
+  dataReferencia DateTime       @db.Date // Salva apenas a data (YYYY-MM-DD)
+
   deposito       Decimal  @default(0) @db.Decimal(10, 2)
   saque          Decimal  @default(0) @db.Decimal(10, 2)
   resultado      Decimal  @default(0) @db.Decimal(10, 2)
-  
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -157,14 +157,14 @@ model SupportTicket {
   description String   @db.Text
   priority    String?  // low, medium, high, critical
   status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
-  
+
   // User info (optional if public)
   userEmail   String?
   userId      String?
-  
+
   adminResponse String?   @db.Text
   respondedAt   DateTime?
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -194,7 +194,7 @@ model Saque {
   method           String
   status           String   @default("PENDENTE") // CONCLUIDO, PENDENTE, PROCESSANDO, REJEITADO
   rejectionReason  String?
-  
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -234,7 +234,7 @@ model Market {
   id        String @id @default(cuid())
   name      String
   sportSlug String @default("futebol")
-  
+
   @@unique([name, sportSlug], name: "name_sportSlug")
   @@map("markets")
 }
@@ -247,19 +247,23 @@ model CustomTeam {
   @@map("custom_teams")
 }
 
+// ── Módulo Futevôlei ──────────────────────────────────────────────────────────
+
 model FutvoleiMatch {
-  id            String   @id @default(uuid())
-  player1       String
-  player2       String
-  player3       String
-  player4       String
-  stake         Float    // Valor da aposta por dupla ou total
-  totalSets     Int      @default(3) // Ex: Melhor de 3
-  pointsPerSet  Int      @default(18)
-  status        String   @default("PENDING") // PENDING, FINISHED, CANCELED
-  winnerTeam    Int?     // 1 para Dupla A, 2 para Dupla B
-  createdAt     DateTime @default(now())
+  id           String    @id @default(uuid())
+  player1      String                         // Dupla A — Jogador 1
+  player2      String                         // Dupla A — Jogador 2
+  player3      String                         // Dupla B — Jogador 1
+  player4      String                         // Dupla B — Jogador 2
+  stake        Float                          // Valor da aposta
+  totalSets    Int       @default(3)          // Ex: Melhor de 3
+  pointsPerSet Int       @default(18)         // Pontos por set
+  scoreA       Int       @default(0)          // Placar Dupla A
+  scoreB       Int       @default(0)          // Placar Dupla B
+  status       String    @default("PENDING")  // PENDING, FINISHED, CANCELED
+  winnerTeam   Int?                           // 1 = Dupla A, 2 = Dupla B
+  finishedAt   DateTime?                      // Data/hora de finalização
+  createdAt    DateTime  @default(now())
 
   @@map("futvolei_matches")
 }
-

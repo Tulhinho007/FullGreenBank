@@ -12,6 +12,7 @@ import gestaoBancaRoutes from './routes/gestao-banca.routes';
 import supportRoutes from './routes/support.routes';
 import solicitacoesRoutes from './routes/solicitacoes.routes';
 import cadastrosRoutes from './routes/cadastros.routes';
+import futvoleiRoutes from './routes/futvolei.routes';
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use('/api/support',     supportRoutes);
 app.use('/api/solicitacoes', solicitacoesRoutes);
 app.use('/api/saques', saquesRoutes);
 app.use('/api/cadastros', cadastrosRoutes);
+app.use('/api/futvolei', futvoleiRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

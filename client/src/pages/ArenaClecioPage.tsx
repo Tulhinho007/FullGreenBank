@@ -1,269 +1,714 @@
-import { useState } from 'react';
-import { Trophy, Activity, ArrowLeft, CheckCircle, AlertTriangle, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react'
+import { useTheme } from '../contexts/ThemeContext'
+import { futvoleiService, FutvoleiMatch } from '../services/futvolei.service'
 
-export const ArenaClecioPage = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<any>(null);
+// ── Helpers ────────────────────────────────────────────────────────────────────
+const fmtMoney = (v: number) =>
+  `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
 
-  const handleCreateMatch = () => {
-    alert("Funcionalidade de criação será implementada com a integração do Backend!");
-  };
+const fmtTime = (d: string) =>
+  new Date(d).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
-  const handleFinalize = (match: any) => {
-    setSelectedMatch(match);
-    setShowModal(true);
-  };
+const fmtDate = (d: string) =>
+  new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
 
-  const confirmFinalize = (winner: string) => {
-    alert(`Partida finalizada! Vencedor: ${winner}`);
-    setShowModal(false);
-  };
+// ── Sub-componentes ────────────────────────────────────────────────────────────
+
+const ConfigIcon = ({ sets }: { sets: number }) =>
+  sets === 1 ? (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="7" stroke="#22c55e" strokeWidth="1.8" />
+      <text x="9" y="13.5" textAnchor="middle" fontSize="9" fill="#22c55e" fontWeight="800">1</text>
+    </svg>
+  ) : (
+    <svg width="26" height="18" viewBox="0 0 26 18" fill="none">
+      {[0, 1, 2].map((i) => (
+        <circle key={i} cx={5 + i * 8} cy="9" r="4" stroke="#f59e0b" strokeWidth="1.8" />
+      ))}
+    </svg>
+  )
+
+interface EditableScoreProps {
+  value: number
+  onChange: (v: number) => void
+  winning: boolean
+  dark: boolean
+  saving: boolean
+}
+
+const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScoreProps) => {
+  const [editing, setEditing] = useState(false)
+  const bg = winning ? '#22c55e' : dark ? '#334155' : '#1e293b'
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        type="number"
+        min={0}
+        defaultValue={value}
+        onBlur={(e) => { onChange(Math.max(0, Number(e.target.value) || 0)); setEditing(false) }}
+        onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
+        style={{
+          width: 44, height: 44, textAlign: 'center', fontSize: 18, fontWeight: 800,
+          borderRadius: 10, border: '2px solid #22c55e',
+          background: dark ? '#1e293b' : '#fff',
+          color: dark ? '#f1f5f9' : '#0f172a', outline: 'none',
+        }}
+      />
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-8 w-full pb-20 max-w-6xl mx-auto relative px-4 md:px-0">
-      
-      {/* HEADER SECTION */}
-      <header className="relative pt-10 pb-6">
-        <div className="flex flex-col items-center justify-center text-center relative px-16">
-            {/* BACK BUTTON - Aligned with the content flow but absolute for layering */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2">
-                <Link 
-                    to="/dashboard" 
-                    className="p-3.5 rounded-2xl bg-white dark:bg-surface-300/10 border border-slate-200 dark:border-surface-400 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all shadow-sm group"
-                >
-                    <ArrowLeft size={22} className="group-hover:-translate-x-1 transition-transform" />
-                </Link>
-            </div>
-
-            <div className="space-y-1.5 px-4">
-                <h1 className="text-3xl md:text-5xl font-display font-bold text-slate-900 dark:text-white flex items-center justify-center gap-4">
-                    <Activity className="text-green-500 w-8 h-8 md:w-10 md:h-10" /> Arena Clêcio
-                </h1>
-                <p className="text-slate-700 dark:text-slate-200 font-semibold text-base md:text-lg">Gestão de desafios e apostas casadas.</p>
-            </div>
-        </div>
-      </header>
-
-      {/* RESUMO FINANCEIRO - O Pulo do Gato */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 p-8 rounded-[2rem] shadow-xl flex items-center gap-6 group hover:border-green-500/50 transition-all">
-              <div className="w-16 h-16 rounded-3xl bg-green-500/10 flex items-center justify-center text-green-500 shrink-0 group-hover:scale-110 transition-transform">
-                  <Activity size={32} />
-              </div>
-              <div>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Jogos Criados (Hoje)</p>
-                  <p className="text-3xl font-display font-bold text-slate-900 dark:text-white">12</p>
-              </div>
-          </div>
-
-          <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 p-8 rounded-[2rem] shadow-xl flex items-center gap-6 group hover:border-green-500/50 transition-all">
-              <div className="w-16 h-16 rounded-3xl bg-green-500/10 flex items-center justify-center text-green-500 shrink-0 group-hover:scale-110 transition-transform">
-                  <Trophy size={32} />
-              </div>
-              <div>
-                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Total Apostado (Hoje)</p>
-                  <p className="text-3xl font-display font-bold text-slate-900 dark:text-white">
-                      <span className="text-green-500/50 text-xl mr-1">R$</span>1.500,00
-                  </p>
-              </div>
-          </div>
-
-          <div className="hidden lg:flex bg-green-500 p-8 rounded-[2rem] shadow-xl shadow-green-500/20 items-center gap-6">
-              <div className="w-16 h-16 rounded-3xl bg-black/10 flex items-center justify-center text-black/40 shrink-0">
-                  <CheckCircle size={32} />
-              </div>
-              <div className="text-black">
-                  <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1">Status da Arena</p>
-                  <p className="text-2xl font-display font-bold leading-tight">Arena Ativa & Monitorada</p>
-              </div>
-          </div>
-      </div>
-
-      {/* Card de Nova Partida */}
-      <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-3xl p-8 shadow-xl">
-        <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Trophy size={22} className="text-yellow-500" /> Novo Desafio
-            </h2>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-black uppercase tracking-widest">
-                <Info size={12} /> Preencha para Iniciar
-            </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Dupla 1 */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Dupla A (Mandante)</label>
-            </div>
-            <input type="text" placeholder="Jogador 1" className="w-full bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 p-4 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm" />
-            <input type="text" placeholder="Jogador 2" className="w-full bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 p-4 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm" />
-          </div>
-
-          {/* VS Divider */}
-          <div className="flex items-center justify-center text-4xl font-black text-green-500/20 italic select-none">
-            VS
-          </div>
-
-          {/* Dupla 2 */}
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">Dupla B (Visitante)</label>
-            <input type="text" placeholder="Jogador 3" className="w-full bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 p-4 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm" />
-            <input type="text" placeholder="Jogador 4" className="w-full bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 p-4 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm" />
-          </div>
-
-          {/* Detalhes da Aposta */}
-          <div className="space-y-4 bg-green-500/5 dark:bg-green-500/10 p-6 rounded-3xl border border-dashed border-green-500/30">
-            <div>
-              <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 block">Valor da Aposta (R$)</label>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xl font-bold text-green-500/50">R$</span>
-                <input type="number" placeholder="50" className="w-full bg-transparent text-4xl font-display font-bold text-green-500 outline-none" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 border-t border-green-500/20 pt-4">
-              <div>
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 block">Sets</label>
-                <select className="bg-transparent block text-slate-800 dark:text-white font-bold text-lg cursor-pointer outline-none w-full">
-                  <option value="1">1 Set</option>
-                  <option value="3" defaultValue="3">Melhor de 3</option>
-                  <option value="5">Melhor de 5</option>
-                </select>
-              </div>
-              <div className="text-right">
-                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 block">Pts/Set</label>
-                <input type="number" defaultValue="18" className="w-full bg-transparent text-slate-800 dark:text-white font-bold text-xl text-right outline-none" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button 
-          onClick={handleCreateMatch}
-          className="w-full mt-14 bg-green-500 hover:bg-green-400 text-black font-black text-lg py-6 rounded-3xl transition-all shadow-2xl shadow-green-500/30 active:scale-[0.98] uppercase tracking-wider"
-        >
-          CRIAR NOVO DESAFIO
-        </button>
-      </div>
-
-      {/* Lista de Partidas Ativas */}
-      <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-3xl overflow-hidden shadow-xl">
-        <div className="p-8 border-b border-slate-100 dark:border-surface-300/50 flex items-center justify-between bg-slate-50/50 dark:bg-surface-300/10">
-            <h3 className="font-display font-bold text-slate-800 dark:text-white text-lg">Desafios Ativos</h3>
-            <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Em tempo real</span>
-            </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/50 dark:bg-surface-300/5 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                <th className="px-8 py-6 border-b border-slate-100 dark:border-surface-300/50">Partida / Duplas</th>
-                <th className="px-8 py-6 text-center border-b border-slate-100 dark:border-surface-300/50">Investimento</th>
-                <th className="px-8 py-6 text-center border-b border-slate-100 dark:border-surface-300/50">Configuração</th>
-                <th className="px-8 py-6 text-center border-b border-slate-100 dark:border-surface-300/50">Placar Atual</th>
-                <th className="px-8 py-6 text-right border-b border-slate-100 dark:border-surface-300/50">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-surface-300/50">
-              <tr className="group hover:bg-slate-50/50 dark:hover:bg-surface-300/10 transition-colors">
-                <td className="px-8 py-8">
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col items-end">
-                      <span className="font-bold text-slate-900 dark:text-white">Giba / Renato</span>
-                      <span className="text-[9px] text-green-500 font-black uppercase">Dupla A</span>
-                    </div>
-                    <div className="h-10 w-[1px] bg-slate-200 dark:bg-surface-300/50 origin-center rotate-[20deg]" />
-                    <div className="flex flex-col items-start text-slate-500 dark:text-slate-400">
-                      <span className="font-bold">Belo / Fabio</span>
-                      <span className="text-[9px] text-slate-400 font-black uppercase">Dupla B</span>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-8 py-8 text-center">
-                    <span className="inline-flex px-4 py-1.5 rounded-2xl bg-green-500/10 text-green-500 font-bold text-base shadow-sm ring-1 ring-green-500/20">
-                        R$ 200,00
-                    </span>
-                </td>
-                <td className="px-8 py-8 text-center">
-                    <div className="flex flex-col items-center">
-                        <span className="text-slate-600 dark:text-slate-300 text-sm font-bold">Melhor de 3</span>
-                        <span className="text-[10px] text-slate-400 font-medium">Sets de 18 pontos</span>
-                    </div>
-                </td>
-                <td className="px-8 py-8 text-center">
-                    <div className="inline-flex items-center gap-3 bg-slate-900 dark:bg-surface-300 text-white dark:text-slate-900 px-4 py-2 rounded-2xl font-display font-black text-xl shadow-lg ring-4 ring-slate-100 dark:ring-surface-400">
-                        1 <span className="opacity-30">-</span> 0
-                    </div>
-                </td>
-                <td className="px-8 py-8 text-right">
-                  <button 
-                    onClick={() => handleFinalize({ teamA: "Giba / Renato", teamB: "Belo / Fabio" })}
-                    className="bg-green-500 text-black hover:bg-green-400 px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"
-                  >
-                    Finalizar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* CONFIRMATION MODAL */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white dark:bg-surface-200 w-full max-w-lg rounded-[2.5rem] border border-slate-200 dark:border-surface-400 shadow-2xl overflow-hidden animate-in zoom-in duration-200">
-            <div className="p-10 text-center">
-                <div className="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-yellow-500/5">
-                    <Trophy className="text-yellow-500" size={32} />
-                </div>
-                <h3 className="text-2xl font-display font-bold text-slate-900 dark:text-white mb-2">Finalizar Partida</h3>
-                <p className="text-slate-500 dark:text-slate-400 mb-10 px-4 text-sm font-medium">Confirme a dupla vencedora para processar o resultado financeiro.</p>
-                
-                <div className="grid grid-cols-1 gap-4">
-                    <button 
-                        onClick={() => confirmFinalize(selectedMatch?.teamA)}
-                        className="group flex flex-col items-center p-6 rounded-3xl bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 hover:border-green-500 hover:bg-green-500/5 transition-all text-left relative overflow-hidden"
-                    >
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Vencedor sugerido</span>
-                        <span className="text-xl font-display font-bold text-slate-900 dark:text-white">{selectedMatch?.teamA}</span>
-                        <div className="absolute top-4 right-4 text-green-500 opacity-0 group-hover:opacity-100 transition-all">
-                            <CheckCircle size={24} />
-                        </div>
-                    </button>
-
-                    <button 
-                        onClick={() => confirmFinalize(selectedMatch?.teamB)}
-                        className="group flex flex-col items-center p-6 rounded-3xl bg-slate-50 dark:bg-surface-300/20 border border-slate-200 dark:border-surface-400 hover:border-green-500 hover:bg-green-500/5 transition-all text-left relative overflow-hidden"
-                    >
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Outro Vencedor</span>
-                        <span className="text-xl font-display font-bold text-slate-900 dark:text-white">{selectedMatch?.teamB}</span>
-                        <div className="absolute top-4 right-4 text-green-500 opacity-0 group-hover:opacity-100 transition-all">
-                            <CheckCircle size={24} />
-                        </div>
-                    </button>
-                </div>
-
-                <div className="mt-10 flex flex-col gap-4">
-                    <div className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs font-bold">
-                        <AlertTriangle size={14} /> Essa ação não pode ser desfeita.
-                    </div>
-                    <button 
-                        onClick={() => setShowModal(false)}
-                        className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-black uppercase text-[10px] tracking-widest pt-2"
-                    >
-                        Cancelar Operação
-                    </button>
-                </div>
-            </div>
-          </div>
-        </div>
+    <div
+      onClick={() => !saving && setEditing(true)}
+      title="Clique para editar"
+      style={{
+        background: bg, color: '#fff', borderRadius: 10, fontWeight: 800, fontSize: 18,
+        width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: winning ? '0 0 14px #22c55e55' : 'none',
+        cursor: saving ? 'wait' : 'text', transition: 'all .25s', userSelect: 'none',
+        position: 'relative', opacity: saving ? 0.7 : 1,
+      }}
+    >
+      {value}
+      {!saving && (
+        <span style={{
+          position: 'absolute', bottom: 0, right: 0, width: 13, height: 13,
+          background: '#22c55e', borderRadius: '50% 0 10px 0',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="7" height="7" viewBox="0 0 8 8">
+            <path d="M1 6L6 1M6 1H3M6 1V4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" />
+          </svg>
+        </span>
       )}
     </div>
-  );
-};
+  )
+}
 
+interface ConfirmModalProps {
+  match: FutvoleiMatch
+  onConfirm: (winnerTeam: 1 | 2) => void
+  onCancel: () => void
+  dark: boolean
+  loading: boolean
+}
+
+const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModalProps) => {
+  const [selected, setSelected] = useState<1 | 2 | null>(null)
+  const bg = dark ? '#1e293b' : '#fff'
+  const text = dark ? '#f1f5f9' : '#0f172a'
+  const sub = dark ? '#94a3b8' : '#64748b'
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: '#00000099', zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backdropFilter: 'blur(6px)', animation: 'fadeIn .2s ease',
+    }}>
+      <div style={{
+        background: bg, borderRadius: 22, padding: '36px 32px',
+        maxWidth: 430, width: '92%',
+        boxShadow: '0 32px 80px #00000055', animation: 'slideUp .25s ease',
+        border: `1px solid ${dark ? '#334155' : '#e2e8f0'}`,
+      }}>
+        <div style={{ fontSize: 30, marginBottom: 6 }}>🏆</div>
+        <h2 style={{ margin: '0 0 6px', fontSize: 21, fontWeight: 800, color: text }}>
+          Confirmar Vencedor
+        </h2>
+        <p style={{ margin: '0 0 6px', color: sub, fontSize: 14 }}>
+          Placar atual:{' '}
+          <strong style={{ color: text }}>{match.scoreA} – {match.scoreB}</strong>
+        </p>
+        <p style={{ margin: '0 0 22px', color: sub, fontSize: 14 }}>
+          Selecione a dupla vencedora para finalizar.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+          {([
+            { label: 'Dupla A', names: `${match.player1} / ${match.player2}`, key: 1 as const },
+            { label: 'Dupla B', names: `${match.player3} / ${match.player4}`, key: 2 as const },
+          ] as const).map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => setSelected(opt.key)}
+              style={{
+                border: `2px solid ${selected === opt.key ? '#22c55e' : dark ? '#334155' : '#e2e8f0'}`,
+                borderRadius: 14, padding: '14px 18px',
+                background: selected === opt.key
+                  ? dark ? '#14532d' : '#f0fdf4'
+                  : dark ? '#0f172a' : '#f8fafc',
+                cursor: 'pointer', display: 'flex', alignItems: 'center',
+                gap: 14, transition: 'all .2s', textAlign: 'left',
+              }}
+            >
+              <div style={{
+                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                border: selected === opt.key
+                  ? '7px solid #22c55e'
+                  : `2px solid ${dark ? '#475569' : '#cbd5e1'}`,
+                transition: 'all .2s',
+              }} />
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#22c55e', letterSpacing: 1, textTransform: 'uppercase' }}>
+                  {opt.label}
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: text }}>{opt.names}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button onClick={onCancel} disabled={loading} style={{
+            flex: 1, padding: '13px', borderRadius: 12,
+            border: `2px solid ${dark ? '#334155' : '#e2e8f0'}`,
+            background: 'transparent', cursor: loading ? 'wait' : 'pointer',
+            fontWeight: 700, color: sub, fontSize: 14,
+          }}>
+            Cancelar
+          </button>
+          <button
+            onClick={() => selected && onConfirm(selected)}
+            disabled={!selected || loading}
+            style={{
+              flex: 2, padding: '13px', borderRadius: 12, border: 'none',
+              background: selected && !loading ? '#22c55e' : dark ? '#334155' : '#e2e8f0',
+              cursor: selected && !loading ? 'pointer' : 'not-allowed',
+              fontWeight: 800,
+              color: selected && !loading ? '#fff' : sub,
+              fontSize: 14, transition: 'all .2s',
+              boxShadow: selected && !loading ? '0 4px 16px #22c55e44' : 'none',
+            }}
+          >
+            {loading ? 'Finalizando...' : '✓ Confirmar Vencedor'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Formulário inicial ─────────────────────────────────────────────────────────
+interface FormState {
+  a1: string; a2: string
+  b1: string; b2: string
+  valor: number; sets: number; pts: number
+}
+
+const defaultForm: FormState = { a1: '', a2: '', b1: '', b2: '', valor: 50, sets: 1, pts: 18 }
+
+// ── Página principal ───────────────────────────────────────────────────────────
+export const ArenaClecioPage = () => {
+  const { theme } = useTheme()
+  const dark = theme === 'dark' || (theme === 'DARK')
+
+  const [active, setActive]     = useState<FutvoleiMatch[]>([])
+  const [history, setHistory]   = useState<FutvoleiMatch[]>([])
+  const [stats, setStats]       = useState({ jogosHoje: 0, totalApostadoHoje: 0 })
+  const [form, setForm]         = useState<FormState>(defaultForm)
+  const [confirmTarget, setConfirmTarget] = useState<FutvoleiMatch | null>(null)
+
+  const [loadingCreate,   setLoadingCreate]   = useState(false)
+  const [loadingFinalize, setLoadingFinalize] = useState(false)
+  const [savingScore,     setSavingScore]     = useState<string | null>(null)
+  const [toast,           setToast]           = useState<string | null>(null)
+  const [error,           setError]           = useState<string | null>(null)
+
+  // Paleta adaptativa
+  const c = {
+    bg:          dark ? '#0f172a' : '#f1f5f9',
+    card:        dark ? '#1e293b' : '#ffffff',
+    cardBorder:  dark ? '#334155' : '#e2e8f0',
+    text:        dark ? '#f1f5f9' : '#0f172a',
+    sub:         dark ? '#94a3b8' : '#64748b',
+    muted:       dark ? '#475569' : '#94a3b8',
+    inputBg:     dark ? '#0f172a' : '#ffffff',
+    inputBorder: dark ? '#334155' : '#e2e8f0',
+    divider:     dark ? '#334155' : '#f1f5f9',
+  }
+
+  const showToast = (msg: string) => {
+    setToast(msg)
+    setTimeout(() => setToast(null), 3500)
+  }
+
+  // ── Busca inicial ────────────────────────────────────────────────────────────
+  const fetchAll = useCallback(async () => {
+    try {
+      const [a, h, s] = await Promise.all([
+        futvoleiService.getActive(),
+        futvoleiService.getHistory(),
+        futvoleiService.getStats(),
+      ])
+      setActive(a)
+      setHistory(h)
+      setStats(s)
+      setError(null)
+    } catch {
+      setError('Erro ao carregar dados. Verifique a conexão.')
+    }
+  }, [])
+
+  useEffect(() => { fetchAll() }, [fetchAll])
+
+  // ── Criar desafio ────────────────────────────────────────────────────────────
+  const handleCreate = async () => {
+    if (!form.a1 || !form.a2 || !form.b1 || !form.b2) return
+    setLoadingCreate(true)
+    try {
+      const novo = await futvoleiService.create({
+        player1: form.a1, player2: form.a2,
+        player3: form.b1, player4: form.b2,
+        stake: form.valor,
+        totalSets: form.sets,
+        pointsPerSet: form.pts,
+      })
+      setActive((p) => [novo, ...p])
+      setStats((s) => ({
+        jogosHoje: s.jogosHoje + 1,
+        totalApostadoHoje: s.totalApostadoHoje + form.valor,
+      }))
+      setForm(defaultForm)
+      showToast('✅ Desafio criado com sucesso!')
+    } catch {
+      showToast('❌ Erro ao criar desafio. Tente novamente.')
+    } finally {
+      setLoadingCreate(false)
+    }
+  }
+
+  // ── Atualizar placar ─────────────────────────────────────────────────────────
+  const handleScoreChange = async (id: string, side: 'A' | 'B', val: number) => {
+    const match = active.find((m) => m.id === id)
+    if (!match) return
+
+    const scoreA = side === 'A' ? val : match.scoreA
+    const scoreB = side === 'B' ? val : match.scoreB
+
+    // Atualiza localmente de imediato (otimista)
+    setActive((prev) =>
+      prev.map((m) => m.id === id ? { ...m, scoreA, scoreB } : m)
+    )
+
+    setSavingScore(id)
+    try {
+      await futvoleiService.updateScore(id, scoreA, scoreB)
+    } catch {
+      // Reverte em caso de erro
+      setActive((prev) =>
+        prev.map((m) => m.id === id ? { ...m, scoreA: match.scoreA, scoreB: match.scoreB } : m)
+      )
+      showToast('❌ Erro ao salvar placar.')
+    } finally {
+      setSavingScore(null)
+    }
+  }
+
+  // ── Finalizar partida ────────────────────────────────────────────────────────
+  const handleFinalize = async (winnerTeam: 1 | 2) => {
+    if (!confirmTarget) return
+    setLoadingFinalize(true)
+    try {
+      const finished = await futvoleiService.finalize(
+        confirmTarget.id,
+        winnerTeam,
+        confirmTarget.scoreA,
+        confirmTarget.scoreB,
+      )
+      setActive((p) => p.filter((m) => m.id !== confirmTarget.id))
+      setHistory((h) => [finished, ...h])
+      setConfirmTarget(null)
+      const vencedor = winnerTeam === 1
+        ? `${confirmTarget.player1} / ${confirmTarget.player2}`
+        : `${confirmTarget.player3} / ${confirmTarget.player4}`
+      showToast(`🏆 ${vencedor} venceu! Partida finalizada.`)
+    } catch {
+      showToast('❌ Erro ao finalizar partida. Tente novamente.')
+    } finally {
+      setLoadingFinalize(false)
+    }
+  }
+
+  const allFilled = form.a1 && form.a2 && form.b1 && form.b2
+
+  // ── Render ────────────────────────────────────────────────────────────────────
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap');
+        @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+        @keyframes toastIn { from { transform: translateX(-50%) translateY(16px); opacity: 0 } to { transform: translateX(-50%) translateY(0); opacity: 1 } }
+        @keyframes pulse   { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+        @keyframes spin    { to { transform: rotate(360deg) } }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        input:focus, select:focus { outline: none; }
+        .rh:hover { filter: brightness(${dark ? 1.08 : 0.97}); }
+        .btnfin { transition: all .2s; }
+        .btnfin:hover { filter: brightness(1.1); transform: scale(1.02); }
+        .stcard { transition: transform .2s; }
+        .stcard:hover { transform: translateY(-3px); }
+      `}</style>
+
+      <div style={{ background: c.bg, minHeight: '100vh', transition: 'background .3s', padding: '28px 24px 80px' }}>
+        <div style={{ maxWidth: 980, margin: '0 auto' }}>
+
+          {/* Título da página */}
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 24, fontWeight: 800, color: c.text, letterSpacing: -0.5 }}>
+                Arena Clécio
+              </h1>
+            </div>
+            <p style={{ color: c.sub, fontSize: 14 }}>Gestão de desafios e apostas casadas.</p>
+          </div>
+
+          {/* Erro de conexão */}
+          {error && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: '12px 16px', marginBottom: 20, color: '#dc2626', fontSize: 14, fontWeight: 600 }}>
+              ⚠️ {error}
+              <button onClick={fetchAll} style={{ marginLeft: 12, textDecoration: 'underline', background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 700 }}>
+                Tentar novamente
+              </button>
+            </div>
+          )}
+
+          {/* STATS */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 24 }}>
+            {[
+              { label: 'JOGOS CRIADOS (HOJE)', value: String(stats.jogosHoje), icon: '⚡', green: false },
+              { label: 'TOTAL APOSTADO (HOJE)', value: fmtMoney(stats.totalApostadoHoje), icon: '🏆', green: false },
+              { label: 'STATUS DA ARENA', value: 'Arena Ativa & Monitorada', icon: '✅', green: true },
+            ].map((s, i) => (
+              <div key={i} className="stcard" style={{
+                background: s.green ? '#22c55e' : c.card,
+                border: `1px solid ${s.green ? 'transparent' : c.cardBorder}`,
+                borderRadius: 16, padding: '18px 20px',
+                boxShadow: s.green ? '0 8px 28px #22c55e33' : '0 2px 8px #0000000a',
+                display: 'flex', alignItems: 'center', gap: 14,
+              }}>
+                <div style={{
+                  width: 46, height: 46, borderRadius: 13,
+                  background: s.green ? '#16a34a' : dark ? '#0f172a' : '#f0fdf4',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0,
+                }}>{s.icon}</div>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.8, color: s.green ? '#d1fae5' : c.muted, textTransform: 'uppercase', marginBottom: 3 }}>
+                    {s.label}
+                  </div>
+                  <div style={{ fontSize: i === 2 ? 15 : 22, fontWeight: 800, color: s.green ? '#fff' : c.text, lineHeight: 1.2 }}>
+                    {s.value}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* NOVO DESAFIO */}
+          <div style={{ background: c.card, borderRadius: 20, padding: 28, marginBottom: 24, border: `1px solid ${c.cardBorder}`, boxShadow: '0 2px 8px #0000000a' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+              <h2 style={{ fontFamily: "'Syne',sans-serif", fontSize: 17, fontWeight: 800, color: c.text, display: 'flex', alignItems: 'center', gap: 8 }}>
+                🏆 Novo Desafio
+              </h2>
+              {!allFilled && (
+                <span style={{ fontSize: 11, color: c.muted, border: `1px solid ${c.cardBorder}`, padding: '5px 11px', borderRadius: 8, fontWeight: 600 }}>
+                  ⓘ PREENCHA PARA INICIAR
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto', gap: 18, alignItems: 'start', marginBottom: 20 }}>
+              {/* Dupla A */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#22c55e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, background: '#22c55e', borderRadius: '50%', display: 'inline-block' }} />
+                  Dupla A (Mandante)
+                </div>
+                {(['a1', 'a2'] as const).map((k, i) => (
+                  <input key={k} placeholder={`Jogador ${i + 1}`} value={form[k]}
+                    onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
+                    style={{
+                      width: '100%', padding: '11px 14px', borderRadius: 10,
+                      border: `1.5px solid ${c.inputBorder}`,
+                      fontSize: 15, color: c.text, background: c.inputBg,
+                      marginBottom: i === 0 ? 10 : 0, transition: 'all .2s',
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div style={{ paddingTop: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 19, fontWeight: 800, color: '#22c55e', opacity: 0.7 }}>VS</span>
+              </div>
+
+              {/* Dupla B */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, background: '#3b82f6', borderRadius: '50%', display: 'inline-block' }} />
+                  Dupla B (Visitante)
+                </div>
+                {(['b1', 'b2'] as const).map((k, i) => (
+                  <input key={k} placeholder={`Jogador ${i + 1}`} value={form[k]}
+                    onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
+                    style={{
+                      width: '100%', padding: '11px 14px', borderRadius: 10,
+                      border: `1.5px solid ${c.inputBorder}`,
+                      fontSize: 15, color: c.text, background: c.inputBg,
+                      marginBottom: i === 0 ? 10 : 0, transition: 'all .2s',
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Valor/Config */}
+              <div style={{
+                background: dark ? '#052e1633' : '#f0fdf4', borderRadius: 14, padding: '16px 18px',
+                border: `1.5px solid ${dark ? '#166534' : '#bbf7d0'}`, minWidth: 175,
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 6 }}>
+                  Valor da Aposta (R$)
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 14 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: '#15803d' }}>R$</span>
+                  <input type="number" value={form.valor}
+                    onChange={(e) => setForm((p) => ({ ...p, valor: +e.target.value }))}
+                    style={{ width: 80, border: 'none', background: 'transparent', fontSize: 28, fontWeight: 800, color: '#15803d', fontFamily: "'Syne',sans-serif" }}
+                  />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 4 }}>SETS</div>
+                    <select value={form.sets} onChange={(e) => setForm((p) => ({ ...p, sets: +e.target.value }))}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 8, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 700, background: c.inputBg, color: c.text }}>
+                      <option value={1}>1 Set</option>
+                      <option value={3}>Melhor 3</option>
+                      <option value={5}>Melhor 5</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 4 }}>PTS/SET</div>
+                    <input type="number" value={form.pts}
+                      onChange={(e) => setForm((p) => ({ ...p, pts: +e.target.value }))}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 8, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 700, textAlign: 'center', background: c.inputBg, color: c.text }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button onClick={handleCreate} disabled={!allFilled || loadingCreate} style={{
+              width: '100%', padding: 15, borderRadius: 14, border: 'none',
+              background: allFilled && !loadingCreate ? '#22c55e' : dark ? '#334155' : '#e2e8f0',
+              color: allFilled && !loadingCreate ? '#fff' : c.muted,
+              fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 14,
+              letterSpacing: 1.5, cursor: allFilled && !loadingCreate ? 'pointer' : 'not-allowed',
+              transition: 'all .25s', boxShadow: allFilled && !loadingCreate ? '0 6px 20px #22c55e44' : 'none',
+            }}>
+              {loadingCreate ? 'CRIANDO...' : 'CRIAR NOVO DESAFIO'}
+            </button>
+          </div>
+
+          {/* DESAFIOS ATIVOS */}
+          <div style={{ background: c.card, borderRadius: 20, padding: 28, marginBottom: 24, border: `1px solid ${c.cardBorder}`, boxShadow: '0 2px 8px #0000000a' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+              <h2 style={{ fontFamily: "'Syne',sans-serif", fontSize: 17, fontWeight: 800, color: c.text }}>
+                Desafios Ativos
+              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 700, color: '#22c55e' }}>
+                <span style={{ width: 8, height: 8, background: '#22c55e', borderRadius: '50%', animation: 'pulse 2s infinite', display: 'inline-block' }} />
+                EM TEMPO REAL
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr 1.3fr 1.3fr auto', padding: '0 14px 12px', borderBottom: `2px solid ${c.divider}`, gap: 14 }}>
+              {['PARTIDA / DUPLAS', 'INVESTIMENTO', 'CONFIGURAÇÃO', 'RESULTADO', 'AÇÕES'].map((h) => (
+                <div key={h} style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.8, textTransform: 'uppercase' }}>{h}</div>
+              ))}
+            </div>
+
+            {active.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: c.muted, fontSize: 15 }}>
+                Nenhum desafio ativo no momento.
+              </div>
+            )}
+
+            {active.map((ch, i) => (
+              <div key={ch.id} className="rh" style={{
+                display: 'grid', gridTemplateColumns: '2.2fr 1fr 1.3fr 1.3fr auto',
+                padding: '18px 14px',
+                borderBottom: i < active.length - 1 ? `1px solid ${c.divider}` : 'none',
+                alignItems: 'center', gap: 14, borderRadius: 12, transition: 'filter .15s',
+              }}>
+                {/* Duplas */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                    <span style={{ width: 8, height: 8, background: '#22c55e', borderRadius: '50%', flexShrink: 0 }} />
+                    <span style={{ fontWeight: 700, fontSize: 14, color: c.text }}>{ch.player1} / {ch.player2}</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: '#22c55e', background: dark ? '#14532d' : '#f0fdf4', padding: '2px 6px', borderRadius: 4 }}>DUPLA A</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 8, height: 8, background: '#3b82f6', borderRadius: '50%', flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, fontSize: 13, color: c.sub }}>{ch.player3} / {ch.player4}</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: '#3b82f6', background: dark ? '#1e3a5f' : '#eff6ff', padding: '2px 6px', borderRadius: 4 }}>DUPLA B</span>
+                  </div>
+                </div>
+
+                <div style={{ background: dark ? '#14532d' : '#f0fdf4', color: '#15803d', fontWeight: 800, fontSize: 13, padding: '7px 11px', borderRadius: 10, display: 'inline-flex', whiteSpace: 'nowrap', border: `1px solid ${dark ? '#166534' : '#bbf7d0'}` }}>
+                  {fmtMoney(ch.stake)}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ConfigIcon sets={ch.totalSets} />
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: c.text }}>
+                      {ch.totalSets === 1 ? '1 Set' : `Melhor de ${ch.totalSets}`}
+                    </div>
+                    <div style={{ fontSize: 11, color: c.muted }}>Sets de {ch.pointsPerSet}pts</div>
+                  </div>
+                </div>
+
+                {/* Resultado editável */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <EditableScore
+                    value={ch.scoreA}
+                    onChange={(v) => handleScoreChange(ch.id, 'A', v)}
+                    winning={ch.scoreA > ch.scoreB}
+                    dark={dark}
+                    saving={savingScore === ch.id}
+                  />
+                  <span style={{ color: c.muted, fontWeight: 800, fontSize: 15 }}>–</span>
+                  <EditableScore
+                    value={ch.scoreB}
+                    onChange={(v) => handleScoreChange(ch.id, 'B', v)}
+                    winning={ch.scoreB > ch.scoreA}
+                    dark={dark}
+                    saving={savingScore === ch.id}
+                  />
+                </div>
+
+                <button className="btnfin" onClick={() => setConfirmTarget(ch)} style={{
+                  background: '#22c55e', color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '9px 16px', fontWeight: 800, fontSize: 12,
+                  cursor: 'pointer', letterSpacing: 0.5, whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 12px #22c55e33',
+                }}>
+                  FINALIZAR
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* HISTÓRICO */}
+          <div style={{ background: c.card, borderRadius: 20, padding: 28, border: `1px solid ${c.cardBorder}`, boxShadow: '0 2px 8px #0000000a' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+              <h2 style={{ fontFamily: "'Syne',sans-serif", fontSize: 17, fontWeight: 800, color: c.text }}>
+                📋 Histórico de Jogos
+              </h2>
+              <span style={{ fontSize: 12, fontWeight: 700, background: dark ? '#334155' : '#f1f5f9', color: c.sub, padding: '3px 10px', borderRadius: 20 }}>
+                {history.length} partidas
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1.5fr 0.9fr 1fr 1fr', padding: '0 14px 12px', borderBottom: `2px solid ${c.divider}`, gap: 12 }}>
+              {['PARTIDA', 'VENCEDOR', 'RESULTADO', 'APOSTADO', 'DATA / HORA'].map((h) => (
+                <div key={h} style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.8, textTransform: 'uppercase' }}>{h}</div>
+              ))}
+            </div>
+
+            {history.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: c.muted, fontSize: 15 }}>
+                Nenhuma partida finalizada ainda.
+              </div>
+            )}
+
+            {history.map((h, i) => {
+              const duplaAVenceu = h.winnerTeam === 1
+              return (
+                <div key={h.id} style={{
+                  display: 'grid', gridTemplateColumns: '2.4fr 1.5fr 0.9fr 1fr 1fr',
+                  padding: '16px 14px',
+                  borderBottom: i < history.length - 1 ? `1px solid ${c.divider}` : 'none',
+                  alignItems: 'center', gap: 12, animation: 'fadeIn .35s ease',
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+                      <span style={{ width: 7, height: 7, background: '#22c55e', borderRadius: '50%', flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{h.player1} / {h.player2}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 7, height: 7, background: '#3b82f6', borderRadius: '50%', flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: c.sub }}>{h.player3} / {h.player4}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 18 }}>🏆</span>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#22c55e', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        Dupla {duplaAVenceu ? 'A' : 'B'}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: c.text }}>
+                        {duplaAVenceu ? `${h.player1} / ${h.player2}` : `${h.player3} / ${h.player4}`}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontWeight: 800, fontSize: 20, fontFamily: "'Syne',sans-serif", color: duplaAVenceu ? '#22c55e' : c.sub }}>{h.scoreA}</span>
+                    <span style={{ color: c.muted, fontWeight: 700 }}>–</span>
+                    <span style={{ fontWeight: 800, fontSize: 20, fontFamily: "'Syne',sans-serif", color: !duplaAVenceu ? '#22c55e' : c.sub }}>{h.scoreB}</span>
+                  </div>
+
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#15803d', background: dark ? '#14532d' : '#f0fdf4', padding: '5px 10px', borderRadius: 8, display: 'inline-block', whiteSpace: 'nowrap', border: `1px solid ${dark ? '#166534' : '#bbf7d0'}` }}>
+                    {fmtMoney(h.stake)}
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{h.finishedAt ? fmtTime(h.finishedAt) : '—'}</div>
+                    <div style={{ fontSize: 11, color: c.muted }}>{fmtDate(h.createdAt)}</div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+        </div>
+      </div>
+
+      {/* Modal de confirmação */}
+      {confirmTarget && (
+        <ConfirmModal
+          match={confirmTarget}
+          dark={dark}
+          loading={loadingFinalize}
+          onCancel={() => setConfirmTarget(null)}
+          onConfirm={handleFinalize}
+        />
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 28, left: '50%',
+          transform: 'translateX(-50%)',
+          background: dark ? '#f1f5f9' : '#0f172a',
+          color: dark ? '#0f172a' : '#fff',
+          padding: '13px 24px', borderRadius: 14,
+          fontWeight: 700, fontSize: 14,
+          boxShadow: '0 8px 32px #00000044',
+          animation: 'toastIn .3s ease',
+          zIndex: 2000, whiteSpace: 'nowrap',
+          borderLeft: '4px solid #22c55e',
+        }}>
+          {toast}
+        </div>
+      )}
+    </>
+  )
+}
