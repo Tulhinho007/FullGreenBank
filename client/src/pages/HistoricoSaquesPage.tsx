@@ -2,12 +2,12 @@ import { useState } from 'react'
 import {
   Banknote,
   Search,
-  Filter,
   CheckCircle2,
   XCircle,
   Clock,
   Loader2,
-  Download
+  Download,
+  Plus
 } from 'lucide-react'
 import { formatCurrency as fmt } from '../utils/formatters'
 
@@ -23,49 +23,7 @@ interface Saque {
   rejectionReason?: string
 }
 
-const mockSaques: Saque[] = [
-  {
-    id: 'sq-1234',
-    date: '2026-03-20T14:30:00Z',
-    userName: 'Carlos Silva',
-    grossValue: 1500,
-    comissionPercent: 10,
-    netValue: 1350,
-    method: 'Pix',
-    status: 'CONCLUIDO'
-  },
-  {
-    id: 'sq-1235',
-    date: '2026-03-18T09:15:00Z',
-    userName: 'Ana Beatriz',
-    grossValue: 500,
-    comissionPercent: 0,
-    netValue: 500,
-    method: 'Pix',
-    status: 'PENDENTE'
-  },
-  {
-    id: 'sq-1236',
-    date: '2026-03-15T16:45:00Z',
-    userName: 'Lucas Mendes',
-    grossValue: 2000,
-    comissionPercent: 10,
-    netValue: 1800,
-    method: 'Transferência',
-    status: 'REJEITADO',
-    rejectionReason: 'Dados bancários divergentes.'
-  },
-  {
-    id: 'sq-1237',
-    date: '2026-03-21T10:00:00Z',
-    userName: 'Roberto Carlos',
-    grossValue: 350,
-    comissionPercent: 10,
-    netValue: 315,
-    method: 'Pix',
-    status: 'PROCESSANDO'
-  }
-]
+const mockSaques: Saque[] = []
 
 export const HistoricoSaquesPage = () => {
   const [saques] = useState<Saque[]>(mockSaques)
@@ -100,15 +58,21 @@ export const HistoricoSaquesPage = () => {
             Acompanhamento e auditoria de solicitações de retirada
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-surface-300 text-slate-700 dark:text-slate-200 font-semibold rounded-lg hover:bg-surface-400 transition-colors shadow-sm text-sm">
-          <Download size={16} />
-          Exportar Relatório
-        </button>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-surface-300 text-slate-700 dark:text-slate-200 font-semibold rounded-lg hover:bg-surface-400 transition-colors shadow-sm text-sm">
+            <Download size={16} />
+            Exportar
+          </button>
+          <button className="flex items-center gap-2 px-5 py-2 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition-colors shadow-sm text-sm">
+            <Plus size={16} />
+            Novo Saque
+          </button>
+        </div>
       </div>
 
       {/* ─── Barra de Filtros ─── */}
       <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full sm:max-w-xs">
+        <div className="relative flex-1 w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
@@ -118,10 +82,6 @@ export const HistoricoSaquesPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="h-11 px-4 flex items-center justify-center gap-2 bg-white dark:bg-surface-200 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-surface-300 rounded-xl hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors font-medium text-sm w-full sm:w-auto">
-          <Filter size={16} />
-          Filtros Avançados
-        </button>
       </div>
 
       {/* ─── Área da Tabela ─── */}
@@ -134,7 +94,7 @@ export const HistoricoSaquesPage = () => {
         </div>
 
         {/* Tabela Header */}
-        <div className="hidden lg:grid grid-cols-[140px_1fr_120px_120px_120px_110px_130px] gap-4 px-6 py-4 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
+        <div className="hidden lg:grid grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px] gap-4 px-6 py-4 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
           <span>Data e Hora</span>
           <span>Usuário</span>
           <span>Valor Bruto</span>
@@ -157,7 +117,7 @@ export const HistoricoSaquesPage = () => {
               const statusCfg = getStatusConfig(s.status)
               
               return (
-                <div key={s.id} className="grid grid-cols-1 lg:grid-cols-[140px_1fr_120px_120px_120px_110px_130px] gap-2 lg:gap-4 px-6 py-4 lg:py-4.5 text-sm items-start lg:items-center hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
+                <div key={s.id} className="grid grid-cols-1 lg:grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px] gap-2 lg:gap-4 px-6 py-4 lg:py-4.5 text-sm items-start lg:items-center hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
                   
                   {/* Data e Hora */}
                   <div className="flex flex-col">
