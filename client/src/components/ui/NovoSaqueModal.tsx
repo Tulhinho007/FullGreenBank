@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { usersService } from '../../services/users.service'
 
 interface Saque {
   id: string
@@ -20,7 +21,14 @@ interface NovoSaqueModalProps {
   initialData?: Saque | null
 }
 
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
 export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaqueModalProps) => {
+  const [users, setUsers] = useState<User[]>([])
   const [userName, setUserName] = useState('')
   const [date, setDate] = useState('')
   const [grossValue, setGrossValue] = useState<number | ''>('')
@@ -28,6 +36,14 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
   const [method, setMethod] = useState('Pix')
   const [status, setStatus] = useState<Saque['status']>('PENDENTE')
   const [rejectionReason, setRejectionReason] = useState('')
+
+  useEffect(() => {
+    // Carregar usuários
+    usersService.getAll().then(res => {
+      const arr = Array.isArray(res) ? res : (Array.isArray(res?.users) ? res.users : [])
+      setUsers(arr)
+    }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (initialData && isOpen) {
@@ -100,15 +116,18 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="label">Nome do Usuário</label>
-              <input 
-                type="text" 
+              <label className="label">Usuário</label>
+              <select 
                 required
                 value={userName}
                 onChange={e => setUserName(e.target.value)}
-                placeholder="Ex: Carlos Silva"
                 className="input-field bg-slate-50 dark:bg-surface-300"
-              />
+              >
+                <option value="">Selecione o usuário...</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.name}>{u.name} ({u.email})</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -130,7 +149,12 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                 className="input-field bg-slate-50 dark:bg-surface-300"
               >
                 <option value="Pix">Pix</option>
-                <option value="Transferência">Transferência</option>
+                <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
+                <option value="Boleto Bancário">Boleto Bancário</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
+                <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
+                <option value="PicPay">PicPay</option>
                 <option value="Outros">Outros</option>
               </select>
             </div>

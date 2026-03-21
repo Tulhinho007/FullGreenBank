@@ -6,6 +6,9 @@ import {
 import { formatCurrency as fmt } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import { NovoSaqueModal } from '../components/ui/NovoSaqueModal'
+import * as XLSX from 'xlsx'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export interface Saque {
   id: string
@@ -109,9 +112,56 @@ export const HistoricoSaquesPage = () => {
 
   // Ações Exportação
   const handleExport = (type: string) => {
-    toast.success(`Exportação para ${type} iniciada.`)
     setIsExportMenuOpen(false)
-    if (type === 'Print') window.print()
+
+    if (filteredSaques.length === 0) {
+      toast.error('Nenhum dado para exportar, use filtros diferentes.')
+      return
+    }
+
+    try {
+      if (type === 'Excel') {
+        const ws = XLSX.utils.json_to_sheet(filteredSaques.map(s => ({
+          "Data e Hora": new Date(s.date).toLocaleString('pt-BR'),
+          "Usuário": s.userName,
+          "Valor Bruto": s.grossValue,
+          "Comissão %": s.comissionPercent,
+          "Valor Líquido": s.netValue,
+          "Método": s.method,
+          "Status": s.status,
+          "Motivo": s.rejectionReason || '-'
+        })))
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(wb, ws, "Saques")
+        XLSX.writeFile(wb, "historico_saques.xlsx")
+        toast.success('Planilha exportada com sucesso!')
+      } else if (type === 'PDF') {
+        const doc = new jsPDF()
+        doc.text("Histórico de Saques", 14, 15)
+        
+        autoTable(doc, {
+          startY: 20,
+          head: [['Data', 'Usuário', 'V. Bruto', 'Comissão', 'V. Líquido', 'Método', 'Status']],
+          body: filteredSaques.map(s => [
+            new Date(s.date).toLocaleDateString('pt-BR'),
+            s.userName,
+            s.grossValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+            `${s.comissionPercent}%`,
+            s.netValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+            s.method,
+            s.status
+          ]),
+          styles: { fontSize: 8 }
+        })
+        
+        doc.save("historico_saques.pdf")
+        toast.success('PDF do relatório gerado com sucesso!')
+      } else if (type === 'Print') {
+        window.print()
+      }
+    } catch (e) {
+      toast.error('Ocorreu um erro ao gerar o relatório.')
+    }
   }
 
   return (
@@ -193,7 +243,12 @@ export const HistoricoSaquesPage = () => {
           >
             <option value="Todos">Método: Todos</option>
             <option value="Pix">Pix</option>
-            <option value="Transferência">Transferência</option>
+            <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
+            <option value="Boleto Bancário">Boleto Bancário</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
+            <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
+            <option value="PicPay">PicPay</option>
             <option value="Outros">Outros</option>
           </select>
 

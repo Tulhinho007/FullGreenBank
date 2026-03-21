@@ -228,12 +228,14 @@ export const TransacoesPage = () => {
           value={filterMethod} onChange={e => setFilterMethod(e.target.value)}
         >
           <option value="">Todos os métodos</option>
-          <option value="PIX">PIX</option>
-          <option value="CARTAO">Cartão de Crédito</option>
-          <option value="BOLETO">Boleto</option>
-          <option value="CRIPTO">Criptomoeda</option>
-          <option value="TRANSFERENCIA">Transferência Bancária</option>
-          <option value="OUTROS">Outros</option>
+          <option value="Pix">Pix</option>
+          <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
+          <option value="Boleto Bancário">Boleto Bancário</option>
+          <option value="PayPal">PayPal</option>
+          <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
+          <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
+          <option value="PicPay">PicPay</option>
+          <option value="Outros">Outros</option>
         </select>
 
         <select 
@@ -381,13 +383,14 @@ export const TransacoesPage = () => {
               required
             >
               <option value="">Selecione...</option>
-              <option value="PIX">PIX</option>
-              <option value="CARTAO">Cartão de Crédito</option>
-              <option value="BOLETO">Boleto</option>
-              <option value="CARTEIRA">Carteira Digital (Skrill, Neteller)</option>
-              <option value="CRIPTO">Criptomoeda</option>
-              <option value="TRANSFERENCIA">Transferência Bancária</option>
-              <option value="OUTROS">Outros</option>
+              <option value="Pix">Pix</option>
+              <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
+              <option value="Boleto Bancário">Boleto Bancário</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
+              <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
+              <option value="PicPay">PicPay</option>
+              <option value="Outros">Outros</option>
             </select>
           </div>
 
