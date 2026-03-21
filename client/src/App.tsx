@@ -33,6 +33,8 @@ import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
 import { HistoricoSaquesPage } from './pages/HistoricoSaquesPage'
+import { ArenaClecioPage } from './pages/ArenaClecioPage'
+
 
 function App() {
   return (
@@ -146,7 +148,9 @@ function App() {
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/calculadora" element={<CalculadoraPage />} />
           <Route path="gestao/dicas-gestao" element={<DicasGestaoPage />} />
+          <Route path="gestao/futevolei/arena-clecio" element={<ArenaClecioPage />} />
           <Route path="gestao/historico" element={<HistoryPage />} />
+
         </Route>
 
         {/* Catch-all */}

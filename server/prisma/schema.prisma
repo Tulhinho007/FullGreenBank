@@ -246,3 +246,20 @@ model CustomTeam {
 
   @@map("custom_teams")
 }
+
+model FutvoleiMatch {
+  id            String   @id @default(uuid())
+  player1       String
+  player2       String
+  player3       String
+  player4       String
+  stake         Float    // Valor da aposta por dupla ou total
+  totalSets     Int      @default(3) // Ex: Melhor de 3
+  pointsPerSet  Int      @default(18)
+  status        String   @default("PENDING") // PENDING, FINISHED, CANCELED
+  winnerTeam    Int?     // 1 para Dupla A, 2 para Dupla B
+  createdAt     DateTime @default(now())
+
+  @@map("futvolei_matches")
+}
+

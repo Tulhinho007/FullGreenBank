@@ -6,7 +6,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart3,
   DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  Target, Star, Briefcase
+  Target, Star, Briefcase, Activity
 } from 'lucide-react'
 
 interface NavItemProps {
@@ -156,7 +156,11 @@ export const Sidebar = () => {
               { label: 'Calculadora', to: '/gestao/calculadora' },
               { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao' }
             ]} />
+            <NavItem icon={<Activity size={16} />}      label="Futevôlei"         children={[
+              { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
+            ]} />
             <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
+
           </>
         ) : (
           <div className="px-4 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mx-2 mt-4">
