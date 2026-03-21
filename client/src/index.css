@@ -82,6 +82,8 @@
 
 /* Textos — força leitura clara */
 [data-theme="light"] .text-white     { color: #0f172a !important; }
+[data-theme="light"] .text-slate-100 { color: #334155 !important; }
+[data-theme="light"] .text-slate-200 { color: #1e293b !important; }
 [data-theme="light"] .text-slate-300 { color: #334155 !important; }
 [data-theme="light"] .text-slate-400 { color: #475569 !important; }
 [data-theme="light"] .text-slate-500 { color: #475569 !important; }
@@ -157,9 +159,9 @@
 [data-theme="light"] aside .sidebar-link { color: #94a3b8 !important; }
 [data-theme="light"] aside .sidebar-link:hover { color: #ffffff !important; }
 [data-theme="light"] aside .sidebar-link.active { color: #4ade80 !important; }
-[data-theme="light"] aside .text-[11px] { color: #fbbf24 !important; }
+[data-theme="light"] aside .text-\[11px\] { color: #fbbf24 !important; }
 
-/* Logo text na sidebar — sempre branco independente do tema */
+/* Logo text na sidebar -- sempre branco independente do tema */
 [data-theme="light"] aside .font-display { color: #ffffff !important; }
 [data-theme="light"] aside .font-bold    { color: #ffffff !important; }
 [data-theme="light"] aside p.font-display.font-bold { color: #ffffff !important; }

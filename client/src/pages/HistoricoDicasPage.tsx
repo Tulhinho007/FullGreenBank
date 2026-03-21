@@ -283,24 +283,24 @@ export const HistoricoDicasPage = () => {
                           {tipo}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-xs text-slate-300 whitespace-nowrap">
+                      <td className="px-5 py-4 text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">
                         {fmtDate(tip.tipDate)}
                       </td>
                       <td className="px-5 py-4">
                         <p className="text-sm font-bold text-white leading-tight mb-0.5">{tip.event}</p>
                         <p className="text-xs text-slate-400 capitalize max-w-[200px] truncate">{tip.market}</p>
                       </td>
-                      <td className="px-5 py-4 text-sm font-bold text-slate-200">
+                      <td className="px-5 py-4 text-sm font-bold text-slate-700 dark:text-slate-200">
                         {tip.odds.toFixed(2)}
                       </td>
-                      <td className="px-5 py-4 text-sm font-medium text-slate-300">
+                      <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
                         {fmt(tip.stake)}
                       </td>
                       <td className="px-5 py-4">
                         <span className={`text-sm font-bold ${
-                          status === 'GREEN' ? 'text-emerald-400' :
-                          status === 'RED' ? 'text-rose-400' :
-                          'text-slate-400'
+                          status === 'GREEN' ? 'text-emerald-500' :
+                          status === 'RED' ? 'text-rose-500' :
+                          'text-slate-500 dark:text-slate-400'
                         }`}>
                           {status === 'GREEN' && tip.profit ? `+ ${fmt(tip.profit)}` :
                            status === 'RED' ? `- ${fmt(tip.stake)}` :
