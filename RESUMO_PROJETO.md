@@ -261,11 +261,15 @@ notes           String?    -- histórico de pagamentos em texto
 ### 21. Persistência de Cadastros no PostgreSQL (Infra)
 - **Migração de Dados**: Esportes, Ligas, Casas, Mercados e Times Personalizados movidos do `localStorage` para tabelas reais no banco de dados.
 - **Sincronização**: Novo botão "Sincronizar Defaults" para carga inicial de dados via endpoint `/api/cadastros/seed`.
+- **425+ Mercados**: Injeção direta via script standalone garantindo que todos os mercados (Ambas Marcam, Handicaps, Cantos, etc.) estejam disponíveis.
 - **Times Compartilhados**: Times cadastrados por administradores agora são visíveis para todos os usuários do sistema.
-- **UX**: Fallback automático para `localStorage` enquanto a API carrega, garantindo navegação fluida.
+
+### 22. Gestão de Bancas Múltiplas (Carteiras)
+- **Segregação por Casa**: Suporte a múltiplas bancas dentro da mesma casa de apostas (ex: Banca Principal e Banca de Alavancagem em Bet365).
+- **CRUD Completo**: Implementação das rotas `GET`, `POST`, `PATCH` e `DELETE` no backend (Vercel) para controle 100% via API.
+- **Histórico Persistente**: Ações de depósito, saque e resultado vinculadas à `carteiraId`, permitindo análise individual de performance.
 
 ---
-
 
 ## 📡 API — Principais Endpoints
 
@@ -274,18 +278,11 @@ notes           String?    -- histórico de pagamentos em texto
 | POST | `/api/auth/login` | Público | Login |
 | POST | `/api/auth/register` | Público | Cadastro |
 | GET | `/api/auth/me` | Autenticado | Perfil atual |
-| GET | `/api/users` | ADMIN/MASTER | Listar usuários |
-| PATCH | `/api/users/:id/profile` | ADMIN/MASTER | Editar usuário |
-| PATCH | `/api/users/profile/me` | Autenticado | Editar próprio perfil |
-| PATCH | `/api/users/:id/role` | MASTER | Alterar role |
-| PATCH | `/api/users/:id/toggle-active` | ADMIN/MASTER | Ativar/desativar |
-| GET | `/api/tips` | Autenticado | Listar tips |
-| POST | `/api/tips` | ADMIN/MASTER | Criar tip |
-| GET | `/api/banca/contratos` | Autenticado | Contratos de banca |
-| GET | `/api/cadastros/sports` | Autenticado | Listar esportes |
-| POST | `/api/cadastros/seed` | ADMIN/MASTER | Popular dados padrão |
-| GET | `/api/cadastros/custom-teams` | Autenticado | Listar times personalizados |
-
+| GET | `/api/gestao-banca/carteiras` | Autenticado | Listar todas as carteiras do usuário |
+| GET | `/api/gestao-banca/carteiras/:id` | Autenticado | Detalhes de uma carteira específica |
+| DELETE | `/api/gestao-banca/carteiras/:id` | Autenticado | Excluir carteira e todo seu histórico (cascade) |
+| GET | `/api/cadastros/sports` | Autenticado | Listar esportes do DB |
+| POST | `/api/cadastros/seed` | ADMIN/MASTER | Popular dados padrão do sistema |
 
 ---
 
@@ -293,14 +290,16 @@ notes           String?    -- histórico de pagamentos em texto
 
 ### Backend (`.env`)
 ```
-DATABASE_URL=        # URL de conexão Supabase (pooling)
-DIRECT_URL=          # URL direta Supabase (para Prisma migrations)
+DATABASE_URL=        # URL de conexão Supabase (pooling - porta 6543)
+DIRECT_URL=          # URL direta Supabase (migrations - porta 5432)
 JWT_SECRET=          # Chave secreta para JWT
+PORT=3001           # Porta local (padrão 3001)
 ```
 
 ### Frontend (`.env`)
 ```
-VITE_API_URL=        # URL base da API (ex: https://full-green-bank-backend.vercel.app/api)
+VITE_API_URL=http://localhost:3001 # Local
+# Na produção: https://full-green-bank-backend.vercel.app
 ```
 
 ---
@@ -309,16 +308,10 @@ VITE_API_URL=        # URL base da API (ex: https://full-green-bank-backend.verc
 
 | Commit | Descrição |
 |--------|-----------|
-| `a7e2e6c` | fix: remove FREE plan, set STARTER as default, fix date color in light mode |
-| `bb5f698` | feat: implement monthly subscription renewal logic |
-| `fb8c11d` | feat: refine Financeiro UI Phase 2 - unified modal, persistent buttons |
-| `3e28959` | feat: financial page full redesign + access control by payment status |
-| `1eafcce` | fix: move institutional pages inside AppLayout for sidebar and dark theme |
-| `f64696c` | fix: resolve TS build errors and missing dependencies for Vercel deploy |
-| `76650d6` | fix: add build script to root package.json for Vercel deploy |
-| `30c69b6` | feat: implement bidirectional support ticket response system |
-| `f1cba9a` | feat: advanced edit mode for multi-markets and multiple tickets |
-| `106f0fb` | style(tips): perfect pixel redesign of complex ticket modals |
-| `2a666be` | feat: generate historical datatable with modular types |
+| `1202efa` | fix: adicionar rotas GET e DELETE para carteiras em gestao-banca |
+| `ac9bf87` | debug: logs de seed no frontend e backend |
+| `efc5cea` | feat: otimizar inserção de mercados com createMany no backend |
+| `6a19f07` | feat: adicionar restrição única name_sportSlug no Prisma |
 | `bc56f0f` | feat: persistência de dados de cadastros no PostgreSQL |
+
 
