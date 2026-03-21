@@ -150,9 +150,11 @@
 [data-theme="light"] ::-webkit-scrollbar-track { background: #e8edf3; }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: #94a3b8; }
 
-/* Sidebar no tema claro — textos legíveis */
+/* Sidebar no tema claro -- textos legíveis */
 [data-theme="light"] aside .text-white,
+[data-theme="light"] aside .text-slate-200,
 [data-theme="light"] aside p.font-display,
+[data-theme="light"] aside p { color: #ffffff !important; }
 [data-theme="light"] aside p { color: #ffffff !important; }
 [data-theme="light"] aside .text-green-500 { color: #4ade80 !important; }
 [data-theme="light"] aside .text-sidebar-text { color: #94a3b8 !important; }

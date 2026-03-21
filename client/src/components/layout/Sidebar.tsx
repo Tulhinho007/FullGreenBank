@@ -34,7 +34,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
             <span className={`transition-colors ${isChildActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
               {icon}
             </span>
-            <span className="text-[14px] font-semibold">{label}</span>
+            <span className="text-[15px] font-semibold tracking-wide">{label}</span>
           </span>
           <span className="text-slate-500">
             {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -45,7 +45,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
             {children.map((c, i) => {
               if (c.placeholder || !c.to) {
                 return (
-                  <div key={i} className="text-xs py-2 px-3 rounded-md flex justify-between items-center opacity-60 cursor-not-allowed select-none text-slate-500">
+                  <div key={i} className="text-[13px] py-2.5 px-3 rounded-md flex justify-between items-center opacity-60 cursor-not-allowed select-none text-slate-500">
                     <span>{c.label}</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-500" title="Em breve"></span>
                   </div>
@@ -56,7 +56,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
                   key={c.to}
                   to={c.to}
                   className={({ isActive }) =>
-                    `text-xs py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
+                    `text-[13px] py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
                       isActive ? 'text-green-400 font-bold bg-green-500/5' : 'text-slate-200 hover:text-white hover:bg-surface-300/30'
                     }`
                   }
@@ -76,7 +76,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
       <div className="sidebar-link opacity-60 cursor-not-allowed select-none group">
         <span className="text-slate-500 transition-colors flex items-center gap-3">
           {icon}
-          <span>{label}</span>
+          <span className="text-[15px] tracking-wide">{label}</span>
         </span>
         <span className="ml-auto w-1.5 h-1.5 rounded-full bg-slate-500" title="Em breve"></span>
       </div>
@@ -93,7 +93,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
           <span className={`transition-colors flex-shrink-0 ${isActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
             {icon}
           </span>
-          <span className="truncate flex-1">{label}</span>
+          <span className="truncate flex-1 text-[15px] tracking-wide">{label}</span>
         </>
       )}
     </NavLink>
@@ -101,7 +101,7 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
 }
 
 const SectionLabel = ({ label }: { label: string }) => (
-  <p className="text-[10px] font-semibold text-sidebar-text/60 uppercase tracking-widest px-4 mt-5 mb-2">
+  <p className="text-[11px] font-bold text-sidebar-text/60 uppercase tracking-widest px-4 mt-5 mb-2">
     {label}
   </p>
 )
@@ -121,15 +121,13 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col shrink-0">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center logo-glow">
-            <span className="text-white font-display font-bold text-sm">FG</span>
-          </div>
-          <div>
-            <p className="font-display font-bold text-white text-sm leading-none">Full Green</p>
-            <p className="text-green-500 text-[11px] font-medium tracking-wider mt-0.5">BANK</p>
-          </div>
+      <div className="px-5 py-6 border-b border-sidebar-border flex flex-col items-center justify-center text-center gap-3">
+        <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center logo-glow">
+          <span className="text-white font-display font-bold text-lg">FG</span>
+        </div>
+        <div>
+          <p className="font-display font-bold text-white text-lg leading-none tracking-wide">Full Green</p>
+          <p className="text-green-500 text-[11px] font-bold tracking-[0.2em] mt-1.5">BANK</p>
         </div>
       </div>
 
