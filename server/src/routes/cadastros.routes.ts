@@ -379,14 +379,12 @@ router.post('/seed', authenticate, requireAdmin, async (_req, res) => {
       return { name, sportSlug }
     })
 
-    // Remove duplicados se já existirem alguns
-    for (const d of marketData) {
-      await prisma.market.upsert({
-        where: { name_sportSlug: { name: d.name, sportSlug: d.sportSlug } },
-        update: {},
-        create: d
-      })
-    }
+    // Inserção em massa para performance (evita timeout)
+    await prisma.market.createMany({
+      data: marketData,
+      skipDuplicates: true
+    })
+
 
 
     const sportCounts = await prisma.sport.count()
