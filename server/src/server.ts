@@ -11,6 +11,7 @@ import bancaContratosRoutes from './routes/banca-contratos.routes';
 import gestaoBancaRoutes from './routes/gestao-banca.routes';
 import supportRoutes from './routes/support.routes';
 import solicitacoesRoutes from './routes/solicitacoes.routes';
+import cadastrosRoutes from './routes/cadastros.routes';
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/api/gestao-banca', gestaoBancaRoutes);
 app.use('/api/support',     supportRoutes);
 app.use('/api/solicitacoes', solicitacoesRoutes);
 app.use('/api/saques', saquesRoutes);
+app.use('/api/cadastros', cadastrosRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

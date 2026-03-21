@@ -200,3 +200,48 @@ model Saque {
 
   @@map("saques")
 }
+
+// ── Módulo Cadastros ──────────────────────────────────────────────────────────
+
+model Sport {
+  id    String  @id @default(cuid())
+  name  String
+  emoji String?
+  slug  String  @unique
+
+  @@map("sports")
+}
+
+model League {
+  id       String  @id @default(cuid())
+  name     String
+  category String
+  featured Boolean @default(false)
+
+  @@map("leagues")
+}
+
+model Bookmaker {
+  id           String @id @default(cuid())
+  name         String @unique
+  differential String @default("")
+  focus        String @default("")
+
+  @@map("bookmakers")
+}
+
+model Market {
+  id        String @id @default(cuid())
+  name      String
+  sportSlug String @default("futebol")
+
+  @@map("markets")
+}
+
+model CustomTeam {
+  id    String @id @default(cuid())
+  name  String
+  group String
+
+  @@map("custom_teams")
+}

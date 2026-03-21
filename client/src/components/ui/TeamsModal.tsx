@@ -4,6 +4,9 @@ import {
   AlertTriangle, Loader2, Users,
 } from 'lucide-react'
 import { teamsService, Team } from '../../services/teams.service'
+import { customTeamsService } from '../../services/cadastros.service'
+import toast from 'react-hot-toast'
+
 
 interface TeamsModalProps {
   isOpen: boolean
@@ -157,9 +160,7 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
   const [loading,     setLoading]     = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
 
-  const [customTeams, setCustomTeams] = useState<Team[]>(() => {
-    try { return JSON.parse(localStorage.getItem('fgb_custom_teams') || '[]') } catch { return [] }
-  })
+  const [customTeams, setCustomTeams] = useState<Team[]>([])
 
   type ActionMode = 'add' | 'edit' | 'delete' | null
   const [actionMode,  setActionMode]  = useState<ActionMode>(null)
@@ -181,11 +182,21 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
   const searchRef    = useRef<HTMLInputElement>(null)
   const searchTimer  = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const fetchCustomTeams = useCallback(async () => {
+    try {
+      const res = await customTeamsService.getAll()
+      // Adapta CustomTeam (da API) para Team (do modal) se necessário
+      // O CustomTeam da API já parece compatível com Team { id, name, group }
+      setCustomTeams(res as any)
+    } catch { /**/ }
+  }, [])
+
   useEffect(() => {
     if (!isOpen) return
     teamsService.getGroups().then(g => { setGroups(g); setAddGroup(g[0] || '') }).catch(() => {})
+    fetchCustomTeams()
     setTimeout(() => searchRef.current?.focus(), 150)
-  }, [isOpen])
+  }, [isOpen, fetchCustomTeams])
 
   const doSearch = useCallback(async (q: string, grp: string, pg: number, append = false) => {
     if (pg === 1) setLoading(true); else setLoadingMore(true)
@@ -214,11 +225,6 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
   const displayTotal = total + customTeams.length
   const isCustom = (t: Team) => customTeams.some(c => c.id === t.id)
 
-  const saveCustom = (updated: Team[]) => {
-    setCustomTeams(updated)
-    localStorage.setItem('fgb_custom_teams', JSON.stringify(updated))
-  }
-
   const closeAction = () => {
     setActionMode(null)
     setAddName(''); setEditTarget(null); setEditName(''); setEditGroup(''); setDelTarget(null)
@@ -231,9 +237,12 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
       title: 'Adicionar time', variant: 'success',
       message: `Adicionar "${addName.trim()}" no grupo "${addGroup}"?`,
       label: '✓ Adicionar',
-      fn: () => {
-        saveCustom([...customTeams, { id: Date.now(), name: addName.trim(), group: addGroup }])
-        closeAction(); setConfirm(null)
+      fn: async () => {
+        try {
+          await customTeamsService.create({ name: addName.trim(), group: addGroup })
+          await fetchCustomTeams()
+          closeAction(); setConfirm(null)
+        } catch { toast.error('Erro ao adicionar time personalizado.') }
       }
     })
   }
@@ -245,12 +254,13 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
       title: 'Salvar alteração', variant: 'success',
       message: `Alterar "${editTarget.name}" para "${editName.trim()}"?`,
       label: 'Salvar',
-      fn: () => {
-        // custom team edit
+      fn: async () => {
         if (isCustom(editTarget)) {
-          saveCustom(customTeams.map(t => t.id === editTarget.id ? { ...t, name: editName.trim(), group: editGroup } : t))
+          try {
+            await customTeamsService.update(editTarget.id.toString(), { name: editName.trim(), group: editGroup })
+            await fetchCustomTeams()
+          } catch { toast.error('Erro ao atualizar time personalizado.') }
         }
-        // For base teams, just refresh (they are read-only in backend, store override locally)
         closeAction(); setConfirm(null)
       }
     })
@@ -261,11 +271,14 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
     if (!delTarget) return
     setConfirm({
       title: 'Remover time', variant: 'danger',
-      message: `Remover "${delTarget.name}"? Times base voltam após recarregar. Times personalizados são removidos permanentemente.`,
+      message: `Remover "${delTarget.name}"? Times base são apenas ocultados localmente (até recarregar), times personalizados são removidos permanentemente.`,
       label: 'Remover',
-      fn: () => {
+      fn: async () => {
         if (isCustom(delTarget)) {
-          saveCustom(customTeams.filter(t => t.id !== delTarget.id))
+          try {
+            await customTeamsService.remove(delTarget.id.toString())
+            await fetchCustomTeams()
+          } catch { toast.error('Erro ao remover time personalizado.') }
         }
         closeAction(); setConfirm(null)
       }

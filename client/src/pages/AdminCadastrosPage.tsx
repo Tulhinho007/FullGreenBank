@@ -1,151 +1,45 @@
 import { useEffect, useState, FormEvent } from 'react'
-import { ClipboardList, Users, Eye, EyeOff, Dumbbell, Trophy, Shield, Star } from 'lucide-react'
+import { ClipboardList, Users, Eye, EyeOff, Dumbbell, Trophy, Shield, Star, RefreshCw } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { SportsModal, Sport } from '../components/ui/SportsModal'
 import { LeaguesModal, League, DEFAULT_LEAGUES } from '../components/ui/LeaguesModal'
 import { TeamsModal } from '../components/ui/TeamsModal'
-import { BookmakersModal, Bookmaker, DEFAULT_BOOKMAKERS } from '../components/ui/BookmakersModal'
+import { BookmakersModal, Bookmaker } from '../components/ui/BookmakersModal'
 import { MarketsModal, Market } from '../components/ui/MarketsModal'
 import { usersService } from '../services/users.service'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
 import api from '../services/api'
 import toast from 'react-hot-toast'
+import {
+  sportsService,
+  leaguesService,
+  bookmakersService,
+  marketsService,
+  runSeed,
+} from '../services/cadastros.service'
+// localStorage keys mantidos como cache local (fallback enquanto API carrega)
+// Identificadores para localStorage cache
 const SPORTS_KEY     = 'fgb_sports'
 const LEAGUES_KEY    = 'fgb_leagues'
 const BOOKMAKERS_KEY = 'fgb_bookmakers'
 const MARKETS_KEY    = 'fgb_markets'
 
-// Dados iniciais — carregados apenas na primeira vez (localStorage vazio)
-const DEFAULT_SPORTS: Sport[] = [
-  { id: '1', name: 'Futebol',            emoji: '⚽', slug: 'futebol'    },
-  { id: '2', name: 'Basquete',           emoji: '🏀', slug: 'basquete'   },
-  { id: '3', name: 'Tênis',              emoji: '🎾', slug: 'tenis'      },
-  { id: '4', name: 'eSports',            emoji: '🎮', slug: 'esports'    },
-  { id: '5', name: 'Vôlei',             emoji: '🏐', slug: 'volei'      },
-  { id: '6', name: 'MMA',               emoji: '🥊', slug: 'mma'        },
-  { id: '7', name: 'Futebol Americano', emoji: '🏈', slug: 'nfl'        },
-]
+
 
 const loadSports = (): Sport[] => {
-  try {
-    const stored = localStorage.getItem(SPORTS_KEY)
-    if (stored) return JSON.parse(stored)
-    localStorage.setItem(SPORTS_KEY, JSON.stringify(DEFAULT_SPORTS))
-    return DEFAULT_SPORTS
-  } catch { return DEFAULT_SPORTS }
+  try { const s = localStorage.getItem(SPORTS_KEY); return s ? JSON.parse(s) : [] } catch { return [] }
 }
-
 const loadLeagues = (): League[] => {
-  try {
-    const stored = localStorage.getItem(LEAGUES_KEY)
-    if (stored) return JSON.parse(stored)
-    localStorage.setItem(LEAGUES_KEY, JSON.stringify(DEFAULT_LEAGUES))
-    return DEFAULT_LEAGUES
-  } catch { return DEFAULT_LEAGUES }
+  try { const s = localStorage.getItem(LEAGUES_KEY); return s ? JSON.parse(s) : DEFAULT_LEAGUES } catch { return DEFAULT_LEAGUES }
 }
-
 const loadBookmakers = (): Bookmaker[] => {
-  try {
-    const stored = localStorage.getItem(BOOKMAKERS_KEY)
-    if (stored) return JSON.parse(stored)
-    localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(DEFAULT_BOOKMAKERS))
-    return DEFAULT_BOOKMAKERS
-  } catch { return DEFAULT_BOOKMAKERS }
+  try { const s = localStorage.getItem(BOOKMAKERS_KEY); return s ? JSON.parse(s) : [] } catch { return [] }
 }
-
-const DEFAULT_MARKETS: Market[] = [
-  ...[
-    "Ambas Marcam",
-    "Asiático - Mais de 0.5 gols", "Asiático - Mais de 0.75 gols", "Asiático - Mais de 1.0 gols", "Asiático - Mais de 1.25 gols", "Asiático - Mais de 1.5 gols", "Asiático - Mais de 1.75 gols", "Asiático - Mais de 2.0 gols", "Asiático - Mais de 2.25 gols", "Asiático - Mais de 2.5 gols", "Asiático - Mais de 2.75 gols", "Asiático - Mais de 3.0 gols", "Asiático - Mais de 3.25 gols", "Asiático - Mais de 3.5 gols", "Asiático - Mais de 3.75 gols", "Asiático - Mais de 4.0 gols", "Asiático - Mais de 4.25 gols", "Asiático - Mais de 4.5 gols", "Asiático - Mais de 4.75 gols", "Asiático - Mais de 5.0 gols", "Asiático - Mais de 5.25 gols", "Asiático - Mais de 5.5 gols", "Asiático - Mais de 5.75 gols", "Asiático - Mais de 6.0 gols", "Asiático - Mais de 6.25 gols", "Asiático - Mais de 6.5 gols", "Asiático - Mais de 6.75 gols", "Asiático - Mais de 7.0 gols", "Asiático - Mais de 7.25 gols", "Asiático - Mais de 7.5 gols", "Asiático - Mais de 7.75 gols", "Asiático - Mais de 8.0 gols",
-    "Asiático - Menos  de 4.75 gols", "Asiático - Menos  de 6.5 gols", "Asiático - Menos  de 6.75 gols",
-    "Asiático - Menos de 0.5 gols", "Asiático - Menos de 0.75 gols", "Asiático - Menos de 1.0 gols", "Asiático - Menos de 1.25 gols", "Asiático - Menos de 1.5 gols", "Asiático - Menos de 1.75 gols", "Asiático - Menos de 2.0 gols", "Asiático - Menos de 2.25 gols", "Asiático - Menos de 2.5 gols", "Asiático - Menos de 2.75 gols", "Asiático - Menos de 3.0 gols", "Asiático - Menos de 3.25 gols", "Asiático - Menos de 3.5 gols", "Asiático - Menos de 3.75 gols", "Asiático - Menos de 4.0 gols", "Asiático - Menos de 4.25 gols", "Asiático - Menos de 4.5 gols", "Asiático - Menos de 5.0 gols", "Asiático - Menos de 5.25 gols", "Asiático - Menos de 5.5 gols", "Asiático - Menos de 5.75 gols", "Asiático - Menos de 6.0 gols", "Asiático - Menos de 6.25 gols", "Asiático - Menos de 7.0 gols", "Asiático - Menos de 7.25 gols", "Asiático - Menos de 7.5 gols", "Asiático - Menos de 7.75 gols", "Asiático - Menos de 8.0 gols",
-    "Back Favorito",
-    "Basket - Casa", "Basket - Fora", "Basket - Handicap Mais Pontos Casa", "Basket - Handicap Mais Pontos Fora", "Basket - Handicap Menos Pontos Casa", "Basket - Handicap Menos Pontos Fora", "Basket - Mais Total Pontos", "Basket - Menos Total Pontos", "Basket - Personalizada",
-    "Basket - Vencedor 1º Intervalo Casa", "Basket - Vencedor 1º Intervalo Empate", "Basket - Vencedor 1º Intervalo Fora",
-    "Basket - Vencedor 1º Quarto Casa", "Basket - Vencedor 1º Quarto Empate", "Basket - Vencedor 1º Quarto Fora",
-    "Basket - Vencedor 2º Intervalo Casa", "Basket - Vencedor 2º Intervalo Empate", "Basket - Vencedor 2º Intervalo Fora",
-    "Basket - Vencedor 2º Quarto Casa", "Basket - Vencedor 2º Quarto Empate", "Basket - Vencedor 2º Quarto Fora",
-    "Basket - Vencedor 3º Quarto Casa", "Basket - Vencedor 3º Quarto Empate", "Basket - Vencedor 3º Quarto Fora",
-    "Basket - Vencedor 4º Quarto Casa", "Basket - Vencedor 4º Quarto Empate", "Basket - Vencedor 4º Quarto Fora",
-    "Cartões - Ambas Recebem 1 - Não", "Cartões - Ambas Recebem 1 - Sim", "Cartões - Ambas Recebem 2 ou mais - Não", "Cartões - Ambas Recebem 2 ou mais - Sim",
-    "Cartões - Casa +", "Cartões - Empate", "Cartões - Fora +",
-    "Cartões - Mais de 1.5", "Cartões - Mais de 2.5", "Cartões - Mais de 3.5", "Cartões - Mais de 4.5", "Cartões - Mais de 5.5", "Cartões - Mais de 6.5", "Cartões - Mais de 7.5", "Cartões - Mais de 8.5", "Cartões - Mais de 9.5",
-    "Cartões - Menos de 1.5", "Cartões - Menos de 2.5", "Cartões - Menos de 3.5", "Cartões - Menos de 4.5", "Cartões - Menos de 5.5", "Cartões - Menos de 6.5", "Cartões - Menos de 7.5", "Cartões - Menos de 8.5", "Cartões - Menos de 9.5",
-    "Cartões Vermelhos - Mais de 0.5", "Cartões Vermelhos - Mais de 1.5", "Cartões Vermelhos - Menos de 0.5", "Cartões Vermelhos - Menos de 1.5",
-    "Casa - Mais de 0.5 gols", "Casa - Mais de 1.5 gols", "Casa - Mais de 2.5 gols", "Casa - Mais de 3.5 gols", "Casa - Mais de 4.5 gols",
-    "Casa - Menos de 0.5 gols", "Casa - Menos de 1.5 gols", "Casa - Menos de 2.5 gols", "Casa - Menos de 3.5 gols", "Casa - Menos de 4.5 gols",
-    "DC - Casa ou Empate", "DC - Casa ou Fora", "DC - Fora ou Empate",
-    "Escanteios - Casa Mais de 1.5", "Escanteios - Casa Mais de 2.5", "Escanteios - Casa Mais de 3.5", "Escanteios - Casa Mais de 4.5", "Escanteios - Casa Mais de 5.5", "Escanteios - Casa Mais de 6.5", "Escanteios - Casa Mais de 7.5", "Escanteios - Casa Mais de 8.5", "Escanteios - Casa Mais de 9.5",
-    "Escanteios - Casa Menos de 1.5", "Escanteios - Casa Menos de 2.5", "Escanteios - Casa Menos de 3.5", "Escanteios - Casa Menos de 4.5", "Escanteios - Casa Menos de 5.5", "Escanteios - Casa Menos de 6.5", "Escanteios - Casa Menos de 7.5", "Escanteios - Casa Menos de 8.5", "Escanteios - Casa Menos de 9.5",
-    "Escanteios - Casa+", "Escanteios - Empate",
-    "Escanteios - Fora Mais de 1.5", "Escanteios - Fora Mais de 2.5", "Escanteios - Fora Mais de 3.5", "Escanteios - Fora Mais de 4.5", "Escanteios - Fora Mais de 5.5", "Escanteios - Fora Mais de 6.5", "Escanteios - Fora Mais de 7.5", "Escanteios - Fora Mais de 8.5", "Escanteios - Fora Mais de 9.5",
-    "Escanteios - Fora Menos de 1.5", "Escanteios - Fora Menos de 2.5", "Escanteios - Fora Menos de 3.5", "Escanteios - Fora Menos de 4.5", "Escanteios - Fora Menos de 5.5", "Escanteios - Fora Menos de 6.5", "Escanteios - Fora Menos de 7.5", "Escanteios - Fora Menos de 8.5", "Escanteios - Fora Menos de 9.5",
-    "Escanteios - Fora+",
-    "Escanteios - Mais de 10.5", "Escanteios - Mais de 11.5", "Escanteios - Mais de 12.5", "Escanteios - Mais de 13.5", "Escanteios - Mais de 14.5", "Escanteios - Mais de 15.5", "Escanteios - Mais de 2.5", "Escanteios - Mais de 3.5", "Escanteios - Mais de 4.5", "Escanteios - Mais de 5.5", "Escanteios - Mais de 6.5", "Escanteios - Mais de 7.5", "Escanteios - Mais de 8.5", "Escanteios - Mais de 9.5",
-    "Escanteios - Menos de 10.5", "Escanteios - Menos de 11.5", "Escanteios - Menos de 12.5", "Escanteios - Menos de 13.5", "Escanteios - Menos de 14.5", "Escanteios - Menos de 15.5", "Escanteios - Menos de 2.5", "Escanteios - Menos de 3.5", "Escanteios - Menos de 4.5", "Escanteios - Menos de 5.5", "Escanteios - Menos de 6.5", "Escanteios - Menos de 7.5", "Escanteios - Menos de 8.5", "Escanteios - Menos de 9.5",
-    "Escanteios - Race 1 - Casa", "Escanteios - Race 1 - Fora", "Escanteios - Race 2 - Casa", "Escanteios - Race 2 - Fora", "Escanteios - Race 3 - Casa", "Escanteios - Race 3 - Fora", "Escanteios - Race 4 - Casa", "Escanteios - Race 4 - Fora", "Escanteios - Race 5 - Casa", "Escanteios - Race 5 - Fora", "Escanteios - Race 6 - Casa", "Escanteios - Race 6 - Fora", "Escanteios - Race 7 - Casa", "Escanteios - Race 7 - Fora", "Escanteios - Race 8 - Casa", "Escanteios - Race 8 - Fora", "Escanteios - Race 9 - Casa", "Escanteios - Race 9 - Fora",
-    "Escanteios 1ºTempo - Casa Mais de 1.5", "Escanteios 1ºTempo - Casa Mais de 2.5", "Escanteios 1ºTempo - Casa Mais de 3.5", "Escanteios 1ºTempo - Casa Mais de 4.5", "Escanteios 1ºTempo - Casa Mais de 5.5",
-    "Escanteios 1ºTempo - Casa Menos de 1.5", "Escanteios 1ºTempo - Casa Menos de 2.5", "Escanteios 1ºTempo - Casa Menos de 3.5", "Escanteios 1ºTempo - Casa Menos de 4.5", "Escanteios 1ºTempo - Casa Menos de 5.5",
-    "Escanteios 1ºTempo - Fora Mais de 1.5", "Escanteios 1ºTempo - Fora Mais de 2.5", "Escanteios 1ºTempo - Fora Mais de 3.5", "Escanteios 1ºTempo - Fora Mais de 4.5", "Escanteios 1ºTempo - Fora Mais de 5.5",
-    "Escanteios 1ºTempo - Fora Menos de 1.5", "Escanteios 1ºTempo - Fora Menos de 2.5", "Escanteios 1ºTempo - Fora Menos de 3.5", "Escanteios 1ºTempo - Fora Menos de 4.5", "Escanteios 1ºTempo - Fora Menos de 5.5",
-    "Escanteios 1ºTempo - Mais de 1.5", "Escanteios 1ºTempo - Mais de 2.5", "Escanteios 1ºTempo - Mais de 3.5", "Escanteios 1ºTempo - Mais de 4.5", "Escanteios 1ºTempo - Mais de 5.5", "Escanteios 1ºTempo - Mais de 6.5", "Escanteios 1ºTempo - Mais de 7.5",
-    "Fora - Mais de 0.5 gols", "Fora - Mais de 1.5 gols", "Fora - Mais de 2.5 gols", "Fora - Mais de 3.5 gols", "Fora - Mais de 4.5 gols",
-    "Fora - Menos de 0.5 gols", "Fora - Menos de 1.5 gols", "Fora - Menos de 2.5 gols", "Fora - Menos de 3.5 gols", "Fora - Menos de 4.5 gols",
-    "Futebol - Personalizada",
-    "Handicap Asiático Casa -0.5", "Handicap Asiático Casa -0.75", "Handicap Asiático Casa -1.0", "Handicap Asiático Casa -1.25", "Handicap Asiático Casa -1.5", "Handicap Asiático Casa -1.75", "Handicap Asiático Casa -2.0", "Handicap Asiático Casa -2.25", "Handicap Asiático Casa -2.5", "Handicap Asiático Casa -2.75", "Handicap Asiático Casa -3.0", "Handicap Asiático Casa -3.25", "Handicap Asiático Casa -3.5", "Handicap Asiático Casa -3.75", "Handicap Asiático Casa -4.0", "Handicap Asiático Casa -4.25", "Handicap Asiático Casa -4.5", "Handicap Asiático Casa -4.75", "Handicap Asiático Casa -5.0",
-    "Handicap Asiático Casa +0.5", "Handicap Asiático Casa +0.75", "Handicap Asiático Casa +1.0", "Handicap Asiático Casa +1.25", "Handicap Asiático Casa +1.5", "Handicap Asiático Casa +1.75", "Handicap Asiático Casa +2.0", "Handicap Asiático Casa +2.25", "Handicap Asiático Casa +2.5", "Handicap Asiático Casa +2.75", "Handicap Asiático Casa +3.0", "Handicap Asiático Casa +3.25", "Handicap Asiático Casa +3.5", "Handicap Asiático Casa +3.75", "Handicap Asiático Casa +4.0", "Handicap Asiático Casa +4.25", "Handicap Asiático Casa +4.5", "Handicap Asiático Casa +4.75", "Handicap Asiático Casa +5.0",
-    "Handicap Asiático Fora  -1.75", "Handicap Asiático Fora  +1.75", "Handicap Asiático Fora -0.5", "Handicap Asiático Fora -0.75", "Handicap Asiático Fora -1.0", "Handicap Asiático Fora -1.25", "Handicap Asiático Fora -1.5", "Handicap Asiático Fora -2.0", "Handicap Asiático Fora -2.25", "Handicap Asiático Fora -2.5", "Handicap Asiático Fora -2.75", "Handicap Asiático Fora -3.0", "Handicap Asiático Fora -3.25", "Handicap Asiático Fora -3.5", "Handicap Asiático Fora -3.75", "Handicap Asiático Fora -4.0", "Handicap Asiático Fora -4.25", "Handicap Asiático Fora -4.5", "Handicap Asiático Fora -4.75", "Handicap Asiático Fora -5.0",
-    "Handicap Asiático Fora +0.5", "Handicap Asiático Fora +0.75", "Handicap Asiático Fora +1.0", "Handicap Asiático Fora +1.25", "Handicap Asiático Fora +1.5", "Handicap Asiático Fora +2.0", "Handicap Asiático Fora +2.25", "Handicap Asiático Fora +2.5", "Handicap Asiático Fora +2.75", "Handicap Asiático Fora +3.0", "Handicap Asiático Fora +3.25", "Handicap Asiático Fora +3.5", "Handicap Asiático Fora +3.75", "Handicap Asiático Fora +4.0", "Handicap Asiático Fora +4.25", "Handicap Asiático Fora +4.5", "Handicap Asiático Fora +4.75", "Handicap Asiático Fora +5.0",
-    "Handicap Casa -1", "Handicap Casa -2", "Handicap Casa -3", "Handicap Casa -4", "Handicap Casa -5", "Handicap Casa -6", "Handicap Casa -7", "Handicap Casa -8", "Handicap Casa -9",
-    "Handicap Casa +1", "Handicap Casa +2", "Handicap Casa +3", "Handicap Casa +4", "Handicap Casa +5", "Handicap Casa +6", "Handicap Casa +7", "Handicap Casa +8", "Handicap Casa +9",
-    "Handicap Fora -1", "Handicap Fora -2", "Handicap Fora -3", "Handicap Fora -4", "Handicap Fora -5", "Handicap Fora -6", "Handicap Fora -7", "Handicap Fora -8", "Handicap Fora -9",
-    "Handicap Fora +1", "Handicap Fora +2", "Handicap Fora +3", "Handicap Fora +4", "Handicap Fora +5", "Handicap Fora +6", "Handicap Fora +7", "Handicap Fora +8", "Handicap Fora +9",
-    "Lay Favorito",
-    "Mais de 0.5 gols", "Mais de 1.5 gols", "Mais de 10.5 gols", "Mais de 2.5 gols", "Mais de 3.5 gols", "Mais de 4.5 gols", "Mais de 5.5 gols", "Mais de 6.5 gols", "Mais de 7.5 gols", "Mais de 8.5 gols", "Mais de 9.5 gols",
-    "Menos de 0.5 gols", "Menos de 1.5 gols", "Menos de 10.5 gols", "Menos de 2.5 gols", "Menos de 3.5 gols", "Menos de 4.5 gols", "Menos de 5.5 gols", "Menos de 6.5 gols", "Menos de 7.5 gols", "Menos de 8.5 gols", "Menos de 9.5 gols",
-    "Vôlei - 0x3", "Vôlei - 1x3", "Vôlei - 2x3", "Vôlei - 3 Sets", "Vôlei - 3x0", "Vôlei - 3x1", "Vôlei - 3x2", "Vôlei - 4 Sets", "Vôlei - 5 Sets", "Vôlei - Casa", "Vôlei - Fora",
-    "Vôlei - Handicap -1.5 Casa", "Vôlei - Handicap -1.5 Fora", "Vôlei - Handicap -2.5 Casa", "Vôlei - Handicap -2.5 Fora",
-    "Vôlei - Handicap +1.5 Casa", "Vôlei - Handicap +1.5 Fora", "Vôlei - Handicap +2.5 Casa", "Vôlei - Handicap +2.5 Fora",
-    "Vôlei - Mais Pontos", "Vôlei - Menos Pontos", "Vôlei - Personalizada",
-    "Vôlei - Vencedor 1º Set Casa", "Vôlei - Vencedor 1º Set Fora",
-    "Vôlei - Vencedor 2º Set Casa", "Vôlei - Vencedor 2º Set Fora",
-    "Vôlei - Vencedor 3º Set Casa", "Vôlei - Vencedor 3º Set Fora",
-    "Vôlei - Vencedor 4º Set Casa", "Vôlei - Vencedor 4º Set Fora",
-    "Vôlei - Vencedor 5º Set Casa", "Vôlei - Vencedor 5º Set Fora"
-  ].map((name, i) => {
-    let sportSlug = 'futebol';
-    if (name.startsWith('Basket -')) sportSlug = 'basquete';
-    if (name.startsWith('Vôlei -')) sportSlug = 'volei';
-    return { id: `mx${i + 1}`, sportSlug, name };
-  })
-]
-
-
 const loadMarkets = (): Market[] => {
-  try {
-    const stored = localStorage.getItem(MARKETS_KEY)
-    const storedMarkets: Market[] = stored ? JSON.parse(stored) : []
-    
-    // Sincronização automática: Adiciona itens padrões que não existem na lista atual
-    const existingNames = new Set(storedMarkets.map(m => m.name.toLowerCase()))
-    
-    const missingDefaults = DEFAULT_MARKETS.filter(dm => !existingNames.has(dm.name.toLowerCase()))
-    
-    if (missingDefaults.length > 0) {
-      const merged = [...storedMarkets, ...missingDefaults]
-      localStorage.setItem(MARKETS_KEY, JSON.stringify(merged))
-      return merged
-    }
-
-    if (!stored) {
-      localStorage.setItem(MARKETS_KEY, JSON.stringify(DEFAULT_MARKETS))
-      return DEFAULT_MARKETS
-    }
-    
-    return storedMarkets
-  } catch { return DEFAULT_MARKETS }
+  try { const s = localStorage.getItem(MARKETS_KEY); return s ? JSON.parse(s) : [] } catch { return [] }
 }
+
 
 const placeholders = [
   { title: 'Categorias', desc: 'Categorias e tags de dicas'      },
@@ -173,39 +67,118 @@ export const AdminCadastrosPage = () => {
   const [form,       setForm]       = useState(emptyForm)
   const [showPass,   setShowPass]   = useState(false)
   const [loading,    setLoading]    = useState(false)
+  const [seeding,    setSeeding]    = useState(false)
 
-  const saveSports = (updated: Sport[]) => {
-    setSports(updated)
-    localStorage.setItem(SPORTS_KEY, JSON.stringify(updated))
-    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Esportes atualizados', detail: `${updated.length} esportes na lista` })
+  // ── Carrega dados da API e atualiza localStorage como cache ─────────────────
+  const fetchAllFromAPI = async () => {
+    try {
+      const [sp, lgs, bms, mks] = await Promise.all([
+        sportsService.getAll(),
+        leaguesService.getAll(),
+        bookmakersService.getAll(),
+        marketsService.getAll(),
+      ])
+      setSports(sp);     localStorage.setItem(SPORTS_KEY, JSON.stringify(sp))
+      setLeagues(lgs);   localStorage.setItem(LEAGUES_KEY, JSON.stringify(lgs))
+      setBookmakers(bms);localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(bms))
+      setMarkets(mks);   localStorage.setItem(MARKETS_KEY, JSON.stringify(mks))
+    } catch {
+      // Se falhar, mantém os dados do localStorage (já carregados no estado inicial)
+    }
   }
 
-  const saveLeagues = (updated: League[]) => {
-    setLeagues(updated)
-    localStorage.setItem(LEAGUES_KEY, JSON.stringify(updated))
-    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Ligas atualizadas', detail: `${updated.length} ligas na lista` })
+  // ── Sincronizar Defaults → popula o banco com dados padrão ───────────────────
+  const handleSeed = async () => {
+    setSeeding(true)
+    try {
+      const result = await runSeed()
+      toast.success(`Dados padrão importados! ${result.sports} esportes, ${result.leagues} ligas, ${result.bookmakers} casas.`)
+      await fetchAllFromAPI()
+    } catch {
+      toast.error('Erro ao sincronizar dados padrão.')
+    } finally {
+      setSeeding(false)
+    }
   }
 
-  const saveBookmakers = (updated: Bookmaker[]) => {
-    setBookmakers(updated)
-    localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(updated))
-    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Casas de apostas atualizadas', detail: `${updated.length} casas na lista` })
+  // ── Callbacks para os modais (chamam a API e atualizam estado) ───────────────
+  const saveSports = async (updated: Sport[]) => {
+    // Detecta o que mudou (add/edit/delete) e chama a API correspondente
+    const addedItems   = updated.filter(u => !sports.find(s => s.id === u.id))
+    const removedItems = sports.filter(s => !updated.find(u => u.id === s.id))
+    const editedItems  = updated.filter(u => {
+      const orig = sports.find(s => s.id === u.id)
+      return orig && (orig.name !== u.name || orig.emoji !== u.emoji || orig.slug !== u.slug)
+    })
+    try {
+      for (const a of addedItems)  await sportsService.create({ name: a.name, emoji: a.emoji, slug: a.slug })
+      for (const d of removedItems) await sportsService.remove(d.id)
+      for (const e of editedItems)  await sportsService.update(e.id, { name: e.name, emoji: e.emoji, slug: e.slug })
+      const fresh = await sportsService.getAll()
+      setSports(fresh); localStorage.setItem(SPORTS_KEY, JSON.stringify(fresh))
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Esportes atualizados', detail: `${fresh.length} esportes` })
+    } catch { toast.error('Erro ao salvar esportes.') }
   }
 
-  const saveMarkets = (updated: Market[]) => {
-    setMarkets(updated)
-    localStorage.setItem(MARKETS_KEY, JSON.stringify(updated))
-    if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Mercados atualizados', detail: `${updated.length} mercados na lista` })
+  const saveLeagues = async (updated: League[]) => {
+    const addedItems   = updated.filter(u => !leagues.find(l => l.id === u.id))
+    const removedItems = leagues.filter(l => !updated.find(u => u.id === l.id))
+    const editedItems  = updated.filter(u => {
+      const orig = leagues.find(l => l.id === u.id)
+      return orig && (orig.name !== u.name || orig.category !== u.category)
+    })
+    try {
+      for (const a of addedItems)   await leaguesService.create({ name: a.name, category: a.category, featured: a.featured ?? false })
+      for (const d of removedItems) await leaguesService.remove(d.id)
+      for (const e of editedItems)  await leaguesService.update(e.id, { name: e.name, category: e.category, featured: e.featured ?? false })
+      const fresh = await leaguesService.getAll()
+      setLeagues(fresh); localStorage.setItem(LEAGUES_KEY, JSON.stringify(fresh))
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Ligas atualizadas', detail: `${fresh.length} ligas` })
+    } catch { toast.error('Erro ao salvar ligas.') }
   }
 
-  // Carrega contagem de usuários
+  const saveBookmakers = async (updated: Bookmaker[]) => {
+    const addedItems   = updated.filter(u => !bookmakers.find(b => b.id === u.id))
+    const removedItems = bookmakers.filter(b => !updated.find(u => u.id === b.id))
+    const editedItems  = updated.filter(u => {
+      const orig = bookmakers.find(b => b.id === u.id)
+      return orig && (orig.name !== u.name || orig.differential !== u.differential || orig.focus !== u.focus)
+    })
+    try {
+      for (const a of addedItems)   await bookmakersService.create({ name: a.name, differential: a.differential, focus: a.focus })
+      for (const d of removedItems) await bookmakersService.remove(d.id)
+      for (const e of editedItems)  await bookmakersService.update(e.id, { name: e.name, differential: e.differential, focus: e.focus })
+      const fresh = await bookmakersService.getAll()
+      setBookmakers(fresh); localStorage.setItem(BOOKMAKERS_KEY, JSON.stringify(fresh))
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Casas atualizadas', detail: `${fresh.length} casas` })
+    } catch { toast.error('Erro ao salvar casas.') }
+  }
+
+  const saveMarkets = async (updated: Market[]) => {
+    const addedItems   = updated.filter(u => !markets.find(m => m.id === u.id))
+    const removedItems = markets.filter(m => !updated.find(u => u.id === m.id))
+    const editedItems  = updated.filter(u => {
+      const orig = markets.find(m => m.id === u.id)
+      return orig && (orig.name !== u.name || orig.sportSlug !== u.sportSlug)
+    })
+    try {
+      for (const a of addedItems)   await marketsService.create({ name: a.name, sportSlug: a.sportSlug })
+      for (const d of removedItems) await marketsService.remove(d.id)
+      for (const e of editedItems)  await marketsService.update(e.id, { name: e.name, sportSlug: e.sportSlug })
+      const fresh = await marketsService.getAll()
+      setMarkets(fresh); localStorage.setItem(MARKETS_KEY, JSON.stringify(fresh))
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Mercados atualizados', detail: `${fresh.length} mercados` })
+    } catch { toast.error('Erro ao salvar mercados.') }
+  }
+
+  // Carrega contagem de usuários + dados da API
   const loadCount = () => {
     usersService.getAll()
       .then(users => setUserCount(users.length))
       .catch(() => setUserCount(0))
   }
 
-  useEffect(() => { loadCount() }, [])
+  useEffect(() => { loadCount(); fetchAllFromAPI() }, [])
 
   const set = (field: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -269,9 +242,22 @@ export const AdminCadastrosPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="font-display font-semibold text-white">{'Cadastros'}</h2>
-        <p className="text-xs text-slate-500 mt-0.5">{'Gerenciamento de tabelas base do sistema'}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="font-display font-semibold text-white">{'Cadastros'}</h2>
+          <p className="text-xs text-slate-500 mt-0.5">{'Gerenciamento de tabelas base do sistema'}</p>
+        </div>
+        {!isReadOnly && (
+          <button
+            onClick={handleSeed}
+            disabled={seeding}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600/20 border border-amber-600/40 text-amber-400 text-xs font-semibold hover:bg-amber-600/30 transition-all disabled:opacity-50"
+            title="Popula o banco com os dados padrão (esportes, ligas, casas)."
+          >
+            <RefreshCw size={13} className={seeding ? 'animate-spin' : ''} />
+            {seeding ? 'Sincronizando...' : 'Sincronizar Defaults'}
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

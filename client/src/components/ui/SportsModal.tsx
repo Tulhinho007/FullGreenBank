@@ -5,7 +5,7 @@ export interface Sport {
   id: string
   name: string
   emoji: string
-  slug?: string
+  slug: string
 }
 
 interface SportModalProps {
