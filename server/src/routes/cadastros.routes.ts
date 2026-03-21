@@ -379,26 +379,29 @@ router.post('/seed', authenticate, requireAdmin, async (_req, res) => {
       return { name, sportSlug }
     })
 
+    console.log('Seeding markets starting...')
     // Inserção em massa para performance (evita timeout)
-    await prisma.market.createMany({
+    const seedResult = await prisma.market.createMany({
       data: marketData,
       skipDuplicates: true
     })
-
-
+    console.log('Markets seed finished:', seedResult)
 
     const sportCounts = await prisma.sport.count()
     const leagueCounts = await prisma.league.count()
     const bmCounts = await prisma.bookmaker.count()
     const mkCounts = await prisma.market.count()
 
+    console.log('Final counts:', { sportCounts, leagueCounts, bmCounts, mkCounts })
+
     res.json({
       message: 'Seed executado com sucesso!',
-      sports: sportCounts,
-      leagues: leagueCounts,
-      bookmakers: bmCounts,
-      markets: mkCounts,
+      sports: Number(sportCounts),
+      leagues: Number(leagueCounts),
+      bookmakers: Number(bmCounts),
+      markets: Number(mkCounts),
     })
+
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Erro ao executar seed.' })

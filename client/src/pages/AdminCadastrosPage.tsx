@@ -89,9 +89,10 @@ export const AdminCadastrosPage = () => {
 
   // ── Sincronizar Defaults → popula o banco com dados padrão ───────────────────
   const handleSeed = async () => {
-    setSeeding(true)
+    setLoading(true)
     try {
       const result = await runSeed()
+      console.log('Seed result:', result)
       toast.success(`Dados padrão importados! ${result.sports} esportes, ${result.leagues} ligas, ${result.bookmakers} casas, ${result.markets} mercados.`)
       await fetchAllFromAPI()
     } catch {
