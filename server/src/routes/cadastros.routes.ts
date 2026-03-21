@@ -311,15 +311,84 @@ router.post('/seed', authenticate, requireAdmin, async (_req, res) => {
       if (!existing) await prisma.league.create({ data: l })
     }
 
+    const RAW_MARKETS = [
+      "Ambas Marcam",
+      "Asiático - Mais de 0.5 gols", "Asiático - Mais de 0.75 gols", "Asiático - Mais de 1.0 gols", "Asiático - Mais de 1.25 gols", "Asiático - Mais de 1.5 gols", "Asiático - Mais de 1.75 gols", "Asiático - Mais de 2.0 gols", "Asiático - Mais de 2.25 gols", "Asiático - Mais de 2.5 gols", "Asiático - Mais de 2.75 gols", "Asiático - Mais de 3.0 gols", "Asiático - Mais de 3.25 gols", "Asiático - Mais de 3.5 gols", "Asiático - Mais de 3.75 gols", "Asiático - Mais de 4.0 gols", "Asiático - Mais de 4.25 gols", "Asiático - Mais de 4.5 gols", "Asiático - Mais de 4.75 gols", "Asiático - Mais de 5.0 gols", "Asiático - Mais de 5.25 gols", "Asiático - Mais de 5.5 gols", "Asiático - Mais de 5.75 gols", "Asiático - Mais de 6.0 gols", "Asiático - Mais de 6.25 gols", "Asiático - Mais de 6.5 gols", "Asiático - Mais de 6.75 gols", "Asiático - Mais de 7.0 gols", "Asiático - Mais de 7.25 gols", "Asiático - Mais de 7.5 gols", "Asiático - Mais de 7.75 gols", "Asiático - Mais de 8.0 gols",
+      "Asiático - Menos  de 4.75 gols", "Asiático - Menos  de 6.5 gols", "Asiático - Menos  de 6.75 gols",
+      "Asiático - Menos de 0.5 gols", "Asiático - Menos de 0.75 gols", "Asiático - Menos de 1.0 gols", "Asiático - Menos de 1.25 gols", "Asiático - Menos de 1.5 gols", "Asiático - Menos de 1.75 gols", "Asiático - Menos de 2.0 gols", "Asiático - Menos de 2.25 gols", "Asiático - Menos de 2.5 gols", "Asiático - Menos de 2.75 gols", "Asiático - Menos de 3.0 gols", "Asiático - Menos de 3.25 gols", "Asiático - Menos de 3.5 gols", "Asiático - Menos de 3.75 gols", "Asiático - Menos de 4.0 gols", "Asiático - Menos de 4.25 gols", "Asiático - Menos de 4.5 gols", "Asiático - Menos de 5.0 gols", "Asiático - Menos de 5.25 gols", "Asiático - Menos de 5.5 gols", "Asiático - Menos de 5.75 gols", "Asiático - Menos de 6.0 gols", "Asiático - Menos de 6.25 gols", "Asiático - Menos de 7.0 gols", "Asiático - Menos de 7.25 gols", "Asiático - Menos de 7.5 gols", "Asiático - Menos de 7.75 gols", "Asiático - Menos de 8.0 gols",
+      "Back Favorito",
+      "Basket - Casa", "Basket - Fora", "Basket - Handicap Mais Pontos Casa", "Basket - Handicap Mais Pontos Fora", "Basket - Handicap Menos Pontos Casa", "Basket - Handicap Menos Pontos Fora", "Basket - Mais Total Pontos", "Basket - Menos Total Pontos", "Basket - Personalizada",
+      "Basket - Vencedor 1º Intervalo Casa", "Basket - Vencedor 1º Intervalo Empate", "Basket - Vencedor 1º Intervalo Fora",
+      "Basket - Vencedor 1º Quarto Casa", "Basket - Vencedor 1º Quarto Empate", "Basket - Vencedor 1º Quarto Fora",
+      "Basket - Vencedor 2º Intervalo Casa", "Basket - Vencedor 2º Intervalo Empate", "Basket - Vencedor 2º Intervalo Fora",
+      "Basket - Vencedor 2º Quarto Casa", "Basket - Vencedor 2º Quarto Empate", "Basket - Vencedor 2º Quarto Fora",
+      "Basket - Vencedor 3º Quarto Casa", "Basket - Vencedor 3º Quarto Empate", "Basket - Vencedor 3º Quarto Fora",
+      "Basket - Vencedor 4º Quarto Casa", "Basket - Vencedor 4º Quarto Empate", "Basket - Vencedor 4º Quarto Fora",
+      "Cartões - Ambas Recebem 1 - Não", "Cartões - Ambas Recebem 1 - Sim", "Cartões - Ambas Recebem 2 ou mais - Não", "Cartões - Ambas Recebem 2 ou mais - Sim",
+      "Cartões - Casa +", "Cartões - Empate", "Cartões - Fora +",
+      "Cartões - Mais de 1.5", "Cartões - Mais de 2.5", "Cartões - Mais de 3.5", "Cartões - Mais de 4.5", "Cartões - Mais de 5.5", "Cartões - Mais de 6.5", "Cartões - Mais de 7.5", "Cartões - Mais de 8.5", "Cartões - Mais de 9.5",
+      "Cartões - Menos de 1.5", "Cartões - Menos de 2.5", "Cartões - Menos de 3.5", "Cartões - Menos de 4.5", "Cartões - Menos de 5.5", "Cartões - Menos de 6.5", "Cartões - Menos de 7.5", "Cartões - Menos de 8.5", "Cartões - Menos de 9.5",
+      "Cartões Vermelhos - Mais de 0.5", "Cartões Vermelhos - Mais de 1.5", "Cartões Vermelhos - Menos de 0.5", "Cartões Vermelhos - Menos de 1.5",
+      "Casa - Mais de 0.5 gols", "Casa - Mais de 1.5 gols", "Casa - Mais de 2.5 gols", "Casa - Mais de 3.5 gols", "Casa - Mais de 4.5 gols",
+      "Casa - Menos de 0.5 gols", "Casa - Menos de 1.5 gols", "Casa - Menos de 2.5 gols", "Casa - Menos de 3.5 gols", "Casa - Menos de 4.5 gols",
+      "DC - Casa ou Empate", "DC - Casa ou Fora", "DC - Fora ou Empate",
+      "Escanteios - Casa Mais de 1.5", "Escanteios - Casa Mais de 2.5", "Escanteios - Casa Mais de 3.5", "Escanteios - Casa Mais de 4.5", "Escanteios - Casa Mais de 5.5", "Escanteios - Casa Mais de 6.5", "Escanteios - Casa Mais de 7.5", "Escanteios - Casa Mais de 8.5", "Escanteios - Casa Mais de 9.5",
+      "Escanteios - Casa Menos de 1.5", "Escanteios - Casa Menos de 2.5", "Escanteios - Casa Menos de 3.5", "Escanteios - Casa Menos de 4.5", "Escanteios - Casa Menos de 5.5", "Escanteios - Casa Menos de 6.5", "Escanteios - Casa Menos de 7.5", "Escanteios - Casa Menos de 8.5", "Escanteios - Casa Menos de 9.5",
+      "Escanteios - Casa+", "Escanteios - Empate",
+      "Escanteios - Fora Mais de 1.5", "Escanteios - Fora Mais de 2.5", "Escanteios - Fora Mais de 3.5", "Escanteios - Fora Mais de 4.5", "Escanteios - Fora Mais de 5.5", "Escanteios - Fora Mais de 6.5", "Escanteios - Fora Mais de 7.5", "Escanteios - Fora Mais de 8.5", "Escanteios - Fora Mais de 9.5",
+      "Escanteios - Fora Menos de 1.5", "Escanteios - Fora Menos de 2.5", "Escanteios - Fora Menos de 3.5", "Escanteios - Fora Menos de 4.5", "Escanteios - Fora Menos de 5.5", "Escanteios - Fora Menos de 6.5", "Escanteios - Fora Menos de 7.5", "Escanteios - Fora Menos de 8.5", "Escanteios - Fora Menos de 9.5",
+      "Escanteios - Fora+",
+      "Escanteios - Mais de 10.5", "Escanteios - Mais de 11.5", "Escanteios - Mais de 12.5", "Escanteios - Mais de 13.5", "Escanteios - Mais de 14.5", "Escanteios - Mais de 15.5", "Escanteios - Mais de 2.5", "Escanteios - Mais de 3.5", "Escanteios - Mais de 4.5", "Escanteios - Mais de 5.5", "Escanteios - Mais de 6.5", "Escanteios - Mais de 7.5", "Escanteios - Mais de 8.5", "Escanteios - Mais de 9.5",
+      "Escanteios - Menos de 10.5", "Escanteios - Menos de 11.5", "Escanteios - Menos de 12.5", "Escanteios - Menos de 13.5", "Escanteios - Menos de 14.5", "Escanteios - Menos de 15.5", "Escanteios - Menos de 2.5", "Escanteios - Menos de 3.5", "Escanteios - Menos de 4.5", "Escanteios - Menos de 5.5", "Escanteios - Menos de 6.5", "Escanteios - Menos de 7.5", "Escanteios - Menos de 8.5", "Escanteios - Menos de 9.5",
+      "Escanteios - Race 1 - Casa", "Escanteios - Race 1 - Fora", "Escanteios - Race 2 - Casa", "Escanteios - Race 2 - Fora", "Escanteios - Race 3 - Casa", "Escanteios - Race 3 - Fora", "Escanteios - Race 4 - Casa", "Escanteios - Race 4 - Fora", "Escanteios - Race 5 - Casa", "Escanteios - Race 5 - Fora", "Escanteios - Race 6 - Casa", "Escanteios - Race 6 - Fora", "Escanteios - Race 7 - Casa", "Escanteios - Race 7 - Fora", "Escanteios - Race 8 - Casa", "Escanteios - Race 8 - Fora", "Escanteios - Race 9 - Casa", "Escanteios - Race 9 - Fora",
+      "Escanteios 1ºTempo - Casa Mais de 1.5", "Escanteios 1ºTempo - Casa Mais de 2.5", "Escanteios 1ºTempo - Casa Mais de 3.5", "Escanteios 1ºTempo - Casa Mais de 4.5", "Escanteios 1ºTempo - Casa Mais de 5.5",
+      "Escanteios 1ºTempo - Casa Menos de 1.5", "Escanteios 1ºTempo - Casa Menos de 2.5", "Escanteios 1ºTempo - Casa Menos de 3.5", "Escanteios 1ºTempo - Casa Menos de 4.5", "Escanteios 1ºTempo - Casa Menos de 5.5",
+      "Escanteios 1ºTempo - Fora Mais de 1.5", "Escanteios 1ºTempo - Fora Mais de 2.5", "Escanteios 1ºTempo - Fora Mais de 3.5", "Escanteios 1ºTempo - Fora Mais de 4.5", "Escanteios 1ºTempo - Fora Mais de 5.5",
+      "Escanteios 1ºTempo - Fora Menos de 1.5", "Escanteios 1ºTempo - Fora Menos de 2.5", "Escanteios 1ºTempo - Fora Menos de 3.5", "Escanteios 1ºTempo - Fora Menos de 4.5", "Escanteios 1ºTempo - Fora Menos de 5.5",
+      "Escanteios 1ºTempo - Mais de 1.5", "Escanteios 1ºTempo - Mais de 2.5", "Escanteios 1ºTempo - Mais de 3.5", "Escanteios 1ºTempo - Mais de 4.5", "Escanteios 1ºTempo - Mais de 5.5", "Escanteios 1ºTempo - Mais de 6.5", "Escanteios 1ºTempo - Mais de 7.5",
+      "Fora - Mais de 0.5 gols", "Fora - Mais de 1.5 gols", "Fora - Mais de 2.5 gols", "Fora - Mais de 3.5 gols", "Fora - Mais de 4.5 gols",
+      "Fora - Menos de 0.5 gols", "Fora - Menos de 1.5 gols", "Fora - Menos de 2.5 gols", "Fora - Menos de 3.5 gols", "Fora - Menos de 4.5 gols",
+      "Futebol - Personalizada",
+      "Handicap Asiático Casa -0.5", "Handicap Asiático Casa -0.75", "Handicap Asiático Casa -1.0", "Handicap Asiático Casa -1.25", "Handicap Asiático Casa -1.5", "Handicap Asiático Casa -1.75", "Handicap Asiático Casa -2.0", "Handicap Asiático Casa -2.25", "Handicap Asiático Casa -2.5", "Handicap Asiático Casa -2.75", "Handicap Asiático Casa -3.0", "Handicap Asiático Casa -3.25", "Handicap Asiático Casa -3.5", "Handicap Asiático Casa -3.75", "Handicap Asiático Casa -4.0", "Handicap Asiático Casa -4.25", "Handicap Asiático Casa -4.5", "Handicap Asiático Casa -4.75", "Handicap Asiático Casa -5.0",
+      "Handicap Asiático Casa +0.5", "Handicap Asiático Casa +0.75", "Handicap Asiático Casa +1.0", "Handicap Asiático Casa +1.25", "Handicap Asiático Casa +1.5", "Handicap Asiático Casa +1.75", "Handicap Asiático Casa +2.0", "Handicap Asiático Casa +2.25", "Handicap Asiático Casa +2.5", "Handicap Asiático Casa +2.75", "Handicap Asiático Casa +3.0", "Handicap Asiático Casa +3.25", "Handicap Asiático Casa +3.5", "Handicap Asiático Casa +3.75", "Handicap Asiático Casa +4.0", "Handicap Asiático Casa +4.25", "Handicap Asiático Casa +4.5", "Handicap Asiático Casa +4.75", "Handicap Asiático Casa +5.0",
+      "Handicap Asiático Fora  -1.75", "Handicap Asiático Fora  +1.75", "Handicap Asiático Fora -0.5", "Handicap Asiático Fora -0.75", "Handicap Asiático Fora -1.0", "Handicap Asiático Fora -1.25", "Handicap Asiático Fora -1.5", "Handicap Asiático Fora -2.0", "Handicap Asiático Fora -2.25", "Handicap Asiático Fora -2.5", "Handicap Asiático Fora -2.75", "Handicap Asiático Fora -3.0", "Handicap Asiático Fora -3.25", "Handicap Asiático Fora -3.5", "Handicap Asiático Fora -3.75", "Handicap Asiático Fora -4.0", "Handicap Asiático Fora -4.25", "Handicap Asiático Fora -4.5", "Handicap Asiático Fora -4.75", "Handicap Asiático Fora -5.0",
+      "Handicap Asiático Fora +0.5", "Handicap Asiático Fora +0.75", "Handicap Asiático Fora +1.0", "Handicap Asiático Fora +1.25", "Handicap Asiático Fora +1.5", "Handicap Asiático Fora +2.0", "Handicap Asiático Fora +2.25", "Handicap Asiático Fora +2.5", "Handicap Asiático Fora +2.75", "Handicap Asiático Fora +3.0", "Handicap Asiático Fora +3.25", "Handicap Asiático Fora +3.5", "Handicap Asiático Fora +3.75", "Handicap Asiático Fora +4.0", "Handicap Asiático Fora +4.25", "Handicap Asiático Fora +4.5", "Handicap Asiático Fora +4.75", "Handicap Asiático Fora +5.0",
+      "Handicap Casa -1", "Handicap Casa -2", "Handicap Casa -3", "Handicap Casa -4", "Handicap Casa -5", "Handicap Casa -6", "Handicap Casa -7", "Handicap Casa -8", "Handicap Casa -9",
+      "Handicap Casa +1", "Handicap Casa +2", "Handicap Casa +3", "Handicap Casa +4", "Handicap Casa +5", "Handicap Casa +6", "Handicap Casa +7", "Handicap Casa +8", "Handicap Casa +9",
+      "Handicap Fora -1", "Handicap Fora -2", "Handicap Fora -3", "Handicap Fora -4", "Handicap Fora -5", "Handicap Fora -6", "Handicap Fora -7", "Handicap Fora -8", "Handicap Fora -9",
+      "Handicap Fora +1", "Handicap Fora +2", "Handicap Fora +3", "Handicap Fora +4", "Handicap Fora +5", "Handicap Fora +6", "Handicap Fora +7", "Handicap Fora +8", "Handicap Fora +9",
+      "Lay Favorito",
+      "Mais de 0.5 gols", "Mais de 1.5 gols", "Mais de 10.5 gols", "Mais de 2.5 gols", "Mais de 3.5 gols", "Mais de 4.5 gols", "Mais de 5.5 gols", "Mais de 6.5 gols", "Mais de 7.5 gols", "Mais de 8.5 gols", "Mais de 9.5 gols",
+      "Menos de 0.5 gols", "Menos de 1.5 gols", "Menos de 10.5 gols", "Menos de 2.5 gols", "Menos de 3.5 gols", "Menos de 4.5 gols", "Menos de 5.5 gols", "Menos de 6.5 gols", "Menos de 7.5 gols", "Menos de 8.5 gols", "Menos de 9.5 gols",
+      "Vôlei - 0x3", "Vôlei - 1x3", "Vôlei - 2x3", "Vôlei - 3 Sets", "Vôlei - 3x0", "Vôlei - 3x1", "Vôlei - 3x2", "Vôlei - 4 Sets", "Vôlei - 5 Sets", "Vôlei - Casa", "Vôlei - Fora",
+      "Vôlei - Handicap -1.5 Casa", "Vôlei - Handicap -1.5 Fora", "Vôlei - Handicap -2.5 Casa", "Vôlei - Handicap -2.5 Fora",
+      "Vôlei - Handicap +1.5 Casa", "Vôlei - Handicap +1.5 Fora", "Vôlei - Handicap +2.5 Casa", "Vôlei - Handicap +2.5 Fora",
+      "Vôlei - Mais Pontos", "Vôlei - Menos Pontos", "Vôlei - Personalizada",
+      "Vôlei - Vencedor 1º Set Casa", "Vôlei - Vencedor 1º Set Fora",
+      "Vôlei - Vencedor 2º Set Casa", "Vôlei - Vencedor 2º Set Fora",
+      "Vôlei - Vencedor 3º Set Casa", "Vôlei - Vencedor 3º Set Fora",
+      "Vôlei - Vencedor 4º Set Casa", "Vôlei - Vencedor 4º Set Fora",
+      "Vôlei - Vencedor 5º Set Casa", "Vôlei - Vencedor 5º Set Fora"
+    ]
+    for (const name of RAW_MARKETS) {
+      let sportSlug = 'futebol'
+      if (name.startsWith('Basket -')) sportSlug = 'basquete'
+      if (name.startsWith('Vôlei -')) sportSlug = 'volei'
+      const existing = await prisma.market.findFirst({ where: { name } })
+      if (!existing) await prisma.market.create({ data: { name, sportSlug } })
+    }
+
     const sportCounts = await prisma.sport.count()
     const leagueCounts = await prisma.league.count()
     const bmCounts = await prisma.bookmaker.count()
+    const mkCounts = await prisma.market.count()
 
     res.json({
       message: 'Seed executado com sucesso!',
       sports: sportCounts,
       leagues: leagueCounts,
       bookmakers: bmCounts,
+      markets: mkCounts,
     })
   } catch (err) {
     console.error(err)
