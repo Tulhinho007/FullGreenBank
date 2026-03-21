@@ -4,6 +4,7 @@ import { usersService } from '../../services/users.service'
 
 interface Saque {
   id: string
+  userId: string
   date: string
   userName: string
   grossValue: number
@@ -29,7 +30,7 @@ interface User {
 
 export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaqueModalProps) => {
   const [users, setUsers] = useState<User[]>([])
-  const [userName, setUserName] = useState('')
+  const [userId, setUserId] = useState('')
   const [date, setDate] = useState('')
   const [grossValue, setGrossValue] = useState<number | ''>('')
   const [comissionPercent, setComissionPercent] = useState<number | ''>('')
@@ -47,7 +48,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
 
   useEffect(() => {
     if (initialData && isOpen) {
-      setUserName(initialData.userName)
+      setUserId(initialData.userId)
       // Extrair YY-MM-DDTHH:MM local format per input type="datetime-local"
       const d = new Date(initialData.date)
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
@@ -59,7 +60,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
       setStatus(initialData.status)
       setRejectionReason(initialData.rejectionReason || '')
     } else if (isOpen) {
-      setUserName('')
+      setUserId('')
       const d = new Date()
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
       setDate(d.toISOString().slice(0, 16))
@@ -81,10 +82,13 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!userName || !date || grossValue === '') return
+    if (!userId || !date || grossValue === '') return
+
+    const selectedUser = users.find(u => u.id === userId)
 
     onSave({
-      userName,
+      userId,
+      userName: selectedUser?.name || '',
       date: new Date(date).toISOString(),
       grossValue: Number(grossValue),
       comissionPercent: Number(comissionPercent),
@@ -119,13 +123,13 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
               <label className="label">Usuário</label>
               <select 
                 required
-                value={userName}
-                onChange={e => setUserName(e.target.value)}
+                value={userId}
+                onChange={e => setUserId(e.target.value)}
                 className="input-field bg-slate-50 dark:bg-surface-300"
               >
                 <option value="">Selecione o usuário...</option>
                 {users.map(u => (
-                  <option key={u.id} value={u.name}>{u.name} ({u.email})</option>
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                 ))}
               </select>
             </div>

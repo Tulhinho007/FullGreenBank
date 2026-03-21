@@ -38,6 +38,8 @@ app.use(
   })
 );
 
+import { saquesRoutes } from './routes/saques.routes';
+
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.use('/api/auth',  authRoutes);
 app.use('/api/tips',  tipsRoutes);
@@ -47,6 +49,7 @@ app.use('/api/banca-contratos', bancaContratosRoutes);
 app.use('/api/gestao-banca', gestaoBancaRoutes);
 app.use('/api/support',     supportRoutes);
 app.use('/api/solicitacoes', solicitacoesRoutes);
+app.use('/api/saques', saquesRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

@@ -6,12 +6,14 @@ import {
 import { formatCurrency as fmt } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import { NovoSaqueModal } from '../components/ui/NovoSaqueModal'
+import { saquesService } from '../services/saques.service'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 export interface Saque {
   id: string
+  userId: string
   date: string
   userName: string
   grossValue: number
@@ -24,7 +26,24 @@ export interface Saque {
 
 export const HistoricoSaquesPage = () => {
   const [saques, setSaques] = useState<Saque[]>([])
-  
+  const [isLoading, setIsLoading] = useState(true)
+
+  const loadSaques = async () => {
+    try {
+      setIsLoading(true)
+      const data = await saquesService.getAll()
+      setSaques(data)
+    } catch (e) {
+      toast.error('Erro ao carregar o histórico de saques.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadSaques()
+  }, [])
+
   // Filtros
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('Todos')
@@ -89,24 +108,33 @@ export const HistoricoSaquesPage = () => {
   })
 
   // Ações CRUD
-  const handleSaveSaque = (saqueData: Omit<Saque, 'id'>) => {
-    if (saqueToEdit) {
-      setSaques(prev => prev.map(s => s.id === saqueToEdit.id ? { ...saqueData, id: s.id } : s))
-      toast.success('Saque atualizado com sucesso!')
-    } else {
-      const novoSaque: Saque = {
-        ...saqueData,
-        id: `sq-${Math.random().toString(36).substring(2, 9)}`
+  const handleSaveSaque = async (saqueData: any) => {
+    try {
+      if (saqueToEdit) {
+        // Atualiza na API
+        const updated = await saquesService.update(saqueToEdit.id, saqueData)
+        setSaques(prev => prev.map(s => s.id === saqueToEdit.id ? updated : s))
+        toast.success('Saque atualizado com sucesso!')
+      } else {
+        // Cria na API
+        const novoSaque = await saquesService.create(saqueData)
+        setSaques([novoSaque, ...saques])
+        toast.success('Novo saque registrado!')
       }
-      setSaques([novoSaque, ...saques])
-      toast.success('Novo saque registrado!')
+    } catch (e) {
+      toast.error('Erro ao processar saque.')
     }
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if(window.confirm('Tem certeza que deseja excluir permanentemente este saque?')) {
-      setSaques(prev => prev.filter(s => s.id !== id))
-      toast.success('Saque removido.')
+      try {
+        await saquesService.delete(id)
+        setSaques(prev => prev.filter(s => s.id !== id))
+        toast.success('Saque removido.')
+      } catch (e) {
+        toast.error('Erro ao remover saque.')
+      }
     }
   }
 
@@ -284,9 +312,13 @@ export const HistoricoSaquesPage = () => {
           <span>Status</span>
           <span className="text-right print:hidden">Ações</span>
         </div>
-
-        {filteredSaques.length === 0 ? (
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
+            <Loader2 size={40} className="text-green-500 animate-spin mb-4" />
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Carregando Saques...</h3>
+          </div>
+        ) : filteredSaques.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center print:hidden">
             <div className="w-16 h-16 bg-slate-50 dark:bg-surface-300/50 rounded-full flex items-center justify-center mb-4 border border-slate-200 dark:border-surface-300">
               <Banknote className="text-slate-300 dark:text-slate-500" size={24} />
             </div>

@@ -53,6 +53,7 @@ model User {
   bancaContratos       BancaContrato[]
   bancaCarteiras       BancaCarteira[]
   solicitacoesInv      SolicitacaoInvestimento[]
+  saques               Saque[]
 
   @@map("users")
 }
@@ -181,4 +182,21 @@ model SolicitacaoInvestimento {
   observacoes  String?  @db.Text
 
   @@map("solicitacoes_investimento")
+}
+
+model Saque {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grossValue       Float
+  comissionPercent Float
+  netValue         Float
+  method           String
+  status           String   @default("PENDENTE") // CONCLUIDO, PENDENTE, PROCESSANDO, REJEITADO
+  rejectionReason  String?
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("saques")
 }
