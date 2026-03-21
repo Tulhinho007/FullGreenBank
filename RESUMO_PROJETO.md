@@ -1,6 +1,6 @@
 # 📘 Full Green Bank — Resumo Completo do Projeto
 
-> Documento gerado em: 20/03/2026 (Atualizado)
+> Documento gerado em: 21/03/2026 (Atualizado)
 > Repositório: [github.com/Tulhinho007/FullGreenBank](https://github.com/Tulhinho007/FullGreenBank)
 
 ---
@@ -258,11 +258,14 @@ notes           String?    -- histórico de pagamentos em texto
 - **Excel & PDF Tabular**: Implementação robusta das bibliotecas `xlsx` e `jspdf` via script para a exportação fidedigna das tabelas baseadas inteiramente nas queries/filtros ativos da tela.
 - **Impressão Expandida (Print Mode)**: Injeção de regras CSS Tailwind exclusivas (`print:hidden` e `print:border-none`) na Sidebar e em componentes de tela, permitindo que a funcionalidade "Imprimir Tabela" ocupe 100% da área do PDF emitido pelo sistema operacional.
 
-### 20. Dados Dinâmicos e Padronização Sistêmica
-- **Filtros e Selects Automatizados**: Substituição manual de inputs textuais propensos a erros corporativos por menus de seleção (`<select>`) vinculados dinamicamente via API (ex: Modal de Saque buscando usuários registrados via HTTP request de backend).
-- **Lista Unificada de Métodos**: Adoção total da lista master de 8 opções financeiras (Pix, Transferência DOC/TED, Boleto, PayPal, Cartões (Visa/Mastercard), Criptomoedas, PicPay e Outros) espelhada nos filtros das páginas de Histórico, Transações e Operações.
+### 21. Persistência de Cadastros no PostgreSQL (Infra)
+- **Migração de Dados**: Esportes, Ligas, Casas, Mercados e Times Personalizados movidos do `localStorage` para tabelas reais no banco de dados.
+- **Sincronização**: Novo botão "Sincronizar Defaults" para carga inicial de dados via endpoint `/api/cadastros/seed`.
+- **Times Compartilhados**: Times cadastrados por administradores agora são visíveis para todos os usuários do sistema.
+- **UX**: Fallback automático para `localStorage` enquanto a API carrega, garantindo navegação fluida.
 
 ---
+
 
 ## 📡 API — Principais Endpoints
 
@@ -279,6 +282,10 @@ notes           String?    -- histórico de pagamentos em texto
 | GET | `/api/tips` | Autenticado | Listar tips |
 | POST | `/api/tips` | ADMIN/MASTER | Criar tip |
 | GET | `/api/banca/contratos` | Autenticado | Contratos de banca |
+| GET | `/api/cadastros/sports` | Autenticado | Listar esportes |
+| POST | `/api/cadastros/seed` | ADMIN/MASTER | Popular dados padrão |
+| GET | `/api/cadastros/custom-teams` | Autenticado | Listar times personalizados |
+
 
 ---
 
@@ -313,3 +320,5 @@ VITE_API_URL=        # URL base da API (ex: https://full-green-bank-backend.verc
 | `f1cba9a` | feat: advanced edit mode for multi-markets and multiple tickets |
 | `106f0fb` | style(tips): perfect pixel redesign of complex ticket modals |
 | `2a666be` | feat: generate historical datatable with modular types |
+| `bc56f0f` | feat: persistência de dados de cadastros no PostgreSQL |
+
