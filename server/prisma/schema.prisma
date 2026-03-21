@@ -54,6 +54,7 @@ model User {
   bancaCarteiras    BancaCarteira[]
   solicitacoesInv   SolicitacaoInvestimento[]
   saques            Saque[]
+  permissions       UserPermission[]
 
   @@map("users")
 }
@@ -266,4 +267,20 @@ model FutvoleiMatch {
   createdAt    DateTime  @default(now())
 
   @@map("futvolei_matches")
+}
+model UserPermission {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module     String
+  pageName   String
+  pageLabel  String
+  canView    Boolean  @default(false)
+  canEdit    Boolean  @default(false)
+  canDelete  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, pageName])
+  @@map("user_permissions")
 }

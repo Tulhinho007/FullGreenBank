@@ -34,12 +34,20 @@ import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
 import { HistoricoSaquesPage } from './pages/HistoricoSaquesPage'
 import { ArenaClecioPage } from './pages/ArenaClecioPage'
+import { PermissionsProvider } from './contexts/PermissionsContext'
+import { AdminPermissoesPage } from './pages/AdminPermissoesPage'
+
 
 
 function App() {
   return (
     <AuthProvider>
     <ThemeProvider>
+      <PermissionsProvider>
+        <Routes>
+        ...
+      </Routes>
+      </PermissionsProvider>
       <Routes>
         {/* Public */}
         <Route path="/login"    element={<LoginPage />} />
@@ -112,6 +120,14 @@ function App() {
             }
           />
           <Route
+            path="admin/permissoes"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+                <AdminPermissoesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="financeiro/pagamentos"
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
@@ -155,6 +171,7 @@ function App() {
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
       </Routes>
     </ThemeProvider>
     </AuthProvider>

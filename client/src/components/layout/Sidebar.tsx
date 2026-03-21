@@ -182,13 +182,15 @@ export const Sidebar = () => {
               { label: 'Histórico de Saques', to: '/financeiro/saques' },
               { label: 'Transações', to: '/financeiro/transacoes' },
               { label: 'Fluxo de Caixa', placeholder: true }
+              
             ]} />
             <NavItem icon={<Settings size={16} />} label="Sistema" children={[
               { label: 'Usuários', to: '/admin/users' },
               { label: 'Cadastros', to: '/admin/cadastros' },
               { label: 'Solicitações (Aportes)', to: '/admin/solicitacoes' },
               { label: 'Suporte & Feedback', to: '/admin/support' },
-              { label: 'Logs / Eventos', to: '/admin/log' }
+              { label: 'Logs / Eventos', to: '/admin/log' },
+              { label: 'Controle de Acesso', to: '/admin/permissoes' }
             ]} />
           </>
         )}

@@ -13,6 +13,7 @@ import supportRoutes from './routes/support.routes';
 import solicitacoesRoutes from './routes/solicitacoes.routes';
 import cadastrosRoutes from './routes/cadastros.routes';
 import futvoleiRoutes from './routes/futvolei.routes';
+import permissionsRoutes from './routes/permissions.routes'
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/solicitacoes', solicitacoesRoutes);
 app.use('/api/saques', saquesRoutes);
 app.use('/api/cadastros', cadastrosRoutes);
 app.use('/api/futvolei', futvoleiRoutes);
+app.use('/api/permissions', permissionsRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
