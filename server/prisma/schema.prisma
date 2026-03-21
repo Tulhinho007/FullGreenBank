@@ -234,7 +234,8 @@ model Market {
   id        String @id @default(cuid())
   name      String
   sportSlug String @default("futebol")
-
+  
+  @@unique([name, sportSlug])
   @@map("markets")
 }
 

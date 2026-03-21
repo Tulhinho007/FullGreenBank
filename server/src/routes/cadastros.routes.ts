@@ -336,7 +336,7 @@ router.post('/seed', authenticate, requireAdmin, async (_req, res) => {
       "Escanteios - Casa Menos de 1.5", "Escanteios - Casa Menos de 2.5", "Escanteios - Casa Menos de 3.5", "Escanteios - Casa Menos de 4.5", "Escanteios - Casa Menos de 5.5", "Escanteios - Casa Menos de 6.5", "Escanteios - Casa Menos de 7.5", "Escanteios - Casa Menos de 8.5", "Escanteios - Casa Menos de 9.5",
       "Escanteios - Casa+", "Escanteios - Empate",
       "Escanteios - Fora Mais de 1.5", "Escanteios - Fora Mais de 2.5", "Escanteios - Fora Mais de 3.5", "Escanteios - Fora Mais de 4.5", "Escanteios - Fora Mais de 5.5", "Escanteios - Fora Mais de 6.5", "Escanteios - Fora Mais de 7.5", "Escanteios - Fora Mais de 8.5", "Escanteios - Fora Mais de 9.5",
-      "Escanteios - Fora Menos de 1.5", "Escanteios - Fora Menos de 2.5", "Escanteios - Fora Menos de 3.5", "Escanteios - Fora Menos de 4.5", "Escanteios - Fora Menos de 5.5", "Escanteios - Fora Menos de 6.5", "Escanteios - Fora Menos de 7.5", "Escanteios - Fora Menos de 8.5", "Escanteios - Fora Menos de 9.5",
+      "Escanteios - Fora Menos de 1.5", "Escanteios - Fora Menos de 2.5", "Escanteios - Fora Menos de 3.5", "Escanteios - Fora Mais de 1.5", "Escanteios - Fora Menos de 4.5", "Escanteios - Fora Menos de 5.5", "Escanteios - Fora Menos de 6.5", "Escanteios - Fora Menos de 7.5", "Escanteios - Fora Menos de 8.5", "Escanteios - Fora Menos de 9.5",
       "Escanteios - Fora+",
       "Escanteios - Mais de 10.5", "Escanteios - Mais de 11.5", "Escanteios - Mais de 12.5", "Escanteios - Mais de 13.5", "Escanteios - Mais de 14.5", "Escanteios - Mais de 15.5", "Escanteios - Mais de 2.5", "Escanteios - Mais de 3.5", "Escanteios - Mais de 4.5", "Escanteios - Mais de 5.5", "Escanteios - Mais de 6.5", "Escanteios - Mais de 7.5", "Escanteios - Mais de 8.5", "Escanteios - Mais de 9.5",
       "Escanteios - Menos de 10.5", "Escanteios - Menos de 11.5", "Escanteios - Menos de 12.5", "Escanteios - Menos de 13.5", "Escanteios - Menos de 14.5", "Escanteios - Menos de 15.5", "Escanteios - Menos de 2.5", "Escanteios - Menos de 3.5", "Escanteios - Menos de 4.5", "Escanteios - Menos de 5.5", "Escanteios - Menos de 6.5", "Escanteios - Menos de 7.5", "Escanteios - Menos de 8.5", "Escanteios - Menos de 9.5",
@@ -370,13 +370,24 @@ router.post('/seed', authenticate, requireAdmin, async (_req, res) => {
       "Vôlei - Vencedor 4º Set Casa", "Vôlei - Vencedor 4º Set Fora",
       "Vôlei - Vencedor 5º Set Casa", "Vôlei - Vencedor 5º Set Fora"
     ]
-    for (const name of RAW_MARKETS) {
+    
+    // Converte os nomes em objetos para createMany
+    const marketData = RAW_MARKETS.map(name => {
       let sportSlug = 'futebol'
       if (name.startsWith('Basket -')) sportSlug = 'basquete'
       if (name.startsWith('Vôlei -')) sportSlug = 'volei'
-      const existing = await prisma.market.findFirst({ where: { name } })
-      if (!existing) await prisma.market.create({ data: { name, sportSlug } })
+      return { name, sportSlug }
+    })
+
+    // Remove duplicados se já existirem alguns
+    for (const d of marketData) {
+      await prisma.market.upsert({
+        where: { name_sportSlug: { name: d.name, sportSlug: d.sportSlug } },
+        update: {},
+        create: d
+      })
     }
+
 
     const sportCounts = await prisma.sport.count()
     const leagueCounts = await prisma.league.count()

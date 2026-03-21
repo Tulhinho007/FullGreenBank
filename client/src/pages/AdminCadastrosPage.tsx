@@ -92,7 +92,7 @@ export const AdminCadastrosPage = () => {
     setSeeding(true)
     try {
       const result = await runSeed()
-      toast.success(`Dados padrão importados! ${result.sports} esportes, ${result.leagues} ligas, ${result.bookmakers} casas.`)
+      toast.success(`Dados padrão importados! ${result.sports} esportes, ${result.leagues} ligas, ${result.bookmakers} casas, ${result.markets} mercados.`)
       await fetchAllFromAPI()
     } catch {
       toast.error('Erro ao sincronizar dados padrão.')
