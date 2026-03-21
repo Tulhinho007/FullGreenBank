@@ -151,9 +151,14 @@ export const PlanosPage = () => {
               ))}
             </div>
 
-            <button className={`w-full py-4 rounded-2xl font-bold text-sm transition-all active:scale-95 ${plan.highlight ? 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/20' : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:opacity-90 shadow-lg'} shadow-xl`}>
+            <a 
+              href="https://w.app/ixpqkt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full py-4 rounded-2xl font-bold text-sm text-center transition-all active:scale-95 ${plan.highlight ? 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/20' : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:opacity-90 shadow-lg'} shadow-xl`}
+            >
               {plan.id === 'starter' ? 'Começar Agora' : 'Assinar Plano'}
-            </button>
+            </a>
           </div>
         ))}
       </div>
@@ -221,9 +226,14 @@ export const PlanosPage = () => {
         
         <h2 className="text-3xl font-display font-bold text-white mb-4 relative z-10">Ainda com dúvidas?</h2>
         <p className="text-slate-400 mb-8 max-w-md mx-auto relative z-10">Nosso time está pronto para te ajudar a escolher o melhor caminho para sua banca.</p>
-        <button className="px-10 py-4 bg-white text-slate-900 font-bold rounded-2xl hover:scale-105 transition-all relative z-10">
+        <a 
+          href="https://w.app/ixpqkt"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-10 py-4 bg-white text-slate-900 font-bold rounded-2xl hover:scale-105 transition-all relative z-10 block w-fit mx-auto"
+        >
           Falar com suporte
-        </button>
+        </a>
       </div>
 
     </div>
