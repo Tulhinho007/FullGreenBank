@@ -245,6 +245,23 @@ notes           String?    -- histórico de pagamentos em texto
 - Adicionado script `build` na raiz do monorepo para delegar o build ao client.
 - Instalada dependência ausente `date-fns` no frontend.
 
+### 17. Tipster Dashboard (Gestão)
+- **Painel Analítico**: Nova página `/gestao/tipsters` focada na visão geral do tipster com suporte dark-mode.
+- **Gráficos e KPIs**: Implementação de gráficos de área (`Recharts`) para evolução da banca, com cards dinâmicos de Green/Red/Void e métricas de ROI e Lucro Total.
+- **Tabela de Dados Dinâmica**: Tabela de histórico de entradas atreladas ao tipster com ações de edição e status coloridos via badges.
+
+### 18. Multi-Bankroll (Múltiplas Carteiras)
+- **Arquitetura de Dados Retrocompatível**: Atualização do schema (`GestaoBancaItem`) para incluir `carteiraId` de forma segura.
+- **Interface Múltipla**: Componentização do frontend para possibilitar criação, seleção e segregação de caixa de múltiplas carteiras (bancas) operando sob a mesma conta/casa de apostas.
+
+### 19. Sistema de Exportação Real (Saques & Relatórios)
+- **Excel & PDF Tabular**: Implementação robusta das bibliotecas `xlsx` e `jspdf` via script para a exportação fidedigna das tabelas baseadas inteiramente nas queries/filtros ativos da tela.
+- **Impressão Expandida (Print Mode)**: Injeção de regras CSS Tailwind exclusivas (`print:hidden` e `print:border-none`) na Sidebar e em componentes de tela, permitindo que a funcionalidade "Imprimir Tabela" ocupe 100% da área do PDF emitido pelo sistema operacional.
+
+### 20. Dados Dinâmicos e Padronização Sistêmica
+- **Filtros e Selects Automatizados**: Substituição manual de inputs textuais propensos a erros corporativos por menus de seleção (`<select>`) vinculados dinamicamente via API (ex: Modal de Saque buscando usuários registrados via HTTP request de backend).
+- **Lista Unificada de Métodos**: Adoção total da lista master de 8 opções financeiras (Pix, Transferência DOC/TED, Boleto, PayPal, Cartões (Visa/Mastercard), Criptomoedas, PicPay e Outros) espelhada nos filtros das páginas de Histórico, Transações e Operações.
+
 ---
 
 ## 📡 API — Principais Endpoints

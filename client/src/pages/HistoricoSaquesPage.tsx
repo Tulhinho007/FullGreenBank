@@ -175,7 +175,7 @@ export const HistoricoSaquesPage = () => {
             Acompanhamento e auditoria de solicitações de retirada
           </p>
         </div>
-        <div className="flex items-center gap-3 relative" ref={dropdownRef}>
+        <div className="flex items-center gap-3 relative print:hidden" ref={dropdownRef}>
           <button 
             onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
             className="flex items-center gap-2 px-4 py-2 bg-surface-300 text-slate-700 dark:text-slate-200 font-semibold rounded-lg hover:bg-surface-400 transition-colors shadow-sm text-sm"
@@ -211,7 +211,7 @@ export const HistoricoSaquesPage = () => {
       </div>
 
       {/* ─── Barra de Filtros (Expandida) ─── */}
-      <div className="flex flex-col xl:flex-row gap-3">
+      <div className="flex flex-col xl:flex-row gap-3 print:hidden">
         <div className="relative flex-1 w-full min-w-[250px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
@@ -266,9 +266,9 @@ export const HistoricoSaquesPage = () => {
       </div>
 
       {/* ─── Área da Tabela ─── */}
-      <div className="card overflow-hidden bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300">
+      <div className="card overflow-hidden bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300 print:border-none print:shadow-none">
         
-        <div className="px-6 py-3 bg-blue-50 dark:bg-blue-500/5 border-b border-blue-100 dark:border-blue-500/10 flex items-start sm:items-center gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300 leading-tight">
+        <div className="px-6 py-3 bg-blue-50 dark:bg-blue-500/5 border-b border-blue-100 dark:border-blue-500/10 flex items-start sm:items-center gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300 leading-tight print:hidden">
            <Banknote className="shrink-0 mt-0.5 sm:mt-0" size={16} />
            <p><strong>Dica de Auditoria:</strong> Saques originados de Bancas Gerenciadas podem apresentar até 10% de comissão deduzida do valor bruto solicitado.</p>
         </div>
@@ -282,7 +282,7 @@ export const HistoricoSaquesPage = () => {
           <span>Valor Líquido</span>
           <span>Método</span>
           <span>Status</span>
-          <span className="text-right">Ações</span>
+          <span className="text-right print:hidden">Ações</span>
         </div>
 
         {filteredSaques.length === 0 ? (
@@ -355,7 +355,7 @@ export const HistoricoSaquesPage = () => {
                   </div>
 
                   {/* Ações (Aparecem no hover na lg, fixo no mobile) */}
-                  <div className="flex items-center justify-start lg:justify-end gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity mt-2 lg:mt-0">
+                  <div className="flex items-center justify-start lg:justify-end gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity mt-2 lg:mt-0 print:hidden">
                     <button 
                       onClick={() => { setSaqueToEdit(s); setIsModalOpen(true); }}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"
