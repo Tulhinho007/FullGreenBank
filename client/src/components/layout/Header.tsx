@@ -28,7 +28,7 @@ export const Header = () => {
   const firstName = user?.name.split(' ')[0] || ''
 
   return (
-    <header className="h-16 bg-surface-200 border-b border-surface-300 flex items-center justify-between px-6 shrink-0">
+    <header className="h-16 bg-surface-200 border-b border-surface-300 flex items-center justify-between px-6 shrink-0 print:hidden">
       {/* Left - greeting */}
       <div>
         <h1 className="font-display font-semibold text-white text-base">{title}</h1>
