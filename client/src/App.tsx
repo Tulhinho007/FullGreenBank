@@ -31,6 +31,7 @@ import { GuidePage }                   from './pages/GuidePage'
 import { AlavancagemPage } from './pages/AlavancagemPage'
 import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
+import { TransacoesPage } from './pages/TransacoesPage'
 
 function App() {
   return (
@@ -112,6 +113,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
                 <FinanceiroPagamentosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="financeiro/transacoes"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
+                <TransacoesPage />
               </ProtectedRoute>
             }
           />

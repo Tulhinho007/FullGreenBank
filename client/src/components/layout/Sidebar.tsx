@@ -175,8 +175,9 @@ export const Sidebar = () => {
           <>
             <SectionLabel label="Administração" />
             <NavItem icon={<DollarSign size={16} />} label="Financeiro" children={[
-              { label: 'Pagamentos', to: '/financeiro/pagamentos' },
+              { label: 'Assinaturas', to: '/financeiro/pagamentos' },
               { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada' },
+              { label: 'Transações', to: '/financeiro/transacoes' },
               { label: 'Fluxo de Caixa', placeholder: true }
             ]} />
             <NavItem icon={<Settings size={16} />} label="Sistema" children={[

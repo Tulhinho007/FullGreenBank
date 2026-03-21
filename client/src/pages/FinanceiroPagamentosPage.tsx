@@ -207,7 +207,7 @@ export const FinanceiroPagamentosPage = () => {
         small { color: #94a3b8; }
         @media print { body { -webkit-print-color-adjust: exact; } }
       </style></head><body>
-      <h1>🟢 Relatório: Pagamentos — Full Green Bank</h1>
+      <h1>🟢 Relatório: Assinaturas — Full Green Bank</h1>
       <p>Gerado em ${new Date().toLocaleString(me?.language === 'PT-BR' ? 'pt-BR' : 'en-US')} · ${filtered.length} usuários listados</p>
       <table>
         <thead><tr>
@@ -304,7 +304,7 @@ export const FinanceiroPagamentosPage = () => {
 
       {/* Cabeçalho */}
       <div>
-        <h2 className="font-display font-semibold text-white">Pagamentos</h2>
+        <h2 className="font-display font-semibold text-white">Assinaturas</h2>
         <p className="text-xs text-slate-500 mt-0.5">
           Gerencie assinaturas e pagamentos de todos os usuários
         </p>
