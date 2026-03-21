@@ -1,5 +1,6 @@
 import React from 'react'
-import { Check, X, Star, Zap, Crown, Shield } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Check, X, Star, Zap, Crown, Shield, ArrowLeft } from 'lucide-react'
 
 const PLAN_DATA = [
   {
@@ -90,8 +91,19 @@ const COMPARISON_TABLE = [
 
 export const PlanosPage = () => {
   return (
-    <div className="flex flex-col gap-10 w-full pb-20 max-w-6xl mx-auto">
+    <div className="flex flex-col gap-10 w-full pb-20 max-w-6xl mx-auto relative">
       
+      {/* BACK BUTTON */}
+      <div className="absolute top-0 left-0">
+        <Link 
+          to="/dashboard" 
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors font-medium text-sm"
+        >
+          <ArrowLeft size={18} />
+          Voltar para o sistema
+        </Link>
+      </div>
+
       {/* HEADER SECTION */}
       <div className="text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-widest animate-pulse">
