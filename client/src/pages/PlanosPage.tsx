@@ -7,9 +7,9 @@ const PLAN_DATA = [
     name: 'STARTER',
     subtitle: 'Básico',
     price: 'Grátis',
-    color: 'text-slate-400',
-    borderColor: 'border-slate-200 dark:border-surface-400',
-    bgColor: 'bg-slate-50 dark:bg-surface-300/10',
+    color: 'text-yellow-500',
+    borderColor: 'border-yellow-500/30',
+    bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
     icon: <Zap size={24} />,
     features: [
       'Dashboard Geral', 
@@ -25,9 +25,9 @@ const PLAN_DATA = [
     name: 'STANDARD',
     subtitle: 'Intermediário',
     price: 'R$ 49,90',
-    color: 'text-green-500',
-    borderColor: 'border-green-500/30',
-    bgColor: 'bg-green-500/5 dark:bg-green-500/10',
+    color: 'text-yellow-500',
+    borderColor: 'border-yellow-500/30',
+    bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
     icon: <Shield size={24} />,
     features: [
       'Dashboard Geral', 
@@ -155,9 +155,9 @@ export const PlanosPage = () => {
               href="https://w.app/ixpqkt"
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full py-4 rounded-2xl font-bold text-sm text-center transition-all active:scale-95 ${plan.highlight ? 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/20' : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:opacity-90 shadow-lg'} shadow-xl`}
+              className={`w-full py-4 rounded-2xl font-bold text-sm text-center transition-all active:scale-95 bg-yellow-500 hover:bg-yellow-400 text-black shadow-yellow-500/20 shadow-xl`}
             >
-              {plan.id === 'starter' ? 'Começar Agora' : 'Assinar Plano'}
+              {plan.id === 'starter' ? 'Plano Atual' : 'Assinar Plano'}
             </a>
           </div>
         ))}
@@ -204,7 +204,7 @@ export const PlanosPage = () => {
                       <td className="px-8 py-5 text-center text-sm">
                         {renderValue(feature.starter)}
                       </td>
-                      <td className="px-8 py-5 text-center text-sm bg-green-500/5 dark:bg-green-500/5">
+                      <td className="px-8 py-5 text-center text-sm bg-yellow-500/5 dark:bg-yellow-500/5">
                         {renderValue(feature.standard)}
                       </td>
                       <td className="px-8 py-5 text-center text-sm bg-yellow-500/5 dark:bg-yellow-500/5">
