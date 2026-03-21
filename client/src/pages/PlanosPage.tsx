@@ -5,70 +5,86 @@ const PLAN_DATA = [
   {
     id: 'starter',
     name: 'STARTER',
-    subtitle: 'Free',
+    subtitle: 'Básico',
     price: 'Grátis',
     color: 'text-slate-400',
     borderColor: 'border-slate-200 dark:border-surface-400',
     bgColor: 'bg-slate-50 dark:bg-surface-300/10',
     icon: <Zap size={24} />,
     features: [
-      'Dashboard Básico', 
-      'Dicas & Palpites', 
-      'Gerenciamento de 1 Banca', 
-      'Sistema de Tipsters', 
-      'Histórico (2 meses de teste)'
+      'Dashboard Geral', 
+      'Dicas (Tips)', 
+      'Gestão de Bancas (Apenas 1)', 
+      'Calculadora Operacional', 
+      'Suporte Comum'
     ],
-    notIncluded: ['Análise de Valor', 'Banca Gerenciada']
+    notIncluded: ['Tipsters', 'Histórico de Dicas', 'Relatórios de Performance', 'Investimentos', 'Alavancagem', 'Dicas de Gestão', 'Análise de Valor']
   },
   {
     id: 'standard',
     name: 'STANDARD',
-    subtitle: 'Inter.',
-    price: 'Intermediário',
+    subtitle: 'Intermediário',
+    price: 'R$ 49,90',
     color: 'text-green-500',
     borderColor: 'border-green-500/30',
     bgColor: 'bg-green-500/5 dark:bg-green-500/10',
     icon: <Shield size={24} />,
-    features: ['Dashboard Completo', 'Dicas & Palpites', 'Até 3 Bancas Ativas', 'Sistema de Tipsters', 'Histórico Completo'],
-    notIncluded: ['Análise de Valor', 'Banca Gerenciada']
+    features: [
+      'Dashboard Geral', 
+      'Dicas (Tips)', 
+      'Tipsters', 
+      'Histórico de Dicas', 
+      'Relatórios de Performance', 
+      'Gestão de Bancas (Até 5)', 
+      'Investimentos', 
+      'Calculadora Operacional', 
+      'Alavancagem',
+      'Suporte Prioritário'
+    ],
+    notIncluded: ['Dicas de Gestão', 'Análise de Valor']
   },
   {
     id: 'pro',
     name: 'PRO',
-    subtitle: 'Full',
-    price: 'Acesso Total',
+    subtitle: 'Completo',
+    price: 'R$ 97,00',
     color: 'text-yellow-500',
     borderColor: 'border-yellow-500/50',
     bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
     icon: <Crown size={24} />,
     highlight: true,
     features: [
-      'Dashboard Avançado + Analytics',
-      'Dicas & Palpites ILIMITADOS',
-      'Bancas Ativas ILIMITADAS',
-      'Sistema de Tipsters Profissional',
-      'Análise de Valor (EV+)',
-      'Histórico + Exportação total',
-      'Banca Gerenciada & Investidores'
+      'Dashboard Geral',
+      'Dicas (Tips)',
+      'Tipsters',
+      'Histórico de Dicas',
+      'Relatórios de Performance',
+      'Gestão de Bancas (Ilimitadas)',
+      'Investimentos',
+      'Calculadora Operacional',
+      'Alavancagem',
+      'Dicas de Gestão',
+      'Análise de Valor',
+      'Suporte VIP / Direto'
     ],
     notIncluded: []
   }
 ]
 
 const COMPARISON_TABLE = [
-  { category: 'PRINCIPAL', features: [
-    { name: '📊 Dashboard', starter: 'Resumo Básico', standard: 'Completo', pro: 'Avançado + Analytics' },
-    { name: '📈 Dicas', starter: true, standard: true, pro: true },
-  ]},
-  { category: 'GESTÃO', features: [
-    { name: '💳 Bancas Ativas', starter: 'Apenas 1', standard: 'Até 3', pro: 'Ilimitadas' },
-    { name: '🎯 Tipsters', starter: true, standard: true, pro: true },
-    { name: '📊 Análise de Valor', starter: false, standard: false, pro: true },
-    { name: '🕒 Histórico', starter: '2 Meses (Teste)', standard: 'Completo', pro: 'Completo + Exportação' },
-  ]},
-  { category: 'FINANCEIRO', features: [
-    { name: '💸 Pagamentos', starter: true, standard: true, pro: true },
-    { name: '💼 Banca Gerenciada', starter: false, standard: false, pro: true },
+  { category: 'FUNCIONALIDADES', features: [
+    { name: 'Dashboard Geral', starter: true, standard: true, pro: true },
+    { name: 'Dicas (Tips)', starter: true, standard: true, pro: true },
+    { name: 'Tipsters', starter: false, standard: true, pro: true },
+    { name: 'Histórico de Dicas', starter: false, standard: true, pro: true },
+    { name: 'Relatórios de Performance', starter: false, standard: true, pro: true },
+    { name: 'Gestão de Bancas', starter: 'Apenas 1', standard: 'Até 5', pro: 'Ilimitadas' },
+    { name: 'Investimentos', starter: false, standard: true, pro: true },
+    { name: 'Calculadora Operacional', starter: true, standard: true, pro: true },
+    { name: 'Alavancagem', starter: false, standard: true, pro: true },
+    { name: 'Dicas de Gestão', starter: false, standard: false, pro: true },
+    { name: 'Análise de Valor', starter: false, standard: false, pro: true },
+    { name: 'Suporte', starter: 'Comum', standard: 'Prioritário', pro: 'VIP / Direto' },
   ]}
 ]
 
@@ -142,19 +158,12 @@ export const PlanosPage = () => {
         ))}
       </div>
 
-      {/* PRO OBSERVER & STARTER TRIAL NOTE */}
+      {/* PRO OBSERVER */}
       <div className="flex flex-col gap-4">
         <div className="p-6 rounded-2xl bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 text-center text-sm font-semibold text-yellow-600 dark:text-yellow-400">
           <p className="flex items-center justify-center gap-2">
             <Zap size={16} fill="currentColor" /> 
             Obs: Qualquer nova funcionalidade no sistema o plano <span className="underline font-black">PRO</span> terá acesso imediato e garantido.
-          </p>
-        </div>
-        
-        <div className="p-6 rounded-2xl bg-slate-100 dark:bg-surface-300/10 border border-slate-200 dark:border-surface-400 text-center text-sm text-slate-600 dark:text-slate-400">
-          <p>
-            <span className="font-bold text-slate-900 dark:text-white">Atenção:</span> O plano <span className="font-bold">STARTER</span> possui acesso ao Histórico por apenas <span className="text-green-500 font-bold">2 meses como teste</span>. 
-            Após esse período, as funcionalidades avançadas serão bloqueadas e o acesso será restrito à visualização do Dashboard inicial.
           </p>
         </div>
       </div>
