@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import {
   BadgeDollarSign,
-  HandCoins,
+  ArrowDownCircle,
   Wallet,
   Hourglass,
   Filter,
@@ -45,7 +44,7 @@ export const TransacoesPage = () => {
           <div className="flex items-start justify-between mb-4">
             <span className="text-sm font-semibold text-slate-500">Total Saques</span>
             <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center shrink-0">
-              <HandCoins className="text-pink-500" size={20} />
+              <ArrowDownCircle className="text-pink-500" size={20} />
             </div>
           </div>
           <p className="text-2xl font-bold text-red-500 tracking-tight">R$ 0,00</p>
