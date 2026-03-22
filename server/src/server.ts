@@ -18,6 +18,7 @@ import futvoleiRoutes      from './routes/futvolei.routes';
 import permissionsRoutes   from './routes/permissions.routes';
 import { saquesRoutes }    from './routes/saques.routes';
 import { securityLoggerMiddleware } from './utils/securityLogger'
+import aiRoutes from './routes/ai.routes'
 
 const app = express();
 
@@ -109,6 +110,7 @@ app.use('/api/saques',          saquesRoutes);
 app.use('/api/cadastros',       cadastrosRoutes);
 app.use('/api/futvolei',        futvoleiRoutes);
 app.use('/api/permissions',     permissionsRoutes);
+app.use('/api/ai', aiRoutes)
 
 // ── Health check ──────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

@@ -36,42 +36,63 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
     setError(null)
   }
 
+  const buildPrompt = (t: TipoBilhete): string => {
+    if (t === 'simples') {
+      return `Leia este bilhete de aposta e extraia os dados. Responda APENAS com JSON válido, sem texto adicional:
+{"event":"Nome do jogo/evento","market":"Mercado da aposta","odds":1.85,"stake":50.00,"sport":"Futebol"}`
+    }
+    if (t === 'multipla') {
+      return `Leia este bilhete de aposta múltipla e extraia todos os jogos. Responda APENAS com JSON válido, sem texto adicional:
+{"stake":10.00,"oddTotal":5.20,"jogos":[{"mandante":"Time A","visitante":"Time B","mercado":"Resultado Final","selecao":"Time A","odd":1.80,"resultado":"PENDING"}]}`
+    }
+    if (t === 'criar-aposta') {
+      return `Leia este bilhete de Criar Aposta / Bet Builder e extraia os dados. Responda APENAS com JSON válido, sem texto adicional:
+{"event":"Nome do jogo","stake":10.00,"odds":2.05,"sport":"Futebol","mercados":["Time A - Resultado Final","Mais de 1.5 Gols"]}`
+    }
+    return `Leia este bilhete de aposta múltipla com Criar Aposta e extraia todos os dados. Responda APENAS com JSON válido, sem texto adicional:
+{"stake":10.00,"jogos":[{"mandante":"Newcastle United","visitante":"Sunderland","odd":2.05,"resultado":"PENDING","mercados":[{"selecao":"Newcastle United","mercado":"Resultado Final"},{"selecao":"Mais de 1.5","mercado":"Total de Gols Mais/Menos"}]}]}`
+  }
+
   const handleScan = async () => {
     if (!image) return
     setLoading(true)
     setError(null)
 
     try {
-      const base64 = image.split(',')[1]
-      const mediaType = image.split(';')[0].split(':')[1]
+      const base64    = image.split(',')[1]
+      const mediaType = image.split(';')[0].split(':')[1] as 'image/jpeg' | 'image/png' | 'image/webp'
+      const prompt    = buildPrompt(tipo)
+      const token     = localStorage.getItem('token')
 
-      const prompt = buildPrompt(tipo)
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/scan-bilhete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: { type: 'base64', media_type: mediaType, data: base64 }
-              },
-              { type: 'text', text: prompt }
-            ]
-          }]
-        })
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image',
+                  source: { type: 'base64', media_type: mediaType, data: base64 },
+                },
+                { type: 'text', text: prompt },
+              ],
+            },
+          ],
+        }),
       })
+
+      if (!response.ok) throw new Error(`Erro ${response.status} ao processar imagem`)
 
       const data = await response.json()
       const text = data.content?.[0]?.text || ''
 
-      // Extrai o JSON da resposta
       const jsonMatch = text.match(/```json\n?([\s\S]*?)\n?```/) || text.match(/\{[\s\S]*\}/)
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : text
+      const jsonStr   = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : text
 
       let parsed: any
       try {
@@ -80,21 +101,13 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
         throw new Error('Não consegui ler o bilhete. Tente uma foto mais nítida.')
       }
 
-      // Injeta esporte selecionado no resultado
       if (sport) parsed.sport = sport
 
-      // Dispara o modal correto
-      if (tipo === 'simples') {
-        onSimples(parsed)
-      } else if (tipo === 'multipla') {
-        onMultipla(parsed)
-      } else if (tipo === 'multipla-criar-aposta') {
-        onMultiplaCriarAposta(parsed)
-      } else {
-        onCriarAposta(parsed)
-      }
+      if (tipo === 'simples') onSimples(parsed)
+      else if (tipo === 'multipla') onMultipla(parsed)
+      else if (tipo === 'multipla-criar-aposta') onMultiplaCriarAposta(parsed)
+      else onCriarAposta(parsed)
 
-      // Fecha e limpa
       setIsOpen(false)
       setImage(null)
       setTipo('multipla')
@@ -107,80 +120,14 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
     }
   }
 
-  const buildPrompt = (tipo: TipoBilhete): string => {
-    if (tipo === 'simples') {
-      return `Leia este bilhete de aposta e extraia os dados. Responda APENAS com JSON:
-{
-  "event": "Nome do jogo/evento",
-  "market": "Mercado da aposta (ex: Resultado Final, Mais de 2.5 Gols)",
-  "odds": 1.85,
-  "stake": 50.00,
-  "sport": "Futebol"
-}`
-    }
-
-    if (tipo === 'multipla') {
-      return `Leia este bilhete de aposta múltipla e extraia todos os jogos. Responda APENAS com JSON:
-{
-  "stake": 10.00,
-  "oddTotal": 5.20,
-  "jogos": [
-    {
-      "mandante": "Time A",
-      "visitante": "Time B",
-      "mercado": "Resultado Final",
-      "selecao": "Time A",
-      "odd": 1.80,
-      "resultado": "PENDING"
-    }
-  ]
-}`
-    }
-
-    // criar-aposta
-    if (tipo === 'criar-aposta') {
-      return `Leia este bilhete de aposta (Criar Aposta / Bet Builder) e extraia os dados. Responda APENAS com JSON:
-{
-  "event": "Nome do jogo principal",
-  "stake": 10.00,
-  "odds": 2.05,
-  "sport": "Futebol",
-  "mercados": [
-    "Time A - Resultado Final",
-    "Mais de 1.5 Gols"
-  ]
-}`
-    }
-
-    // multipla-criar-aposta
-    return `Leia este bilhete de aposta múltipla com Criar Aposta e extraia todos os dados. Responda APENAS com JSON:
-{
-  "stake": 10.00,
-  "jogos": [
-    {
-      "mandante": "Newcastle United",
-      "visitante": "Sunderland",
-      "odd": 2.05,
-      "resultado": "PENDING",
-      "mercados": [
-        { "selecao": "Newcastle United", "mercado": "Resultado Final" },
-        { "selecao": "Mais de 1.5", "mercado": "Total de Gols Mais/Menos" }
-      ]
-    }
-  ]
-}`
-  }
+  const closeModal = () => { setIsOpen(false); setImage(null); setError(null); setSport('') }
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm transition-colors text-white shadow-lg"
-        style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: '0 4px 14px rgba(124,58,237,0.4)' }}
-        title="Escanear bilhete de aposta"
-      >
-        <Zap size={15} />
-        Scan Bilhete
+      <button onClick={() => setIsOpen(true)}
+        className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm text-white shadow-lg"
+        style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: '0 4px 14px rgba(124,58,237,0.4)' }}>
+        <Zap size={15} /> Scan Bilhete
       </button>
     )
   }
@@ -188,8 +135,7 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-        
-        {/* Header */}
+
         <div className="flex items-center justify-between p-5 border-b border-surface-300">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -201,26 +147,21 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
               <p className="text-xs text-slate-500">IA lê e preenche o modal automaticamente</p>
             </div>
           </div>
-          <button onClick={() => { setIsOpen(false); setImage(null); setError(null); setSport('') }}
-            className="p-2 rounded-lg hover:bg-surface-300 text-slate-400 transition-colors">
+          <button onClick={closeModal} className="p-2 rounded-lg hover:bg-surface-300 text-slate-400 transition-colors">
             <X size={18} />
           </button>
         </div>
 
         <div className="p-5 flex flex-col gap-4">
 
-          {/* Tipo de aposta */}
+          {/* Tipo */}
           <div>
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">
-              Tipo de Aposta
-            </label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Tipo de Aposta</label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(TIPO_LABELS) as TipoBilhete[]).map(t => (
                 <button key={t} onClick={() => setTipo(t)}
                   className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
-                    tipo === t
-                      ? 'border-violet-500 bg-violet-500/15 text-violet-300'
-                      : 'border-surface-400 bg-surface-300 text-slate-400 hover:text-white'
+                    tipo === t ? 'border-violet-500 bg-violet-500/15 text-violet-300' : 'border-surface-400 bg-surface-300 text-slate-400 hover:text-white'
                   }`}>
                   {TIPO_LABELS[t]}
                 </button>
@@ -230,19 +171,14 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
 
           {/* Esporte */}
           <div>
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">
-              Esporte
-            </label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Esporte</label>
             <SportSelect value={sport} onChange={setSport} />
           </div>
 
-          {/* Upload da foto */}
+          {/* Upload */}
           <div>
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">
-              Foto do Bilhete
-            </label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Foto do Bilhete</label>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
-
             {!image ? (
               <button onClick={() => fileRef.current?.click()}
                 className="w-full border-2 border-dashed border-surface-400 rounded-xl p-8 flex flex-col items-center gap-3 hover:border-violet-500/50 hover:bg-violet-500/5 transition-all group">
@@ -254,8 +190,7 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
                   <p className="text-xs text-slate-500 mt-1">PNG, JPG, WEBP — screenshot ou foto</p>
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                  <Upload size={12} />
-                  Suporta bilhetes da Betano, Bet365 e outras casas
+                  <Upload size={12} /> Suporta bilhetes da Betano, Bet365 e outras casas
                 </div>
               </button>
             ) : (
@@ -272,37 +207,21 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
             )}
           </div>
 
-          {/* Erro */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-sm text-red-400 flex items-start gap-2">
-              <X size={14} className="shrink-0 mt-0.5" />
-              {error}
+              <X size={14} className="shrink-0 mt-0.5" /> {error}
             </div>
           )}
 
-          {/* Botões */}
           <div className="flex gap-3 pt-1">
-            <button onClick={() => { setIsOpen(false); setImage(null); setError(null); setSport('') }}
-              className="flex-1 btn-secondary py-2.5 text-sm">
-              Cancelar
-            </button>
-            <button
-              onClick={handleScan}
-              disabled={!image || loading}
+            <button onClick={closeModal} className="flex-1 btn-secondary py-2.5 text-sm">Cancelar</button>
+            <button onClick={handleScan} disabled={!image || loading}
               className="flex-[2] py-2.5 rounded-xl font-bold text-sm text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: !image || loading ? undefined : 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: !image || loading ? undefined : '0 4px 14px rgba(124,58,237,0.3)' }}
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Lendo bilhete...
-                </>
-              ) : (
-                <>
-                  <Zap size={15} />
-                  Gerar Modal
-                </>
-              )}
+              style={{
+                background: !image || loading ? undefined : 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                boxShadow: !image || loading ? undefined : '0 4px 14px rgba(124,58,237,0.3)',
+              }}>
+              {loading ? <><Loader2 size={16} className="animate-spin" /> Lendo bilhete...</> : <><Zap size={15} /> Gerar Modal</>}
             </button>
           </div>
 
