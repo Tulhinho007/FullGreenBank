@@ -8,7 +8,7 @@ import { BookmakersModal, Bookmaker } from '../components/ui/BookmakersModal'
 import { MarketsModal, Market } from '../components/ui/MarketsModal'
 import { usersService } from '../services/users.service'
 import { useAuth } from '../contexts/AuthContext'
-import { addLog } from './SystemLogPage'
+import { addLog } from '../services/log.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import {

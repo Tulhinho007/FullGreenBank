@@ -298,3 +298,16 @@ model SecurityLog {
 
   @@map("security_logs")
 }
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userEmail String
+  userName  String
+  userRole  String
+  category  String
+  action    String
+  detail    String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}

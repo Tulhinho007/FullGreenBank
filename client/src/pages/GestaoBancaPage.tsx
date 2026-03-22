@@ -6,6 +6,8 @@ import { formatCurrency } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
+import { useAuth } from '../contexts/AuthContext'
+import { addLog } from '../services/log.service'
 
 interface DailyRow {
   id: string
@@ -54,6 +56,7 @@ export interface BancaCarteira {
 }
 
 export const GestaoBancaPage = () => {
+  const { user: me } = useAuth()
   const [loading, setLoading] = useState(false)
 
   // Lista de casas vem do painel Admin
@@ -192,6 +195,7 @@ export const GestaoBancaPage = () => {
         })
         setRows(prev => prev.map(row => row.id === r.id ? { ...row, id: data.id, isEditing: false, isNew: false } : row))
         toast.success('Criado!')
+        if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Lançamento registrado', detail: `Novo lançamento na banca` })
       } else {
         await api.patch(`/gestao-banca/item/${r.id}`, {
           date: r.date, deposit: r.deposit, withdrawal: r.withdrawal, result: r.result
@@ -231,6 +235,7 @@ export const GestaoBancaPage = () => {
       setNovaBancaNome('')
       setNovaBancaValorInicial('')
       toast.success(`Banca "${novaCarteira.nome}" ativada em ${casaAposta}! 🚀`)
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Banca criada', detail: `Criou banca: ${novaBancaNome} em ${casaAposta}` })
     } catch {
       toast.error('Erro ao ativar banca.')
     }
@@ -251,6 +256,7 @@ export const GestaoBancaPage = () => {
       setNovaBancaNome('')
       setNovaBancaValorInicial('')
       toast.success('Banca criada com sucesso!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Banca criada', detail: `Criou banca: ${novaBancaNome}` })
     } catch { toast.error('Erro ao criar banca.') }
   }
 
@@ -264,6 +270,7 @@ export const GestaoBancaPage = () => {
       ))
       setIsModalEditBancaOpen(false)
       toast.success('Banca renomeada!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Banca renomeada', detail: `Renomeou banca para: ${editBancaNome}` })
     } catch { toast.error('Erro ao renomear banca.') }
   }
 
@@ -279,6 +286,7 @@ export const GestaoBancaPage = () => {
       setTodasCarteiras(prev => prev.filter(c => c.id !== carteiraToDeleteId))
       if (carteiraToDeleteId === selectedCarteiraId) setSelectedCarteiraId('')
       toast.success('Banca excluída com sucesso!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Financeiro', action: 'Banca excluída', detail: `Excluiu banca ID: ${carteiraToDeleteId}` })
       setIsConfirmDeleteOpen(false)
       setIsModalDeleteBancaOpen(false)
       setCarteiraToDeleteId(null)

@@ -5,6 +5,7 @@ import { Modal } from '../components/ui/Modal'
 import { ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
+import { addLog } from '../services/log.service'
 
 interface User {
   id: string; name: string; email: string; phone?: string
@@ -91,6 +92,7 @@ export const AdminUsersPage = () => {
     try {
       await usersService.toggleActive(u.id)
       toast.success(`Usuário ${u.active ? 'desativado' : 'ativado'}!`)
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: u.active ? 'Usuário desativado' : 'Usuário ativado', detail: `${u.email}` })
       load()
     } catch { toast.error('Erro ao alterar status') }
   }
@@ -110,6 +112,7 @@ export const AdminUsersPage = () => {
       if (editForm.password) payload.password = editForm.password
       await usersService.updateProfileById(selected.id, payload)
       toast.success('Usuário atualizado!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Usuário editado', detail: `Editou usuário: ${selected.email} · Plano: ${editForm.plan}` })
       closeModal()
       load()
     } catch (err: any) {
@@ -124,6 +127,7 @@ export const AdminUsersPage = () => {
     try {
       await usersService.updateRole(selected.id, newRole)
       toast.success('Role atualizado!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Role alterado', detail: `Alterou role de ${selected.email} para ${newRole}` })
       closeModal()
       load()
     } catch { toast.error('Erro ao atualizar role') }

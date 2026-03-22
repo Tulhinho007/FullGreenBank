@@ -3,8 +3,11 @@ import { CheckCircle2, ShieldAlert } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../services/api'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
+import { useAuth } from '../contexts/AuthContext'
+import { addLog } from '../services/log.service'
 
 export const InvestimentosPage = () => {
+  const { user } = useAuth()
   const [aceitoTermos, setAceitoTermos] = useState(false)
   const [valorAporte, setValorAporte] = useState('')
   const [loading, setLoading] = useState(false)
@@ -24,6 +27,7 @@ export const InvestimentosPage = () => {
     setLoading(true)
     try {
       await api.post('/solicitacoes', { valorAporte: valor, termoAceito: true })
+      if (user) addLog({ userEmail: user.email, userName: user.name, userRole: user.role, category: 'Financeiro', action: 'Solicitação de aporte', detail: `Solicitou aporte de R$ ${valor.toFixed(2)}` })
       toast.success('Sua solicitação foi enviada e está em análise pela nossa equipe técnica.')
       setValorAporte('')
       setAceitoTermos(false)

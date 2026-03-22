@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import logRoutes from './routes/log.routes'
 
 import authRoutes          from './routes/auth.routes';
 import tipsRoutes          from './routes/tips.routes';
@@ -18,6 +19,7 @@ import futvoleiRoutes      from './routes/futvolei.routes';
 import permissionsRoutes   from './routes/permissions.routes';
 import { saquesRoutes }    from './routes/saques.routes';
 import { securityLoggerMiddleware } from './utils/securityLogger'
+
 
 const app = express();
 
@@ -109,6 +111,7 @@ app.use('/api/saques',          saquesRoutes);
 app.use('/api/cadastros',       cadastrosRoutes);
 app.use('/api/futvolei',        futvoleiRoutes);
 app.use('/api/permissions',     permissionsRoutes);
+app.use('/api/logs', logRoutes)
 
 // ── Health check ──────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

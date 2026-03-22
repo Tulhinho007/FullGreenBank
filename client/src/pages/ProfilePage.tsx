@@ -8,6 +8,7 @@ import {
   Settings, Lock, Moon, Sun, Monitor, CreditCard
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { addLog } from '../services/log.service'
 
 export const ProfilePage = () => {
   const { user, updateUser } = useAuth()
@@ -48,6 +49,13 @@ export const ProfilePage = () => {
       
       const updated = await usersService.updateProfile(payload)
       updateUser(updated)
+      if (user) {
+        if (form.password) {
+          addLog({ userEmail: user.email, userName: user.name, userRole: user.role, category: 'Segurança', action: 'Senha alterada', detail: 'Usuário alterou a própria senha' })
+        } else {
+          addLog({ userEmail: user.email, userName: user.name, userRole: user.role, category: 'Sistema', action: 'Perfil atualizado', detail: 'Atualizou dados do perfil' })
+        }
+      }
       
       // Aplicar tema imediatamente no context se mudou
       if (payload.theme === 'SYSTEM') toggleTheme('system')

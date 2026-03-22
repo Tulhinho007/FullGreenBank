@@ -16,6 +16,7 @@ import { Doughnut } from 'react-chartjs-2'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
 import { ModalMultiplaCriarAposta } from '../components/ui/ModalMultiplaCriarAposta'
 import { SportSelect } from '../components/ui/SportSelect'
+import { addLog } from '../services/log.service'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -122,6 +123,7 @@ export const TipsPage = () => {
     try {
       await tipsService.delete(id)
       toast.success('Dica removida.')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip removida', detail: `Removeu tip ID: ${id}` })
       load(page)
     } catch { toast.error('Erro ao excluir dica') }
   }
@@ -144,6 +146,7 @@ export const TipsPage = () => {
         linkAposta: editForm.linkAposta?.trim() || null,
       })
       toast.success('Dica atualizada! 🎯')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Operacional', action: 'Resultado atualizado', detail: `Resultado: ${editForm.result} — ${selected?.title}` })
       setSelected(null); load(page)
     } catch { toast.error('Erro ao atualizar') }
     finally { setSaving(false) }
@@ -166,8 +169,10 @@ export const TipsPage = () => {
   const handleSaveNovoBilhete = async (data: any, id?: string) => {
     if (id) {
       await tipsService.update(id, data)
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip editada', detail: `Editou: ${data.title} — ${data.sport}` })
     } else {
       await tipsService.create(data)
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip publicada', detail: `Publicou: ${data.title} — ${data.sport}` })
     }
     load(1)
     setEditTipMultipla(null)

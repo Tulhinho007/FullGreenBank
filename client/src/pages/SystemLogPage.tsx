@@ -2,28 +2,29 @@ import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { formatDateTime } from '../utils/formatters'
 import { Activity, Users, Filter, Printer, FileText, FileSpreadsheet, Trash2 } from 'lucide-react'
+import api from '../services/api'
+import { addLog } from '../services/log.service'
 
 interface LogEntry {
   id: string
-  timestamp: string
+  createdAt: string
   userEmail: string
   userName: string
   userRole: string
-  category: 'Auth' | 'Dicas' | 'Usuários' | 'Admin' | 'Sistema' | 'Financeiro'
+  category: string
   action: string
   detail: string
 }
 
-const STORAGE_KEY = 'fgb_system_log'
-const MAX_LOGS = 500
-
 const categoryColors: Record<string, string> = {
-  Auth:     'bg-yellow-900/50 text-yellow-400 border-yellow-800/40',
-  Dicas:    'bg-green-900/50  text-green-400  border-green-800/40',
-  Usuários: 'bg-blue-900/50   text-blue-400   border-blue-800/40',
-  Admin:    'bg-purple-900/50 text-purple-400  border-purple-800/40',
-  Sistema:  'bg-slate-700/50  text-slate-300   border-slate-600/40',
-  Financeiro: 'bg-emerald-900/50 text-emerald-400 border-emerald-800/40',
+  Auth:        'bg-yellow-900/50 text-yellow-400 border-yellow-800/40',
+  Dicas:       'bg-green-900/50  text-green-400  border-green-800/40',
+  Usuários:    'bg-blue-900/50   text-blue-400   border-blue-800/40',
+  Admin:       'bg-purple-900/50 text-purple-400 border-purple-800/40',
+  Sistema:     'bg-slate-700/50  text-slate-300  border-slate-600/40',
+  Financeiro:  'bg-emerald-900/50 text-emerald-400 border-emerald-800/40',
+  Segurança:   'bg-red-900/50    text-red-400    border-red-800/40',
+  Operacional: 'bg-cyan-900/50   text-cyan-400   border-cyan-800/40',
 }
 
 const roleColor: Record<string, string> = {
@@ -32,25 +33,10 @@ const roleColor: Record<string, string> = {
   MEMBRO: 'text-slate-400',
 }
 
-// ── Utilitário: salvar log ────────────────────────────────────────────────
-export const addLog = (entry: Omit<LogEntry, 'id' | 'timestamp'>) => {
-  try {
-    const logs: LogEntry[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-    const newEntry: LogEntry = {
-      ...entry,
-      id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
-    }
-    const updated = [newEntry, ...logs].slice(0, MAX_LOGS)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-  } catch { /* silent */ }
-}
-
-// Agrupar por data
 const groupByDate = (logs: LogEntry[]) => {
   const groups: Record<string, LogEntry[]> = {}
   logs.forEach(log => {
-    const date = new Date(log.timestamp).toLocaleDateString('pt-BR', {
+    const date = new Date(log.createdAt).toLocaleDateString('pt-BR', {
       weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
     }).toUpperCase()
     if (!groups[date]) groups[date] = []
@@ -59,28 +45,37 @@ const groupByDate = (logs: LogEntry[]) => {
   return groups
 }
 
-const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin', 'Sistema', 'Financeiro']
+const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin', 'Sistema', 'Financeiro', 'Segurança', 'Operacional']
 
 export const SystemLogPage = () => {
   const { user } = useAuth()
   const isReadOnly = user?.role === 'TESTER'
+
   const [logs,       setLogs]       = useState<LogEntry[]>([])
+  const [loading,    setLoading]    = useState(true)
   const [filterUser, setFilterUser] = useState('Todos os usuários')
   const [filterCat,  setFilterCat]  = useState('Todas as categorias')
   const [users,      setUsers]      = useState<string[]>([])
 
-  const load = useCallback(() => {
+  const load = useCallback(async () => {
     try {
-      const stored: LogEntry[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-      setLogs(stored)
-      const uniqueUsers = [...new Set(stored.map(l => l.userEmail))]
+      const params: any = { limit: 500 }
+      if (filterCat  !== 'Todas as categorias') params.category  = filterCat
+      if (filterUser !== 'Todos os usuários')   params.userEmail = filterUser
+      const res = await api.get('/logs', { params })
+      const data: LogEntry[] = res.data.data?.logs || []
+      setLogs(data)
+      const uniqueUsers = [...new Set(data.map(l => l.userEmail))]
       setUsers(uniqueUsers)
-    } catch { setLogs([]) }
-  }, [])
+    } catch {
+      setLogs([])
+    } finally {
+      setLoading(false)
+    }
+  }, [filterCat, filterUser])
 
   useEffect(() => {
     load()
-    // Registra acesso ao log
     if (user) {
       addLog({
         userEmail: user.email,
@@ -91,39 +86,37 @@ export const SystemLogPage = () => {
         detail:    'Acessou a página de Log do Sistema',
       })
     }
-    const interval = setInterval(load, 5000)
+    const interval = setInterval(load, 10000)
     return () => clearInterval(interval)
   }, [load, user])
 
-  const filtered = Array.isArray(logs) ? logs.filter(l => {
-    const byUser = filterUser === 'Todos os usuários' || l.userEmail === filterUser
-    const byCat  = filterCat  === 'Todas as categorias' || l.category === filterCat
-    return byUser && byCat
-  }) : []
+  const filtered = logs
 
   const grouped = groupByDate(filtered)
+
   const activeUsers = new Set(
     logs.filter(l => {
-      const diff = Date.now() - new Date(l.timestamp).getTime()
-      return diff < 30 * 60 * 1000 // 30 min
+      const diff = Date.now() - new Date(l.createdAt).getTime()
+      return diff < 30 * 60 * 1000
     }).map(l => l.userEmail)
   ).size
 
-  const lastActivity = logs[0]?.timestamp
-    ? formatDateTime(logs[0].timestamp)
-    : '—'
+  const lastActivity = logs[0]?.createdAt ? formatDateTime(logs[0].createdAt) : '—'
 
-  const handleClear = () => {
+  const handleClear = async () => {
     if (!window.confirm('Limpar todo o log do sistema?')) return
-    localStorage.removeItem(STORAGE_KEY)
-    load()
+    try {
+      await api.delete('/logs/clear')
+      load()
+    } catch {
+      alert('Erro ao limpar logs')
+    }
   }
 
-  // ── Exportar CSV/Excel ────────────────────────────────────────────────
   const exportCSV = () => {
     const header = ['Data/Hora', 'Usuário', 'Email', 'Role', 'Categoria', 'Ação', 'Detalhe']
     const rows = filtered.map(l => [
-      formatDateTime(l.timestamp),
+      formatDateTime(l.createdAt),
       l.userName,
       l.userEmail,
       l.userRole,
@@ -143,20 +136,18 @@ export const SystemLogPage = () => {
     URL.revokeObjectURL(url)
   }
 
-  // ── Exportar PDF ─────────────────────────────────────────────────────
   const exportPDF = () => {
     const win = window.open('', '_blank')
     if (!win) return
     const rows = filtered.map(l => `
       <tr>
-        <td>${formatDateTime(l.timestamp)}</td>
+        <td>${formatDateTime(l.createdAt)}</td>
         <td>${l.userName}<br/><small>${l.userEmail}</small></td>
         <td>${l.userRole}</td>
         <td>${l.category}</td>
         <td>${l.action}</td>
         <td>${l.detail}</td>
       </tr>`).join('')
-
     win.document.write(`
       <!DOCTYPE html><html><head>
       <meta charset="utf-8"/>
@@ -186,14 +177,8 @@ export const SystemLogPage = () => {
     win.document.close()
   }
 
-  // ── Imprimir ──────────────────────────────────────────────────────────
-  const handlePrint = () => {
-    window.print()
-  }
-
   return (
     <div className="flex flex-col gap-5">
-      {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="font-display font-semibold text-white flex items-center gap-2">
@@ -203,9 +188,7 @@ export const SystemLogPage = () => {
           <p className="text-xs text-slate-500 mt-0.5">Atividade de todos os usuários em tempo real</p>
         </div>
 
-        {/* Filtros */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Filtro usuário */}
           <div className="relative">
             <select
               className="input-field py-1.5 pl-8 pr-3 text-xs w-44"
@@ -218,7 +201,6 @@ export const SystemLogPage = () => {
             <Users size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
 
-          {/* Filtro categoria */}
           <div className="relative">
             <select
               className="input-field py-1.5 pl-8 pr-3 text-xs w-48"
@@ -230,56 +212,36 @@ export const SystemLogPage = () => {
             <Filter size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
 
-          {/* Exportar CSV */}
-          <button
-            onClick={exportCSV}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors"
-            title="Exportar Excel/CSV"
-          >
+          <button onClick={exportCSV}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors">
             <FileSpreadsheet size={13} />Excel
           </button>
-
-          {/* Exportar PDF */}
-          <button
-            onClick={exportPDF}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors"
-            title="Exportar PDF"
-          >
+          <button onClick={exportPDF}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors">
             <FileText size={13} />PDF
           </button>
-
-          {/* Imprimir */}
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors"
-            title="Imprimir"
-          >
+          <button onClick={() => window.print()}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors">
             <Printer size={13} />Imprimir
           </button>
-
-          {/* Limpar */}
           {!isReadOnly && (
-            <button
-              onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/40 text-red-400 hover:bg-red-800/50 transition-colors"
-              title="Limpar log"
-            >
+            <button onClick={handleClear}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/40 text-red-400 hover:bg-red-800/50 transition-colors">
               <Trash2 size={13} />Limpar Log
             </button>
           )}
         </div>
       </div>
 
-      {/* Stats row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
-          <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          <span className="w-2 h-2 rounded-full bg-green-500" />
           <span className="text-xs text-slate-400">Total:</span>
           <span className="text-sm font-semibold text-white">{filtered.length} eventos</span>
         </div>
         <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
-          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-          <span className="text-xs text-slate-400">Usuários ativos:</span>
+          <span className="w-2 h-2 rounded-full bg-blue-500" />
+          <span className="text-xs text-slate-400">Usuários ativos (30min):</span>
           <span className="text-sm font-semibold text-white">{activeUsers}</span>
         </div>
         <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
@@ -288,8 +250,11 @@ export const SystemLogPage = () => {
         </div>
       </div>
 
-      {/* Log table */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="card p-16 text-center border border-surface-400">
           <Activity size={36} className="text-slate-700 mx-auto mb-4" />
           <p className="text-slate-400 text-sm">Nenhum evento registrado ainda.</p>
@@ -299,49 +264,36 @@ export const SystemLogPage = () => {
         <div className="card border border-surface-400 overflow-hidden">
           {Object.entries(grouped).map(([date, entries]) => (
             <div key={date}>
-              {/* Date separator */}
               <div className="px-4 py-2 bg-surface-300/50 border-b border-surface-300">
                 <span className="text-[10px] font-semibold text-slate-500 tracking-widest">{date}</span>
               </div>
-
-              {/* Entries */}
               {entries.map((log, i) => {
                 const catCls = categoryColors[log.category] || categoryColors['Sistema']
                 return (
-                  <div
-                    key={log.id}
-                    className={`flex items-start gap-4 px-4 py-3 border-b border-surface-300/50 hover:bg-surface-300/20 transition-colors ${
-                      i === entries.length - 1 ? 'border-b-0' : ''
-                    }`}
+                  <div key={log.id}
+                    className={`flex items-start gap-4 px-4 py-3 border-b border-surface-300/50 hover:bg-surface-300/20 transition-colors ${i === entries.length - 1 ? 'border-b-0' : ''}`}
                   >
-                    {/* Time */}
                     <div className="w-16 shrink-0 pt-0.5">
                       <span className="text-xs font-mono text-slate-500">
-                        {new Date(log.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        {new Date(log.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                       </span>
                     </div>
-
-                    {/* User */}
                     <div className="w-48 shrink-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-xs font-medium text-white truncate max-w-[140px]">{log.userEmail}</p>
+                        <p className="text-xs font-medium text-white truncate max-w-[140px]">{log.userName}</p>
                         {log.userRole !== 'MEMBRO' && (
                           <span className={`text-[9px] font-bold ${roleColor[log.userRole] || ''}`}>
-                            {log.userRole === 'MASTER' ? 'Master' : 'Admin'}
+                            {log.userRole === 'MASTER' ? 'Master' : log.userRole === 'ADMIN' ? 'Admin' : log.userRole}
                           </span>
                         )}
                       </div>
                       <p className="text-[10px] text-slate-600 truncate">{log.userEmail}</p>
                     </div>
-
-                    {/* Category badge */}
-                    <div className="w-24 shrink-0 pt-0.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${catCls} log-cat-light-${log.category}`}>
+                    <div className="w-28 shrink-0 pt-0.5">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${catCls}`}>
                         {log.category}
                       </span>
                     </div>
-
-                    {/* Action + Detail */}
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-white">{log.action}</p>
                       <p className="text-[11px] text-slate-500 mt-0.5">{log.detail}</p>

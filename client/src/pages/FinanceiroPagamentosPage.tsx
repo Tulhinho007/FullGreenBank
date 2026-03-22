@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
-import { addLog } from './SystemLogPage'
+import { addLog } from '../services/log.service'
 import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
