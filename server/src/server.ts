@@ -17,6 +17,7 @@ import cadastrosRoutes     from './routes/cadastros.routes';
 import futvoleiRoutes      from './routes/futvolei.routes';
 import permissionsRoutes   from './routes/permissions.routes';
 import { saquesRoutes }    from './routes/saques.routes';
+import { securityLoggerMiddleware } from './utils/securityLogger'
 
 const app = express();
 
@@ -71,6 +72,8 @@ app.use((_req, res, next) => {
   );
   next();
 });
+
+app.use(securityLoggerMiddleware)
 
 // ── Rate Limiting ─────────────────────────────────────────────────
 const generalLimiter = rateLimit({

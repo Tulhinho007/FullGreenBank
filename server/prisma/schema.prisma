@@ -284,3 +284,16 @@ model UserPermission {
   @@unique([userId, pageName])
   @@map("user_permissions")
 }
+model SecurityLog {
+  id         String   @id @default(uuid())
+  ip         String
+  route      String
+  method     String
+  statusCode Int
+  userId     String?
+  userAgent  String?
+  reason     String?  // ex: "LOGIN_FAILED", "RATE_LIMIT", "UNAUTHORIZED"
+  createdAt  DateTime @default(now())
+
+  @@map("security_logs")
+}
