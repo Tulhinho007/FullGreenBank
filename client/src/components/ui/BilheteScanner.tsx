@@ -78,7 +78,7 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
       const base64    = image.split(',')[1]
       const mediaType = image.split(';')[0].split(':')[1] as 'image/jpeg' | 'image/png' | 'image/webp'
       const prompt    = buildPrompt(tipo)
-      const token     = localStorage.getItem('token')
+      const token     = localStorage.getItem('fgb_token')
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/scan-bilhete`, {
         method: 'POST',
