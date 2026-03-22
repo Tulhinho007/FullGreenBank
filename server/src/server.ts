@@ -20,6 +20,7 @@ import { saquesRoutes }    from './routes/saques.routes';
 import { securityLoggerMiddleware } from './utils/securityLogger'
 import aiRoutes from './routes/ai.routes'
 
+
 const app = express();
 
 // ── Helmet (deve vir primeiro) ────────────────────────────────────
