@@ -67,7 +67,7 @@ app.use((_req, res, next) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
     "img-src 'self' data: blob:; " +
-    "connect-src 'self' https://*.supabase.co https://full-green-bank-backend.vercel.app; " +
+    "connect-src 'self' https://*.supabase.co https://full-green-bank-backend.vercel.app https://api.anthropic.com; " +
     "frame-ancestors 'none';"
   );
   next();
