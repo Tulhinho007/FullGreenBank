@@ -37,4 +37,5 @@ router.post(
 
 router.get('/me', authenticate, authController.getMe);
 
+router.post('/refresh', authController.refresh);
 export default router;

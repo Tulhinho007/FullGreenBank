@@ -3,6 +3,7 @@ import { registerUser, loginUser } from '../services/auth.service';
 import { sendSuccess, sendError } from '../utils/response';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { getUserById } from '../services/user.service';
+import { generateToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -43,3 +44,18 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
     sendError(res, "Erro interno ao carregar perfil", 500);
   }
 };
+export const refresh = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      sendError(res, 'Refresh token não fornecido', 401);
+      return;
+    }
+    const payload = verifyRefreshToken(refreshToken);
+    const newAccessToken  = generateToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
+    sendSuccess(res, { token: newAccessToken, refreshToken: newRefreshToken });
+  } catch {
+    sendError(res, 'Refresh token inválido ou expirado', 401);
+  }
+}
