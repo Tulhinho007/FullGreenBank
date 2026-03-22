@@ -11,10 +11,16 @@ export const tipsService = {
     return res.data.data
   },
 
-  create: async (data: any) => {
+create: async (data: any) => {
+  console.log('📦 Payload:', JSON.stringify(data, null, 2))
+  try {
     const res = await api.post('/tips', data)
     return res.data.data
-  },
+  } catch (err: any) {
+    console.error('❌ Erro response:', err.response?.data)
+    throw err
+  }
+},
 
   delete: async (id: string) => {
     const res = await api.delete(`/tips/${id}`)
