@@ -214,15 +214,15 @@ export const HistoricoSaquesPage = () => {
           </button>
 
           {isExportMenuOpen && (
-            <div className="absolute top-full right-[130px] sm:right-auto sm:left-0 mt-2 w-48 bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300 rounded-xl shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 py-1">
-              <button onClick={() => handleExport('Excel')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors text-left">
+            <div className="absolute top-full right-[130px] sm:right-auto sm:left-0 mt-2 w-48 bg-surface-200 border border-surface-300 rounded-xl shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 py-1">
+              <button onClick={() => handleExport('Excel')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
                 <FileSpreadsheet size={16} className="text-green-500" /> Excel (.xlsx)
               </button>
-              <button onClick={() => handleExport('PDF')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors text-left">
+              <button onClick={() => handleExport('PDF')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
                 <FileText size={16} className="text-red-500" /> Relatório PDF
               </button>
               <div className="h-px bg-slate-100 dark:bg-surface-300 my-1"></div>
-              <button onClick={() => handleExport('Print')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors text-left">
+              <button onClick={() => handleExport('Print')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
                 <Printer size={16} className="text-slate-400" /> Imprimir Tabela
               </button>
             </div>
@@ -245,7 +245,7 @@ export const HistoricoSaquesPage = () => {
           <input 
             type="text" 
             placeholder="Buscar por usuário..." 
-            className="input-field pl-10 h-11 text-sm bg-white dark:bg-surface-200 w-full"
+            className="input-field pl-10 h-11 text-sm bg-surface-200 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -253,7 +253,7 @@ export const HistoricoSaquesPage = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select 
-            className="input-field h-11 text-sm bg-white dark:bg-surface-200"
+            className="input-field h-11 text-sm bg-surface-200"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -265,7 +265,7 @@ export const HistoricoSaquesPage = () => {
           </select>
 
           <select 
-            className="input-field h-11 text-sm bg-white dark:bg-surface-200"
+            className="input-field h-11 text-sm bg-surface-200"
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
           >
@@ -281,7 +281,7 @@ export const HistoricoSaquesPage = () => {
           </select>
 
           <select 
-            className="input-field h-11 text-sm bg-white dark:bg-surface-200"
+            className="input-field h-11 text-sm bg-surface-200"
             value={periodFilter}
             onChange={(e) => setPeriodFilter(e.target.value)}
           >
@@ -294,7 +294,7 @@ export const HistoricoSaquesPage = () => {
       </div>
 
       {/* ─── Área da Tabela ─── */}
-      <div className="card overflow-hidden bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300 print:border-none print:shadow-none">
+      <div className="card overflow-hidden bg-surface-200 border border-surface-300 print:border-none print:shadow-none">
         
         <div className="px-6 py-3 bg-blue-50 dark:bg-blue-500/5 border-b border-blue-100 dark:border-blue-500/10 flex items-start sm:items-center gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300 leading-tight print:hidden">
            <Banknote className="shrink-0 mt-0.5 sm:mt-0" size={16} />
@@ -302,7 +302,7 @@ export const HistoricoSaquesPage = () => {
         </div>
 
         {/* Tabela Header (Adicionado 80px para AÇÕES) */}
-        <div className="hidden lg:grid grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-4 px-6 py-4 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
+        <div className="hidden lg:grid grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
           <span>Data e Hora</span>
           <span>Usuário</span>
           <span>Valor Bruto</span>
@@ -319,7 +319,7 @@ export const HistoricoSaquesPage = () => {
           </div>
         ) : filteredSaques.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center print:hidden">
-            <div className="w-16 h-16 bg-slate-50 dark:bg-surface-300/50 rounded-full flex items-center justify-center mb-4 border border-slate-200 dark:border-surface-300">
+            <div className="w-16 h-16 bg-surface-300/50 rounded-full flex items-center justify-center mb-4 border border-surface-300">
               <Banknote className="text-slate-300 dark:text-slate-500" size={24} />
             </div>
             <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">Nenhum saque encontrado.</p>
@@ -330,7 +330,7 @@ export const HistoricoSaquesPage = () => {
               const statusCfg = getStatusConfig(s.status)
               
               return (
-                <div key={s.id} className="group grid grid-cols-1 lg:grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-2 lg:gap-4 px-6 py-4 lg:py-4.5 text-sm items-start lg:items-center hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
+                <div key={s.id} className="group grid grid-cols-1 lg:grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-2 lg:gap-4 px-6 py-4 lg:py-4.5 text-sm items-start lg:items-center hover:bg-surface-300/50/20 transition-colors">
                   
                   {/* Data e Hora */}
                   <div className="flex flex-col">
@@ -349,7 +349,7 @@ export const HistoricoSaquesPage = () => {
 
                   {/* Valor Bruto */}
                   <div className="flex items-center">
-                    <span className="font-semibold text-slate-600 dark:text-slate-300">{fmt(s.grossValue)}</span>
+                    <span className="font-semibold text-slate-300">{fmt(s.grossValue)}</span>
                   </div>
 
                   {/* Comissão */}
@@ -374,7 +374,7 @@ export const HistoricoSaquesPage = () => {
                   </div>
 
                   {/* Método */}
-                  <div className="flex items-center text-slate-600 dark:text-slate-300 font-medium">
+                  <div className="flex items-center text-slate-300 font-medium">
                     {s.method}
                   </div>
 
