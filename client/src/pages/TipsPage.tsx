@@ -19,8 +19,6 @@ import { SportSelect } from '../components/ui/SportSelect'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
 interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
@@ -28,6 +26,7 @@ interface Tip {
   mercados?: string[]
   isMultipla?: boolean
   jogos?: any
+  linkAposta?: string
 }
 
 type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
@@ -40,12 +39,10 @@ const FILTER_LABELS: Record<ResultFilter, string> = {
 const STATUS_CONFIG: Record<string, any> = {
   GREEN:   { bg: 'bg-emerald-500/10', text: 'text-emerald-500', borderL: 'border-l-emerald-500', label: 'Green', icon: <CheckCircle size={12} /> },
   RED:     { bg: 'bg-rose-500/10',    text: 'text-rose-500',    borderL: 'border-l-rose-500',    label: 'Red',   icon: <XCircle size={12} /> },
-  VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   borderL: 'border-l-slate-500',   label: 'Anulada', icon: <XCircle size={12} /> },
+  VOID:    { bg: 'bg-slate-500/10',   text: 'text-slate-500',   borderL: 'border-l-slate-500',   label: 'Anulada', icon: <XCircle size={12} /> },
   PENDING: { bg: 'bg-amber-500/10',   text: 'text-amber-500',   borderL: 'border-l-amber-500',   label: 'Pendente', icon: <Clock size={12} /> },
   CASHOUT: { bg: 'bg-orange-500/10',  text: 'text-orange-500',  borderL: 'border-l-orange-500',  label: 'Cashout',  icon: <DollarSign size={12} /> },
 }
-
-// ─── Componentes Auxiliares (Fora para evitar recriação) ───────────────────────
 
 const DoughnutChart = ({ greens, reds, pending, voided, cashout }: any) => {
   const data = {
@@ -62,28 +59,11 @@ const DoughnutChart = ({ greens, reds, pending, voided, cashout }: any) => {
         <Doughnut data={data} options={{ plugins: { legend: { display: false }, tooltip: { enabled: true } }, cutout: '70%', maintainAspectRatio: false }} />
       </div>
       <div className="flex flex-col gap-1 text-[10px] font-medium min-w-[80px]">
-        <div className="flex items-center gap-1.5 text-emerald-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>{greens} Green</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-rose-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-          <span>{reds} Red</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-amber-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <span>{pending} Pend.</span>
-        </div>
-        {voided > 0 && (
-          <div className="flex items-center gap-1.5 text-slate-500">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-            <span>{voided} Anul.</span>
-          </div>
-        )}
-        <div className="flex items-center gap-1.5 text-orange-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-          <span>{cashout} Cash.</span>
-        </div>
+        <div className="flex items-center gap-1.5 text-emerald-500"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>{greens} Green</span></div>
+        <div className="flex items-center gap-1.5 text-rose-500"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" /><span>{reds} Red</span></div>
+        <div className="flex items-center gap-1.5 text-amber-500"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /><span>{pending} Pend.</span></div>
+        {voided > 0 && <div className="flex items-center gap-1.5 text-slate-500"><span className="w-1.5 h-1.5 rounded-full bg-slate-500" /><span>{voided} Anul.</span></div>}
+        <div className="flex items-center gap-1.5 text-orange-500"><span className="w-1.5 h-1.5 rounded-full bg-orange-500" /><span>{cashout} Cash.</span></div>
       </div>
     </div>
   )
@@ -99,8 +79,6 @@ const StatusBadge = ({ tip }: { tip: Tip }) => {
   )
 }
 
-// ─── Componente Principal ─────────────────────────────────────────────────────
-
 export const TipsPage = () => {
   const { user: me } = useAuth()
   const isMaster = me?.role === 'MASTER' || me?.role === 'ADMIN'
@@ -114,8 +92,8 @@ export const TipsPage = () => {
     title: '', event: '', market: '', odds: '', stake: '', result: 'PENDING',
     profit: '', tipDate: '', valorCashout: '', sport: '', linkAposta: ''
   })
-  const [newTipSport, setNewTipSport]       = useState('')
-  const [newTipLink,  setNewTipLink]        = useState('')
+  const [newTipSport, setNewTipSport] = useState('')
+  const [newTipLink,  setNewTipLink]  = useState('')
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
@@ -173,42 +151,33 @@ export const TipsPage = () => {
 
   const handleResultChange = (newResult: string) => {
     setEditForm(f => {
-      const stakeVal = Number(f.stake) || 0;
-      const oddsVal = Number(f.odds) || 1;
-      let newProfit = f.profit;
-
-      if (newResult === 'GREEN') {
-        newProfit = (stakeVal * (oddsVal - 1)).toFixed(2);
-      } else if (newResult === 'RED') {
-        newProfit = (-stakeVal).toFixed(2);
-      } else if (newResult === 'VOID') {
-        newProfit = '0';
-      } else if (newResult === 'CASHOUT') {
-        newProfit = (Number(f.valorCashout || 0) - Number(f.stake || 0)).toFixed(2);
-      } else {
-        newProfit = '';
-      }
-
-      return { ...f, result: newResult, profit: newProfit };
-    });
-  };
+      const stakeVal = Number(f.stake) || 0
+      const oddsVal = Number(f.odds) || 1
+      let newProfit = f.profit
+      if (newResult === 'GREEN') newProfit = (stakeVal * (oddsVal - 1)).toFixed(2)
+      else if (newResult === 'RED') newProfit = (-stakeVal).toFixed(2)
+      else if (newResult === 'VOID') newProfit = '0'
+      else if (newResult === 'CASHOUT') newProfit = (Number(f.valorCashout || 0) - Number(f.stake || 0)).toFixed(2)
+      else newProfit = ''
+      return { ...f, result: newResult, profit: newProfit }
+    })
+  }
 
   const handleSaveNovoBilhete = async (data: any, id?: string) => {
-  console.log('📦 Payload enviado:', JSON.stringify(data, null, 2)) // ← adicione esta linha
-  if (id) {
-    await tipsService.update(id, data)
-  } else {
-    await tipsService.create(data)
+    if (id) {
+      await tipsService.update(id, data)
+    } else {
+      await tipsService.create(data)
+    }
+    load(1)
+    setEditTipMultipla(null)
+    setEditTipMultiMercado(null)
   }
-  load(1)
-  setEditTipMultipla(null)
-  setEditTipMultiMercado(null)
-}
 
   const openEdit = (tip: Tip) => {
     if (tip.isMultipla) {
-      setEditTipMultipla(tip)
-      setIsCriarMultiplaModalOpen(true)
+      setEditTipMultiplaCriarAposta(tip)
+      setIsMultiplaCriarApostaModalOpen(true)
     } else if (tip.mercados && tip.mercados.length > 0) {
       setEditTipMultiMercado(tip)
       setIsCriarApostaModalOpen(true)
@@ -224,8 +193,8 @@ export const TipsPage = () => {
         profit: tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '',
         tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
         valorCashout: tip.valorCashout?.toString() || '',
-        sport: (tip as any).sport || '',
-        linkAposta: (tip as any).linkAposta || '',
+        sport: tip.sport || '',
+        linkAposta: tip.linkAposta || '',
       })
     }
   }
@@ -251,19 +220,16 @@ export const TipsPage = () => {
     return filter === 'Todos' ? ts : ts.filter(t => (t.result || 'PENDING') === filter)
   }, [tips, filter])
 
-  // ─── Sub-componentes internos para acessar fmt/fmtDate ───────────────────────
-
   const TipCard = ({ tip }: { tip: Tip }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const c = STATUS_CONFIG[tip.result || 'PENDING'] || STATUS_CONFIG.PENDING;
-    const temMercados = tip.mercados && tip.mercados.length > 0;
-    const isMultipla = tip.isMultipla && Array.isArray(tip.jogos) && tip.jogos.length > 0;
-    const eExpansivel = temMercados || isMultipla;
+    const [isExpanded, setIsExpanded] = useState(false)
+    const c = STATUS_CONFIG[tip.result || 'PENDING'] || STATUS_CONFIG.PENDING
+    const temMercados = tip.mercados && tip.mercados.length > 0
+    const isMultipla = tip.isMultipla && Array.isArray(tip.jogos) && tip.jogos.length > 0
+    const eExpansivel = temMercados || isMultipla
 
     return (
       <div className={`border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm bg-surface-200 border-surface-400 group flex flex-col`}>
-        {/* HEADER DO CARD (Sempre visível) */}
-        <div 
+        <div
           className="flex justify-between items-start cursor-pointer w-full"
           onClick={() => eExpansivel && setIsExpanded(!isExpanded)}
         >
@@ -293,10 +259,8 @@ export const TipsPage = () => {
           </div>
         </div>
 
-        {/* Divisor */}
         <hr className="border-surface-400 my-4" />
 
-        {/* Células de Dados (Odd, Valor, Profit, Status e Data) */}
         <div className="flex items-center justify-between text-center gap-2">
           <div className="text-left">
             <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Odd</p>
@@ -312,8 +276,8 @@ export const TipsPage = () => {
               <div className="h-8 w-px bg-surface-400" />
               <div className="text-center">
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Profit</p>
-                <p className={`text-[15px] font-bold font-mono ${tip.profit >=  0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {tip.profit >=  0 ? '+' : ''}{fmt(tip.profit)}
+                <p className={`text-[15px] font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {tip.profit >= 0 ? '+' : ''}{fmt(tip.profit)}
                 </p>
               </div>
             </>
@@ -323,33 +287,39 @@ export const TipsPage = () => {
           <div className="flex flex-col items-end gap-1.5 flex-[1.5] text-right">
             <StatusBadge tip={tip} />
             <span className="text-[10px] text-slate-500 font-mono">{fmtDate(tip.tipDate)}</span>
+            {tip.linkAposta && (
+              <a
+                href={tip.linkAposta}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-400 text-[10px] font-bold hover:bg-blue-500/30 transition-colors"
+              >
+                🔗 Ver Aposta
+              </a>
+            )}
           </div>
         </div>
 
-        {/* CORPO EXPANSÍVEL (Mercados do Bilhete ou Multiplos) */}
         {isExpanded && eExpansivel && (
           <div className="mt-5 pt-4 border-t border-surface-400 space-y-2">
             {isMultipla ? (
               <>
                 <div className="flex items-center gap-1.5 text-cyan-400 mb-3">
                   <span className="text-xs">★</span>
-                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Jogos do Bilhete (Mutlipla)</h4>
+                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Jogos do Bilhete (Múltipla)</h4>
                 </div>
                 {tip.jogos!.map((jogo: any, index: number) => {
-                  const sC = STATUS_CONFIG[jogo.resultado || 'PENDING'] || STATUS_CONFIG.PENDING;
+                  const sC = STATUS_CONFIG[jogo.resultado || 'PENDING'] || STATUS_CONFIG.PENDING
                   return (
                     <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex flex-col gap-1.5 border border-surface-300">
                       <div className="flex items-center justify-between">
-                        <span className="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold rounded-full px-2 py-0.5 w-max">
-                          Jogo {index + 1}
-                        </span>
-                        <span className={`text-[10px] font-bold uppercase tracking-widest ${sC.text}`}>
-                          {sC.label}
-                        </span>
+                        <span className="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold rounded-full px-2 py-0.5 w-max">Jogo {index + 1}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${sC.text}`}>{sC.label}</span>
                       </div>
                       <p className="text-[13px] font-bold text-white flex-1 leading-snug">{jogo.mandante} x {jogo.visitante}</p>
                       <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 pt-1 border-t border-surface-300/50">
-                        <span>{jogo.mercado}</span>
+                        <span>{jogo.mercados?.map((m: any) => m.mercado || m).join(', ')}</span>
                         <span className="font-mono text-emerald-400 font-bold">@{Number(jogo.odd).toFixed(2)}</span>
                       </div>
                     </div>
@@ -364,9 +334,7 @@ export const TipsPage = () => {
                 </div>
                 {tip.mercados!.map((mercado, index) => (
                   <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex items-center gap-3 border border-surface-300">
-                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">
-                      {index + 1}
-                    </span>
+                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">{index + 1}</span>
                     <p className="text-[13px] text-slate-200 flex-1 leading-snug">{mercado}</p>
                   </div>
                 ))}
@@ -375,14 +343,11 @@ export const TipsPage = () => {
           </div>
         )}
       </div>
-    );
+    )
   }
-
-  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <div className="flex flex-col gap-6 relative pb-32">
-      {/* Banner */}
       {showBanner && (
         <div className="flex items-start gap-3 rounded-xl p-4 border bg-amber-500/10 border-amber-500/30">
           <Info size={16} className="mt-0.5 shrink-0 text-amber-400" />
@@ -393,7 +358,6 @@ export const TipsPage = () => {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="font-display font-semibold text-white">Dicas do Dia</h2>
@@ -418,7 +382,6 @@ export const TipsPage = () => {
         )}
       </div>
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card p-4">
           <div className="flex items-center justify-between mb-2">
@@ -453,7 +416,6 @@ export const TipsPage = () => {
         </div>
       </div>
 
-      {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2">
         {FILTERS.map(f => (
           <button key={f} onClick={() => setFilter(f)}
@@ -463,7 +425,6 @@ export const TipsPage = () => {
         ))}
       </div>
 
-      {/* Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" /></div>
       ) : filtered.length === 0 ? (
@@ -474,7 +435,6 @@ export const TipsPage = () => {
         </div>
       )}
 
-      {/* Modal Editar */}
       <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Editar Dica / Resultado" size="md">
         {selected && (
           <div className="flex flex-col gap-4">
@@ -515,32 +475,32 @@ export const TipsPage = () => {
               <div className="grid grid-cols-2 gap-3 border-t border-surface-400 pt-4 mt-4">
                 <div>
                   <label className="label">Resultado</label>
-                 <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="input-field py-2 px-3 w-full text-white bg-surface-200">
-                <option value="PENDING">Pendente</option>
-                <option value="GREEN">Green</option>
-                <option value="RED">Red</option>
-                <option value="VOID">Anulada</option>
-                <option value="CASHOUT">Cashout</option>
-              </select>
+                  <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="input-field py-2 px-3 w-full text-white bg-surface-200">
+                    <option value="PENDING">Pendente</option>
+                    <option value="GREEN">Green</option>
+                    <option value="RED">Red</option>
+                    <option value="VOID">Anulada</option>
+                    <option value="CASHOUT">Cashout</option>
+                  </select>
                 </div>
                 <div>
                   <label className="label">
                     {editForm.result === 'CASHOUT' ? 'Valor Recebido' : `Lucro/Prejuízo (${me?.currency || 'BRL'})`}
                   </label>
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    className="input-field font-mono" 
-                    value={editForm.result === 'CASHOUT' ? editForm.valorCashout : editForm.profit} 
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="input-field font-mono"
+                    value={editForm.result === 'CASHOUT' ? editForm.valorCashout : editForm.profit}
                     onChange={e => {
-                      const val = e.target.value;
+                      const val = e.target.value
                       if (editForm.result === 'CASHOUT') {
-                        const prof = (Number(val) - Number(editForm.stake)).toFixed(2);
-                        setEditForm(f => ({ ...f, valorCashout: val, profit: prof }));
+                        const prof = (Number(val) - Number(editForm.stake)).toFixed(2)
+                        setEditForm(f => ({ ...f, valorCashout: val, profit: prof }))
                       } else {
-                        setEditForm(f => ({ ...f, profit: val }));
+                        setEditForm(f => ({ ...f, profit: val }))
                       }
-                    }} 
+                    }}
                   />
                 </div>
               </div>
@@ -557,35 +517,33 @@ export const TipsPage = () => {
         )}
       </Modal>
 
-      {/* Modal Novo */}
       {newTipOpen && (
         <Modal isOpen={newTipOpen} onClose={() => setNewTipOpen(false)} title="Nova Dica" size="md">
           <form className="flex flex-col gap-4" onSubmit={async (e) => {
-            e.preventDefault();
-            setSaving(true);
+            e.preventDefault()
+            setSaving(true)
             try {
-               const autoTitle = (e.currentTarget.elements.namedItem('champ') as HTMLInputElement).value 
+              const autoTitle = (e.currentTarget.elements.namedItem('champ') as HTMLInputElement).value
                 ? `${(e.currentTarget.elements.namedItem('event') as HTMLInputElement).value} — ${(e.currentTarget.elements.namedItem('champ') as HTMLInputElement).value}`
-                : (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value;
-               
-               await tipsService.create({
-                 title: autoTitle,
-                 event: (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value,
-                 market: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
-                 odds: Number((e.currentTarget.elements.namedItem('odds') as HTMLInputElement).value),
-                 stake: Number((e.currentTarget.elements.namedItem('stake') as HTMLInputElement).value),
-                 tipDate: new Date((e.currentTarget.elements.namedItem('date') as HTMLInputElement).value).toISOString(),
-                 sport: newTipSport || 'Futebol',
-                 description: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
-                 linkAposta: newTipLink.trim() || null,
-               });
-               toast.success('Dica criada!');
-               setNewTipOpen(false)
-               setNewTipSport('')
-               setNewTipLink('')
-               load(1);
-            } catch { toast.error('Erro ao criar dica'); }
-            finally { setSaving(false); }
+                : (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value
+              await tipsService.create({
+                title: autoTitle,
+                event: (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value,
+                market: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
+                odds: Number((e.currentTarget.elements.namedItem('odds') as HTMLInputElement).value),
+                stake: Number((e.currentTarget.elements.namedItem('stake') as HTMLInputElement).value),
+                tipDate: new Date((e.currentTarget.elements.namedItem('date') as HTMLInputElement).value).toISOString(),
+                sport: newTipSport || 'Futebol',
+                description: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
+                linkAposta: newTipLink.trim() || null,
+              })
+              toast.success('Dica criada!')
+              setNewTipOpen(false)
+              setNewTipSport('')
+              setNewTipLink('')
+              load(1)
+            } catch { toast.error('Erro ao criar dica') }
+            finally { setSaving(false) }
           }}>
             <div><label className="label">Evento *</label><input name="event" required className="input-field" /></div>
             <div><label className="label">Campeonato</label><input name="champ" className="input-field" /></div>
@@ -610,10 +568,8 @@ export const TipsPage = () => {
         </Modal>
       )}
 
-      {/* Modal Compartilhar */}
       {sharingTip && <ShareTipModal isOpen={!!sharingTip} onClose={() => setSharingTip(null)} tip={sharingTip} />}
 
-      {/* Modal Múltipla + Criar Aposta */}
       <ModalMultiplaCriarAposta
         isOpen={isMultiplaCriarApostaModalOpen}
         onClose={() => { setIsMultiplaCriarApostaModalOpen(false); setEditTipMultiplaCriarAposta(null) }}
@@ -621,19 +577,17 @@ export const TipsPage = () => {
         initialData={editTipMultiplaCriarAposta}
       />
 
-      {/* NOVO Modal Criar Aposta Multi-Mercados */}
-      <ModalCriarAposta 
-        isOpen={isCriarApostaModalOpen} 
-        onClose={() => { setIsCriarApostaModalOpen(false); setEditTipMultiMercado(null); }} 
-        onSave={handleSaveNovoBilhete} 
+      <ModalCriarAposta
+        isOpen={isCriarApostaModalOpen}
+        onClose={() => { setIsCriarApostaModalOpen(false); setEditTipMultiMercado(null) }}
+        onSave={handleSaveNovoBilhete}
         initialData={editTipMultiMercado}
       />
 
-      {/* NOVO Modal Criar Aposta Múltipla */}
-      <ModalCriarMultipla 
-        isOpen={isCriarMultiplaModalOpen} 
-        onClose={() => { setIsCriarMultiplaModalOpen(false); setEditTipMultipla(null); }} 
-        onSave={handleSaveNovoBilhete} 
+      <ModalCriarMultipla
+        isOpen={isCriarMultiplaModalOpen}
+        onClose={() => { setIsCriarMultiplaModalOpen(false); setEditTipMultipla(null) }}
+        onSave={handleSaveNovoBilhete}
         initialData={editTipMultipla}
       />
     </div>

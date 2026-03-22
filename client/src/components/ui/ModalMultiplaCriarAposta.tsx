@@ -36,6 +36,21 @@ const emptyJogo = (): JogoMultiplaCriarAposta => ({
   mercados:  [{ mercado: '' }],
 })
 
+// Normaliza jogos antigos que tinham { selecao, mercado } para { mercado }
+const normalizeJogos = (jogos: any[]): JogoMultiplaCriarAposta[] => {
+  return jogos.map(j => ({
+    mandante:  j.mandante  || '',
+    visitante: j.visitante || '',
+    odd:       j.odd       || '',
+    resultado: j.resultado || 'PENDING',
+    mercados:  Array.isArray(j.mercados)
+      ? j.mercados.map((m: any) => ({
+          mercado: typeof m === 'string' ? m : (m.mercado || m.selecao || ''),
+        }))
+      : [{ mercado: '' }],
+  }))
+}
+
 export const ModalMultiplaCriarAposta = ({
   isOpen, onClose, onSave, initialData,
 }: ModalMultiplaCriarApostaProps) => {
@@ -57,7 +72,11 @@ export const ModalMultiplaCriarAposta = ({
       setLinkAposta(initialData.linkAposta || '')
       setResultado(initialData.result || 'PENDING')
       setProfit(initialData.profit != null ? initialData.profit.toString() : '')
-      setJogos(initialData.jogos?.length > 0 ? initialData.jogos : [emptyJogo()])
+      setJogos(
+        initialData.jogos?.length > 0
+          ? normalizeJogos(initialData.jogos)
+          : [emptyJogo()]
+      )
     } else {
       setDataAposta('')
       setStake('')
@@ -125,7 +144,7 @@ export const ModalMultiplaCriarAposta = ({
         profit:      profit ? Number(profit) : null,
         isMultipla:  true,
         jogos,
-        linkAposta:  linkAposta.trim() || null,
+        linkAposta:  linkAposta?.trim() || null,
       }, initialData?.id)
 
       toast.success(initialData ? 'Bilhete atualizado!' : 'Bilhete salvo!')
@@ -157,7 +176,6 @@ export const ModalMultiplaCriarAposta = ({
         {/* Body */}
         <div className="overflow-y-auto p-5 flex flex-col gap-5">
 
-          {/* Campos principais */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data da Aposta</label>
@@ -184,9 +202,7 @@ export const ModalMultiplaCriarAposta = ({
           {/* Jogos */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Jogos do Bilhete
-              </label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Jogos do Bilhete</label>
               <button type="button" onClick={addJogo}
                 className="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-300 hover:bg-surface-300 transition-colors">
                 <Plus size={14} /> Adicionar Jogo
@@ -196,11 +212,8 @@ export const ModalMultiplaCriarAposta = ({
             <div className="flex flex-col gap-4">
               {jogos.map((jogo, jogoIdx) => (
                 <div key={jogoIdx} className="bg-surface-100/50 rounded-xl border border-surface-300 overflow-hidden">
-
                   <div className="flex items-center justify-between px-4 py-2.5 bg-purple-500/10 border-b border-surface-300">
-                    <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">
-                      Jogo {jogoIdx + 1}
-                    </span>
+                    <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Jogo {jogoIdx + 1}</span>
                     {jogos.length > 1 && (
                       <button type="button" onClick={() => removeJogo(jogoIdx)}
                         className="text-slate-500 hover:text-red-400 transition-colors p-1">
@@ -210,7 +223,6 @@ export const ModalMultiplaCriarAposta = ({
                   </div>
 
                   <div className="p-4 flex flex-col gap-3">
-                    {/* Times + Odd */}
                     <div className="grid grid-cols-3 gap-3">
                       <div>
                         <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Mandante</label>
@@ -232,7 +244,6 @@ export const ModalMultiplaCriarAposta = ({
                       </div>
                     </div>
 
-                    {/* Resultado do jogo */}
                     <div>
                       <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Resultado do Jogo</label>
                       <select value={jogo.resultado} onChange={e => updateJogo(jogoIdx, 'resultado', e.target.value)}
@@ -244,12 +255,9 @@ export const ModalMultiplaCriarAposta = ({
                       </select>
                     </div>
 
-                    {/* Mercados do jogo */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">
-                          Mercados
-                        </label>
+                        <label className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">Mercados</label>
                         <button type="button" onClick={() => addMercado(jogoIdx)}
                           className="text-[10px] font-bold text-slate-500 hover:text-white flex items-center gap-1 px-2 py-1 rounded border border-surface-400 hover:bg-surface-300 transition-colors">
                           <Plus size={11} /> Mercado
