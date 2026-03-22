@@ -14,7 +14,6 @@ import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
-import { BilheteScanner } from '../components/ui/BilheteScanner'
 import { ModalMultiplaCriarAposta } from '../components/ui/ModalMultiplaCriarAposta'
 import { SportSelect } from '../components/ui/SportSelect'
 
@@ -127,7 +126,6 @@ export const TipsPage = () => {
   const [editTipMultiMercado, setEditTipMultiMercado] = useState<Tip | null>(null)
   const [isMultiplaCriarApostaModalOpen, setIsMultiplaCriarApostaModalOpen] = useState(false)
   const [editTipMultiplaCriarAposta, setEditTipMultiplaCriarAposta] = useState<Tip | null>(null)
-  const [scanData, setScanData] = useState<any>(null)
 
   const load = async (p = 1) => {
     setLoading(true)
@@ -194,66 +192,6 @@ export const TipsPage = () => {
       return { ...f, result: newResult, profit: newProfit };
     });
   };
-
-  const handleScanMultiplaCriarAposta = (data: any) => {
-    // data: { stake, jogos: [{mandante, visitante, odd, resultado, mercados:[{selecao,mercado}]}] }
-    const tipData = {
-      stake: data.stake,
-      isMultipla: true,
-      jogos: data.jogos,
-      event: `Múltipla CA — ${data.jogos?.length || 0} jogos`,
-      title: `Múltipla CA — ${data.jogos?.length || 0} jogos`,
-      sport: 'Futebol',
-      market: 'Múltipla / Criar Aposta',
-      description: 'Múltipla Criar Aposta gerada via scan',
-      tipDate: new Date().toISOString(),
-    }
-    setEditTipMultiplaCriarAposta(tipData as any)
-    setIsMultiplaCriarApostaModalOpen(true)
-  }
-
-  const handleScanSimples = (data: any) => {
-    setNewTipOpen(true)
-    // Preenche via estado temporário — o form do modal simples usa name= então só abrimos
-    // Os dados chegam como: { event, market, odds, stake, sport }
-    // Guardamos para pré-preencher
-    setScanData(data)
-  }
-
-  const handleScanMultipla = (data: any) => {
-    // data: { stake, oddTotal, jogos: [{mandante, visitante, mercado, selecao, odd, resultado}] }
-    const tipData = {
-      stake: data.stake,
-      odds: data.oddTotal,
-      isMultipla: true,
-      jogos: data.jogos,
-      event: data.jogos?.[0] ? `${data.jogos[0].mandante} x ${data.jogos[0].visitante}` : 'Múltipla',
-      title: `Múltipla ${data.jogos?.length || 0} jogos`,
-      sport: 'Futebol',
-      market: 'Múltipla',
-      description: 'Múltipla gerada via scan',
-      tipDate: new Date().toISOString(),
-    }
-    setEditTipMultipla(tipData as any)
-    setIsCriarMultiplaModalOpen(true)
-  }
-
-  const handleScanCriarAposta = (data: any) => {
-    // data: { event, stake, odds, sport, mercados: string[] }
-    const tipData = {
-      event: data.event,
-      stake: data.stake,
-      odds: data.odds,
-      sport: data.sport || 'Futebol',
-      mercados: data.mercados,
-      title: data.event,
-      market: data.mercados?.[0] || 'Criar Aposta',
-      description: 'Criar Aposta gerada via scan',
-      tipDate: new Date().toISOString(),
-    }
-    setEditTipMultiMercado(tipData as any)
-    setIsCriarApostaModalOpen(true)
-  }
 
   const handleSaveNovoBilhete = async (data: any, id?: string) => {
     if (id) {
@@ -462,12 +400,6 @@ export const TipsPage = () => {
         </div>
         {isMaster && (
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
-            <BilheteScanner
-              onSimples={handleScanSimples}
-              onMultipla={handleScanMultipla}
-              onCriarAposta={handleScanCriarAposta}
-              onMultiplaCriarAposta={handleScanMultiplaCriarAposta}
-            />
             <button onClick={() => setIsMultiplaCriarApostaModalOpen(true)}
               className="bg-purple-600 hover:bg-purple-500 transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-purple-500/20 text-sm">
               <span className="text-[12px] font-bold relative top-[-1px]">M</span>⭐ Múltipla + CA
