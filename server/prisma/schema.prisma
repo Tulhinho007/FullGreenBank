@@ -75,6 +75,7 @@ model Tip {
   mercados     String[] @default([])
   isMultipla   Boolean  @default(false)
   jogos        Json?
+  linkAposta   String?     //
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
