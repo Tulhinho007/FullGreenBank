@@ -57,6 +57,32 @@ app.use('/api/cadastros', cadastrosRoutes);
 app.use('/api/futvolei', futvoleiRoutes);
 app.use('/api/permissions', permissionsRoutes);
 
+// ── Security Headers ──────────────────────────────────────────────
+app.use((_req, res, next) => {
+  // Impede que outros sites carreguem seus recursos
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-site')
+  
+  // Impede que sua API seja carregada em iframes
+  res.setHeader('X-Frame-Options', 'DENY')
+  
+  // Impede sniffing de MIME type
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  
+  // Força HTTPS
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+  
+  // Controla informações do referrer
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  
+  // Desativa recursos perigosos do browser
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  
+  // Impede execução de scripts não autorizados
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+
+  next()
+})
+
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Full Green Bank API running 🟢' });
