@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { authenticate } from '../middlewares/auth.middleware'
 import * as futvoleiController from '../controllers/futvolei.controller'
+import { validate, createMatchSchema } from '../utils/validators'
 
 const router = Router()
 
@@ -8,6 +9,7 @@ const router = Router()
 router.get('/active',  authenticate, futvoleiController.getActiveMatches)
 router.get('/history', authenticate, futvoleiController.getFinishedMatches)
 router.get('/stats',   authenticate, futvoleiController.getStats)
+router.post('/', authenticate, validate(createMatchSchema), futvoleiController.createMatch)
 
 // Criar desafio
 router.post('/', authenticate, futvoleiController.createMatch)
