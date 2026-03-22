@@ -28,13 +28,29 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setImage(ev.target?.result as string)
-    reader.readAsDataURL(file)
-    setError(null)
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  // Comprime a imagem antes de salvar
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const img = new Image()
+
+  img.onload = () => {
+    // Reduz para no máximo 1200px de largura
+    const maxW = 1200
+    const ratio = Math.min(1, maxW / img.width)
+    canvas.width  = img.width  * ratio
+    canvas.height = img.height * ratio
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+    // Converte para JPEG com 80% de qualidade
+    setImage(canvas.toDataURL('image/jpeg', 0.8))
   }
+
+  img.src = URL.createObjectURL(file)
+  setError(null)
+}
 
   const buildPrompt = (t: TipoBilhete): string => {
     if (t === 'simples') {
