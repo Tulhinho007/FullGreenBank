@@ -14,6 +14,7 @@ import solicitacoesRoutes from './routes/solicitacoes.routes';
 import cadastrosRoutes from './routes/cadastros.routes';
 import futvoleiRoutes from './routes/futvolei.routes';
 import permissionsRoutes from './routes/permissions.routes'
+import rateLimit from 'express-rate-limit'
 
 const app = express();
 
@@ -91,6 +92,29 @@ app.use((_req, res, next) => {
 )
   next()
 })
+
+// ── Rate Limiting ─────────────────────────────────────────────────
+// Geral — todas as rotas
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100,                  // máx 100 requisições por IP
+  message: { success: false, message: 'Muitas requisições. Tente novamente em 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+// Login — mais restrito
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 10,                   // máx 10 tentativas de login por IP
+  message: { success: false, message: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+app.use(generalLimiter)
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/register', authLimiter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
