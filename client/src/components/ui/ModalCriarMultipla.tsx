@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Plus, X, ListPlus, Edit2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { SportSelect } from './SportSelect'
 
 interface JogoMultipla {
   mandante: string
@@ -26,6 +27,8 @@ const formatDateForInput = (dateString?: string) => {
 export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: ModalCriarMultiplaProps) => {
   const [dataAposta, setDataAposta] = useState('')
   const [stake, setStake] = useState('')
+  const [sport, setSport] = useState('')
+  const [linkAposta, setLinkAposta] = useState('')
   const [resultado, setResultado] = useState('PENDING')
   const [profit, setProfit] = useState('')
   const [jogos, setJogos] = useState<JogoMultipla[]>([
@@ -38,12 +41,16 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: Mod
       if (initialData) {
         setDataAposta(formatDateForInput(initialData.tipDate))
         setStake(initialData.stake?.toString() || '')
+        setSport(initialData.sport || '')
+        setLinkAposta(initialData.linkAposta || '')
         setResultado(initialData.result || 'PENDING')
         setProfit(initialData.profit !== null && initialData.profit !== undefined ? initialData.profit.toString() : '')
         setJogos(initialData.jogos?.length > 0 ? initialData.jogos : [{ mandante: '', visitante: '', mercado: '', odd: '', resultado: 'PENDING' }])
       } else {
         setDataAposta('')
         setStake('')
+        setSport('')
+        setLinkAposta('')
         setResultado('PENDING')
         setProfit('')
         setJogos([{ mandante: '', visitante: '', mercado: '', odd: '', resultado: 'PENDING' }])
@@ -109,7 +116,7 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: Mod
         event,
         title,
         description: 'Bilhete Múltiplo',
-        sport: 'Futebol', 
+        sport: sport || 'Futebol',
         market: 'Múltipla',
         odds: Number(oddTotal),
         stake: Number(stake),
@@ -117,7 +124,8 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: Mod
         result: resultado,
         profit: profit ? Number(profit) : null,
         isMultipla: true,
-        jogos: jogos // Prisma Json handles this
+        jogos,
+        linkAposta: linkAposta.trim() || null,
       }, initialData?.id)
       onClose()
       toast.success(initialData ? 'Múltipla atualizada!' : 'Bilhete salvo!')
@@ -147,25 +155,23 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: Mod
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data</label>
-              <input 
-                type="datetime-local" 
-                value={dataAposta}
-                onChange={e => setDataAposta(e.target.value)}
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
-              />
+              <input type="datetime-local" value={dataAposta} onChange={e => setDataAposta(e.target.value)}
+                className="input-field py-2.5 px-3 w-full bg-surface-200" required />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stake (R$)</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                value={stake}
-                onChange={e => setStake(e.target.value)}
-                placeholder="Ex: 50.00"
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
-              />
+              <input type="number" step="0.01" value={stake} onChange={e => setStake(e.target.value)}
+                placeholder="Ex: 50.00" className="input-field py-2.5 px-3 w-full bg-surface-200" required />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Esporte *</label>
+              <SportSelect value={sport} onChange={setSport} required />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Link da Aposta</label>
+              <input type="url" value={linkAposta} onChange={e => setLinkAposta(e.target.value)}
+                placeholder="https://www.betano.bet.br/bookingcode/..."
+                className="input-field py-2.5 px-3 w-full bg-surface-200 text-sm" />
             </div>
           </div>
 

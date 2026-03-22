@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Plus, X, Star, Edit2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { SportSelect } from './SportSelect'
 
 interface ModalCriarApostaProps {
   isOpen: boolean
@@ -22,6 +23,8 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
   const [resultado, setResultado] = useState('PENDING')
   const [profit, setProfit] = useState('')
   const [event, setEvent] = useState('')
+  const [sport, setSport] = useState('')
+  const [linkAposta, setLinkAposta] = useState('')
   const [mercados, setMercados] = useState<string[]>([''])
   const [saving, setSaving] = useState(false)
 
@@ -34,6 +37,8 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
         setResultado(initialData.result || 'PENDING')
         setProfit(initialData.profit !== null && initialData.profit !== undefined ? initialData.profit.toString() : '')
         setEvent(initialData.event || '')
+        setSport(initialData.sport || '')
+        setLinkAposta(initialData.linkAposta || '')
         setMercados(initialData.mercados?.length > 0 ? initialData.mercados : [''])
       } else {
         setDataAposta('')
@@ -42,6 +47,8 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
         setResultado('PENDING')
         setProfit('')
         setEvent('')
+        setSport('')
+        setLinkAposta('')
         setMercados([''])
       }
     }
@@ -91,16 +98,17 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
     try {
       await onSave({
         event,
-        title: event, // Title could just be the event name for tickets
+        title: event,
         description: 'Bilhete Multi-Mercados',
-        sport: 'Futebol', // Default sport (could be selectable later)
-        market: mercados[0] || 'Múltiplo', // Default fallback
+        sport: sport || 'Futebol',
+        market: mercados[0] || 'Múltiplo',
         odds: Number(oddTotal),
         stake: Number(stake),
         tipDate: new Date(dataAposta).toISOString(),
         result: resultado,
         profit: profit ? Number(profit) : null,
-        mercados: mercados.filter(m => m.trim() !== '')
+        mercados: mercados.filter(m => m.trim() !== ''),
+        linkAposta: linkAposta.trim() || null,
       }, initialData?.id)
       onClose()
       toast.success(initialData ? 'Bilhete atualizado!' : 'Bilhete salvo!')
@@ -127,53 +135,69 @@ export const ModalCriarAposta = ({ isOpen, onClose, onSave, initialData }: Modal
 
         {/* Content */}
         <div className="p-5 overflow-y-auto custom-scrollbar">
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Evento *</label>
+              <input
+                type="text"
+                value={event}
+                onChange={e => setEvent(e.target.value)}
+                placeholder="Ex: Arsenal x Chelsea"
+                className="input-field py-2.5 px-3 w-full bg-surface-200"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Esporte *</label>
+              <SportSelect value={sport} onChange={setSport} required />
+            </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data</label>
-              <input 
-                type="datetime-local" 
+              <input
+                type="datetime-local"
                 value={dataAposta}
                 onChange={e => setDataAposta(e.target.value)}
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
+                className="input-field py-2.5 px-3 w-full bg-surface-200"
+                required
               />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stake (R$)</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                value={stake}
+              <input
+                type="number" step="0.01" value={stake}
                 onChange={e => setStake(e.target.value)}
                 placeholder="Ex: 10"
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
+                className="input-field py-2.5 px-3 w-full bg-surface-200" required
               />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Odd Total</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                value={oddTotal}
+              <input
+                type="number" step="0.01" value={oddTotal}
                 onChange={e => setOddTotal(e.target.value)}
                 placeholder="Ex: 5,3"
-                className="input-field py-2.5 px-3 w-full bg-surface-200" 
-                required 
+                className="input-field py-2.5 px-3 w-full bg-surface-200" required
               />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Resultado</label>
-              <select 
-                value={resultado}
-                onChange={e => setResultado(e.target.value)}
-                className="input-field py-2.5 px-3 w-full bg-surface-200"
-              >
+              <select value={resultado} onChange={e => setResultado(e.target.value)}
+                className="input-field py-2.5 px-3 w-full bg-surface-200">
                 <option value="PENDING">— Pendente —</option>
                 <option value="GREEN">✅ Green</option>
                 <option value="RED">❌ Red</option>
                 <option value="VOID">⚪ Anulado</option>
               </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Link da Aposta</label>
+              <input
+                type="url"
+                value={linkAposta}
+                onChange={e => setLinkAposta(e.target.value)}
+                placeholder="Ex: https://www.betano.bet.br/bookingcode/..."
+                className="input-field py-2.5 px-3 w-full bg-surface-200 text-sm"
+              />
             </div>
           </div>
 

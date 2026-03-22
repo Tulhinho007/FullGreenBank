@@ -14,6 +14,9 @@ import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
+import { BilheteScanner } from '../components/ui/BilheteScanner'
+import { ModalMultiplaCriarAposta } from '../components/ui/ModalMultiplaCriarAposta'
+import { SportSelect } from '../components/ui/SportSelect'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -109,8 +112,11 @@ export const TipsPage = () => {
   const [page,       setPage]       = useState(1)
   const [selected,   setSelected]   = useState<Tip | null>(null)
   const [editForm,   setEditForm]   = useState({
-    title: '', event: '', market: '', odds: '', stake: '', result: 'PENDING', profit: '', tipDate: '', valorCashout: ''
+    title: '', event: '', market: '', odds: '', stake: '', result: 'PENDING',
+    profit: '', tipDate: '', valorCashout: '', sport: '', linkAposta: ''
   })
+  const [newTipSport, setNewTipSport]       = useState('')
+  const [newTipLink,  setNewTipLink]        = useState('')
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
@@ -119,6 +125,9 @@ export const TipsPage = () => {
   const [sharingTip, setSharingTip] = useState<Tip | null>(null)
   const [editTipMultipla, setEditTipMultipla] = useState<Tip | null>(null)
   const [editTipMultiMercado, setEditTipMultiMercado] = useState<Tip | null>(null)
+  const [isMultiplaCriarApostaModalOpen, setIsMultiplaCriarApostaModalOpen] = useState(false)
+  const [editTipMultiplaCriarAposta, setEditTipMultiplaCriarAposta] = useState<Tip | null>(null)
+  const [scanData, setScanData] = useState<any>(null)
 
   const load = async (p = 1) => {
     setLoading(true)
@@ -154,7 +163,9 @@ export const TipsPage = () => {
         result: editForm.result,
         profit: Number(editForm.profit),
         tipDate: new Date(editForm.tipDate).toISOString(),
-        valorCashout: editForm.result === 'CASHOUT' ? Number(editForm.valorCashout) : null
+        valorCashout: editForm.result === 'CASHOUT' ? Number(editForm.valorCashout) : null,
+        sport: editForm.sport || 'Futebol',
+        linkAposta: editForm.linkAposta?.trim() || null,
       })
       toast.success('Dica atualizada! 🎯')
       setSelected(null); load(page)
@@ -183,6 +194,66 @@ export const TipsPage = () => {
       return { ...f, result: newResult, profit: newProfit };
     });
   };
+
+  const handleScanMultiplaCriarAposta = (data: any) => {
+    // data: { stake, jogos: [{mandante, visitante, odd, resultado, mercados:[{selecao,mercado}]}] }
+    const tipData = {
+      stake: data.stake,
+      isMultipla: true,
+      jogos: data.jogos,
+      event: `Múltipla CA — ${data.jogos?.length || 0} jogos`,
+      title: `Múltipla CA — ${data.jogos?.length || 0} jogos`,
+      sport: 'Futebol',
+      market: 'Múltipla / Criar Aposta',
+      description: 'Múltipla Criar Aposta gerada via scan',
+      tipDate: new Date().toISOString(),
+    }
+    setEditTipMultiplaCriarAposta(tipData as any)
+    setIsMultiplaCriarApostaModalOpen(true)
+  }
+
+  const handleScanSimples = (data: any) => {
+    setNewTipOpen(true)
+    // Preenche via estado temporário — o form do modal simples usa name= então só abrimos
+    // Os dados chegam como: { event, market, odds, stake, sport }
+    // Guardamos para pré-preencher
+    setScanData(data)
+  }
+
+  const handleScanMultipla = (data: any) => {
+    // data: { stake, oddTotal, jogos: [{mandante, visitante, mercado, selecao, odd, resultado}] }
+    const tipData = {
+      stake: data.stake,
+      odds: data.oddTotal,
+      isMultipla: true,
+      jogos: data.jogos,
+      event: data.jogos?.[0] ? `${data.jogos[0].mandante} x ${data.jogos[0].visitante}` : 'Múltipla',
+      title: `Múltipla ${data.jogos?.length || 0} jogos`,
+      sport: 'Futebol',
+      market: 'Múltipla',
+      description: 'Múltipla gerada via scan',
+      tipDate: new Date().toISOString(),
+    }
+    setEditTipMultipla(tipData as any)
+    setIsCriarMultiplaModalOpen(true)
+  }
+
+  const handleScanCriarAposta = (data: any) => {
+    // data: { event, stake, odds, sport, mercados: string[] }
+    const tipData = {
+      event: data.event,
+      stake: data.stake,
+      odds: data.odds,
+      sport: data.sport || 'Futebol',
+      mercados: data.mercados,
+      title: data.event,
+      market: data.mercados?.[0] || 'Criar Aposta',
+      description: 'Criar Aposta gerada via scan',
+      tipDate: new Date().toISOString(),
+    }
+    setEditTipMultiMercado(tipData as any)
+    setIsCriarApostaModalOpen(true)
+  }
 
   const handleSaveNovoBilhete = async (data: any, id?: string) => {
     if (id) {
@@ -213,7 +284,9 @@ export const TipsPage = () => {
         result: tip.result || 'PENDING',
         profit: tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '',
         tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
-        valorCashout: tip.valorCashout?.toString() || ''
+        valorCashout: tip.valorCashout?.toString() || '',
+        sport: (tip as any).sport || '',
+        linkAposta: (tip as any).linkAposta || '',
       })
     }
   }
@@ -389,6 +462,16 @@ export const TipsPage = () => {
         </div>
         {isMaster && (
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
+            <BilheteScanner
+              onSimples={handleScanSimples}
+              onMultipla={handleScanMultipla}
+              onCriarAposta={handleScanCriarAposta}
+              onMultiplaCriarAposta={handleScanMultiplaCriarAposta}
+            />
+            <button onClick={() => setIsMultiplaCriarApostaModalOpen(true)}
+              className="bg-purple-600 hover:bg-purple-500 transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-purple-500/20 text-sm">
+              <span className="text-[12px] font-bold relative top-[-1px]">M</span>⭐ Múltipla + CA
+            </button>
             <button onClick={() => setIsCriarMultiplaModalOpen(true)} className="bg-cyan-500 hover:bg-cyan-400 transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-cyan-500/20 text-sm">
               <span className="text-[12px] font-bold relative top-[-1px]">M</span> Dicas - Múltiplas
             </button>
@@ -463,13 +546,23 @@ export const TipsPage = () => {
         {selected && (
           <div className="flex flex-col gap-4">
             <div className="space-y-4">
-              <div>
-                <label className="label">Evento</label>
-                <input className="input-field" value={editForm.event} onChange={e => setEditForm(f => ({ ...f, event: e.target.value }))} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Esporte</label>
+                  <SportSelect value={editForm.sport} onChange={v => setEditForm(f => ({ ...f, sport: v }))} />
+                </div>
+                <div>
+                  <label className="label">Evento</label>
+                  <input className="input-field" value={editForm.event} onChange={e => setEditForm(f => ({ ...f, event: e.target.value }))} />
+                </div>
               </div>
               <div>
                 <label className="label">Mercado</label>
                 <input className="input-field" value={editForm.market} onChange={e => setEditForm(f => ({ ...f, market: e.target.value }))} />
+              </div>
+              <div>
+                <label className="label">Link da Aposta</label>
+                <input type="url" className="input-field text-sm" placeholder="https://..." value={editForm.linkAposta} onChange={e => setEditForm(f => ({ ...f, linkAposta: e.target.value }))} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -549,22 +642,36 @@ export const TipsPage = () => {
                  odds: Number((e.currentTarget.elements.namedItem('odds') as HTMLInputElement).value),
                  stake: Number((e.currentTarget.elements.namedItem('stake') as HTMLInputElement).value),
                  tipDate: new Date((e.currentTarget.elements.namedItem('date') as HTMLInputElement).value).toISOString(),
-                 sport: 'Futebol',
-                 description: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value
+                 sport: newTipSport || 'Futebol',
+                 description: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
+                 linkAposta: newTipLink.trim() || null,
                });
                toast.success('Dica criada!');
-               setNewTipOpen(false); load(1);
+               setNewTipOpen(false)
+               setNewTipSport('')
+               setNewTipLink('')
+               load(1);
             } catch { toast.error('Erro ao criar dica'); }
             finally { setSaving(false); }
           }}>
             <div><label className="label">Evento *</label><input name="event" required className="input-field" /></div>
             <div><label className="label">Campeonato</label><input name="champ" className="input-field" /></div>
+            <div>
+              <label className="label">Esporte *</label>
+              <SportSelect value={newTipSport} onChange={setNewTipSport} required />
+            </div>
             <div><label className="label">Mercado *</label><input name="market" required className="input-field" /></div>
             <div className="grid grid-cols-2 gap-3">
               <div><label className="label">Odd *</label><input name="odds" type="number" step="0.01" required className="input-field" /></div>
               <div><label className="label">Stake *</label><input name="stake" type="number" step="0.5" required className="input-field" /></div>
             </div>
             <div><label className="label">Data/Hora *</label><input name="date" type="datetime-local" required className="input-field" /></div>
+            <div>
+              <label className="label">Link da Aposta</label>
+              <input type="url" value={newTipLink} onChange={e => setNewTipLink(e.target.value)}
+                placeholder="https://www.betano.bet.br/bookingcode/..."
+                className="input-field text-sm" />
+            </div>
             <button type="submit" disabled={saving} className="btn-primary w-full py-3">{saving ? 'Publicando...' : 'Publicar'}</button>
           </form>
         </Modal>
@@ -572,6 +679,14 @@ export const TipsPage = () => {
 
       {/* Modal Compartilhar */}
       {sharingTip && <ShareTipModal isOpen={!!sharingTip} onClose={() => setSharingTip(null)} tip={sharingTip} />}
+
+      {/* Modal Múltipla + Criar Aposta */}
+      <ModalMultiplaCriarAposta
+        isOpen={isMultiplaCriarApostaModalOpen}
+        onClose={() => { setIsMultiplaCriarApostaModalOpen(false); setEditTipMultiplaCriarAposta(null) }}
+        onSave={handleSaveNovoBilhete}
+        initialData={editTipMultiplaCriarAposta}
+      />
 
       {/* NOVO Modal Criar Aposta Multi-Mercados */}
       <ModalCriarAposta 
