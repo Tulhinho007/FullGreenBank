@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import logRoutes from './routes/log.routes'
 
+
 import authRoutes          from './routes/auth.routes';
 import tipsRoutes          from './routes/tips.routes';
 import userRoutes          from './routes/user.routes';
