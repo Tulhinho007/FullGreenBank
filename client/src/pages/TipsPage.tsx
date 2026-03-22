@@ -194,15 +194,16 @@ export const TipsPage = () => {
   };
 
   const handleSaveNovoBilhete = async (data: any, id?: string) => {
-    if (id) {
-      await tipsService.update(id, data)
-    } else {
-      await tipsService.create(data)
-    }
-    load(1)
-    setEditTipMultipla(null)
-    setEditTipMultiMercado(null)
+  console.log('📦 Payload enviado:', JSON.stringify(data, null, 2)) // ← adicione esta linha
+  if (id) {
+    await tipsService.update(id, data)
+  } else {
+    await tipsService.create(data)
   }
+  load(1)
+  setEditTipMultipla(null)
+  setEditTipMultiMercado(null)
+}
 
   const openEdit = (tip: Tip) => {
     if (tip.isMultipla) {
