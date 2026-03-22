@@ -4,8 +4,7 @@ import toast from 'react-hot-toast'
 import { SportSelect } from './SportSelect'
 
 interface MercadoJogo {
-  selecao: string   // Ex: "Newcastle United", "Mais de 1.5"
-  mercado: string   // Ex: "Resultado Final", "Total de Gols"
+  mercado: string
 }
 
 interface JogoMultiplaCriarAposta {
@@ -34,7 +33,7 @@ const emptyJogo = (): JogoMultiplaCriarAposta => ({
   visitante: '',
   odd:       '',
   resultado: 'PENDING',
-  mercados:  [{ selecao: '', mercado: '' }],
+  mercados:  [{ mercado: '' }],
 })
 
 export const ModalMultiplaCriarAposta = ({
@@ -88,39 +87,28 @@ export const ModalMultiplaCriarAposta = ({
 
   if (!isOpen) return null
 
-  // ── Jogo handlers ──────────────────────────────────────────────────────────
   const addJogo = () => setJogos(p => [...p, emptyJogo()])
   const removeJogo = (i: number) => setJogos(p => p.filter((_, idx) => idx !== i))
   const updateJogo = (i: number, field: keyof Omit<JogoMultiplaCriarAposta, 'mercados'>, val: string) =>
     setJogos(p => p.map((j, idx) => idx === i ? { ...j, [field]: val } : j))
 
-  // ── Mercado handlers ────────────────────────────────────────────────────────
   const addMercado = (jogoIdx: number) =>
     setJogos(p => p.map((j, i) =>
-      i === jogoIdx ? { ...j, mercados: [...j.mercados, { selecao: '', mercado: '' }] } : j
+      i === jogoIdx ? { ...j, mercados: [...j.mercados, { mercado: '' }] } : j
     ))
   const removeMercado = (jogoIdx: number, mIdx: number) =>
     setJogos(p => p.map((j, i) =>
       i === jogoIdx ? { ...j, mercados: j.mercados.filter((_, mi) => mi !== mIdx) } : j
     ))
-  const updateMercado = (jogoIdx: number, mIdx: number, field: keyof MercadoJogo, val: string) =>
+  const updateMercado = (jogoIdx: number, mIdx: number, val: string) =>
     setJogos(p => p.map((j, i) =>
       i === jogoIdx
-        ? { ...j, mercados: j.mercados.map((m, mi) => mi === mIdx ? { ...m, [field]: val } : m) }
+        ? { ...j, mercados: j.mercados.map((m, mi) => mi === mIdx ? { mercado: val } : m) }
         : j
     ))
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!dataAposta || !stake) { toast.error('Preencha data e stake'); return }
-    for (const j of jogos) {
-      if (!j.mandante || !j.visitante || !j.odd) { toast.error('Preencha todos os jogos'); return }
-      for (const m of j.mercados) {
-        if (!m.selecao || !m.mercado) { toast.error('Preencha todos os mercados dos jogos'); return }
-      }
-    }
-
     setSaving(true)
     try {
       const numJogos = jogos.length
@@ -131,8 +119,8 @@ export const ModalMultiplaCriarAposta = ({
         sport:       sport || 'Futebol',
         market:      'Múltipla / Criar Aposta',
         odds:        Number(oddTotal),
-        stake:       Number(stake),
-        tipDate:     new Date(dataAposta).toISOString(),
+        stake:       Number(stake) || 0,
+        tipDate:     dataAposta ? new Date(dataAposta).toISOString() : new Date().toISOString(),
         result:      resultado,
         profit:      profit ? Number(profit) : null,
         isMultipla:  true,
@@ -167,23 +155,23 @@ export const ModalMultiplaCriarAposta = ({
         </div>
 
         {/* Body */}
-        <div className="p-5 overflow-y-auto custom-scrollbar flex flex-col gap-5">
+        <div className="overflow-y-auto p-5 flex flex-col gap-5">
 
-          {/* Data + Stake + Esporte + Link */}
+          {/* Campos principais */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data</label>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Data da Aposta</label>
               <input type="datetime-local" value={dataAposta} onChange={e => setDataAposta(e.target.value)}
-                className="input-field py-2.5 px-3 w-full bg-surface-200" required />
+                className="input-field py-2.5 px-3 w-full bg-surface-200" />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stake (R$)</label>
               <input type="number" step="0.01" value={stake} onChange={e => setStake(e.target.value)}
-                placeholder="Ex: 10.00" className="input-field py-2.5 px-3 w-full bg-surface-200" required />
+                placeholder="Ex: 10.00" className="input-field py-2.5 px-3 w-full bg-surface-200" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Esporte *</label>
-              <SportSelect value={sport} onChange={setSport} required />
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Esporte</label>
+              <SportSelect value={sport} onChange={setSport} />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Link da Aposta</label>
@@ -209,7 +197,6 @@ export const ModalMultiplaCriarAposta = ({
               {jogos.map((jogo, jogoIdx) => (
                 <div key={jogoIdx} className="bg-surface-100/50 rounded-xl border border-surface-300 overflow-hidden">
 
-                  {/* Jogo header */}
                   <div className="flex items-center justify-between px-4 py-2.5 bg-purple-500/10 border-b border-surface-300">
                     <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">
                       Jogo {jogoIdx + 1}
@@ -261,7 +248,7 @@ export const ModalMultiplaCriarAposta = ({
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">
-                          Mercados / Seleções
+                          Mercados
                         </label>
                         <button type="button" onClick={() => addMercado(jogoIdx)}
                           className="text-[10px] font-bold text-slate-500 hover:text-white flex items-center gap-1 px-2 py-1 rounded border border-surface-400 hover:bg-surface-300 transition-colors">
@@ -274,13 +261,9 @@ export const ModalMultiplaCriarAposta = ({
                             <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 text-[10px] font-bold flex items-center justify-center shrink-0">
                               {mIdx + 1}
                             </span>
-                            <input type="text" value={m.selecao}
-                              onChange={e => updateMercado(jogoIdx, mIdx, 'selecao', e.target.value)}
-                              placeholder="Seleção (ex: Newcastle United)"
-                              className="input-field py-1.5 px-2.5 flex-1 bg-surface-200 text-xs" />
                             <input type="text" value={m.mercado}
-                              onChange={e => updateMercado(jogoIdx, mIdx, 'mercado', e.target.value)}
-                              placeholder="Mercado (ex: Resultado Final)"
+                              onChange={e => updateMercado(jogoIdx, mIdx, e.target.value)}
+                              placeholder="Ex: Resultado Final, Ambas Marcam..."
                               className="input-field py-1.5 px-2.5 flex-1 bg-surface-200 text-xs" />
                             {jogo.mercados.length > 1 && (
                               <button type="button" onClick={() => removeMercado(jogoIdx, mIdx)}
