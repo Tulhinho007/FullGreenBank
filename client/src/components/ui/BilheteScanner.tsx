@@ -28,29 +28,22 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0]
-  if (!file) return
-
-  // Comprime a imagem antes de salvar
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')!
-  const img = new Image()
-
-  img.onload = () => {
-    // Reduz para no máximo 1200px de largura
-    const maxW = 1200
-    const ratio = Math.min(1, maxW / img.width)
-    canvas.width  = img.width  * ratio
-    canvas.height = img.height * ratio
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-
-    // Converte para JPEG com 80% de qualidade
-    setImage(canvas.toDataURL('image/jpeg', 0.8))
+    const file = e.target.files?.[0]
+    if (!file) return
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')!
+    const img = new Image()
+    img.onload = () => {
+      const maxW = 1200
+      const ratio = Math.min(1, maxW / img.width)
+      canvas.width  = img.width  * ratio
+      canvas.height = img.height * ratio
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      setImage(canvas.toDataURL('image/jpeg', 0.92))
+    }
+    img.src = URL.createObjectURL(file)
+    setError(null)
   }
-
-  img.src = URL.createObjectURL(file)
-  setError(null)
-}
 
   const buildPrompt = (t: TipoBilhete): string => {
     if (t === 'simples') {
@@ -87,18 +80,13 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          messages: [
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'image',
-                  source: { type: 'base64', media_type: mediaType, data: base64 },
-                },
-                { type: 'text', text: prompt },
-              ],
-            },
-          ],
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+              { type: 'text', text: prompt },
+            ],
+          }],
         }),
       })
 
@@ -107,12 +95,21 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
       const data = await response.json()
       const text = data.content?.[0]?.text || ''
 
-      const jsonMatch = text.match(/```json\n?([\s\S]*?)\n?```/) || text.match(/\{[\s\S]*\}/)
-      const jsonStr   = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : text
+      // Parser robusto — extrai JSON de qualquer formato de resposta
+      let jsonStr = text
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim()
+
+      const start = jsonStr.indexOf('{')
+      const end   = jsonStr.lastIndexOf('}')
+      if (start !== -1 && end !== -1) {
+        jsonStr = jsonStr.slice(start, end + 1)
+      }
 
       let parsed: any
       try {
-        parsed = JSON.parse(jsonStr.trim())
+        parsed = JSON.parse(jsonStr)
       } catch {
         throw new Error('Não consegui ler o bilhete. Tente uma foto mais nítida.')
       }
@@ -170,7 +167,6 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
 
         <div className="p-5 flex flex-col gap-4">
 
-          {/* Tipo */}
           <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Tipo de Aposta</label>
             <div className="grid grid-cols-2 gap-2">
@@ -185,13 +181,11 @@ export const BilheteScanner = ({ onSimples, onMultipla, onCriarAposta, onMultipl
             </div>
           </div>
 
-          {/* Esporte */}
           <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Esporte</label>
             <SportSelect value={sport} onChange={setSport} />
           </div>
 
-          {/* Upload */}
           <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Foto do Bilhete</label>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
