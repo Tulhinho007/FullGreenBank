@@ -105,13 +105,13 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
       <div 
         className="bg-white dark:bg-surface-200 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-surface-300 animate-in fade-in zoom-in-95 duration-200"
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-surface-300">
-          <h2 className="text-xl font-display font-bold text-slate-800 dark:text-white">
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-surface-300">
+          <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white">
             {initialData ? 'Editar Saque' : 'Novo Saque'}
           </h2>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-surface-300 text-slate-400 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-surface-400 text-slate-400 transition-colors"
           >
             <X size={20} />
           </button>
@@ -125,7 +125,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                 required
                 value={userId}
                 onChange={e => setUserId(e.target.value)}
-                className="input-field bg-slate-50 dark:bg-surface-300"
+                className="input-field bg-surface-300"
               >
                 <option value="">Selecione o usuário...</option>
                 {users.map(u => (
@@ -141,7 +141,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                 required
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                className="input-field bg-slate-50 dark:bg-surface-300 [color-scheme:light] dark:[color-scheme:dark]"
+                className="input-field bg-surface-300 [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
 
@@ -150,7 +150,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
               <select 
                 value={method}
                 onChange={e => setMethod(e.target.value)}
-                className="input-field bg-slate-50 dark:bg-surface-300"
+                className="input-field bg-surface-300"
               >
                 <option value="Pix">Pix</option>
                 <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
@@ -172,7 +172,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                 step="0.01"
                 value={grossValue}
                 onChange={e => setGrossValue(e.target.value ? Number(e.target.value) : '')}
-                className="input-field bg-slate-50 dark:bg-surface-300"
+                className="input-field bg-surface-300"
               />
             </div>
 
@@ -186,7 +186,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                 step="0.1"
                 value={comissionPercent}
                 onChange={e => setComissionPercent(e.target.value ? Number(e.target.value) : '')}
-                className="input-field bg-slate-50 dark:bg-surface-300"
+                className="input-field bg-surface-300"
               />
             </div>
 
@@ -198,12 +198,12 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
               <p className="text-xs text-slate-400 mt-1">Calculado automaticamente</p>
             </div>
 
-            <div className="md:col-span-2 border-t border-slate-100 dark:border-surface-300 pt-4 mt-2">
+            <div className="md:col-span-2 border-t border-slate-200 dark:border-surface-300 pt-4 mt-2">
               <label className="label">Status Inicial</label>
               <select 
                 value={status}
                 onChange={e => setStatus(e.target.value as Saque['status'])}
-                className="input-field bg-slate-50 dark:bg-surface-300 font-medium"
+                className="input-field bg-surface-300 font-medium"
               >
                 <option value="PENDENTE">🟡 Pendente</option>
                 <option value="PROCESSANDO">🔵 Processando</option>
@@ -221,7 +221,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
                   value={rejectionReason}
                   onChange={e => setRejectionReason(e.target.value)}
                   placeholder="Ex: Dados bancários divergentes"
-                  className="input-field bg-slate-50 dark:bg-surface-300 border-red-300 focus:border-red-500"
+                  className="input-field bg-surface-300 border-red-300 focus:border-red-500"
                 />
               </div>
             )}
@@ -231,7 +231,7 @@ export const NovoSaqueModal = ({ isOpen, onClose, onSave, initialData }: NovoSaq
             <button 
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-surface-300 rounded-lg transition-colors"
+              className="px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-surface-400 rounded-lg transition-colors"
             >
               Cancelar
             </button>

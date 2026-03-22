@@ -252,7 +252,7 @@ export const TransacoesPage = () => {
 
       {/* ─── Área da Tabela ─── */}
       <div className="card overflow-hidden bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300">
-        <div className="hidden md:grid grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
+        <div className="hidden md:grid grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
           <span>Data</span>
           <span>Tipo</span>
           <span>Usuário</span>
@@ -319,14 +319,14 @@ export const TransacoesPage = () => {
         title="Nova Transação"
         size="md"
       >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-slate-700 dark:text-slate-300">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-slate-900 dark:text-slate-100">
           
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Data *</label>
               <input 
                 type="date" 
-                className="input-field text-sm bg-slate-50 dark:bg-surface-300" 
+                className="input-field text-sm bg-surface-300" 
                 value={formData.date}
                 onChange={e => setFormData({...formData, date: e.target.value})}
                 required
@@ -335,7 +335,7 @@ export const TransacoesPage = () => {
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo *</label>
               <select 
-                className="input-field text-sm cursor-pointer bg-slate-50 dark:bg-surface-300"
+                className="input-field text-sm cursor-pointer bg-surface-300"
                 value={formData.type}
                 onChange={e => setFormData({...formData, type: e.target.value as 'DEPOSITO' | 'SAQUE'})}
                 required
@@ -352,14 +352,14 @@ export const TransacoesPage = () => {
               value={formData.value ? Number(formData.value) : 0}
               onChange={(v) => setFormData({...formData, value: String(v)})}
               alertLimit={1000}
-              className="text-sm bg-slate-50 dark:bg-surface-300"
+              className="text-sm bg-surface-300"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Usuário *</label>
             <select 
-              className="input-field text-sm cursor-pointer bg-slate-50 dark:bg-surface-300"
+              className="input-field text-sm cursor-pointer bg-surface-300"
               value={formData.userId}
               onChange={e => setFormData({...formData, userId: e.target.value})}
               required
@@ -374,7 +374,7 @@ export const TransacoesPage = () => {
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Método *</label>
             <select 
-              className="input-field text-sm cursor-pointer bg-slate-50 dark:bg-surface-300"
+              className="input-field text-sm cursor-pointer bg-surface-300"
               value={formData.method}
               onChange={e => setFormData({...formData, method: e.target.value})}
               required
@@ -394,7 +394,7 @@ export const TransacoesPage = () => {
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</label>
             <select 
-              className="input-field text-sm cursor-pointer bg-slate-50 dark:bg-surface-300"
+              className="input-field text-sm cursor-pointer bg-surface-300"
               value={formData.status}
               onChange={e => setFormData({...formData, status: e.target.value as 'CONCLUIDO' | 'PENDENTE' | 'RECUSADO'})}
             >
@@ -407,7 +407,7 @@ export const TransacoesPage = () => {
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Observação</label>
             <textarea 
-              className="input-field text-sm resize-none bg-slate-50 dark:bg-surface-300" 
+              className="input-field text-sm resize-none bg-surface-300" 
               rows={3} 
               placeholder="Ex: bônus, rollover, saque parcial..."
               value={formData.notes}
