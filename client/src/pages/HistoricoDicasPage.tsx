@@ -6,6 +6,7 @@ import {
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 import toast from 'react-hot-toast'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 import { ModalCriarAposta } from '../components/ui/ModalCriarAposta'
 import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
 import { Modal } from '../components/ui/Modal'
@@ -378,7 +379,12 @@ export const HistoricoDicasPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Stake (R$)</label>
-              <input type="number" step="0.01" value={editStake} onChange={e => setEditStake(e.target.value)} className="input-field py-2 px-3 w-full" required />
+              <CurrencyInput
+                value={editStake ? Number(editStake) : 0}
+                onChange={(v) => setEditStake(String(v))}
+                alertLimit={1000}
+                className="py-2 px-3 w-full"
+              />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Odd</label>
@@ -406,7 +412,12 @@ export const HistoricoDicasPage = () => {
               <label className="block text-xs font-medium text-slate-400 mb-1">
                 {editResultado === 'CASHOUT' ? 'Recebido' : 'Lucro (Opcional)'}
               </label>
-              <input type="number" step="0.01" value={editProfit} onChange={e => setEditProfit(e.target.value)} placeholder="Ex: 50.00" className="input-field py-2 px-3 w-full" />
+              <CurrencyInput
+                value={editProfit ? Number(editProfit) : 0}
+                onChange={(v) => setEditProfit(String(v))}
+                alertLimit={1000}
+                className="py-2 px-3 w-full"
+              />
             </div>
           </div>
 

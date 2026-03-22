@@ -27,6 +27,7 @@ import api from '../services/api'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // --- Types ---
 
@@ -387,13 +388,23 @@ export const HistoryPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <div className="w-24">
+          <div className="w-32">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Valor Min</label>
-            <input type="number" value={minValue} onChange={e => setMinValue(e.target.value)} placeholder="0" className="input-field w-full py-2 text-sm bg-surface-300" />
+            <CurrencyInput
+              value={minValue ? Number(minValue) : 0}
+              onChange={(v) => setMinValue(String(v))}
+              alertLimit={1000}
+              className="w-full py-2 text-sm bg-surface-300"
+            />
           </div>
-          <div className="w-24">
+          <div className="w-32">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Valor Max</label>
-            <input type="number" value={maxValue} onChange={e => setMaxValue(e.target.value)} placeholder="99k" className="input-field w-full py-2 text-sm bg-surface-300" />
+            <CurrencyInput
+              value={maxValue ? Number(maxValue) : 0}
+              onChange={(v) => setMaxValue(String(v))}
+              alertLimit={1000}
+              className="w-full py-2 text-sm bg-surface-300"
+            />
           </div>
         </div>
 

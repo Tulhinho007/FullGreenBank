@@ -12,6 +12,7 @@ import { Modal } from '../components/ui/Modal'
 import { usersService } from '../services/users.service'
 import { formatCurrency as fmt, formatDate } from '../utils/formatters'
 import toast from 'react-hot-toast'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // ─── Interfaces ─────────────────────────────────────────────────────────────
 interface Transaction {
@@ -347,15 +348,11 @@ export const TransacoesPage = () => {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Valor (R$) *</label>
-            <input 
-              type="number" 
-              step="0.01" 
-              min="0.01"
-              className="input-field text-sm bg-slate-50 dark:bg-surface-300" 
-              placeholder="0,00" 
-              value={formData.value}
-              onChange={e => setFormData({...formData, value: e.target.value})}
-              required
+            <CurrencyInput
+              value={formData.value ? Number(formData.value) : 0}
+              onChange={(v) => setFormData({...formData, value: String(v)})}
+              alertLimit={1000}
+              className="text-sm bg-slate-50 dark:bg-surface-300"
             />
           </div>
 

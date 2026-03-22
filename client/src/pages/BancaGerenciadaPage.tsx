@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { addLog } from './SystemLogPage'
 import api from '../services/api'
 import toast from 'react-hot-toast'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -611,13 +612,21 @@ const ContractForm = ({ form, onChange, users, fmt }: ContractFormProps) => (
     <div className="grid grid-cols-2 gap-3">
       <div>
         <label className="label">Banca Inicial *</label>
-        <input type="number" min="0.01" step="0.01" className="input-field" placeholder="Ex: 1000.00"
-          value={form.bancaInicial} onChange={e => onChange('bancaInicial', e.target.value)} required />
+        <CurrencyInput
+          value={form.bancaInicial ? Number(form.bancaInicial) : 0}
+          onChange={(v) => onChange('bancaInicial', String(v))}
+          alertLimit={1000}
+          className="w-full"
+        />
       </div>
       <div>
         <label className="label">Banca Final</label>
-        <input type="number" min="0" step="0.01" className="input-field" placeholder="Ex: 1500.00"
-          value={form.bancaFinal} onChange={e => onChange('bancaFinal', e.target.value)} />
+        <CurrencyInput
+          value={form.bancaFinal ? Number(form.bancaFinal) : 0}
+          onChange={(v) => onChange('bancaFinal', String(v))}
+          alertLimit={1000}
+          className="w-full"
+        />
       </div>
     </div>
     <div className="grid grid-cols-2 gap-3">

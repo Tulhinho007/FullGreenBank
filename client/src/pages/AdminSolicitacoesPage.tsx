@@ -3,6 +3,7 @@ import { CheckCircle, XCircle, Search, Clock, Edit2, Trash2 } from 'lucide-react
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { formatCurrency } from '../utils/formatters'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 interface Solicitacao {
   id: string
@@ -244,10 +245,12 @@ export const AdminSolicitacoesPage = () => {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Valor do Aporte</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">R$</span>
-                  <input type="number" step="0.01" value={editValor} onChange={(e) => setEditValor(e.target.value)} className="input-field py-2.5 pl-9 pr-3 w-full bg-surface-200" required />
-                </div>
+                <CurrencyInput
+                  value={editValor ? Number(editValor) : 0}
+                  onChange={(v) => setEditValor(String(v))}
+                  alertLimit={1000}
+                  className="w-full bg-surface-200"
+                />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Observações</label>

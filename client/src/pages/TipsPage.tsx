@@ -13,6 +13,7 @@ import { ModalCriarAposta } from '../components/ui/ModalCriarAposta'
 import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -477,7 +478,12 @@ export const TipsPage = () => {
                 </div>
                 <div>
                   <label className="label">Stake</label>
-                  <input type="number" step="0.5" className="input-field" value={editForm.stake} onChange={e => setEditForm(f => ({ ...f, stake: e.target.value }))} />
+                  <CurrencyInput
+                    value={editForm.stake ? Number(editForm.stake) : 0}
+                    onChange={(v) => setEditForm(f => ({ ...f, stake: String(v) }))}
+                    alertLimit={1000}
+                    className="w-full"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 border-t border-surface-400 pt-4 mt-4">

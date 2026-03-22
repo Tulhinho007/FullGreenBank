@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTheme } from '../contexts/ThemeContext'
 import { futvoleiService, FutvoleiMatch } from '../services/futvolei.service'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const fmtMoney = (v: number) =>
@@ -471,14 +472,15 @@ export const ArenaClecioPage = () => {
                 background: dark ? '#052e1633' : '#f0fdf4', borderRadius: 14, padding: '16px 18px',
                 border: `1.5px solid ${dark ? '#166534' : '#bbf7d0'}`, minWidth: 175,
               }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
                   Valor da Aposta (R$)
                 </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 14 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: '#15803d' }}>R$</span>
-                  <input type="number" value={form.valor}
-                    onChange={(e) => setForm((p) => ({ ...p, valor: +e.target.value }))}
-                    style={{ width: 80, border: 'none', background: 'transparent', fontSize: 28, fontWeight: 800, color: '#15803d', fontFamily: "'Syne',sans-serif" }}
+                <div style={{ marginBottom: 14 }}>
+                  <CurrencyInput
+                    value={form.valor}
+                    onChange={(v) => setForm((p) => ({ ...p, valor: v }))}
+                    placeholder="R$ 0,00"
+                    alertLimit={1000}
                   />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

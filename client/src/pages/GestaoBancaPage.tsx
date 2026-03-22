@@ -5,6 +5,7 @@ import {
 import { formatCurrency } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import api from '../services/api'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 interface DailyRow {
   id: string
@@ -397,15 +398,12 @@ export const GestaoBancaPage = () => {
               onChange={e => setNovaBancaNome(e.target.value)}
               className="input-field flex-1 py-2.5 bg-surface-300 text-sm"
             />
-            <input
-              type="number"
-              required
-              step="0.01"
-              min="0.01"
-              placeholder="Valor inicial (R$)"
-              value={novaBancaValorInicial}
-              onChange={e => setNovaBancaValorInicial(e.target.value ? Number(e.target.value) : '')}
-              className="input-field w-40 py-2.5 bg-surface-300 text-sm"
+            <CurrencyInput
+              value={novaBancaValorInicial as number}
+              onChange={(v) => setNovaBancaValorInicial(v)}
+              placeholder="R$ 0,00"
+              alertLimit={1000}
+              className="w-40 py-2.5 bg-surface-300 text-sm"
             />
             <button
               type="submit"
@@ -429,14 +427,12 @@ export const GestaoBancaPage = () => {
                 </div>
                 <Edit2 size={13} className="text-slate-500 group-hover:text-green-400 transition-colors" />
               </div>
-              <input
-                type="number"
-                step="0.01"
-                value={bancaInicialAtual === 0 ? '' : bancaInicialAtual}
-                onChange={(e) => handleSaveConfigCarteira('bancaInicial', e.target.value)}
+              <CurrencyInput
+                value={bancaInicialAtual}
+                onChange={(v) => handleSaveConfigCarteira('bancaInicial', String(v))}
                 disabled={!selectedCarteiraId}
-                className="text-3xl font-bold text-white bg-transparent outline-none w-full border-b border-transparent focus:border-green-500/50 transition-colors z-10 relative disabled:opacity-50"
-                placeholder="0.00"
+                alertLimit={1000}
+                className="text-3xl font-bold"
               />
             </label>
 
@@ -488,21 +484,36 @@ export const GestaoBancaPage = () => {
                         <td className="px-4 py-3 text-sm text-slate-300 font-mono">{formatCurrency(r.calcInitial)}</td>
                         <td className="px-4 py-3">
                           {r.isEditing ? (
-                            <input type="number" value={r.deposit || ''} onChange={e => updateRow(r.id, 'deposit', e.target.value)} className="w-20 bg-surface-300/50 border border-surface-400 rounded px-2 py-1 text-sm text-white" />
+                            <CurrencyInput
+                              value={r.deposit}
+                              onChange={v => updateRow(r.id, 'deposit', String(v))}
+                              alertLimit={1000}
+                              className="w-24 text-sm"
+                            />
                           ) : (
                             <span className="text-sm font-mono">{r.deposit > 0 ? formatCurrency(r.deposit) : '-'}</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
                           {r.isEditing ? (
-                            <input type="number" value={r.withdrawal || ''} onChange={e => updateRow(r.id, 'withdrawal', e.target.value)} className="w-20 bg-surface-300/50 border border-surface-400 rounded px-2 py-1 text-sm text-white" />
+                            <CurrencyInput
+                              value={r.withdrawal}
+                              onChange={v => updateRow(r.id, 'withdrawal', String(v))}
+                              alertLimit={1000}
+                              className="w-24 text-sm"
+                            />
                           ) : (
                             <span className="text-sm font-mono">{r.withdrawal > 0 ? formatCurrency(r.withdrawal) : '-'}</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
                           {r.isEditing ? (
-                            <input type="number" value={r.result || ''} onChange={e => updateRow(r.id, 'result', e.target.value)} className="w-20 bg-surface-300/50 border border-surface-400 rounded px-2 py-1 text-sm text-white" />
+                            <CurrencyInput
+                              value={r.result}
+                              onChange={v => updateRow(r.id, 'result', String(v))}
+                              alertLimit={1000}
+                              className="w-24 text-sm"
+                            />
                           ) : (
                             <span className={`text-sm font-mono font-medium ${r.result > 0 ? 'text-green-400' : r.result < 0 ? 'text-red-400' : 'text-slate-400'}`}>
                               {r.result > 0 ? '+' : ''}{formatCurrency(r.result)}

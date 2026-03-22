@@ -14,6 +14,7 @@ import api from '../services/api'
 import toast from 'react-hot-toast'
 import { formatCurrency as fmt } from '../utils/formatters'
 import { checkSubscription, createPayment } from '../utils/subscription'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -538,14 +539,11 @@ export const FinanceiroPagamentosPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">Valor ({me?.currency || 'R$'})</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="input-field"
-                    placeholder="Ex: 49.90"
-                    value={editForm.value}
-                    onChange={setF('value')}
+                  <CurrencyInput
+                    value={editForm.value ? Number(editForm.value) : 0}
+                    onChange={(v) => setF('value')({ target: { value: String(v) } } as any)}
+                    alertLimit={1000}
+                    className="w-full"
                   />
                 </div>
                 <div>

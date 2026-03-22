@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle2, ShieldAlert } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../services/api'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 export const InvestimentosPage = () => {
   const [aceitoTermos, setAceitoTermos] = useState(false)
@@ -88,15 +89,11 @@ export const InvestimentosPage = () => {
              
              <div>
                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Valor do Aporte (R$)</label>
-               <input 
-                 type="number"
-                 step="0.01"
-                 min="1"
-                 required
-                 placeholder="0.00"
-                 value={valorAporte}
-                 onChange={e => setValorAporte(e.target.value)}
-                 className="input-field w-full py-3 px-4 text-lg font-bold text-white bg-surface-300 focus:ring-green-500/50 transition-all font-mono"
+               <CurrencyInput
+                 value={valorAporte ? Number(valorAporte) : 0}
+                 onChange={(v) => setValorAporte(String(v))}
+                 alertLimit={1000}
+                 className="w-full py-3 text-lg font-bold bg-surface-300"
                />
              </div>
 

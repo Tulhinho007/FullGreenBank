@@ -6,6 +6,7 @@ import {
 } from 'recharts'
 import { useAuth } from '../contexts/AuthContext'
 import { usersService } from '../services/users.service'
+import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // --- Types & Config ---
 
@@ -166,11 +167,21 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
               <div className="flex gap-3">
               <div className="flex flex-col gap-1.5 flex-1">
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Investimento</label>
-                <input required type="number" step="0.01" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} className="input-field py-2" placeholder="100.00" />
+                <CurrencyInput
+                  value={form.amount ? Number(form.amount) : 0}
+                  onChange={(v) => setForm({ ...form, amount: String(v) })}
+                  alertLimit={1000}
+                  className="py-2"
+                />
               </div>
               <div className="flex flex-col gap-1.5 flex-1">
                 <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Lucro / Prej.</label>
-                <input required type="number" step="0.01" value={form.profit} onChange={e => setForm({ ...form, profit: e.target.value })} className="input-field py-2" placeholder="Ex: 85.00 ou -50.00" />
+                <CurrencyInput
+                  value={form.profit ? Number(form.profit) : 0}
+                  onChange={(v) => setForm({ ...form, profit: String(v) })}
+                  alertLimit={1000}
+                  className="py-2"
+                />
               </div>
             </div>
 
