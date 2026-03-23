@@ -543,6 +543,7 @@ export const TipsPage = () => {
                 linkAposta: newTipLink.trim() || null,
               })
               toast.success('Dica criada!')
+              if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip publicada', detail: `Publicou: ${autoTitle} — ${newTipSport || 'Futebol'}` })
               setNewTipOpen(false)
               setNewTipSport('')
               setNewTipLink('')
