@@ -36,3 +36,4 @@ export const getLogs = async (page = 1, limit = 100, category?: string, userEmai
 export const clearLogs = async () => {
   return prisma.activityLog.deleteMany({})
 }
+
