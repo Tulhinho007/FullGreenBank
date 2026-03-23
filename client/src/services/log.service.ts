@@ -11,9 +11,11 @@ interface LogEntry {
 }
 
 export const addLog = async (entry: LogEntry): Promise<void> => {
+  console.log('🟡 addLog chamado:', entry)
   try {
-    await api.post('/logs', entry)
-  } catch {
-    // Silent — log nunca deve quebrar a aplicação
+    const res = await api.post('/logs', entry)
+    console.log('✅ Log salvo:', res.status)
+  } catch (err: any) {
+    console.error('❌ Erro ao salvar log:', err.response?.data || err.message)
   }
 }
