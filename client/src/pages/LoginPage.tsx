@@ -2,20 +2,22 @@ import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Eye, EyeOff, TrendingUp } from 'lucide-react'
-import toast from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast' // Importado o Toaster
 
 export const LoginPage = () => {
   const { login } = useAuth()
-  const navigate   = useNavigate()
+  const navigate = useNavigate()
 
-  const [form,    setForm]    = useState({ identifier: '', password: '' })
-  const [show,    setShow]    = useState(false)
+  const [form, setForm] = useState({ identifier: '', password: '' })
+  const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault() // Impede o refresh da página (evita o "piscar")
 
-    if (!form.identifier.trim()) {
+    const identifierClean = form.identifier.trim()
+
+    if (!identifierClean) {
       toast.error('Informe seu e-mail ou usuário')
       return
     }
@@ -26,34 +28,35 @@ export const LoginPage = () => {
 
     setLoading(true)
     try {
-      // Detecta automaticamente se digitou email ou username
-      const isEmail = form.identifier.includes('@')
+      const isEmail = identifierClean.includes('@')
       const payload = isEmail
-        ? { email: form.identifier.trim(), password: form.password }
-        : { username: form.identifier.trim(), password: form.password }
+        ? { email: identifierClean, password: form.password }
+        : { username: identifierClean, password: form.password }
 
-      await login(payload as any, form.password)
+      // Chamada ao contexto de autenticação
+      await login(payload as any) 
+      
+      toast.success('Bem-vindo ao Full Green Bank!')
       navigate('/dashboard')
-    } catch (err: unknown) {
-      const status = (err as any)?.response?.status
-      const msg    = (err as any)?.response?.data?.message ?? ''
-      const lower  = msg.toLowerCase()
+    } catch (err: any) {
+      // Tratamento detalhado de erros
+      const status = err?.response?.status
+      const backendMsg = err?.response?.data?.message || ''
+      const lowerMsg = backendMsg.toLowerCase()
 
-      if (status === 404 || lower.includes('not found') || lower.includes('encontrado') || lower.includes('usuário não')) {
-        const isEmail = form.identifier.includes('@')
-        toast.error(isEmail
-          ? 'Nenhuma conta encontrada com esse e-mail.'
-          : 'Usuário não encontrado. Verifique o nome de usuário.'
-        )
-      } else if (status === 401 || lower.includes('senha') || lower.includes('password') || lower.includes('credencial') || lower.includes('incorrect')) {
+      if (status === 404 || lowerMsg.includes('encontrado') || lowerMsg.includes('not found')) {
+        toast.error(identifierClean.includes('@') 
+          ? 'E-mail não cadastrado.' 
+          : 'Usuário não encontrado.')
+      } else if (status === 401 || lowerMsg.includes('senha') || lowerMsg.includes('incorrect')) {
         toast.error('Senha incorreta. Tente novamente.')
-      } else if (status === 403 || lower.includes('inativ') || lower.includes('bloquead') || lower.includes('suspens')) {
-        toast.error('Conta inativa ou bloqueada. Entre em contato com o suporte.')
-      } else if (msg) {
-        toast.error(msg)
+      } else if (status === 403 || lowerMsg.includes('bloquead') || lowerMsg.includes('inativ')) {
+        toast.error('Sua conta está suspensa ou bloqueada.')
       } else {
-        toast.error('Não foi possível fazer login. Tente novamente.')
+        toast.error(backendMsg || 'Erro ao entrar. Verifique sua conexão.')
       }
+      
+      console.error('Login error:', err)
     } finally {
       setLoading(false)
     }
@@ -61,14 +64,15 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-surface-100 flex items-center justify-center p-4">
-      {/* Background decoration */}
+      {/* Container do Toast para renderizar os popups */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-green-900/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-900/10 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-700 mb-4 logo-glow">
             <TrendingUp size={28} className="text-white" />
@@ -77,7 +81,6 @@ export const LoginPage = () => {
           <p className="text-slate-400 text-sm mt-1">Gestão inteligente de banca</p>
         </div>
 
-        {/* Card */}
         <div className="card border border-surface-400 p-8">
           <h2 className="font-display font-semibold text-white text-xl mb-6">Entrar na conta</h2>
 
@@ -91,6 +94,7 @@ export const LoginPage = () => {
                 value={form.identifier}
                 onChange={e => setForm(f => ({ ...f, identifier: e.target.value }))}
                 autoComplete="username"
+                disabled={loading}
               />
             </div>
 
@@ -104,6 +108,7 @@ export const LoginPage = () => {
                   value={form.password}
                   onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
                   autoComplete="current-password"
+                  disabled={loading}
                 />
                 <button
                   type="button"

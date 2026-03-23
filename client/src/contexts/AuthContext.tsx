@@ -19,7 +19,6 @@ export interface User {
   theme: string
   twoFactorEnabled: boolean
   avatarUrl?: string
-  // Subscription fields
   paymentStatus?: string
   purchaseDate?: string | null
   lastPaymentDate?: string | null
@@ -31,13 +30,16 @@ export interface User {
   createdAt: string
 }
 
+// Tipagem atualizada para suportar o novo payload de login
+type LoginPayload = { email?: string; username?: string; password: string };
+
 interface AuthContextType {
   user: User | null
   token: string | null
   loading: boolean
-  login:    (identifier: string | { email?: string; username?: string; password: string }, password?: string) => Promise<void>
+  login: (payload: LoginPayload) => Promise<void>
   register: (data: RegisterData) => Promise<void>
-  logout:   () => void
+  logout: () => void
   updateUser: (user: User) => void
   impersonateUser: (targetUser: User) => void
   stopImpersonating: () => void
@@ -51,24 +53,22 @@ interface RegisterData {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user,    setUser]    = useState<User | null>(null)
-  const [token,   setToken]   = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem('fgb_token')
-      const savedUser  = localStorage.getItem('fgb_user')
+      const savedUser = localStorage.getItem('fgb_user')
       
       if (savedToken && savedUser) {
         setToken(savedToken)
         setUser(JSON.parse(savedUser))
         
         try {
-          // Busca perfil atualizado do servidor
           const freshUser = await authService.getMe()
           if (freshUser) {
-            // RULE 2: Check subscription status on every load
             const { status, isActive } = checkSubscription(freshUser)
             const userWithStatus = { ...freshUser, paymentStatus: status, isActive }
             setUser(userWithStatus)
@@ -83,40 +83,77 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       setLoading(false)
     }
-
     initAuth()
   }, [])
 
   const isImpersonating = !!localStorage.getItem('fgb_impersonate_id')
 
-  const login = async (identifier: string | { email?: string; username?: string; password: string }, password?: string) => {
-    const payload = typeof identifier === 'string'
-      ? { email: identifier, password: password! }
-      : identifier
-    const res = await authService.login(payload)
-    // RULE 2: Check subscription status on login
-    const { status, isActive } = checkSubscription(res.user)
-    const userWithStatus = { ...res.user, paymentStatus: status, isActive }
-    setToken(res.token)
-    setUser(userWithStatus)
-    localStorage.setItem('fgb_token', res.token)
-    localStorage.setItem('fgb_user',  JSON.stringify(userWithStatus))
-    addLog({ userEmail: res.user.email, userName: res.user.name, userRole: res.user.role, category: 'Auth', action: 'Login realizado', detail: 'Acesso ao sistema' })
-    toast.success(`Bem-vindo, ${res.user.name}! 🟢`)
+  // Função login simplificada e integrada com o novo service
+  const login = async (payload: LoginPayload) => {
+    try {
+      const res = await authService.login(payload)
+      
+      // Validação de assinatura
+      const { status, isActive } = checkSubscription(res.user)
+      const userWithStatus = { ...res.user, paymentStatus: status, isActive }
+      
+      // Persistência de estado
+      setToken(res.token)
+      setUser(userWithStatus)
+      localStorage.setItem('fgb_token', res.token)
+      localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
+      
+      // Log de auditoria
+      addLog({ 
+        userEmail: res.user.email, 
+        userName: res.user.name, 
+        userRole: res.user.role, 
+        category: 'Auth', 
+        action: 'Login realizado', 
+        detail: 'Acesso ao sistema via interface' 
+      })
+
+      // NOTA: O toast.success foi removido daqui para evitar duplicidade 
+      // com o toast que já existe na LoginPage.tsx
+    } catch (err) {
+      // Importante: repassa o erro para que o componente (LoginPage) trate os status 401/404
+      throw err
+    }
   }
 
   const register = async (data: RegisterData) => {
-    const res = await authService.register(data)
-    setToken(res.token)
-    setUser(res.user)
-    localStorage.setItem('fgb_token', res.token)
-    localStorage.setItem('fgb_user',  JSON.stringify(res.user))
-    addLog({ userEmail: res.user.email, userName: res.user.name, userRole: res.user.role, category: 'Auth', action: 'Cadastro realizado', detail: 'Nova conta criada no sistema' })
-    toast.success('Conta criada com sucesso! 🎉')
+    try {
+      const res = await authService.register(data)
+      setToken(res.token)
+      setUser(res.user)
+      localStorage.setItem('fgb_token', res.token)
+      localStorage.setItem('fgb_user', JSON.stringify(res.user))
+      
+      addLog({ 
+        userEmail: res.user.email, 
+        userName: res.user.name, 
+        userRole: res.user.role, 
+        category: 'Auth', 
+        action: 'Cadastro realizado', 
+        detail: 'Nova conta criada' 
+      })
+      toast.success('Conta criada com sucesso! 🎉')
+    } catch (err) {
+      throw err
+    }
   }
 
   const logout = () => {
-    if (user) addLog({ userEmail: user.email, userName: user.name, userRole: user.role, category: 'Auth', action: 'Logout', detail: 'Sessão encerrada' })
+    if (user) {
+      addLog({ 
+        userEmail: user.email, 
+        userName: user.name, 
+        userRole: user.role, 
+        category: 'Auth', 
+        action: 'Logout', 
+        detail: 'Sessão encerrada' 
+      })
+    }
     setUser(null)
     setToken(null)
     localStorage.removeItem('fgb_token')
@@ -130,16 +167,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const impersonateUser = (targetUser: User) => {
-    // Salvamos o admin original antes de trocar
     localStorage.setItem('fgb_original_user', JSON.stringify(user))
     localStorage.setItem('fgb_impersonate_id', targetUser.id)
-    
-    // Trocamos o usuário ativo
     setUser(targetUser)
     localStorage.setItem('fgb_user', JSON.stringify(targetUser))
-    
     toast.success(`Gerenciando conta de ${targetUser.name}`)
-    // Recarregamos para garantir que todos os contextos e a API peguem o novo estado
     window.location.reload()
   }
 
@@ -150,10 +182,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(parsed)
       localStorage.setItem('fgb_user', originalUser)
     }
-    
     localStorage.removeItem('fgb_original_user')
     localStorage.removeItem('fgb_impersonate_id')
-    
     toast.success('De volta à sua conta')
     window.location.reload()
   }
