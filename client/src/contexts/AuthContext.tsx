@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { authService } from '../services/auth.service'
 import toast from 'react-hot-toast'
-import { addLog } from '../pages/SystemLogPage'
+import { addLog } from '../services/log.service'
 import { checkSubscription } from '../utils/subscription'
 
 export interface User {
