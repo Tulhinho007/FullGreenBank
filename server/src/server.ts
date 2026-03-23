@@ -24,6 +24,9 @@ import { securityLoggerMiddleware } from './utils/securityLogger'
 
 const app = express();
 
+// ── Trust Proxy (necessário para Vercel/proxies reversos) ─────────
+app.set('trust proxy', 1);
+
 // ── Helmet (deve vir primeiro) ────────────────────────────────────
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'same-site' },
