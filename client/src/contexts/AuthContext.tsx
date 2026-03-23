@@ -35,7 +35,7 @@ interface AuthContextType {
   user: User | null
   token: string | null
   loading: boolean
-  login:    (email: string, password: string) => Promise<void>
+  login:    (identifier: string | { email?: string; username?: string; password: string }, password?: string) => Promise<void>
   register: (data: RegisterData) => Promise<void>
   logout:   () => void
   updateUser: (user: User) => void
@@ -89,8 +89,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isImpersonating = !!localStorage.getItem('fgb_impersonate_id')
 
-  const login = async (email: string, password: string) => {
-    const res = await authService.login({ email, password })
+  const login = async (identifier: string | { email?: string; username?: string; password: string }, password?: string) => {
+    const payload = typeof identifier === 'string'
+      ? { email: identifier, password: password! }
+      : identifier
+    const res = await authService.login(payload)
     // RULE 2: Check subscription status on login
     const { status, isActive } = checkSubscription(res.user)
     const userWithStatus = { ...res.user, paymentStatus: status, isActive }

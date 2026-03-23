@@ -8,20 +8,52 @@ export const LoginPage = () => {
   const { login } = useAuth()
   const navigate   = useNavigate()
 
-  const [form,    setForm]    = useState({ email: '', password: '' })
+  const [form,    setForm]    = useState({ identifier: '', password: '' })
   const [show,    setShow]    = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!form.email || !form.password) { toast.error('Preencha todos os campos'); return }
+
+    if (!form.identifier.trim()) {
+      toast.error('Informe seu e-mail ou usuário')
+      return
+    }
+    if (!form.password) {
+      toast.error('Informe sua senha')
+      return
+    }
+
     setLoading(true)
     try {
-      await login(form.email, form.password)
+      // Detecta automaticamente se digitou email ou username
+      const isEmail = form.identifier.includes('@')
+      const payload = isEmail
+        ? { email: form.identifier.trim(), password: form.password }
+        : { username: form.identifier.trim(), password: form.password }
+
+      await login(payload as any, form.password)
       navigate('/dashboard')
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao fazer login'
-      toast.error(msg)
+      const status = (err as any)?.response?.status
+      const msg    = (err as any)?.response?.data?.message ?? ''
+      const lower  = msg.toLowerCase()
+
+      if (status === 404 || lower.includes('not found') || lower.includes('encontrado') || lower.includes('usuário não')) {
+        const isEmail = form.identifier.includes('@')
+        toast.error(isEmail
+          ? 'Nenhuma conta encontrada com esse e-mail.'
+          : 'Usuário não encontrado. Verifique o nome de usuário.'
+        )
+      } else if (status === 401 || lower.includes('senha') || lower.includes('password') || lower.includes('credencial') || lower.includes('incorrect')) {
+        toast.error('Senha incorreta. Tente novamente.')
+      } else if (status === 403 || lower.includes('inativ') || lower.includes('bloquead') || lower.includes('suspens')) {
+        toast.error('Conta inativa ou bloqueada. Entre em contato com o suporte.')
+      } else if (msg) {
+        toast.error(msg)
+      } else {
+        toast.error('Não foi possível fazer login. Tente novamente.')
+      }
     } finally {
       setLoading(false)
     }
@@ -51,13 +83,14 @@ export const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="label">Email</label>
+              <label className="label">E-mail ou usuário</label>
               <input
-                type="email"
+                type="text"
                 className="input-field"
-                placeholder="seu@email.com"
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                placeholder="seu@email.com ou @usuario"
+                value={form.identifier}
+                onChange={e => setForm(f => ({ ...f, identifier: e.target.value }))}
+                autoComplete="username"
               />
             </div>
 
@@ -70,6 +103,7 @@ export const LoginPage = () => {
                   placeholder="••••••••"
                   value={form.password}
                   onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
