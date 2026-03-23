@@ -44,10 +44,6 @@ function App() {
     <AuthProvider>
     <ThemeProvider>
       <PermissionsProvider>
-        <Routes>
-        ...
-      </Routes>
-      </PermissionsProvider>
       <Routes>
         {/* Public */}
         <Route path="/login"    element={<LoginPage />} />
@@ -173,6 +169,7 @@ function App() {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
       </Routes>
+      </PermissionsProvider>
     </ThemeProvider>
     </AuthProvider>
   )
