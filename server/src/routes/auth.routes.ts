@@ -39,3 +39,4 @@ router.post(
   validateRequest,
   authController.login
 )
+export default router;
