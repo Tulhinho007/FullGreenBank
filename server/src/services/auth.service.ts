@@ -49,29 +49,26 @@ export const registerUser = async (data: RegisterData) => {
 };
 
 export const loginUser = async (data: LoginData) => {
-  if (!data.email && !data.username) {
+  // 1. Normaliza os dados (remove espaços e garante que strings vazias virem undefined)
+  const email = data.email?.trim() || undefined;
+  const username = data.username?.trim() || undefined;
+
+  if (!email && !username) {
     throw new Error('Informe e-mail ou usuário');
   }
 
-  const user = data.email
-    ? await prisma.user.findUnique({ where: { email: data.email } })
-    : await prisma.user.findUnique({ where: { username: data.username! } });
+  // 2. Busca o usuário de forma mais inteligente
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: email },
+        { username: username }
+      ]
+    }
+  });
 
+  // 3. Erro genérico de credenciais (mais seguro e evita o erro 404/401 confuso)
   if (!user) {
-    throw new Error(data.email ? 'E-mail não cadastrado' : 'Usuário não encontrado');
+    throw new Error('Usuário não encontrado');
   }
-
-  if (!user.active) {
-    throw new Error('Conta desativada. Contate o administrador.');
-  }
-
-  const isPasswordValid = await comparePassword(data.password, user.password);
-  if (!isPasswordValid) {
-    throw new Error('Senha incorreta');
-  }
-
-  const token = generateToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
-
-  const { password: _, ...userWithoutPassword } = user;
-  return { user: userWithoutPassword, token };
-};
+}
