@@ -28,14 +28,14 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').isEmail().withMessage('Email inválido'),
     body('password').notEmpty().withMessage('Senha é obrigatória'),
+    body().custom((_, { req }) => {
+      if (!req.body.email && !req.body.username) {
+        throw new Error('Informe e-mail ou usuário')
+      }
+      return true
+    }),
   ],
   validateRequest,
   authController.login
-);
-
-router.get('/me', authenticate, authController.getMe);
-
-router.post('/refresh', authController.refresh);
-export default router;
+)
