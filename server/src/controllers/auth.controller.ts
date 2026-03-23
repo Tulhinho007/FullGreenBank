@@ -18,8 +18,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
-    const result = await loginUser({ email, password });
+    const { email, username, password } = req.body;
+    const result = await loginUser({ email, username, password });
     sendSuccess(res, result, 'Login realizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao autenticar';
@@ -44,6 +44,7 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
     sendError(res, "Erro interno ao carregar perfil", 500);
   }
 };
+
 export const refresh = async (req: Request, res: Response): Promise<void> => {
   try {
     const { refreshToken } = req.body;
@@ -58,4 +59,4 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
   } catch {
     sendError(res, 'Refresh token inválido ou expirado', 401);
   }
-}
+};

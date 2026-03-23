@@ -11,7 +11,8 @@ interface RegisterData {
 }
 
 interface LoginData {
-  email: string;
+  email?: string;
+  username?: string;
   password: string;
 }
 
@@ -48,12 +49,26 @@ export const registerUser = async (data: RegisterData) => {
 };
 
 export const loginUser = async (data: LoginData) => {
-  const user = await prisma.user.findUnique({ where: { email: data.email } });
-  if (!user) throw new Error('Credenciais inválidas');
-  if (!user.active) throw new Error('Conta desativada. Contate o administrador.');
+  if (!data.email && !data.username) {
+    throw new Error('Informe e-mail ou usuário');
+  }
+
+  const user = data.email
+    ? await prisma.user.findUnique({ where: { email: data.email } })
+    : await prisma.user.findUnique({ where: { username: data.username! } });
+
+  if (!user) {
+    throw new Error(data.email ? 'E-mail não cadastrado' : 'Usuário não encontrado');
+  }
+
+  if (!user.active) {
+    throw new Error('Conta desativada. Contate o administrador.');
+  }
 
   const isPasswordValid = await comparePassword(data.password, user.password);
-  if (!isPasswordValid) throw new Error('Credenciais inválidas');
+  if (!isPasswordValid) {
+    throw new Error('Senha incorreta');
+  }
 
   const token = generateToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
 
