@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Eye, EyeOff, TrendingUp } from 'lucide-react'
-import toast, { Toaster } from 'react-hot-toast' // Importado o Toaster
+import toast, { Toaster } from 'react-hot-toast'
 
 export const LoginPage = () => {
   const { login } = useAuth()
@@ -13,9 +13,14 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault() // Impede o refresh da página (evita o "piscar")
+    e.preventDefault()
+
+    console.log('=== [LOGIN] SUBMIT CHAMADO ===')
 
     const identifierClean = form.identifier.trim()
+
+    console.log('[LOGIN] identifier:', identifierClean)
+    console.log('[LOGIN] password preenchida:', !!form.password)
 
     if (!identifierClean) {
       toast.error('Informe seu e-mail ou usuário')
@@ -33,20 +38,29 @@ export const LoginPage = () => {
         ? { email: identifierClean, password: form.password }
         : { username: identifierClean, password: form.password }
 
-      // Chamada ao contexto de autenticação
-      await login(payload as any) 
-      
+      console.log('[LOGIN] isEmail:', isEmail)
+      console.log('[LOGIN] payload enviado ao contexto:', payload)
+
+      await login(payload as any)
+
+      console.log('[LOGIN] Login bem-sucedido, redirecionando...')
       toast.success('Bem-vindo ao Full Green Bank!')
       navigate('/dashboard')
     } catch (err: any) {
-      // Tratamento detalhado de erros
+      console.error('[LOGIN] ERRO CAPTURADO:', err)
+      console.error('[LOGIN] err.response?.status:', err?.response?.status)
+      console.error('[LOGIN] err.response?.data:', err?.response?.data)
+
       const status = err?.response?.status
       const backendMsg = err?.response?.data?.message || ''
       const lowerMsg = backendMsg.toLowerCase()
 
+      console.log('[LOGIN] status:', status)
+      console.log('[LOGIN] backendMsg:', backendMsg)
+
       if (status === 404 || lowerMsg.includes('encontrado') || lowerMsg.includes('not found')) {
-        toast.error(identifierClean.includes('@') 
-          ? 'E-mail não cadastrado.' 
+        toast.error(identifierClean.includes('@')
+          ? 'E-mail não cadastrado.'
           : 'Usuário não encontrado.')
       } else if (status === 401 || lowerMsg.includes('senha') || lowerMsg.includes('incorrect')) {
         toast.error('Senha incorreta. Tente novamente.')
@@ -55,8 +69,6 @@ export const LoginPage = () => {
       } else {
         toast.error(backendMsg || 'Erro ao entrar. Verifique sua conexão.')
       }
-      
-      console.error('Login error:', err)
     } finally {
       setLoading(false)
     }
@@ -64,7 +76,6 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-surface-100 flex items-center justify-center p-4">
-      {/* Container do Toast para renderizar os popups */}
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
