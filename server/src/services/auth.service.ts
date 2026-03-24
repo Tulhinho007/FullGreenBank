@@ -15,7 +15,8 @@ interface LoginData {
 }
 
 export const registerUser = async (data: RegisterData) => {
-  const existingEmail = await prisma.user.findUnique({ where: { email: data.email } });
+  const emailNormalized = data.email.toLowerCase().trim();
+  const existingEmail = await prisma.user.findUnique({ where: { email: emailNormalized } });
   if (existingEmail) throw new Error('Email já cadastrado');
 
   const hashedPassword = await hashPassword(data.password);
@@ -23,6 +24,7 @@ export const registerUser = async (data: RegisterData) => {
   const user = await prisma.user.create({
     data: {
       ...data,
+      email: emailNormalized,
       password: hashedPassword,
       role: 'MEMBRO',
     },
@@ -43,7 +45,7 @@ export const registerUser = async (data: RegisterData) => {
 };
 
 export const loginUser = async (data: LoginData) => {
-  const email = data.email?.trim();
+  const email = data.email?.toLowerCase().trim();
 
   if (!email) {
     throw new Error('Informe seu e-mail');
