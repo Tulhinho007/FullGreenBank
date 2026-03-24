@@ -180,7 +180,6 @@ export const AdminUsersPage = () => {
                       <td className="px-4 py-3">
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                           u.plan === 'PRO' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-800/50' :
-                          u.plan === 'STANDARD' ? 'bg-green-900/40 text-green-400 border-green-800/50' :
                           'bg-slate-900/40 text-slate-400 border-slate-800/50'
                         }`}>
                           {u.plan || 'STARTER'}
@@ -314,7 +313,7 @@ export const AdminUsersPage = () => {
               <div>
                 <label className="label mb-3">Plano de Assinatura</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {['STARTER', 'STANDARD', 'PRO'].map(p => (
+                  {['STARTER', 'PRO'].map(p => (
                     <button
                       key={p}
                       onClick={() => setEditForm(f => ({ ...f, plan: p }))}

@@ -97,7 +97,6 @@ export const ProfilePage = () => {
             <div className="flex flex-wrap justify-center gap-2">
               <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                 user?.plan === 'PRO' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-800/50' :
-                user?.plan === 'STANDARD' ? 'bg-green-900/40 text-green-400 border-green-800/50' :
                 'bg-slate-900/40 text-slate-400 border-slate-800/50'
               }`}>
                 {user?.plan || 'STARTER'}

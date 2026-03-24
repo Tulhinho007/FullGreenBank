@@ -22,29 +22,6 @@ const PLAN_DATA = [
     notIncluded: ['Tipsters', 'Histórico de Dicas', 'Relatórios de Performance', 'Investimentos', 'Alavancagem', 'Dicas de Gestão', 'Análise de Valor']
   },
   {
-    id: 'standard',
-    name: 'STANDARD',
-    subtitle: 'Intermediário',
-    price: 'R$ 19,90',
-    color: 'text-yellow-500',
-    borderColor: 'border-yellow-500/30',
-    bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
-    icon: <Shield size={24} />,
-    features: [
-      'Dashboard Geral', 
-      'Dicas (Tips)', 
-      'Tipsters', 
-      'Histórico de Dicas', 
-      'Relatórios de Performance', 
-      'Gestão de Bancas (Até 5)', 
-      'Investimentos', 
-      'Calculadora Operacional', 
-      'Alavancagem',
-      'Suporte Prioritário'
-    ],
-    notIncluded: ['Dicas de Gestão', 'Análise de Valor']
-  },
-  {
     id: 'pro',
     name: 'PRO',
     subtitle: 'Completo',
@@ -74,18 +51,18 @@ const PLAN_DATA = [
 
 const COMPARISON_TABLE = [
   { category: 'FUNCIONALIDADES', features: [
-    { name: 'Dashboard Geral', starter: true, standard: true, pro: true },
-    { name: 'Dicas (Tips)', starter: true, standard: true, pro: true },
-    { name: 'Tipsters', starter: false, standard: true, pro: true },
-    { name: 'Histórico de Dicas', starter: false, standard: true, pro: true },
-    { name: 'Relatórios de Performance', starter: false, standard: true, pro: true },
-    { name: 'Gestão de Bancas', starter: 'Apenas 1', standard: 'Até 5', pro: 'Ilimitadas' },
-    { name: 'Investimentos', starter: false, standard: true, pro: true },
-    { name: 'Calculadora Operacional', starter: true, standard: true, pro: true },
-    { name: 'Alavancagem', starter: false, standard: true, pro: true },
-    { name: 'Dicas de Gestão', starter: false, standard: false, pro: true },
-    { name: 'Análise de Valor', starter: false, standard: false, pro: true },
-    { name: 'Suporte', starter: 'Comum', standard: 'Prioritário', pro: 'VIP / Direto' },
+    { name: 'Dashboard Geral', starter: true, pro: true },
+    { name: 'Dicas (Tips)', starter: true, pro: true },
+    { name: 'Tipsters', starter: false, pro: true },
+    { name: 'Histórico de Dicas', starter: false, pro: true },
+    { name: 'Relatórios de Performance', starter: false, pro: true },
+    { name: 'Gestão de Bancas', starter: 'Apenas 1', pro: 'Ilimitadas' },
+    { name: 'Investimentos', starter: false, pro: true },
+    { name: 'Calculadora Operacional', starter: true, pro: true },
+    { name: 'Alavancagem', starter: false, pro: true },
+    { name: 'Dicas de Gestão', starter: false, pro: true },
+    { name: 'Análise de Valor', starter: false, pro: true },
+    { name: 'Suporte', starter: 'Comum', pro: 'VIP / Direto' },
   ]}
 ]
 
@@ -118,7 +95,7 @@ export const PlanosPage = () => {
       </div>
 
       {/* PLAN CARDS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-4xl mx-auto w-full">
         {PLAN_DATA.map((plan) => (
           <div 
             key={plan.id}
@@ -198,7 +175,6 @@ export const PlanosPage = () => {
               <tr className="bg-slate-50 dark:bg-surface-300/50">
                 <th className="px-8 py-6 text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Funcionalidade</th>
                 <th className="px-8 py-6 text-center text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Starter</th>
-                <th className="px-8 py-6 text-center text-sm font-bold text-green-500 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Standard</th>
                 <th className="px-8 py-6 text-center text-sm font-bold text-yellow-500 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Pro</th>
               </tr>
             </thead>
@@ -215,9 +191,6 @@ export const PlanosPage = () => {
                       <td className="px-8 py-5 text-sm font-semibold text-slate-800 dark:text-slate-200">{feature.name}</td>
                       <td className="px-8 py-5 text-center text-sm">
                         {renderValue(feature.starter)}
-                      </td>
-                      <td className="px-8 py-5 text-center text-sm bg-yellow-500/5 dark:bg-yellow-500/5">
-                        {renderValue(feature.standard)}
                       </td>
                       <td className="px-8 py-5 text-center text-sm bg-yellow-500/5 dark:bg-yellow-500/5">
                         {renderValue(feature.pro)}
