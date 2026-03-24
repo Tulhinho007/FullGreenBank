@@ -277,7 +277,8 @@ notes           String?    -- histórico de pagamentos em texto
     - O campo `username` foi removido do banco de dados (Prisma), serviços, controllers e de todas as telas (Login, Cadastro, Perfil, Admin).
 - **Prevenção de Information Disclosure**: Configuração do build de produção (Vite/esbuild) para remover automaticamente todos os `console.log` e `debugger`, protegendo a estrutura da API contra inspeção via DevTools.
 - **Otimização de Build (Code Splitting)**: Implementação de `manualChunks` no `vite.config.ts` para separar bibliotecas pesadas (`vendor`, `charts`, `utils`) em arquivos distintos, melhorando o cache do navegador e a performance de carregamento.
-- **Correção de Rotas de Auth**: Resolvido erro 404 nos endpoints `/auth/me` e `/auth/refresh` após a refatoração de cookies.
+- **Correção de Loop de Redirecionamento**: Ajuste no interceptor de API para evitar recarregamentos infinitos em rotas públicas (Login/Cadastro) quando ocorrem erros 401.
+- **Sessões Estendidas**: Aumento da expiração do JWT para 7 dias, garantindo maior estabilidade de sessão para o usuário.
 
 ---
 
@@ -316,10 +317,11 @@ VITE_API_URL=http://localhost:3001 # Local
 
 ## 📌 Últimos Commits (Resumo)
 
+| `de250ab` | fix: resolve infinite redirect loop and improve auth stability on Vercel |
+| `dcc8b46` | perf: optimize frontend build with manual chunks and increased size limit |
+| `b8e0742` | docs: update RESUMO_PROJETO with security and email-only auth changes |
 | `9b454dd` | refactor: remove username field system-wide and migrate to email-only auth |
 | `e8e194e` | chore: remove console logs in production via Vite esbuild |
-| `1202efa` | fix: adicionar rotas GET e DELETE para carteiras em gestao-banca |
-| `ac9bf87` | debug: logs de seed no frontend e backend |
 | `efc5cea` | feat: otimizar inserção de mercados com createMany no backend |
 | `6a19f07` | feat: adicionar restrição única name_sportSlug no Prisma |
 | `bc56f0f` | feat: persistência de dados de cadastros no PostgreSQL |
