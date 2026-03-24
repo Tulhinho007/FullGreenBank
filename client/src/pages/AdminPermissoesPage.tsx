@@ -333,7 +333,11 @@ export const AdminPermissoesPage = () => {
                                           : 'bg-transparent border-slate-600 hover:border-slate-400'
                                       }`}
                                     >
-                                      {p[field] && <Check size={13} className="text-white" strokeWidth={3} />}
+                                      {p[field] && (
+                                        field === 'canView' ? <Eye size={13} className="text-white" strokeWidth={3} /> :
+                                        field === 'canEdit' ? <Edit3 size={13} className="text-white" strokeWidth={3} /> :
+                                        <Trash2 size={13} className="text-white" strokeWidth={3} />
+                                      )}
                                     </button>
                                   </div>
                                 ))}

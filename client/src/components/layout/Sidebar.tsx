@@ -335,11 +335,11 @@ export const Sidebar = () => {
               <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
                 <ShieldCheck size={32} className="text-amber-500" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Ops! Conteúdo Fechado</h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-8">
-                Essa ferramenta faz parte do <span className="text-white font-semibold">plano PRO</span>. <br />
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Ops! Conteúdo Fechado</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
+                Essa ferramenta faz parte do <span className="text-amber-600 dark:text-amber-400 font-bold uppercase">plano PRO</span>. <br />
                 Sua permissão atual não permite o acesso.<br />
-                <span className="text-amber-400 font-bold mt-2 inline-block">Assine o PRO e desbloqueie tudo!</span>
+                <span className="text-amber-500 dark:text-amber-400 font-bold mt-2 inline-block">Assine o PRO e desbloqueie tudo!</span>
               </p>
               <div className="flex flex-col w-full gap-3">
                 <button 
