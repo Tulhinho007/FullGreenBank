@@ -62,6 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (savedUser) {
         setUser(JSON.parse(savedUser))
+        // Se temos cache, mantemos loading=true até validar com o backend (opcional, mas mais seguro)
+      } else {
+        // Se não temos cache, assumimos que não está logado para não bloquear a UI do convidado
+        setLoading(false)
       }
       
       try {
@@ -72,11 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(userWithStatus)
           localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
         }
-      } catch (err) {
-        console.error('Failed to refresh user', err)
+      } catch (err: any) {
+        // Silenciamos erro 401 no init (comum para convidados)
+        if (err?.response?.status !== 401) {
+          console.error('Failed to refresh user', err)
+        }
         setUser(null)
         localStorage.removeItem('fgb_user')
-        // We log out automatically if me fails, handled by global interceptor anyway
       } finally {
         setLoading(false)
       }
