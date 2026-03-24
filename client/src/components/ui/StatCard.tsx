@@ -10,24 +10,24 @@ interface StatCardProps {
 }
 
 const accentMap = {
-  green:  { icon: 'bg-green-500/10 text-green-600 dark:bg-green-900/50 dark:text-green-400',  border: 'border-slate-200 dark:border-green-800/30' },
-  red:    { icon: 'bg-red-500/10 text-red-600 dark:bg-red-900/50 dark:text-red-400',       border: 'border-slate-200 dark:border-red-800/30'   },
-  blue:   { icon: 'bg-blue-500/10 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400',    border: 'border-slate-200 dark:border-blue-800/30'  },
-  yellow: { icon: 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-400', border: 'border-slate-200 dark:border-yellow-800/30' },
+  green:  { icon: 'bg-green-500/10 text-green-600',  border: 'border-slate-200' },
+  red:    { icon: 'bg-red-500/10 text-red-600',       border: 'border-slate-200' },
+  blue:   { icon: 'bg-blue-500/10 text-blue-600',    border: 'border-slate-200' },
+  yellow: { icon: 'bg-yellow-500/10 text-yellow-600', border: 'border-slate-200' },
 }
 
 export const StatCard = ({ title, value, subtitle, icon, trend, accent = 'green' }: StatCardProps) => {
   const { icon: iconCls, border } = accentMap[accent]
 
   return (
-    <div className={`bg-white dark:bg-surface-200 p-5 rounded-[2rem] border transition-all duration-300 shadow-sm ${border}`}>
+    <div className={`bg-white p-5 rounded-[2rem] border transition-all duration-300 shadow-sm ${border}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{title}</p>
-          <p className="text-2xl font-display font-bold text-slate-900 dark:text-white mt-1 break-words">{value}</p>
-          {subtitle && <p className="text-[11px] text-slate-500 dark:text-slate-500 mt-1 truncate">{subtitle}</p>}
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{title}</p>
+          <p className="text-2xl font-display font-bold text-slate-900 mt-1 break-words">{value}</p>
+          {subtitle && <p className="text-[11px] text-slate-500 mt-1 truncate">{subtitle}</p>}
           {trend && (
-            <p className={`text-xs font-bold mt-2 flex items-center gap-1 ${trend.positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            <p className={`text-xs font-bold mt-2 flex items-center gap-1 ${trend.positive ? 'text-green-600' : 'text-red-600'}`}>
               {trend.positive ? '▲' : '▼'} {trend.value}
             </p>
           )}

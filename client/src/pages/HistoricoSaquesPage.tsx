@@ -72,13 +72,13 @@ export const HistoricoSaquesPage = () => {
   const getStatusConfig = (status: Saque['status']) => {
     switch (status) {
       case 'CONCLUIDO':
-        return { color: 'bg-green-500/10 text-green-600 dark:text-green-500 border-green-500/20', icon: <CheckCircle2 size={12} />, label: 'Concluído' }
+        return { color: 'bg-emerald-50 text-emerald-600 border-emerald-100', icon: <CheckCircle2 size={12} />, label: 'Concluído' }
       case 'PENDENTE':
-        return { color: 'bg-orange-500/10 text-orange-600 dark:text-orange-500 border-orange-500/20', icon: <Clock size={12} />, label: 'Pendente' }
+        return { color: 'bg-amber-50 text-amber-600 border-amber-100', icon: <Clock size={12} />, label: 'Pendente' }
       case 'PROCESSANDO':
-        return { color: 'bg-blue-500/10 text-blue-600 dark:text-blue-500 border-blue-500/20', icon: <Loader2 size={12} className="animate-spin" />, label: 'Processando' }
+        return { color: 'bg-blue-50 text-blue-600 border-blue-100', icon: <Loader2 size={12} className="animate-spin" />, label: 'Processando' }
       case 'REJEITADO':
-        return { color: 'bg-red-500/10 text-red-600 dark:text-red-500 border-red-500/20', icon: <XCircle size={12} />, label: 'Rejeitado' }
+        return { color: 'bg-rose-50 text-rose-600 border-rose-100', icon: <XCircle size={12} />, label: 'Rejeitado' }
     }
   }
 
@@ -198,31 +198,31 @@ export const HistoricoSaquesPage = () => {
       {/* ─── Cabeçalho ─── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-display font-bold text-slate-800 dark:text-white">Histórico de Saques</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Histórico de Saques</h2>
+          <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest mt-1">
             Acompanhamento e auditoria de solicitações de retirada
           </p>
         </div>
         <div className="flex items-center gap-3 relative print:hidden" ref={dropdownRef}>
           <button 
             onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-surface-300 text-slate-700 dark:text-slate-200 font-semibold rounded-lg hover:bg-surface-400 transition-colors shadow-sm text-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-400 font-black uppercase tracking-widest text-[11px] rounded-xl hover:bg-slate-200 transition-all active:scale-95"
           >
-            <Download size={16} />
+            <Download size={14} />
             Exportar
-            <ChevronDown size={14} className={`transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown size={12} className={`transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isExportMenuOpen && (
-            <div className="absolute top-full right-[130px] sm:right-auto sm:left-0 mt-2 w-48 bg-surface-200 border border-surface-300 rounded-xl shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 py-1">
-              <button onClick={() => handleExport('Excel')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
-                <FileSpreadsheet size={16} className="text-green-500" /> Excel (.xlsx)
+            <div className="absolute top-full right-0 mt-3 w-56 bg-white border border-slate-100 rounded-[1.5rem] shadow-2xl shadow-slate-200/50 overflow-hidden z-50 py-2 animate-in fade-in slide-in-from-top-4 duration-300">
+              <button onClick={() => handleExport('Excel')} className="w-full px-5 py-3.5 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-colors text-left">
+                <FileSpreadsheet size={16} className="text-emerald-500" /> Excel (.xlsx)
               </button>
-              <button onClick={() => handleExport('PDF')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
-                <FileText size={16} className="text-red-500" /> Relatório PDF
+              <button onClick={() => handleExport('PDF')} className="w-full px-5 py-3.5 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors text-left">
+                <FileText size={16} className="text-rose-500" /> Relatório PDF
               </button>
-              <div className="h-px bg-slate-100 dark:bg-surface-300 my-1"></div>
-              <button onClick={() => handleExport('Print')} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm text-slate-300 hover:bg-surface-300/50 transition-colors text-left">
+              <div className="h-px bg-slate-50 mx-2 my-1"></div>
+              <button onClick={() => handleExport('Print')} className="w-full px-5 py-3.5 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-colors text-left">
                 <Printer size={16} className="text-slate-400" /> Imprimir Tabela
               </button>
             </div>
@@ -230,7 +230,7 @@ export const HistoricoSaquesPage = () => {
 
           <button 
             onClick={() => { setSaqueToEdit(null); setIsModalOpen(true); }}
-            className="flex items-center gap-2 px-5 py-2 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition-colors shadow-sm text-sm"
+            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-black uppercase tracking-widest text-[11px] rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
           >
             <Plus size={16} />
             Novo Saque
@@ -241,11 +241,11 @@ export const HistoricoSaquesPage = () => {
       {/* ─── Barra de Filtros (Expandida) ─── */}
       <div className="flex flex-col xl:flex-row gap-3 print:hidden">
         <div className="relative flex-1 w-full min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
           <input 
             type="text" 
             placeholder="Buscar por usuário..." 
-            className="input-field pl-10 h-11 text-sm bg-surface-200 w-full"
+            className="w-full bg-slate-50 border border-slate-100 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-sans"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -253,7 +253,7 @@ export const HistoricoSaquesPage = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select 
-            className="input-field h-11 text-sm bg-surface-200"
+            className="bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-4 text-sm text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -265,7 +265,7 @@ export const HistoricoSaquesPage = () => {
           </select>
 
           <select 
-            className="input-field h-11 text-sm bg-surface-200"
+            className="bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-4 text-sm text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
           >
@@ -281,7 +281,7 @@ export const HistoricoSaquesPage = () => {
           </select>
 
           <select 
-            className="input-field h-11 text-sm bg-surface-200"
+            className="bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-4 text-sm text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             value={periodFilter}
             onChange={(e) => setPeriodFilter(e.target.value)}
           >
@@ -294,15 +294,15 @@ export const HistoricoSaquesPage = () => {
       </div>
 
       {/* ─── Área da Tabela ─── */}
-      <div className="card overflow-hidden bg-surface-200 border border-surface-300 print:border-none print:shadow-none">
+      <div className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-sm print:border-none print:shadow-none">
         
-        <div className="px-6 py-3 bg-blue-50 dark:bg-blue-500/5 border-b border-blue-100 dark:border-blue-500/10 flex items-start sm:items-center gap-2 text-xs sm:text-sm text-blue-800 dark:text-blue-300 leading-tight print:hidden">
-           <Banknote className="shrink-0 mt-0.5 sm:mt-0" size={16} />
-           <p><strong>Dica de Auditoria:</strong> Saques originados de Bancas Gerenciadas podem apresentar até 10% de comissão deduzida do valor bruto solicitado.</p>
+        <div className="px-8 py-4 bg-sky-50 border-b border-sky-100 flex items-start sm:items-center gap-3 text-[11px] sm:text-[12px] text-sky-700 leading-tight print:hidden font-bold">
+           <Banknote className="shrink-0 mt-0.5 sm:mt-0 text-sky-500" size={18} />
+           <p className="uppercase tracking-widest leading-relaxed"><strong>Auditoria:</strong> Saques de Bancas Gerenciadas podem deduzir até 10% de comissão do valor bruto.</p>
         </div>
 
-        {/* Tabela Header (Adicionado 80px para AÇÕES) */}
-        <div className="hidden lg:grid grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
+        {/* Tabela Header */}
+        <div className="hidden lg:grid grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-4 px-8 py-5 bg-slate-50/50 border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest items-center">
           <span>Data e Hora</span>
           <span>Usuário</span>
           <span>Valor Bruto</span>
@@ -319,68 +319,68 @@ export const HistoricoSaquesPage = () => {
           </div>
         ) : filteredSaques.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center print:hidden">
-            <div className="w-16 h-16 bg-surface-300/50 rounded-full flex items-center justify-center mb-4 border border-surface-300">
-              <Banknote className="text-slate-300 dark:text-slate-500" size={24} />
+            <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6 border border-slate-50">
+              <Banknote className="text-slate-200" size={32} />
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">Nenhum saque encontrado.</p>
+            <p className="text-slate-400 text-[11px] font-black uppercase tracking-widest">Nenhum registro encontrado.</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-surface-300">
+          <div className="divide-y divide-slate-50">
             {filteredSaques.map(s => {
               const statusCfg = getStatusConfig(s.status)
               
               return (
-                <div key={s.id} className="group grid grid-cols-1 lg:grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-2 lg:gap-4 px-6 py-4 lg:py-4.5 text-sm items-start lg:items-center hover:bg-surface-300/50/20 transition-colors">
+                <div key={s.id} className="group grid grid-cols-1 lg:grid-cols-[140px_2.5fr_1fr_1fr_1fr_110px_130px_80px] gap-2 lg:gap-4 px-8 py-6 items-start lg:items-center hover:bg-slate-50/50 transition-all">
                   
                   {/* Data e Hora */}
                   <div className="flex flex-col">
-                    <span className="text-slate-700 dark:text-slate-200 font-medium">
+                    <span className="text-slate-800 font-bold">
                       {new Date(s.date).toLocaleDateString('pt-BR')}
                     </span>
-                    <span className="text-slate-400 text-xs">
+                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">
                       {new Date(s.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
 
                   {/* Usuário */}
                   <div>
-                    <span className="font-bold text-slate-700 dark:text-slate-200">{s.userName}</span>
+                    <span className="font-black text-slate-800 tracking-tight uppercase text-xs">{s.userName}</span>
                   </div>
 
                   {/* Valor Bruto */}
                   <div className="flex items-center">
-                    <span className="font-semibold text-slate-300">{fmt(s.grossValue)}</span>
+                    <span className="font-bold text-slate-400">{fmt(s.grossValue)}</span>
                   </div>
 
                   {/* Comissão */}
                   <div className="flex flex-col items-start justify-center">
                     {s.comissionPercent > 0 ? (
                       <>
-                        <span className="text-xs font-bold text-pink-500 bg-pink-50 dark:bg-pink-500/10 px-1.5 py-0.5 rounded border border-pink-100 dark:border-pink-500/20">
+                        <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100 uppercase tracking-widest">
                           -{s.comissionPercent}%
                         </span>
-                        <span className="text-xs text-slate-400 mt-0.5 whitespace-nowrap">
-                           Desconto: {fmt(s.grossValue * (s.comissionPercent/100))}
+                        <span className="text-[10px] text-slate-300 mt-1 font-bold">
+                           {fmt(s.grossValue * (s.comissionPercent/100))}
                         </span>
                       </>
                     ) : (
-                      <span className="text-xs text-slate-400 italic">Isento</span>
+                      <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Isento</span>
                     )}
                   </div>
 
                   {/* Valor Líquido */}
                   <div className="flex flex-col items-start justify-center">
-                     <span className="font-bold text-green-600 dark:text-green-500 text-[15px]">{fmt(s.netValue)}</span>
+                     <span className="font-black text-emerald-600 text-lg tracking-tight">{fmt(s.netValue)}</span>
                   </div>
 
                   {/* Método */}
-                  <div className="flex items-center text-slate-300 font-medium">
+                  <div className="flex items-center text-slate-400 font-bold text-xs uppercase tracking-tight">
                     {s.method}
                   </div>
 
                   {/* Status */}
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] sm:text-xs font-bold px-2.5 py-1.5 rounded-md inline-flex items-center gap-1.5 border whitespace-nowrap ${statusCfg.color}`}>
+                    <span className={`text-[9px] font-black px-2.5 py-1.5 rounded-lg inline-flex items-center gap-2 border uppercase tracking-[0.1em] whitespace-nowrap shadow-sm ${statusCfg.color}`}>
                       {statusCfg.icon}
                       {statusCfg.label}
                     </span>
@@ -406,10 +406,10 @@ export const HistoricoSaquesPage = () => {
 
                   {/* Rejection Reason (If any) */}
                   {s.status === 'REJEITADO' && s.rejectionReason && (
-                    <div className="lg:col-span-8 mt-2 p-3 bg-red-50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/10 rounded-lg text-xs text-red-700 dark:text-red-400 flex items-start gap-2">
-                      <XCircle size={14} className="shrink-0 mt-0.5" />
-                      <div>
-                        <strong>Motivo da Rejeição:</strong> {s.rejectionReason}
+                    <div className="lg:col-span-8 mt-3 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-[11px] text-rose-700 flex items-start gap-3">
+                      <XCircle size={16} className="shrink-0 mt-0.5 text-rose-500" />
+                      <div className="font-bold">
+                        <strong className="uppercase tracking-widest mr-2">Rejeitado:</strong> {s.rejectionReason}
                       </div>
                     </div>
                   )}

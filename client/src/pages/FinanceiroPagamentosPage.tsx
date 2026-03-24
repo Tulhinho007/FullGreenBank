@@ -40,15 +40,15 @@ interface UserPayment {
 // ─── Helpers visuais ─────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ATIVO:     { label: 'PAGO',      color: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-green-500/10 dark:text-green-500 dark:border-green-500/20',  icon: <CheckCircle size={12} /> },
-  PENDENTE:  { label: 'PENDENTE',  color: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-yellow-500/10 dark:text-yellow-500 dark:border-yellow-500/20', icon: <Hourglass size={12} /> },
-  ATRASADO:  { label: 'ATRASADO',  color: 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-red-500/10 dark:text-red-500 dark:border-red-500/20',        icon: <AlertTriangle size={12} /> },
-  CANCELADO: { label: 'CANCELADO', color: 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-surface-300 dark:text-slate-400 dark:border-surface-400',    icon: <Ban size={12} /> },
+  ATIVO:     { label: 'PAGO',      color: 'bg-emerald-50 text-emerald-600 border-emerald-100',  icon: <CheckCircle size={12} /> },
+  PENDENTE:  { label: 'PENDENTE',  color: 'bg-amber-50 text-amber-600 border-amber-100', icon: <Hourglass size={12} /> },
+  ATRASADO:  { label: 'ATRASADO',  color: 'bg-rose-50 text-rose-600 border-rose-100',        icon: <AlertTriangle size={12} /> },
+  CANCELADO: { label: 'CANCELADO', color: 'bg-slate-50 text-slate-500 border-slate-200',    icon: <Ban size={12} /> },
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  STARTER:  { label: 'STARTER', color: 'bg-green-500/10 text-green-600 border-green-500/20 dark:text-green-400' },
-  PRO:      { label: 'PRO',     color: 'bg-orange-500/10 text-orange-600 border-orange-500/20 dark:text-orange-400' },
+  STARTER:  { label: 'STARTER', color: 'bg-green-50 text-green-700 border-green-100' },
+  PRO:      { label: 'PRO',     color: 'bg-orange-50 text-orange-700 border-orange-100' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -306,72 +306,72 @@ export const FinanceiroPagamentosPage = () => {
 
       {/* Cabeçalho */}
       <div className="flex flex-col gap-1">
-        <h2 className="font-display font-bold text-slate-900 dark:text-white text-xl">Gestão de Assinaturas</h2>
-        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+        <h2 className="font-display font-bold text-slate-900 text-xl">Gestão de Assinaturas</h2>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
           Controle financeiro e recorrência de membros
         </p>
       </div>
 
       {/* ── Stats Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-2">
-            <Users size={14} className="text-slate-400 dark:text-slate-500" />
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Membros</span>
+            <Users size={14} className="text-slate-400" />
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Membros</span>
           </div>
-          <p className="text-3xl font-display font-bold text-slate-900 dark:text-white">{loading ? '—' : totalUsers}</p>
+          <p className="text-3xl font-display font-bold text-slate-900">{loading ? '—' : totalUsers}</p>
         </div>
 
-        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle size={14} className="text-emerald-500" />
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Ativos</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ativos</span>
           </div>
-          <p className="text-3xl font-display font-bold text-emerald-600 dark:text-emerald-500">{loading ? '—' : ativos}</p>
+          <p className="text-3xl font-display font-bold text-emerald-600">{loading ? '—' : ativos}</p>
         </div>
 
-        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-2">
             <Hourglass size={14} className="text-amber-500" />
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pendentes</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pendentes</span>
           </div>
-          <p className="text-3xl font-display font-bold text-amber-600 dark:text-amber-500">{loading ? '—' : pendentes}</p>
+          <p className="text-3xl font-display font-bold text-amber-600">{loading ? '—' : pendentes}</p>
         </div>
 
-        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle size={14} className="text-rose-500" />
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Atrasados</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atrasados</span>
           </div>
-          <p className="text-3xl font-display font-bold text-rose-600 dark:text-rose-400">{loading ? '—' : atrasados}</p>
+          <p className="text-3xl font-display font-bold text-rose-600">{loading ? '—' : atrasados}</p>
         </div>
 
-        <div className="bg-slate-900 dark:bg-emerald-900/20 p-5 rounded-3xl border border-slate-800 dark:border-emerald-500/30 shadow-lg col-span-2 lg:col-span-1">
+        <div className="bg-emerald-600 p-5 rounded-3xl border border-emerald-500 shadow-lg col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp size={14} className="text-emerald-400" />
-            <span className="text-[10px] font-bold text-emerald-500/70 uppercase tracking-widest">Receita Mensal</span>
+            <TrendingUp size={14} className="text-emerald-100" />
+            <span className="text-[10px] font-bold text-emerald-100 uppercase tracking-widest">Receita Mensal</span>
           </div>
-          <p className="text-2xl font-display font-bold text-white dark:text-emerald-400">
+          <p className="text-2xl font-display font-bold text-white">
             {fmt(receitaMes)}
           </p>
         </div>
       </div>
 
       {/* ── Filtros e Ações ─────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3 mb-6 bg-slate-50/50 dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/10">
+      <div className="flex flex-wrap items-center gap-3 mb-6 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
         <div className="relative flex-1 min-w-[280px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input
             type="text"
             placeholder="Pesquise por nome, email ou ID..."
-            className="w-full bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl py-2.5 pl-12 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all shadow-sm"
+            className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-2.5 pl-12 pr-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-green-500/30 transition-all"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
         <select 
-          className="bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-sm"
+          className="bg-white border border-slate-200 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 cursor-pointer focus:outline-none shadow-sm"
           value={filterPlan} 
           onChange={e => setFilterPlan(e.target.value as PlanType | '')}
         >
@@ -382,7 +382,7 @@ export const FinanceiroPagamentosPage = () => {
         </select>
 
         <select 
-          className="bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-sm"
+          className="bg-white border border-slate-200 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 cursor-pointer focus:outline-none shadow-sm"
           value={filterStatus} 
           onChange={e => setFilterStatus(e.target.value as PaymentStatus | '')}
         >
@@ -392,7 +392,7 @@ export const FinanceiroPagamentosPage = () => {
           ))}
         </select>
 
-        <select className="input-field w-auto h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer">
+        <select className="input-field w-auto h-11 bg-slate-50 border-slate-100 text-sm cursor-pointer">
           <option>Hoje</option>
           <option>Ontem</option>
           <option>Últimos 7 dias</option>
@@ -400,11 +400,11 @@ export const FinanceiroPagamentosPage = () => {
         </select>
 
         <div className="flex items-center gap-2 ml-auto">
-          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-500 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-sm">
+          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-100 transition-all">
             <FileSpreadsheet size={16} />
             Excel
           </button>
-          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-500 border border-rose-100 dark:border-rose-500/20 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-sm">
+          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all">
             <FileText size={16} />
             PDF
           </button>
@@ -417,9 +417,9 @@ export const FinanceiroPagamentosPage = () => {
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
           {/* Header da tabela consolidado */}
-          <div className="hidden md:grid grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-surface-300 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest items-center">
+          <div className="hidden md:grid grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 bg-slate-50/50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest items-center">
             <span>Usuário</span>
             <span>Plano</span>
             <span>Valor</span>
@@ -430,7 +430,7 @@ export const FinanceiroPagamentosPage = () => {
             <span className="text-right pr-4">Ações</span>
           </div>
 
-          <div className="divide-y divide-slate-100 dark:divide-surface-300">
+          <div className="divide-y divide-slate-100">
             {filtered.map(u => (
               <UserRow 
                 key={u.id} 
@@ -460,9 +460,9 @@ export const FinanceiroPagamentosPage = () => {
         size="md"
       >
         <div className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-xl border border-surface-400 bg-surface-300/30">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
             <table className="w-full text-left text-sm">
-              <thead className="bg-surface-400/50 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-surface-400">
+              <thead className="bg-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3">Pagamento</th>
                   <th className="px-4 py-3">Vencimento</th>
@@ -470,7 +470,7 @@ export const FinanceiroPagamentosPage = () => {
                   <th className="px-4 py-3 text-right">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-surface-400">
+              <tbody className="divide-y divide-slate-200">
                 {(() => {
                   const lines = (historyTarget?.notes || '').split('\n').filter(l => l.includes('PAG:')) || [];
                   if (lines.length === 0) {
@@ -489,16 +489,16 @@ export const FinanceiroPagamentosPage = () => {
                     const isNewest = i === 0 && historyTarget?.status === 'ATIVO';
                     
                     return (
-                      <tr key={i} className="hover:bg-surface-400/20 transition-colors">
-                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{formatDate(pag)}</td>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{formatDate(venc)}</td>
+                      <tr key={i} className="hover:bg-slate-100 transition-colors">
+                        <td className="px-4 py-3 font-mono text-xs text-slate-600">{formatDate(pag)}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-slate-600">{formatDate(venc)}</td>
                         <td className="px-4 py-3">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded border border-surface-400 text-slate-400">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded border border-slate-200 text-slate-500">
                             {plan}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isNewest ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'}`}>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isNewest ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-slate-50 text-slate-400 border border-slate-200'}`}>
                             {isNewest ? 'ATIVA' : 'FINALIZADA'}
                           </span>
                         </td>
@@ -524,8 +524,8 @@ export const FinanceiroPagamentosPage = () => {
           <form onSubmit={handleSave} className="flex flex-col gap-5">
 
             {/* Info do usuário */}
-            <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
-              <p className="text-sm font-semibold text-white">{editTarget.name}</p>
+            <div className="bg-slate-50 border border-slate-100 rounded-lg px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">{editTarget.name}</p>
               <p className="text-xs text-slate-500 mt-0.5">{editTarget.email}</p>
             </div>
 
@@ -568,7 +568,7 @@ export const FinanceiroPagamentosPage = () => {
                 </div>
                 <div>
                   <label className="label">Plano de Assinatura</label>
-                  <select className="input-field text-green-400 font-bold" value={editForm.plan} onChange={setF('plan')}>
+                  <select className="input-field text-green-600 font-bold" value={editForm.plan} onChange={setF('plan')}>
                     {(Object.keys(PLAN_CONFIG) as PlanType[]).map(p => (
                       <option key={p} value={p}>{PLAN_CONFIG[p].label}</option>
                     ))}
@@ -589,7 +589,7 @@ export const FinanceiroPagamentosPage = () => {
                 <div>
                   <label className="label">Tipo de Conta</label>
                   <input
-                    className="input-field bg-surface-300/40 cursor-not-allowed text-slate-500"
+                    className="input-field bg-slate-50 cursor-not-allowed text-slate-400"
                     value={editTarget.role === 'ADMIN' || editTarget.role === 'MASTER' ? 'Admin' : 'Membro'}
                     disabled
                     readOnly
@@ -611,7 +611,7 @@ export const FinanceiroPagamentosPage = () => {
             </div>
 
             {/* Ações */}
-            <div className="flex gap-3 pt-4 border-t border-surface-300">
+            <div className="flex gap-3 pt-4 border-t border-slate-100">
               <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
                 {isReadOnly ? 'Fechar' : 'Cancelar'}
               </button>
@@ -657,12 +657,12 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-slate-100 dark:border-surface-300 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors items-center group">
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors items-center group">
       
       {/* USUÁRIO */}
       <div className="flex flex-col min-w-0">
-        <span className="text-sm font-bold text-slate-900 dark:text-white truncate uppercase tracking-tight">{user.name}</span>
-        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 truncate mt-0.5">{user.email}</span>
+        <span className="text-sm font-bold text-slate-900 truncate uppercase tracking-tight">{user.name}</span>
+        <span className="text-[10px] font-bold text-slate-400 truncate mt-0.5">{user.email}</span>
       </div>
 
       {/* PLANO */}
@@ -673,14 +673,14 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* VALOR */}
-      <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
+      <div className="text-sm font-bold text-slate-900 font-mono">
         {user.value != null ? formatCurrency(user.value) : '—'}
       </div>
 
       {/* FORMA DE PAGAMENTO */}
       <div className="flex items-center gap-2">
         {getPayIcon(user.payMethod)}
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-bold whitespace-nowrap uppercase tracking-tighter">
+        <span className="text-[11px] text-slate-500 font-bold whitespace-nowrap uppercase tracking-tighter">
           {PAY_METHOD_LABEL[user.payMethod] || '—'}
         </span>
       </div>
@@ -695,7 +695,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
 
       {/* DATA DE COMPRA */}
       <div>
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 truncate">
+        <span className="text-[11px] font-bold text-slate-400 truncate">
           {user.status !== 'PENDENTE' 
             ? (user.notes?.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1]?.split('|')[0]) : formatDate(new Date().toISOString()))
             : '—'}
@@ -703,7 +703,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* PRÓXIMA MENSALIDADE */}
-      <div className="text-[11px] font-bold text-slate-600 dark:text-slate-300 font-mono">
+      <div className="text-[11px] font-bold text-slate-600 font-mono">
         {user.dueDate ? formatDate(user.dueDate) : '—'}
       </div>
 
@@ -711,14 +711,14 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       <div className="flex items-center justify-end gap-1 translate-x-1 group-hover:translate-x-0 transition-transform">
         <button
           onClick={onHistory}
-          className="p-1.5 text-slate-400 hover:text-blue-500 dark:hover:text-white bg-slate-50 dark:bg-surface-300 rounded-lg border border-slate-200 dark:border-surface-400 transition-all shadow-sm"
+          className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg border border-slate-100 transition-all shadow-sm"
           title="Histórico de Pagamentos"
         >
           <ClipboardList size={14} />
         </button>
         <button
           onClick={() => onEdit(user)}
-          className="p-1.5 text-slate-400 hover:text-green-600 dark:hover:text-white bg-slate-50 dark:bg-surface-300 rounded-lg border border-slate-200 dark:border-surface-400 transition-all shadow-sm"
+          className="p-1.5 text-slate-400 hover:text-green-600 bg-slate-50 rounded-lg border border-slate-100 transition-all shadow-sm"
           title="Editar"
         >
           <Edit2 size={14} />

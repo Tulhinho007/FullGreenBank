@@ -10,7 +10,7 @@ interface ModalProps {
   showHeader?: boolean
 }
 
-const sizeMap = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' }
+const sizeMap = { sm: 'max-w-sm', md: 'max-w-xl', lg: 'max-w-3xl' }
 
 export const Modal = ({ isOpen, onClose, title = '', children, size = 'md', showHeader = true }: ModalProps) => {
   useEffect(() => {
@@ -29,21 +29,21 @@ export const Modal = ({ isOpen, onClose, title = '', children, size = 'md', show
         onClick={onClose}
       />
       {/* Modal */}
-      <div className={`relative w-full ${sizeMap[size]} card border border-surface-400 shadow-2xl animate-in overflow-hidden`}>
+      <div className={`relative w-full ${sizeMap[size]} bg-white border border-slate-100 rounded-[2.5rem] shadow-2xl animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden`}>
         {/* Header */}
         {showHeader && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-300">
-            <h2 className="font-display font-semibold text-white">{title}</h2>
+          <div className="flex items-center justify-between px-8 py-6 border-b border-slate-50 bg-slate-50/20">
+            <h2 className="font-display font-black text-slate-800 text-lg tracking-tight">{title}</h2>
             <button
               onClick={onClose}
-              className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-400 text-slate-400 hover:text-white transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-100 hover:border-rose-200 text-slate-400 hover:text-rose-500 transition-all active:scale-90"
             >
-              <X size={16} />
+              <X size={20} />
             </button>
           </div>
         )}
         {/* Body */}
-        <div className={showHeader ? "px-6 py-5" : ""}>{children}</div>
+        <div className={showHeader ? "px-10 py-8" : ""}>{children}</div>
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ const PLAN_DATA = [
     price: 'Grátis',
     color: 'text-yellow-500',
     borderColor: 'border-yellow-500/30',
-    bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
+    bgColor: 'bg-yellow-500/5',
     icon: <Zap size={24} />,
     features: [
       'Dashboard Geral', 
@@ -28,7 +28,7 @@ const PLAN_DATA = [
     price: 'R$ 29,90',
     color: 'text-yellow-500',
     borderColor: 'border-yellow-500/50',
-    bgColor: 'bg-yellow-500/5 dark:bg-yellow-500/10',
+    bgColor: 'bg-yellow-500/5',
     icon: <Crown size={24} />,
     highlight: true,
     features: [
@@ -74,7 +74,7 @@ export const PlanosPage = () => {
       <div className="absolute top-0 left-0">
         <Link 
           to="/dashboard" 
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors font-medium text-sm"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-medium text-sm"
         >
           <ArrowLeft size={18} />
           Voltar para o sistema
@@ -83,13 +83,13 @@ export const PlanosPage = () => {
 
       {/* HEADER SECTION */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-widest animate-pulse">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
            <Star size={12} fill="currentColor" /> Planos & Assinaturas
         </div>
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-          O poder de escala para o seu <span className="text-green-500">Green</span>.
+        <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 tracking-tight">
+          O poder de escala para o seu <span className="text-emerald-500">Green</span>.
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg">
+        <p className="text-slate-500 max-w-2xl mx-auto text-lg">
           Escolha o plano ideal para o seu nível de gestão e impulsione seus resultados com ferramentas profissionais.
         </p>
       </div>
@@ -107,17 +107,17 @@ export const PlanosPage = () => {
               </div>
             )}
 
-            <div className={`mb-6 p-3 rounded-2xl inline-block ${plan.color} bg-white dark:bg-surface-200 border border-slate-100 dark:border-surface-400 shadow-sm`}>
+            <div className={`mb-6 p-3 rounded-2xl inline-block ${plan.color} bg-white border border-slate-100 shadow-sm`}>
               {plan.icon}
             </div>
 
-            <h3 className="text-2xl font-display font-bold text-slate-900 dark:text-white leading-none mb-1">
+            <h3 className="text-2xl font-display font-bold text-slate-900 leading-none mb-1">
               {plan.name}
             </h3>
             <p className="text-slate-500 text-sm font-medium mb-6">{plan.subtitle}</p>
 
             <div className="mb-8">
-              <span className="text-4xl font-black text-slate-900 dark:text-white">{plan.price}</span>
+              <span className="text-4xl font-black text-slate-900">{plan.price}</span>
               {plan.id !== 'starter' && <span className="text-slate-500 text-sm ml-2">/mensal</span>}
             </div>
 
@@ -127,7 +127,7 @@ export const PlanosPage = () => {
                   <div className="mt-0.5 w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-300 font-medium">{feat}</span>
+                  <span className="text-slate-700 font-medium">{feat}</span>
                 </div>
               ))}
               {plan.notIncluded.map((feat, i) => (
@@ -135,7 +135,7 @@ export const PlanosPage = () => {
                   <div className="mt-0.5 w-5 h-5 rounded-full bg-slate-500/10 flex items-center justify-center text-slate-400 shrink-0">
                     <X size={12} strokeWidth={3} />
                   </div>
-                  <span className="text-slate-500 dark:text-slate-500 line-through">{feat}</span>
+                  <span className="text-slate-400 line-through">{feat}</span>
                 </div>
               ))}
             </div>
@@ -154,7 +154,7 @@ export const PlanosPage = () => {
 
       {/* PRO OBSERVER */}
       <div className="flex flex-col gap-4">
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 text-center text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+        <div className="p-6 rounded-2xl bg-yellow-50 border border-yellow-200 text-center text-sm font-semibold text-yellow-700">
           <p className="flex items-center justify-center gap-2">
             <Zap size={16} fill="currentColor" /> 
             Obs: Qualquer nova funcionalidade no sistema o plano <span className="underline font-black">PRO</span> terá acesso imediato e garantido.
@@ -165,34 +165,34 @@ export const PlanosPage = () => {
       {/* COMPARISON TABLE */}
       <div className="mt-20 space-y-10">
         <div className="text-center max-w-xl mx-auto">
-          <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Compare cada detalhe.</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Visão técnica detalhada de todas as permissões e recursos disponíveis.</p>
+          <h2 className="text-3xl font-display font-bold text-slate-900">Compare cada detalhe.</h2>
+          <p className="text-slate-500 mt-2">Visão técnica detalhada de todas as permissões e recursos disponíveis.</p>
         </div>
 
-        <div className="bg-white dark:bg-surface-200 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-xl overflow-hidden">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-surface-300/50">
-                <th className="px-8 py-6 text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Funcionalidade</th>
-                <th className="px-8 py-6 text-center text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Starter</th>
-                <th className="px-8 py-6 text-center text-sm font-bold text-yellow-500 uppercase tracking-widest border-b border-slate-200 dark:border-surface-400">Pro</th>
+              <tr className="bg-slate-50">
+                <th className="px-8 py-6 text-sm font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Funcionalidade</th>
+                <th className="px-8 py-6 text-center text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200">Starter</th>
+                <th className="px-8 py-6 text-center text-sm font-bold text-yellow-600 uppercase tracking-widest border-b border-slate-200">Pro</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-surface-300/50">
+            <tbody className="divide-y divide-slate-100">
               {COMPARISON_TABLE.map((section, idx) => (
                 <React.Fragment key={idx}>
-                  <tr className="bg-slate-100/50 dark:bg-surface-300/20">
-                    <td colSpan={4} className="px-8 py-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+                  <tr className="bg-slate-50">
+                    <td colSpan={4} className="px-8 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                       {section.category}
                     </td>
                   </tr>
                   {section.features.map((feature, fIdx) => (
-                    <tr key={fIdx} className="hover:bg-slate-50/50 dark:hover:bg-surface-300/10 transition-colors">
-                      <td className="px-8 py-5 text-sm font-semibold text-slate-800 dark:text-slate-200">{feature.name}</td>
+                    <tr key={fIdx} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-8 py-5 text-sm font-semibold text-slate-800">{feature.name}</td>
                       <td className="px-8 py-5 text-center text-sm">
                         {renderValue(feature.starter)}
                       </td>
-                      <td className="px-8 py-5 text-center text-sm bg-yellow-500/5 dark:bg-yellow-500/5">
+                      <td className="px-8 py-5 text-center text-sm bg-yellow-50/30">
                         {renderValue(feature.pro)}
                       </td>
                     </tr>
@@ -230,9 +230,9 @@ const renderValue = (val: any) => {
     return val ? (
       <div className="flex justify-center text-green-500"><Check size={20} strokeWidth={3} /></div>
     ) : (
-      <div className="flex justify-center text-red-500"><X size={20} strokeWidth={3} /></div>
+      <div className="flex justify-center text-rose-500"><X size={20} strokeWidth={3} /></div>
     )
   }
-  return <span className="font-semibold text-slate-600 dark:text-slate-400">{val}</span>
+  return <span className="font-semibold text-slate-600">{val}</span>
 }
 

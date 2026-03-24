@@ -172,7 +172,7 @@ export const AdminCadastrosPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="font-display font-semibold text-white">{'Cadastros'}</h2>
+          <h2 className="font-display font-semibold text-slate-900">{'Cadastros'}</h2>
           <p className="text-xs text-slate-500 mt-0.5">{'Gerenciamento de tabelas base do sistema'}</p>
         </div>
         {!isReadOnly && (
@@ -195,23 +195,23 @@ export const AdminCadastrosPage = () => {
         {/* ── Card ESPORTES — funcional ── */}
         <div
           onClick={() => setSportsOpen(true)}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
-              <Dumbbell size={16} className="text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <Dumbbell size={16} className="text-emerald-600" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest">
               {'Ativo'}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">{'Esportes'}</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{'Esportes'}</h3>
           <p className="text-xs text-slate-500 mt-1">Gerenciar esportes disponíveis no sistema</p>
-          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-            <span className="text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">
               {sports.length} {sports.length === 1 ? 'esporte' : 'esportes'}
             </span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all">
               {'Gerenciar'}
             </span>
           </div>
@@ -220,23 +220,23 @@ export const AdminCadastrosPage = () => {
         {/* ── Card LIGAS / CAMPEONATOS — funcional ── */}
         <div
           onClick={() => setLeaguesOpen(true)}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
-              <Trophy size={16} className="text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <Trophy size={16} className="text-emerald-600" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest">
               {'Ativo'}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">{'Ligas / Campeonatos'}</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{'Ligas / Campeonatos'}</h3>
           <p className="text-xs text-slate-500 mt-1">Competições e torneios disponíveis no sistema</p>
-          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-            <span className="text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">
               {leagues.length} {leagues.length === 1 ? 'liga' : 'ligas'}
             </span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all">
               {'Gerenciar'}
             </span>
           </div>
@@ -245,61 +245,61 @@ export const AdminCadastrosPage = () => {
         {/* ── Card TIMES — funcional ── */}
         <div
           onClick={() => setTeamsOpen(true)}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
-              <Shield size={16} className="text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <Shield size={16} className="text-emerald-600" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">{'Ativo'}</span>
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest">{'Ativo'}</span>
           </div>
-          <h3 className="font-semibold text-white text-sm">{'Times'}</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{'Times'}</h3>
           <p className="text-xs text-slate-500 mt-1">Times e equipes esportivas do sistema</p>
-          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-            <span className="text-xs text-slate-500">1.382 times</span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">{'Gerenciar'}</span>
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">1.382 times</span>
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all">{'Gerenciar'}</span>
           </div>
         </div>
 
         {/* ── Card CASAS DE APOSTAS — funcional ── */}
         <div
           onClick={() => setBookmakersOpen(true)}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
-              <Star size={16} className="text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <Star size={16} className="text-emerald-600" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">{'Ativo'}</span>
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest">{'Ativo'}</span>
           </div>
-          <h3 className="font-semibold text-white text-sm">{'Casas de Apostas'}</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{'Casas de Apostas'}</h3>
           <p className="text-xs text-slate-500 mt-1">Bookmakers e plataformas disponíveis</p>
-          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-            <span className="text-xs text-slate-500">{bookmakers.length} {bookmakers.length === 1 ? 'casa' : 'casas'}</span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">{'Gerenciar'}</span>
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">{bookmakers.length} {bookmakers.length === 1 ? 'casa' : 'casas'}</span>
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all">{'Gerenciar'}</span>
           </div>
         </div>
 
         {/* ── Card MERCADOS — funcional ── */}
         <div
           onClick={() => setMarketsOpen(true)}
-          className="card p-5 border border-surface-400 hover:border-green-600/60 hover:shadow-green-glow transition-all duration-200 cursor-pointer group"
+          className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start justify-between mb-3">
-            <div className="w-9 h-9 rounded-lg bg-green-900/50 flex items-center justify-center group-hover:bg-green-800/60 transition-colors">
-              <ClipboardList size={16} className="text-green-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <ClipboardList size={16} className="text-emerald-600" />
             </div>
-            <span className="text-xs bg-green-900/40 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest">
               {'Ativo'}
             </span>
           </div>
-          <h3 className="font-semibold text-white text-sm">{'Mercados'}</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{'Mercados'}</h3>
           <p className="text-xs text-slate-500 mt-1">Mercados de apostas por esporte</p>
-          <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-            <span className="text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400">
               {markets.length} {markets.length === 1 ? 'mercado' : 'mercados'}
             </span>
-            <span className="text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1 rounded group-hover:bg-green-800/50 transition-colors">
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all">
               {'Gerenciar'}
             </span>
           </div>
@@ -307,20 +307,20 @@ export const AdminCadastrosPage = () => {
 
         {/* ── Cards PLACEHOLDER ── */}
         {placeholders.map(s => (
-          <div key={s.title} className="card p-5 border border-surface-400 hover:border-surface-300 transition-colors">
+          <div key={s.title} className="bg-white p-5 rounded-3xl border border-slate-100 opacity-60 grayscale hover:grayscale-0 transition-all">
             <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-lg bg-surface-300 flex items-center justify-center">
-                <ClipboardList size={16} className="text-slate-500" />
+              <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center">
+                <ClipboardList size={16} className="text-slate-400" />
               </div>
-              <span className="text-xs bg-surface-300 text-slate-500 px-2 py-0.5 rounded-full border border-surface-400">
+              <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 uppercase tracking-widest">
                 {'Em breve'}
               </span>
             </div>
-            <h3 className="font-semibold text-sm">{s.title}</h3>
+            <h3 className="font-bold text-slate-900 text-sm">{s.title}</h3>
             <p className="text-xs text-slate-500 mt-1">{s.desc}</p>
-            <div className="mt-4 pt-3 border-t border-surface-300 flex items-center justify-between">
-              <span className="text-xs text-slate-600">0 registros</span>
-              <button disabled className="text-xs text-slate-600 border border-surface-400 px-2.5 py-1 rounded cursor-not-allowed opacity-40">
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-400">0 registros</span>
+              <button disabled className="text-xs font-bold text-slate-400 border border-slate-200 px-2.5 py-1 rounded-lg cursor-not-allowed">
                 {'Gerenciar'}
               </button>
             </div>

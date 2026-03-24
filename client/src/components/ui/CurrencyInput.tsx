@@ -70,34 +70,35 @@ export const CurrencyInput = ({
 
       {/* Modal de confirmação de valor alto */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
-            <div className="text-4xl mb-6 text-center">⚠️</div>
-            <h3 className="text-slate-900 dark:text-white font-display font-bold text-xl text-center mb-2">
-              Valor Alto Detectado
+        <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-500">
+            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-amber-100">
+              <span className="text-4xl text-amber-500">⚠️</span>
+            </div>
+            <h3 className="text-slate-800 font-display font-black text-2xl text-center mb-3 tracking-tight">
+              Valor Elevado
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-8 leading-relaxed">
+            <p className="text-slate-400 font-medium text-center mb-10 leading-relaxed">
               Você está prestes a confirmar um aporte de{' '}
-              <span className="text-green-600 dark:text-green-400 font-bold text-base">
+              <span className="text-emerald-600 font-display font-black text-lg block mt-2">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL',
                 }).format(pendingValue ?? 0)}
               </span>
-              . Tem certeza?
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={handleCancel}
-                className="flex-1 py-3.5 rounded-2xl bg-slate-100 dark:bg-surface-300 text-slate-500 dark:text-slate-400 font-bold text-sm hover:bg-slate-200 dark:hover:bg-surface-400 transition-all active:scale-95"
-              >
-                Cancelar
-              </button>
+            <div className="flex flex-col gap-3">
               <button
                 onClick={handleConfirm}
-                className="flex-1 py-3.5 rounded-2xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 shadow-lg shadow-green-500/20 transition-all active:scale-95"
+                className="w-full py-4 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest text-[11px] hover:bg-emerald-700 shadow-xl shadow-emerald-500/20 transition-all active:scale-95"
               >
-                Confirmar
+                Confirmar Aporte
+              </button>
+              <button
+                onClick={handleCancel}
+                className="w-full py-4 rounded-2xl bg-white text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 border border-slate-100 transition-all"
+              >
+                Cancelar
               </button>
             </div>
           </div>

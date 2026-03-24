@@ -69,25 +69,25 @@ export const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 transition-colors duration-300">
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-green-900/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-900/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-700 mb-4 logo-glow">
-            <TrendingUp size={28} className="text-white" />
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-emerald-600 mb-6 shadow-xl shadow-emerald-500/20">
+            <TrendingUp size={32} className="text-white" />
           </div>
-          <h1 className="font-display font-bold text-3xl text-white">Full Green Bank</h1>
-          <p className="text-slate-400 text-sm mt-1">Gestão inteligente de banca</p>
+          <h1 className="font-display font-black text-4xl text-slate-800 tracking-tight">Full Green Bank</h1>
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Gestão inteligente de banca</p>
         </div>
 
-        <div className="card border border-surface-400 p-8">
-          <h2 className="font-display font-semibold text-white text-xl mb-6">Entrar na conta</h2>
+        <div className="bg-white border border-slate-100 p-8 lg:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
+          <h2 className="font-display font-bold text-slate-800 text-2xl mb-8">Entrar na conta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
@@ -128,18 +128,18 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary mt-2 flex items-center justify-center gap-2"
+              className="btn-primary mt-4 py-4 flex items-center justify-center gap-2 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-95"
             >
               {loading ? (
-                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Entrando...</>
-              ) : 'Entrar'}
+                <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Entrando...</>
+              ) : 'Acessar Plataforma'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-xs text-slate-400 mt-8 font-bold">
             Não tem conta?{' '}
-            <Link to="/register" className="text-green-400 hover:text-green-300 font-medium">
-              Cadastrar-se
+            <Link to="/register" className="text-emerald-600 hover:text-emerald-500 font-black transition-colors">
+              CRIAR CONTA AGORA
             </Link>
           </p>
         </div>

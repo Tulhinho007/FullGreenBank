@@ -142,44 +142,44 @@ export const LegalPage = () => {
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Breadcrumb / Back */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-        <Link to="/dashboard" className="hover:text-green-500 transition-colors flex items-center gap-1">
-          Dashboard
+      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <Link to="/dashboard" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
+          DASHBOARD
         </Link>
-        <ChevronRight size={12} className="opacity-30" />
-        <span className="text-slate-400">Institucional</span>
-        <ChevronRight size={12} className="opacity-30" />
-        <span className="text-white">{content.title}</span>
+        <ChevronRight size={10} className="text-slate-300" />
+        <span className="text-slate-300">INSTITUCIONAL</span>
+        <ChevronRight size={10} className="text-slate-300" />
+        <span className="text-slate-800">{content.title.toUpperCase()}</span>
       </div>
 
       {/* Header */}
-      <div className="card p-8 bg-surface-200 border-surface-400 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-        <div className="flex items-start gap-5 relative z-10">
-          <div className="w-14 h-14 rounded-2xl bg-surface-300 flex items-center justify-center border border-white/5 shadow-inner">
+      <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+        <div className="flex items-start gap-6 relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 shadow-inner group-hover:scale-110 transition-transform">
             {content.icon}
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-white tracking-tight">{content.title}</h1>
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-              Última atualização: <span className="text-slate-400">{content.lastUpdated}</span>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight">{content.title}</h1>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+              Atualizado em: <span className="text-emerald-600">{content.lastUpdated}</span>
             </p>
           </div>
         </div>
       </div>
 
       {/* Content Sections */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {content.sections.map((section: any, idx: number) => (
           <div 
             key={idx} 
-            className="card p-6 border-transparent bg-surface-100/40 hover:bg-surface-100/60 transition-colors group"
+            className="bg-white p-8 rounded-[2rem] border border-slate-50 hover:border-slate-100 hover:shadow-lg hover:shadow-slate-200/20 transition-all group"
           >
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <h2 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50"></span>
               {section.title}
             </h2>
-            <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-line group-hover:text-slate-300 transition-colors">
+            <p className="text-slate-500 text-sm leading-relaxed whitespace-pre-line font-medium opacity-80 group-hover:opacity-100 transition-opacity">
               {section.content}
             </p>
           </div>
@@ -187,18 +187,19 @@ export const LegalPage = () => {
       </div>
 
       {/* Action Footer */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50">
-        <div className="text-center md:text-left space-y-1">
-          <p className="text-sm font-semibold text-white">Dúvidas sobre nossas políticas?</p>
-          <p className="text-xs text-slate-500">Entre em contato com nosso suporte especializado.</p>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-10 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        <div className="text-center md:text-left space-y-1 relative z-10">
+          <p className="text-lg font-black text-slate-800 tracking-tight">Dúvidas sobre nossas políticas?</p>
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Entre em contato com o suporte especializado.</p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/dashboard" className="btn-secondary flex items-center gap-2 px-6">
-            <ArrowLeft size={16} /> Voltar
+        <div className="flex gap-4 relative z-10">
+          <Link to="/dashboard" className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all active:scale-95">
+            <ArrowLeft size={14} /> Voltar
           </Link>
           <button 
             onClick={() => setShowContact(true)}
-            className="btn-primary px-8"
+            className="flex items-center gap-2 px-8 py-3 rounded-xl bg-emerald-600 text-[10px] font-black uppercase tracking-widest text-white hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
           >
             Falar com Suporte
           </button>

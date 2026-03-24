@@ -44,26 +44,26 @@ const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
   icon: any;
   trend?: 'up' | 'down'
 }) => (
-  <div className="bg-white dark:bg-surface-200 p-6 rounded-[2rem] border border-slate-200 dark:border-surface-400 hover:border-green-600/40 transition-all duration-300 shadow-sm group">
+  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-emerald-600/40 transition-all duration-300 shadow-sm group">
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{title}</p>
-        <h3 className="text-2xl font-display font-bold text-slate-900 dark:text-white mt-1">{value}</h3>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+        <h3 className="text-2xl font-display font-bold text-slate-800 mt-1">{value}</h3>
         {subValue && (
           <div className="flex items-center gap-1 mt-2">
             {trend === 'up' ? (
-              <ArrowUpRight size={14} className="text-green-600 dark:text-green-400" />
+              <ArrowUpRight size={14} className="text-emerald-500" />
             ) : trend === 'down' ? (
-              <ArrowDownRight size={14} className="text-red-600 dark:text-red-400" />
+              <ArrowDownRight size={14} className="text-rose-500" />
             ) : null}
-            <span className={`text-[11px] font-bold ${trend === 'up' ? 'text-green-600 dark:text-green-400' : trend === 'down' ? 'text-red-600 dark:text-red-400' : 'text-slate-400'}`}>
+            <span className={`text-[11px] font-bold ${trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-rose-500' : 'text-slate-400'}`}>
               {subValue}
             </span>
           </div>
         )}
       </div>
-      <div className="w-12 h-12 rounded-2xl bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-        <Icon size={24} className="text-green-600 dark:text-green-400" />
+      <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        <Icon size={24} className="text-emerald-600" />
       </div>
     </div>
   </div>
@@ -74,16 +74,14 @@ export const ReportsPage = () => {
 
 
 
-  const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark'
-
   const chartColors = {
-    stroke: '#22c55e',
+    stroke: '#10b981',
     fill: 'url(#colorProfit)',
-    grid: isDark ? '#334155' : '#e2e8f0',
-    text: isDark ? '#94a3b8' : '#64748b',
-    tooltipBg: isDark ? '#1e293b' : '#ffffff',
-    tooltipBorder: isDark ? '#334155' : '#e2e8f0',
-    tooltipText: isDark ? '#ffffff' : '#0f172a'
+    grid: '#f1f5f9',
+    text: '#94a3b8',
+    tooltipBg: '#ffffff',
+    tooltipBorder: '#f1f5f9',
+    tooltipText: '#0f172a'
   }
 
   return (
@@ -91,12 +89,12 @@ export const ReportsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white">Relatório de Performance</h1>
-          <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Visão geral da saúde e crescimento da sua banca</p>
+          <h1 className="text-2xl font-display font-bold text-slate-800">Relatório de Performance</h1>
+          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5">Visão geral da saúde e crescimento da sua banca</p>
         </div>
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-1.5 shadow-inner">
-          <button className="px-5 py-2 text-xs font-bold rounded-xl bg-green-500 text-white shadow-lg shadow-green-500/20 active:scale-95 transition-all">Este Mês</button>
-          <button className="px-5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">Total</button>
+        <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-2xl p-1.5 shadow-inner">
+          <button className="px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">Este Mês</button>
+          <button className="px-5 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors">Total</button>
         </div>
       </div>
 
@@ -126,16 +124,16 @@ export const ReportsPage = () => {
 
       {/* Main Chart Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white dark:bg-surface-200 p-8 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm relative overflow-hidden">
+        <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Activity size={18} className="text-green-500" />
+            <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
+              <Activity size={18} className="text-emerald-500" />
               Evolução da Banca
             </h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-500/50" />
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Saldo Atual</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Atual</span>
               </div>
             </div>
           </div>
@@ -145,8 +143,8 @@ export const ReportsPage = () => {
               <AreaChart data={MOCK_EVOLUTION}>
                 <defs>
                   <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
@@ -189,54 +187,54 @@ export const ReportsPage = () => {
 
         {/* Side Metrics */}
         <div className="flex flex-col gap-6">
-          <div className="bg-white dark:bg-surface-200 p-8 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
-            <h3 className="font-display font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
-              <Calendar size={18} className="text-green-500" />
+          <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+            <h3 className="font-display font-bold text-slate-800 mb-8 flex items-center gap-2">
+              <Calendar size={18} className="text-emerald-500" />
               Saúde da Banca
             </h3>
             
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Yield</span>
-                  <span className="text-sm font-bold text-green-600 dark:text-green-400">+12.5%</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Yield</span>
+                  <span className="text-sm font-bold text-emerald-600">+12.5%</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 dark:bg-surface-300 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full bg-green-500 rounded-full shadow-lg shadow-green-500/50" style={{ width: '75%' }} />
+                <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" style={{ width: '75%' }} />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Max Drawdown</span>
-                  <span className="text-sm font-bold text-red-600 dark:text-red-400">-8.2%</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Max Drawdown</span>
+                  <span className="text-sm font-bold text-rose-600">-8.2%</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 dark:bg-surface-300 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full bg-red-500 rounded-full shadow-lg shadow-red-500/50" style={{ width: '15%' }} />
+                <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-rose-500 rounded-full shadow-lg shadow-rose-500/50" style={{ width: '15%' }} />
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-slate-100 dark:border-surface-400 space-y-4">
+              <div className="pt-6 border-t border-slate-50 space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Apostado</span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{formatCurrency(12450)}</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Apostado</span>
+                  <span className="text-xs font-bold text-slate-800 font-mono">{formatCurrency(12450)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Média por Aposta</span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{formatCurrency(150)}</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Média por Aposta</span>
+                  <span className="text-xs font-bold text-slate-800 font-mono">{formatCurrency(150)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Última Atualização</span>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Hoje, 14:10</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Última Atualização</span>
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-tighter">Hoje, 14:10</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="bg-green-500/10 dark:bg-green-600/10 p-6 rounded-[2rem] border border-green-500/20 dark:border-green-600/20 shadow-sm group">
-            <p className="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase tracking-widest">Insights</p>
-            <p className="text-sm text-slate-700 dark:text-slate-200 mt-2 leading-relaxed font-medium">
-              Sua performance em <span className="text-green-600 dark:text-white font-bold">Futebol</span> atingiu <span className="text-green-600 dark:text-white font-bold">78% de win rate</span> esta semana. Considere aumentar ligeiramente a stake nestes mercados.
+          <div className="bg-emerald-50 p-6 rounded-[2rem] border border-emerald-100 shadow-sm group">
+            <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest">Insights</p>
+            <p className="text-sm text-slate-600 mt-2 leading-relaxed font-bold">
+              Sua performance em <span className="text-emerald-600 font-bold">Futebol</span> atingiu <span className="text-emerald-600 font-bold">78% de win rate</span> esta semana. Considere aumentar ligeiramente a stake nestes mercados.
             </p>
           </div>
         </div>

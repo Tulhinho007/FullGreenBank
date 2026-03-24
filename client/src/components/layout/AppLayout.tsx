@@ -6,7 +6,7 @@ import { ImpersonationBanner } from '../ui/ImpersonationBanner'
 
 export const AppLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-200 transition-colors duration-300 antialiased">
+    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-800 transition-colors duration-300 antialiased font-sans">
       <ImpersonationBanner />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />

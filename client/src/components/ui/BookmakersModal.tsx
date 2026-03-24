@@ -37,15 +37,15 @@ const ConfirmPopup = ({ title, message, confirmLabel = 'Confirmar', variant = 'd
   <>
     <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl p-6">
-        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
-          <AlertTriangle size={20} className={variant === 'danger' ? 'text-red-500' : 'text-green-500'} />
+      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-2xl p-6">
+        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-rose-50' : 'bg-emerald-50'}`}>
+          <AlertTriangle size={20} className={variant === 'danger' ? 'text-rose-500' : 'text-emerald-500'} />
         </div>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white text-center mb-1">{title}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-5 leading-relaxed">{message}</p>
+        <h3 className="text-sm font-semibold text-slate-800 text-center mb-1">{title}</h3>
+        <p className="text-xs text-slate-500 text-center mb-5 leading-relaxed">{message}</p>
         <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant === 'danger' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-500'}`}>{confirmLabel}</button>
+          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-50 transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant === 'danger' ? 'bg-rose-500 hover:bg-rose-600' : 'bg-emerald-600 hover:bg-emerald-500'}`}>{confirmLabel}</button>
         </div>
       </div>
     </div>
@@ -69,28 +69,28 @@ const BookmakerSearchInput = ({ bookmakers, onSelect }: { bookmakers: Bookmaker[
         <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
         <input autoFocus value={q} onChange={e => { setQ(e.target.value); setSelected(null) }}
           placeholder="Nome da casa de apostas..."
-          className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg pl-8 pr-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" />
+          className="w-full text-sm bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" />
         {q && !selected && <button onClick={() => { setQ(''); setSelected(null) }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X size={11} /></button>}
       </div>
       {!selected && q.trim().length > 0 && (
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg overflow-hidden max-h-40 overflow-y-auto">
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden max-h-40 overflow-y-auto shadow-lg">
           {filtered.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-3">Nenhuma casa encontrada</p>
+            <p className="text-xs text-slate-400 text-center font-bold py-3 italic">Nenhuma casa encontrada</p>
           ) : filtered.map(b => (
             <button key={b.id} onClick={() => pick(b)}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors text-left border-b border-slate-50 dark:border-surface-300/30 last:border-b-0">
-              <Star size={11} className="text-yellow-400 shrink-0" />
-              <span className="flex-1 text-xs font-medium text-slate-800 dark:text-white">{b.name}</span>
-              <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{b.focus}</span>
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-emerald-50 transition-colors text-left border-b border-slate-50 last:border-b-0">
+              <Star size={11} className="text-amber-400 fill-amber-400 shrink-0" />
+              <span className="flex-1 text-xs font-bold text-slate-800">{b.name}</span>
+              <span className="text-[10px] font-black uppercase tracking-tighter text-slate-300 truncate max-w-[120px]">{b.focus}</span>
             </button>
           ))}
         </div>
       )}
       {selected && (
-        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 rounded-lg px-3 py-2">
-          <Star size={12} className="text-yellow-400 shrink-0" />
-          <span className="flex-1 text-xs font-medium text-green-700 dark:text-green-300">{selected.name}</span>
-          <button onClick={() => { setSelected(null); setQ('') }} className="text-green-400 hover:text-green-600"><X size={11} /></button>
+        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">
+          <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
+          <span className="flex-1 text-xs font-bold text-emerald-700">{selected.name}</span>
+          <button onClick={() => { setSelected(null); setQ('') }} className="text-emerald-400 hover:text-emerald-600"><X size={11} /></button>
         </div>
       )}
     </div>
@@ -169,44 +169,44 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
     })
   }
 
-  const panelBase = "mt-1 bg-slate-50 dark:bg-surface-300/50 border border-slate-200 dark:border-surface-400 rounded-xl p-3 flex flex-col gap-2.5"
-  const inputCls  = "w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none transition-all placeholder-slate-400"
+  const panelBase = "mt-1 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-2.5"
+  const inputCls  = "w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none transition-all placeholder-slate-300"
 
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-3xl pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl flex flex-col"
+        <div className="w-full max-w-3xl pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-2xl flex flex-col"
           style={{ maxHeight: '88vh' }} onClick={e => e.stopPropagation()}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-surface-300 shrink-0">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                <Star size={15} className="text-green-600 dark:text-green-400" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <Star size={15} className="text-amber-400 fill-amber-400" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-slate-800 dark:text-white">Casas de Apostas</h2>
-                <p className="text-[11px] text-slate-400">{bookmakers.length} casas cadastradas</p>
+                <h2 className="text-sm font-bold text-slate-800">Casas de Apostas</h2>
+                <p className="text-[11px] text-slate-400 font-bold">{bookmakers.length} casas cadastradas</p>
               </div>
             </div>
-            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors"><X size={15} /></button>
+            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:bg-slate-50 hover:text-slate-500 transition-colors"><X size={15} /></button>
           </div>
 
           {/* Actions */}
           {!readOnly && (
-            <div className="px-5 py-3 border-b border-slate-100 dark:border-surface-300 shrink-0 flex flex-col gap-2">
+            <div className="px-5 py-3 border-b border-slate-50 shrink-0 flex flex-col gap-2">
               <div className="flex gap-1.5">
                 {(['add', 'edit', 'delete'] as const).map(mode => {
                   const cfg = {
-                    add:    { icon: <Plus size={12}/>,   label: 'Adicionar', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
-                    edit:   { icon: <Pencil size={12}/>, label: 'Editar',    active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-                    delete: { icon: <Trash2 size={12}/>, label: 'Remover',   active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
+                    add:    { icon: <Plus size={12}/>,   label: 'Adicionar', active: 'bg-emerald-600 border-emerald-600 text-white', inactive: 'border-emerald-100 text-emerald-600 hover:bg-emerald-50 transition-all' },
+                    edit:   { icon: <Pencil size={12}/>, label: 'Editar',    active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-100 text-blue-500 hover:bg-blue-50 transition-all' },
+                    delete: { icon: <Trash2 size={12}/>, label: 'Remover',   active: 'bg-rose-500 border-rose-500 text-white',     inactive: 'border-rose-100 text-rose-500 hover:bg-rose-50 transition-all' },
                   }[mode]
                   return (
                     <button key={mode}
                       onClick={() => { closeAction(); if (actionMode !== mode) setActionMode(mode) }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
                       {cfg.icon}{cfg.label}
                     </button>
                   )
@@ -216,31 +216,31 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
               {/* ADD panel */}
               {actionMode === 'add' && (
                 <div className={panelBase}>
-                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Nova casa de apostas</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5"><Plus size={12}/>Nova casa</p>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Casa de Aposta *</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Nome *</label>
                       <input autoFocus value={addName} onChange={e => setAddName(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
                         placeholder="Ex: Bet365"
-                        className={`${inputCls} focus:border-green-500 focus:ring-2 focus:ring-green-500/20`} />
+                        className={`${inputCls} focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10`} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Principal Diferencial</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Diferencial</label>
                       <input value={addDiff} onChange={e => setAddDiff(e.target.value)}
-                        placeholder="Ex: Live Stream e variedade"
-                        className={`${inputCls} focus:border-green-500 focus:ring-2 focus:ring-green-500/20`} />
+                        placeholder="Ex: Live Stream"
+                        className={`${inputCls} focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10`} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Foco de Mercado</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Foco</label>
                       <input value={addFocus} onChange={e => setAddFocus(e.target.value)}
-                        placeholder="Ex: Global / Tradicional"
-                        className={`${inputCls} focus:border-green-500 focus:ring-2 focus:ring-green-500/20`} />
+                        placeholder="Ex: Brasil / Futbol"
+                        className={`${inputCls} focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10`} />
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-                    <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
+                    <button onClick={closeAction} className="flex-1 py-1.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
+                    <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-emerald-500/20">Salvar</button>
                   </div>
                 </div>
               )}
@@ -248,9 +248,9 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
               {/* EDIT panel */}
               {actionMode === 'edit' && (
                 <div className={panelBase}>
-                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                    <Pencil size={12} className="text-blue-400"/>
-                    {editTarget ? `Editando: ${editTarget.name}` : 'Buscar casa para editar'}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                    <Pencil size={12} className="text-blue-500"/>
+                    {editTarget ? `Editando: ${editTarget.name}` : 'Buscar casa'}
                   </p>
                   {!editTarget ? (
                     <BookmakerSearchInput bookmakers={bookmakers} onSelect={b => { setEditTarget(b); setEditName(b.name); setEditDiff(b.differential); setEditFocus(b.focus) }} />
@@ -258,54 +258,54 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
                     <>
                       <div className="grid grid-cols-3 gap-2">
                         <div>
-                          <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Casa de Aposta *</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Nome *</label>
                           <input autoFocus value={editName} onChange={e => setEditName(e.target.value)}
-                            className={`${inputCls} border-blue-300 dark:border-blue-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20`} />
+                            className={`${inputCls} border-blue-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10`} />
                         </div>
                         <div>
-                          <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Principal Diferencial</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Diferencial</label>
                           <input value={editDiff} onChange={e => setEditDiff(e.target.value)}
-                            className={`${inputCls} border-blue-300 dark:border-blue-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20`} />
+                            className={`${inputCls} border-blue-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10`} />
                         </div>
                         <div>
-                          <label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Foco de Mercado</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Foco</label>
                           <input value={editFocus} onChange={e => setEditFocus(e.target.value)}
-                            className={`${inputCls} border-blue-300 dark:border-blue-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20`} />
+                            className={`${inputCls} border-blue-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10`} />
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => { setEditTarget(null); setEditName(''); setEditDiff(''); setEditFocus('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
-                        <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
+                        <button onClick={() => { setEditTarget(null); setEditName(''); setEditDiff(''); setEditFocus('') }} className="flex-1 py-1.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">← Trocar</button>
+                        <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-blue-500/20">Salvar</button>
                       </div>
                     </>
                   )}
-                  <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                  <button onClick={closeAction} className="py-1.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
                 </div>
               )}
 
               {/* DELETE panel */}
               {actionMode === 'delete' && (
-                <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
-                  <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
+                <div className={`${panelBase} border-rose-100`}>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-rose-500 flex items-center gap-1.5">
                     <Trash2 size={12}/>
-                    {delTarget ? `Remover: ${delTarget.name}` : 'Buscar casa para remover'}
+                    {delTarget ? `Remover: ${delTarget.name}` : 'Buscar casa'}
                   </p>
                   {!delTarget ? (
                     <BookmakerSearchInput bookmakers={bookmakers} onSelect={b => setDelTarget(b)} />
                   ) : (
                     <>
-                      <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
-                        <Star size={12} className="text-red-400 shrink-0" />
-                        <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
-                        <span className="text-[10px] text-red-400">{delTarget.focus}</span>
+                      <div className="flex items-center gap-2 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">
+                        <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
+                        <span className="flex-1 text-xs font-bold text-rose-700">{delTarget.name}</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter text-rose-400 truncate">{delTarget.focus}</span>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar</button>
-                        <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
+                        <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">← Trocar</button>
+                        <button onClick={handleDelete} className="flex-1 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-rose-500/20">Remover</button>
                       </div>
                     </>
                   )}
-                  <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                  <button onClick={closeAction} className="py-1.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
                 </div>
               )}
             </div>
@@ -315,32 +315,32 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
           <div className="flex-1 overflow-y-auto">
             {bookmakers.length === 0 ? (
               <div className="py-12 text-center">
-                <Star size={32} className="text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-                <p className="text-sm text-slate-400">Nenhuma casa cadastrada</p>
+                <Star size={32} className="text-slate-100 mx-auto mb-3" />
+                <p className="text-xs text-slate-300 font-bold italic">Nenhuma casa cadastrada</p>
               </div>
             ) : (
               <table className="w-full text-sm border-collapse">
-                <thead className="sticky top-0">
-                  <tr className="bg-slate-50 dark:bg-surface-300/80 border-b border-slate-100 dark:border-surface-300">
-                    <th className="text-left px-5 py-2.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/4">Casa de Aposta</th>
-                    <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-2/4">Principal Diferencial</th>
-                    <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-1/4">Foco de Mercado</th>
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-slate-50 border-b border-slate-50">
+                    <th className="text-left px-5 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest w-1/4">Casa</th>
+                    <th className="text-left px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest w-2/4">Diferencial</th>
+                    <th className="text-left px-4 py-2.5 text-[9px] font-black text-slate-400 uppercase tracking-widest w-1/4">Foco</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[...bookmakers].sort((a, b) => a.name.localeCompare(b.name)).map((b, i) => (
-                    <tr key={b.id} className={`border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-surface-300/10'}`}>
+                    <tr key={b.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${i % 2 === 0 ? '' : 'bg-slate-50/20'}`}>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                            <Star size={11} className="text-green-500 dark:text-green-400" />
+                          <div className="w-6 h-6 rounded-md bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                            <Star size={11} className="text-amber-400 fill-amber-400" />
                           </div>
-                          <span className="font-semibold text-slate-800 dark:text-white text-sm">{b.name}</span>
+                          <span className="font-bold text-slate-800 text-sm">{b.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">{b.differential}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500 font-bold">{b.differential}</td>
                       <td className="px-4 py-3">
-                        <span className="text-[11px] bg-slate-100 dark:bg-surface-300 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full border border-slate-200 dark:border-surface-400 whitespace-nowrap">
+                        <span className="text-[9px] font-black uppercase tracking-widest bg-slate-50 text-slate-400 px-2 py-0.5 rounded-full border border-slate-100 whitespace-nowrap">
                           {b.focus}
                         </span>
                       </td>
@@ -352,8 +352,8 @@ export const BookmakersModal = ({ isOpen, onClose, bookmakers, onSave, readOnly 
           </div>
 
           {/* Footer */}
-          <div className="px-5 py-3 border-t border-slate-100 dark:border-surface-300 shrink-0">
-            <button onClick={onClose} className="w-full py-2 rounded-xl bg-slate-100 dark:bg-surface-300 hover:bg-slate-200 dark:hover:bg-surface-400 text-slate-600 dark:text-slate-300 text-sm font-medium transition-colors">Fechar</button>
+          <div className="px-5 py-3 border-t border-slate-50 shrink-0 bg-slate-50/30">
+            <button onClick={onClose} className="w-full py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm border border-slate-100">Fechar</button>
           </div>
         </div>
       </div>

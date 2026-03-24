@@ -49,30 +49,30 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
       <div className="mb-1">
         <button
           onClick={() => setOpen(!open)}
-          className={`sidebar-link w-full justify-between group ${isChildActive ? 'bg-sidebar-active/50 ring-1 ring-white/5 text-white' : ''}`}
+          className={`sidebar-link w-full justify-between group ${isChildActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : ''}`}
         >
           <span className="flex items-center gap-3">
-            <span className={`transition-colors ${isChildActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
+            <span className={`transition-colors ${isChildActive ? 'text-emerald-500' : 'text-slate-400 group-hover:text-slate-600'}`}>
               {icon}
             </span>
-            <span className="text-[15px] font-semibold tracking-wide">{label}</span>
+            <span className="text-[15px] font-bold tracking-wide">{label}</span>
           </span>
           <span className="flex items-center gap-2">
             {renderPermissionIcon(permission)}
             {isLocked && <LockIcon size={12} className="text-amber-500" />}
-            <span className="text-slate-500">
+            <span className="text-slate-400">
               {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </span>
           </span>
         </button>
         {open && (
-          <div className="ml-10 mr-4 mt-1 mb-2 flex flex-col gap-0.5 border-l border-surface-300 pl-3">
+          <div className="ml-10 mr-4 mt-1 mb-2 flex flex-col gap-0.5 border-l border-slate-100 pl-3">
             {children.map((c, i) => {
               if (c.placeholder || !c.to) {
                 return (
-                  <div key={i} className="text-[13px] py-2.5 px-3 rounded-md flex justify-between items-center opacity-60 cursor-not-allowed select-none text-slate-500">
+                  <div key={i} className="text-[13px] py-2.5 px-3 rounded-md flex justify-between items-center opacity-60 cursor-not-allowed select-none text-slate-400">
                     <span>{c.label}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-500" title="Em breve"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300" title="Em breve"></span>
                   </div>
                 )
               }
@@ -85,8 +85,8 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
                   to={childLocked ? '#' : c.to}
                   onClick={childLocked ? handleClick : undefined}
                   className={({ isActive }) =>
-                    `text-[13px] py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
-                      isActive && !childLocked ? 'text-green-400 font-bold bg-green-500/5' : 'text-slate-200 hover:text-white hover:bg-surface-300/30'
+                    `text-[13px] py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center font-bold ${
+                      isActive && !childLocked ? 'text-emerald-600 bg-emerald-50 shadow-sm border border-emerald-100' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
                     } ${childLocked ? 'opacity-70' : ''}`
                   }
                 >
@@ -120,11 +120,11 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
     <NavLink
       to={isLocked ? '#' : to}
       onClick={handleClick}
-      className={({ isActive }) => `sidebar-link group ${isActive && !isLocked ? 'active' : ''} ${isLocked ? 'opacity-70' : ''}`}
+      className={({ isActive }) => `sidebar-link group font-bold ${isActive && !isLocked ? 'active text-emerald-600 bg-emerald-50 border border-emerald-100 shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'} ${isLocked ? 'opacity-70' : ''}`}
     >
       {({ isActive }) => (
         <>
-          <span className={`transition-colors flex-shrink-0 ${isActive && !isLocked ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
+          <span className={`transition-colors flex-shrink-0 ${isActive && !isLocked ? 'text-emerald-500' : 'text-slate-400 group-hover:text-slate-600'}`}>
             {icon}
           </span>
           <span className="truncate flex-1 text-[15px] tracking-wide">{label}</span>
@@ -179,12 +179,12 @@ export const Sidebar = () => {
     <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col shrink-0 print:hidden">
       {/* Logo */}
       <div className="px-5 py-6 border-b border-sidebar-border flex flex-col items-center justify-center text-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center logo-glow">
+        <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
           <span className="text-white font-display font-bold text-lg">FG</span>
         </div>
         <div>
-          <p className="font-display font-bold text-white text-lg leading-none tracking-wide">Full Green</p>
-          <p className="text-green-500 text-[11px] font-bold tracking-[0.2em] mt-1.5">BANK</p>
+          <p className="font-display font-bold text-slate-800 text-lg leading-none tracking-wide">Full Green</p>
+          <p className="text-emerald-600 text-[10px] font-black tracking-[0.2em] mt-2 uppercase">Bank</p>
         </div>
       </div>
 
@@ -357,21 +357,21 @@ export const Sidebar = () => {
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
-              isActive ? 'bg-sidebar-active' : 'hover:bg-sidebar-hover'
+            `flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 font-bold ${
+              isActive ? 'bg-emerald-50 border border-emerald-100' : 'hover:bg-slate-50 border border-transparent'
             }`
           }
         >
-          <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-black text-white shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-            <p className={`text-[11px] ${getRoleInfo(user?.role).color}`}>
+            <p className="text-sm font-bold text-slate-800 truncate">{user?.name}</p>
+            <p className={`text-[10px] font-black uppercase tracking-tighter ${getRoleInfo(user?.role).color}`}>
               {getRoleInfo(user?.role).label}
             </p>
           </div>
-          <User size={14} className="text-sidebar-text shrink-0" />
+          <User size={14} className="text-slate-400 shrink-0" />
         </NavLink>
 
         <button
@@ -387,17 +387,17 @@ export const Sidebar = () => {
 
       {/* MODAL UPGRADE PRO (Locked Content) */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-surface-200 border border-white/10 w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white border border-slate-100 w-full max-w-sm rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
+              <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-6 border border-amber-100">
                 <ShieldCheck size={32} className="text-amber-500" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Ops! Conteúdo Fechado</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
-                Essa ferramenta faz parte do <span className="text-amber-600 dark:text-amber-400 font-bold uppercase">plano PRO</span>. <br />
+              <h3 className="text-xl font-bold text-slate-800 mb-2">Ops! Conteúdo Fechado</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-8 font-bold">
+                Essa ferramenta faz parte do <span className="text-amber-600 font-black uppercase">plano PRO</span>. <br />
                 Sua permissão atual não permite o acesso.<br />
-                <span className="text-amber-500 dark:text-amber-400 font-bold mt-2 inline-block">Assine o PRO e desbloqueie tudo!</span>
+                <span className="text-amber-500 font-black mt-2 inline-block">Assine o PRO e desbloqueie tudo!</span>
               </p>
               <div className="flex flex-col w-full gap-3">
                 <button 
@@ -405,11 +405,11 @@ export const Sidebar = () => {
                     setShowUpgradeModal(false)
                     navigate('/planos')
                   }} 
-                  className="w-full py-4 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all active:scale-95 shadow-lg shadow-amber-900/20"
+                  className="w-full py-4 rounded-[1.5rem] bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
                 >
                   Ver Planos PRO
                 </button>
-                <button onClick={() => setShowUpgradeModal(false)} className="w-full py-4 rounded-2xl bg-surface-300 hover:bg-surface-400 text-slate-300 font-semibold transition-all">
+                <button onClick={() => setShowUpgradeModal(false)} className="w-full py-4 rounded-[1.5rem] bg-slate-50 hover:bg-slate-100 text-slate-400 font-black uppercase tracking-widest text-[10px] transition-all">
                   Voltar
                 </button>
               </div>

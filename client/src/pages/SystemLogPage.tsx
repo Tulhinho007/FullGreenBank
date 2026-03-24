@@ -17,20 +17,20 @@ interface LogEntry {
 }
 
 const categoryColors: Record<string, string> = {
-  Auth:        'bg-yellow-900/50 text-yellow-400 border-yellow-800/40',
-  Dicas:       'bg-green-900/50  text-green-400  border-green-800/40',
-  Usuários:    'bg-blue-900/50   text-blue-400   border-blue-800/40',
-  Admin:       'bg-purple-900/50 text-purple-400 border-purple-800/40',
-  Sistema:     'bg-slate-700/50  text-slate-300  border-slate-600/40',
-  Financeiro:  'bg-emerald-900/50 text-emerald-400 border-emerald-800/40',
-  Segurança:   'bg-red-900/50    text-red-400    border-red-800/40',
-  Operacional: 'bg-cyan-900/50   text-cyan-400   border-cyan-800/40',
+  Auth:        'bg-amber-50 text-amber-600 border-amber-100',
+  Dicas:       'bg-emerald-50 text-emerald-600 border-emerald-100',
+  Usuários:    'bg-blue-50 text-blue-600 border-blue-100',
+  Admin:       'bg-purple-50 text-purple-600 border-purple-100',
+  Sistema:     'bg-slate-50 text-slate-500 border-slate-200',
+  Financeiro:  'bg-emerald-50 text-emerald-600 border-emerald-100',
+  Segurança:   'bg-rose-50 text-rose-600 border-rose-100',
+  Operacional: 'bg-sky-50 text-sky-600 border-sky-100',
 }
 
-const roleColor: Record<string, string> = {
-  MASTER: 'text-yellow-500',
-  ADMIN:  'text-blue-500',
-  MEMBRO: 'text-slate-400',
+const roleLabels: Record<string, { label: string, color: string }> = {
+  MASTER: { label: 'Master', color: 'bg-purple-50 text-purple-600 border-purple-100' },
+  ADMIN:  { label: 'Admin',  color: 'bg-blue-50 text-blue-600 border-blue-100' },
+  MEMBRO: { label: 'Membro', color: 'bg-slate-50 text-slate-400 border-slate-100' },
 }
 
 const groupByDate = (logs: LogEntry[]) => {
@@ -181,11 +181,11 @@ export const SystemLogPage = () => {
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="font-display font-semibold text-white flex items-center gap-2">
-            <Activity size={18} className="text-green-400" />
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+            <Activity size={24} className="text-emerald-500" />
             Log do Sistema
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">Atividade de todos os usuários em tempo real</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1">Atividade de todos os usuários em tempo real</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -213,40 +213,41 @@ export const SystemLogPage = () => {
           </div>
 
           <button onClick={exportCSV}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors">
-            <FileSpreadsheet size={13} />Excel
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-slate-100 bg-white text-slate-500 hover:bg-slate-50 transition-all shadow-sm">
+            <FileSpreadsheet size={14} className="text-emerald-500" /> Excel
           </button>
           <button onClick={exportPDF}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors">
-            <FileText size={13} />PDF
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-slate-100 bg-white text-slate-500 hover:bg-slate-50 transition-all shadow-sm">
+            <FileText size={14} className="text-rose-500" /> PDF
           </button>
           <button onClick={() => window.print()}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors">
-            <Printer size={13} />Imprimir
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-slate-100 bg-white text-slate-500 hover:bg-slate-50 transition-all shadow-sm">
+            <Printer size={14} className="text-blue-500" /> Imprimir
           </button>
           {!isReadOnly && (
             <button onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/40 text-red-400 hover:bg-red-800/50 transition-colors">
-              <Trash2 size={13} />Limpar Log
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-rose-100 bg-rose-50/30 text-rose-500 hover:bg-rose-50 transition-all shadow-sm">
+              <Trash2 size={14} /> Limpar Log
             </button>
           )}
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
-          <span className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-xs text-slate-400">Total:</span>
-          <span className="text-sm font-semibold text-white">{filtered.length} eventos</span>
+      <div className="flex flex-wrap gap-4">
+        <div className="flex items-center gap-3 bg-white border border-slate-100 rounded-2xl px-5 py-3 shadow-sm">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Geral:</span>
+          <span className="text-sm font-black text-slate-800 tracking-tight">{filtered.length} eventos</span>
         </div>
-        <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
-          <span className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-xs text-slate-400">Usuários ativos (30min):</span>
-          <span className="text-sm font-semibold text-white">{activeUsers}</span>
+        <div className="flex items-center gap-3 bg-white border border-slate-100 rounded-2xl px-5 py-3 shadow-sm">
+          <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ativos (30m):</span>
+          <span className="text-sm font-black text-slate-800 tracking-tight">{activeUsers} usuários</span>
         </div>
-        <div className="flex items-center gap-2 bg-surface-200 border border-surface-300 rounded-lg px-4 py-2.5">
-          <span className="text-xs text-slate-400">Última atividade:</span>
-          <span className="text-sm font-semibold text-white">{lastActivity}</span>
+        <div className="flex items-center gap-3 bg-white border border-slate-100 rounded-2xl px-5 py-3 shadow-sm pl-4">
+          <Activity size={12} className="text-slate-300" />
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Último disparo:</span>
+          <span className="text-sm font-black text-slate-800 tracking-tight lowercase">{lastActivity}</span>
         </div>
       </div>
 
@@ -255,52 +256,58 @@ export const SystemLogPage = () => {
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="card p-16 text-center border border-surface-400">
-          <Activity size={36} className="text-slate-700 mx-auto mb-4" />
-          <p className="text-slate-400 text-sm">Nenhum evento registrado ainda.</p>
-          <p className="text-slate-600 text-xs mt-1">O log registra automaticamente logins, cadastros e ações do sistema.</p>
+        <div className="bg-white p-16 text-center border border-slate-100 rounded-[2.5rem] shadow-sm">
+          <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+            <Activity size={32} className="text-slate-200" />
+          </div>
+          <p className="text-sm font-black text-slate-800 uppercase tracking-widest">Nenhum evento registrado</p>
+          <p className="text-xs text-slate-400 mt-2 max-w-xs mx-auto">O log registra automaticamente logins, cadastros de dicas e ações administrativas críticas.</p>
         </div>
       ) : (
-        <div className="card border border-surface-400 overflow-hidden">
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden mb-10">
           {Object.entries(grouped).map(([date, entries]) => (
             <div key={date}>
-              <div className="px-4 py-2 bg-surface-300/50 border-b border-surface-300">
-                <span className="text-[10px] font-semibold text-slate-500 tracking-widest">{date}</span>
+              <div className="px-8 py-3 bg-slate-50/50 border-b border-slate-100">
+                <span className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">{date}</span>
               </div>
-              {entries.map((log, i) => {
-                const catCls = categoryColors[log.category] || categoryColors['Sistema']
-                return (
-                  <div key={log.id}
-                    className={`flex items-start gap-4 px-4 py-3 border-b border-surface-300/50 hover:bg-surface-300/20 transition-colors ${i === entries.length - 1 ? 'border-b-0' : ''}`}
-                  >
-                    <div className="w-16 shrink-0 pt-0.5">
-                      <span className="text-xs font-mono text-slate-500">
-                        {new Date(log.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                      </span>
-                    </div>
-                    <div className="w-48 shrink-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-xs font-medium text-white truncate max-w-[140px]">{log.userName}</p>
-                        {log.userRole !== 'MEMBRO' && (
-                          <span className={`text-[9px] font-bold ${roleColor[log.userRole] || ''}`}>
-                            {log.userRole === 'MASTER' ? 'Master' : log.userRole === 'ADMIN' ? 'Admin' : log.userRole}
-                          </span>
-                        )}
+              <div className="divide-y divide-slate-50">
+                {entries.map((log) => {
+                  const catCls = categoryColors[log.category] || categoryColors['Sistema']
+                  return (
+                    <div key={log.id}
+                      className="flex items-start gap-6 px-8 py-5 hover:bg-slate-50/50 transition-all group"
+                    >
+                      <div className="w-20 shrink-0 pt-1">
+                        <span className="text-xs font-black text-slate-300 group-hover:text-slate-400 transition-colors">
+                          {new Date(log.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
                       </div>
-                      <p className="text-[10px] text-slate-600 truncate">{log.userEmail}</p>
+                      <div className="w-56 shrink-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-black text-slate-800 tracking-tight uppercase truncate max-w-[160px]">{log.userName}</p>
+                          {log.userRole !== 'MEMBRO' && (
+                            <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
+                              roleLabels[log.userRole]?.color || roleLabels.MEMBRO.color
+                            }`}>
+                              {roleLabels[log.userRole]?.label || log.userRole}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-bold text-slate-400 truncate tracking-tight">{log.userEmail}</p>
+                      </div>
+                      <div className="w-32 shrink-0 pt-0.5">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-sm ${catCls}`}>
+                          {log.category}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-black text-slate-800 tracking-tight">{log.action}</p>
+                        <p className="text-[11px] font-bold text-slate-400 mt-1 leading-relaxed opacity-80">{log.detail}</p>
+                      </div>
                     </div>
-                    <div className="w-28 shrink-0 pt-0.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${catCls}`}>
-                        {log.category}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-white">{log.action}</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">{log.detail}</p>
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           ))}
         </div>

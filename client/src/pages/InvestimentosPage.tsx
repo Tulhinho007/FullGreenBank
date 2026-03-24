@@ -56,18 +56,16 @@ export const InvestimentosPage = () => {
 
       {/* 1. Header Principal */}
       <div>
-        <h2 className="font-display font-bold text-slate-900 dark:text-white text-2xl">Gestão de Banca Gerenciada</h2>
-        <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Leia atentamente o contrato e defina o valor do seu aporte para gestão privada.</p>
+        <h2 className="font-display font-bold text-slate-800 text-2xl">Gestão de Banca Gerenciada</h2>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Leia atentamente o contrato e defina o valor do seu aporte para gestão privada.</p>
       </div>
 
       {/* 2. AVISO LEGAL CURTO */}
-      <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 p-4 lg:p-5 rounded-2xl flex gap-4 shadow-sm">
-        <ShieldAlert className="text-amber-600 dark:text-amber-500 shrink-0" size={24} />
-        <div className="text-[11px] lg:text-xs leading-relaxed font-medium">
-          {/* título: amarelo escuro no light, amarelo claro no dark */}
-          <p className="mb-2 font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">AVISO LEGAL IMPORTANTE</p>
-          {/* corpo: slate escuro no light (legível), amarelo claro no dark */}
-          <div className="space-y-1 text-slate-700 dark:text-amber-200/80">
+      <div className="bg-rose-50 border border-rose-100 p-5 lg:p-6 rounded-[2rem] flex gap-4 shadow-sm">
+        <ShieldAlert className="text-rose-600 shrink-0" size={24} />
+        <div className="text-[11px] lg:text-xs leading-relaxed font-bold">
+          <p className="mb-2 font-black uppercase tracking-widest text-rose-700">AVISO LEGAL IMPORTANTE</p>
+          <div className="space-y-1 text-rose-800/80">
             <p>Este serviço consiste na gestão de apostas esportivas realizada de forma privada e mediante autorização do cliente.</p>
             <p>Não se trata de investimento financeiro, não há garantia de lucro, e existem riscos de perda parcial ou total do valor utilizado.</p>
             <p><strong>Ao continuar, você declara estar ciente dos riscos envolvidos nas apostas esportivas.</strong></p>
@@ -76,21 +74,20 @@ export const InvestimentosPage = () => {
       </div>
 
       {/* 3. CONTRATO + FORMULÁRIO */}
-      <div className="bg-white dark:bg-surface-200 p-6 lg:p-8 rounded-[2rem] border border-slate-200 dark:border-white/5 flex flex-col lg:flex-row gap-10 shadow-sm transition-all duration-300">
+      <div className="bg-white p-6 lg:p-8 rounded-[2.5rem] border border-slate-100 flex flex-col lg:flex-row gap-10 shadow-sm transition-all duration-300">
         
         {/* Lado Esquerdo: O Contrato */}
         <div className="flex-1 flex flex-col">
-          {/* título do contrato: sempre escuro no light, branco no dark */}
-          <h3 className="text-xs lg:text-sm font-bold text-slate-900 dark:text-white mb-5 uppercase tracking-widest flex items-center gap-2">
+          <h3 className="text-[11px] lg:text-xs font-black text-slate-800 mb-5 uppercase tracking-[0.2em] flex items-center gap-2">
             CONTRATO DE PRESTAÇÃO DE SERVIÇO – GESTÃO DE APOSTAS ESPORTIVAS
           </h3>
 
           {/* caixa de texto do contrato */}
-          <div className="bg-slate-50 dark:bg-surface-300/30 border border-slate-200 dark:border-surface-400 rounded-2xl p-6 lg:p-8 h-[450px] overflow-y-auto custom-scrollbar leading-relaxed space-y-5
+          <div className="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 lg:p-8 h-[450px] overflow-y-auto custom-scrollbar leading-relaxed space-y-5
             text-xs lg:text-[13px]
-            text-slate-700 dark:text-slate-300">
+            text-slate-600 font-bold">
 
-            <p className="italic border-b border-slate-200 dark:border-white/5 pb-4">
+            <p className="italic border-b border-slate-100 pb-4">
               O presente termo tem como objetivo formalizar a prestação de serviço de gestão de apostas esportivas realizada de forma privada, mediante autorização do cliente.
             </p>
 
@@ -107,8 +104,7 @@ export const InvestimentosPage = () => {
                 'Ao aceitar este termo, o cliente declara que leu, compreendeu e concorda com todas as condições acima.',
               ].map((text, i) => (
                 <p key={i}>
-                  {/* número do item: sempre bem visível */}
-                  <span className="font-bold text-slate-900 dark:text-white mr-2">{i + 1}.</span>
+                  <span className="font-black text-emerald-600 mr-2">{i + 1}.</span>
                   {text}
                 </p>
               ))}
@@ -118,11 +114,10 @@ export const InvestimentosPage = () => {
 
         {/* Lado Direito: Formulário de Aporte */}
         <div className="w-full lg:w-[400px] flex flex-col justify-start pt-2">
-          <form onSubmit={handleSolicitar} className="flex flex-col gap-6 bg-slate-50 dark:bg-surface-300/20 p-6 lg:p-8 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-inner">
+          <form onSubmit={handleSolicitar} className="flex flex-col gap-6 bg-slate-50 p-6 lg:p-10 rounded-[2.5rem] border border-slate-100 shadow-inner">
             
             <div>
-              {/* label legível em ambos os modos */}
-              <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-widest">
+              <label className="block text-[10px] font-black text-slate-400 mb-4 uppercase tracking-[0.2em]">
                 Valor do Aporte Planejado (BRL)
               </label>
               <div className="relative group">
@@ -130,17 +125,16 @@ export const InvestimentosPage = () => {
                   value={valorAporte ? Number(valorAporte) : 0}
                   onChange={(v) => setValorAporte(String(v))}
                   alertLimit={100}
-                  className="w-full py-5 text-3xl font-display font-bold bg-white dark:bg-surface-100 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white transition-all group-focus-within:ring-2 group-focus-within:ring-green-500/20 shadow-sm"
+                  className="w-full py-6 text-3xl font-display font-bold bg-white border border-slate-200 rounded-2xl text-slate-800 transition-all group-focus-within:ring-4 group-focus-within:ring-emerald-500/10 shadow-sm"
                 />
-                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 font-bold pointer-events-none transition-colors group-focus-within:text-green-500">BRL</div>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 font-bold pointer-events-none transition-colors group-focus-within:text-emerald-500">BRL</div>
               </div>
-              {/* hint legível em ambos os modos */}
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-2.5 italic px-1">
+              <p className="text-[10px] text-slate-400 mt-4 italic px-1 font-bold">
                 Defina o montante que deseja disponibilizar para a gestão.
               </p>
             </div>
 
-            <div className="h-px bg-slate-200 dark:bg-white/5 my-2" />
+            <div className="h-px bg-slate-200/50 my-2" />
 
             {/* Checkbox */}
             <label className="flex items-start gap-4 cursor-pointer group select-none">
@@ -151,12 +145,11 @@ export const InvestimentosPage = () => {
                   checked={aceitoTermos}
                   onChange={(e) => setAceitoTermos(e.target.checked)}
                 />
-                <div className="w-6 h-6 rounded-lg border-2 border-slate-300 dark:border-white/10 bg-white dark:bg-surface-100 peer-checked:bg-green-500 peer-checked:border-green-500 transition-all flex items-center justify-center shadow-sm">
-                  <CheckCircle2 size={16} className={`text-white transition-all duration-200 ${aceitoTermos ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+                <div className="w-7 h-7 rounded-xl border-2 border-slate-200 bg-white peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center shadow-sm">
+                  <CheckCircle2 size={18} className={`text-white transition-all duration-200 ${aceitoTermos ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
                 </div>
               </div>
-              {/* texto do checkbox: slate escuro no light, slate claro no dark */}
-              <span className="text-[11px] lg:text-xs text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors leading-relaxed font-semibold">
+              <span className="text-[11px] lg:text-xs text-slate-500 group-hover:text-slate-800 transition-colors leading-relaxed font-bold">
                 Declaro que li e aceito os termos do serviço de gestão de apostas esportivas, estando ciente de que não há garantia de lucro e que posso perder o valor utilizado.
               </span>
             </label>
@@ -164,7 +157,7 @@ export const InvestimentosPage = () => {
             <button 
               type="submit"
               disabled={!aceitoTermos || !valorAporte || parseFloat(valorAporte) <= 0 || loading}
-              className="w-full mt-4 bg-green-500 hover:bg-green-600 disabled:bg-slate-200 dark:disabled:bg-surface-100 disabled:text-slate-500 dark:disabled:text-slate-500 text-white font-bold py-5 px-4 rounded-2xl transition-all shadow-lg shadow-green-500/10 hover:shadow-green-500/30 disabled:shadow-none flex items-center justify-center gap-2 active:scale-95 text-sm uppercase tracking-widest"
+              className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black py-6 px-4 rounded-[1.5rem] transition-all shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/30 disabled:shadow-none flex items-center justify-center gap-2 active:scale-95 text-[11px] uppercase tracking-[0.2em]"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -173,9 +166,9 @@ export const InvestimentosPage = () => {
           </form>
 
           {/* rodapé do formulário */}
-          <div className="mt-8 flex flex-col items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={12} className="text-green-500" />
+          <div className="mt-8 flex flex-col items-center gap-2 text-[10px] text-slate-300 uppercase font-black tracking-widest">
+            <div className="flex items-center gap-2 text-emerald-500">
+              <CheckCircle2 size={12} />
               <span>Análise técnica prioritária</span>
             </div>
             <span>Processamento em até 24h úteis</span>

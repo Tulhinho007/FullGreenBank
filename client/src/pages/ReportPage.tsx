@@ -44,10 +44,10 @@ export const ReportPage = () => {
   };
 
   const statusMap: any = {
-    'OPEN': { label: 'Aberto', color: 'text-blue-500 bg-blue-500/10' },
-    'IN_PROGRESS': { label: 'Em Análise', color: 'text-amber-500 bg-amber-500/10' },
-    'RESOLVED': { label: 'Resolvido', color: 'text-green-500 bg-green-500/10' },
-    'CLOSED': { label: 'Arquivado', color: 'text-zinc-500 bg-zinc-500/10' }
+    'OPEN': { label: 'Aberto', color: 'text-blue-600 bg-blue-50 border-blue-100' },
+    'IN_PROGRESS': { label: 'Em Análise', color: 'text-amber-600 bg-amber-50 border-amber-100' },
+    'RESOLVED': { label: 'Resolvido', color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+    'CLOSED': { label: 'Arquivado', color: 'text-slate-400 bg-slate-50 border-slate-100' }
   };
 
   const handleSubmit = async (e: any) => {
@@ -90,91 +90,91 @@ export const ReportPage = () => {
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Breadcrumb / Back */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium pt-4">
-        <Link to="/dashboard" className="hover:text-green-500 transition-colors flex items-center gap-1">
+      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-black uppercase tracking-widest pt-4">
+        <Link to="/dashboard" className="hover:text-emerald-500 transition-colors flex items-center gap-1">
           Dashboard
         </Link>
-        <ChevronRight size={12} className="opacity-30" />
+        <ChevronRight size={10} className="opacity-30" />
         <span className="text-slate-400">Institucional</span>
-        <ChevronRight size={12} className="opacity-30" />
-        <span className="text-white">{type === 'bug' ? 'Reportar Bug' : 'Feedback'}</span>
+        <ChevronRight size={10} className="opacity-30" />
+        <span className="text-slate-800">{type === 'bug' ? 'Reportar Bug' : 'Feedback'}</span>
       </div>
 
       <div className="max-w-2xl mx-auto px-4">
         
         {/* Tabs */}
-        <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-xl mb-8 border border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-center gap-2 bg-slate-100/50 p-1.5 rounded-[2rem] mb-10 border border-slate-100 shadow-inner">
           <button 
             onClick={() => setActiveTab('new')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all ${
               activeTab === 'new' 
-              ? 'bg-white dark:bg-zinc-700 text-green-600 shadow-sm' 
-              : 'text-zinc-500 hover:text-zinc-700'
+              ? 'bg-white text-emerald-600 shadow-lg shadow-emerald-500/10 border border-emerald-50' 
+              : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            <Send size={16} /> Novo Relato
+            <Send size={14} /> Novo Relato
           </button>
           <button 
             onClick={() => { setActiveTab('my'); fetchMyTickets(); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all ${
               activeTab === 'my' 
-              ? 'bg-white dark:bg-zinc-700 text-green-600 shadow-sm' 
-              : 'text-zinc-500 hover:text-zinc-700'
+              ? 'bg-white text-emerald-600 shadow-lg shadow-emerald-500/10 border border-emerald-50' 
+              : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            <Clock size={16} /> Meus Chamados
+            <Clock size={14} /> Meus Chamados
           </button>
         </div>
 
         {activeTab === 'new' ? (
           <>
             {/* Header */}
-            <div className="mb-8 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-zinc-900 dark:text-white flex items-center gap-3 justify-center md:justify-start">
-                {type === 'bug' ? <Bug className="text-red-500" /> : <MessageSquare className="text-blue-500" />}
+            <div className="mb-10 text-center md:text-left">
+              <h1 className="text-3xl font-black text-slate-800 flex items-center gap-4 justify-center md:justify-start tracking-tight">
+                {type === 'bug' ? <Bug className="text-rose-500" size={32} /> : <MessageSquare className="text-sky-500" size={32} />}
                 {type === 'bug' ? 'Reportar um Problema' : 'Enviar Feedback'}
               </h1>
-              <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                Sua contribuição ajuda o **Full Green Bank** a se tornar uma ferramenta cada vez melhor.
+              <p className="mt-2 text-slate-500 font-bold">
+                Sua contribuição ajuda o <strong className="text-emerald-600">Full Green Bank</strong> a evoluir constantemente.
               </p>
             </div>
 
         {/* Seletor de Tipo */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-10">
           <button
             type="button"
             onClick={() => setType('bug')}
-            className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+            className={`p-6 rounded-[2rem] border flex flex-col items-center gap-3 transition-all ${
               type === 'bug' 
-              ? 'bg-red-50 dark:bg-red-900/10 border-red-500 text-red-600' 
-              : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'
+              ? 'bg-rose-50 border-rose-100 text-rose-600 shadow-lg shadow-rose-500/5' 
+              : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200'
             }`}
           >
-            <Bug size={24} />
-            <span className="font-bold text-sm">Algo não funciona</span>
+            <Bug size={32} />
+            <span className="font-black text-[11px] uppercase tracking-widest">Algo não funciona</span>
           </button>
           
           <button
             type="button"
             onClick={() => setType('feedback')}
-            className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+            className={`p-6 rounded-[2rem] border flex flex-col items-center gap-3 transition-all ${
               type === 'feedback' 
-              ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-500 text-blue-600' 
-              : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'
+              ? 'bg-sky-50 border-sky-100 text-sky-600 shadow-lg shadow-sky-500/5' 
+              : 'bg-white border-slate-100 text-slate-400 hover:border-sky-200'
             }`}
           >
-            <MessageSquare size={24} />
-            <span className="font-bold text-sm">Tenho uma sugestão</span>
+            <MessageSquare size={32} />
+            <span className="font-black text-[11px] uppercase tracking-widest">Tenho uma sugestão</span>
           </button>
         </div>
 
         {/* Formulário */}
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
-          <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-sm">
+          <div className="space-y-8">
             
             {/* Título do Relato */}
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">
                 Título Curto
               </label>
               <input 
@@ -182,7 +182,7 @@ export const ReportPage = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={type === 'bug' ? "Ex: Erro ao renovar contrato" : "Ex: Sugestão de novo gráfico"}
-                className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-green-500 outline-none transition-all dark:text-white"
+                className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-800 font-bold placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 required
               />
             </div>
@@ -190,11 +190,11 @@ export const ReportPage = () => {
             {/* Severidade (Apenas para Bugs) */}
             {type === 'bug' && (
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Urgência</label>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Urgência</label>
                 <select 
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 dark:text-zinc-900 dark:bg-zinc-100 outline-none"
+                  className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-800 font-bold outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
                 >
                   <option>Baixa (Visual / Estético)</option>
                   <option>Média (Funcionalidade com erro)</option>
@@ -206,13 +206,13 @@ export const ReportPage = () => {
 
             {/* Descrição Detalhada */}
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Descrição</label>
+              <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Descrição</label>
               <textarea 
-                rows={4}
+                rows={5}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Descreva com detalhes o que aconteceu ou sua ideia..."
-                className="w-full px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-green-500 outline-none transition-all dark:text-white"
+                className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-800 font-bold placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
                 required
               ></textarea>
             </div>
@@ -220,8 +220,8 @@ export const ReportPage = () => {
             {/* Upload funcional */}
             <div 
               onClick={handleFileClick}
-              className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer group ${
-                selectedFile ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : 'border-zinc-200 dark:border-zinc-700 hover:border-green-500'
+              className={`border-2 border-dashed rounded-[2rem] p-10 text-center transition-all cursor-pointer group ${
+                selectedFile ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-100 hover:border-emerald-500 hover:bg-slate-50'
               }`}
             >
               <input 
@@ -232,23 +232,25 @@ export const ReportPage = () => {
                 accept="image/*"
               />
               {selectedFile ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
-                    <CheckCircle2 size={18} />
-                    <span className="text-sm truncate max-w-[200px]">{selectedFile.name}</span>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="flex items-center gap-3 text-emerald-600 font-black uppercase tracking-widest text-[11px]">
+                    <CheckCircle2 size={20} />
+                    <span className="truncate max-w-[200px]">{selectedFile.name}</span>
                   </div>
                   <button 
                     type="button" 
                     onClick={(e) => { e.stopPropagation(); setSelectedFile(null); }}
-                    className="p-1 hover:bg-red-100 text-red-500 rounded-full transition-colors"
+                    className="w-8 h-8 flex items-center justify-center bg-white border border-rose-100 text-rose-500 rounded-full shadow-sm hover:bg-rose-50 transition-colors"
                   >
                     <X size={14} />
                   </button>
                 </div>
               ) : (
                 <>
-                  <Paperclip className="mx-auto text-zinc-400 group-hover:text-green-500 mb-2" />
-                  <p className="text-xs text-zinc-500">Clique para anexar um print ou arraste o arquivo aqui</p>
+                  <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center mx-auto mb-4 border border-slate-50 group-hover:bg-white group-hover:scale-110 transition-all">
+                    <Paperclip className="text-slate-300 group-hover:text-emerald-500" />
+                  </div>
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Clique para anexar um print ou arraste aqui</p>
                 </>
               )}
             </div>
@@ -257,27 +259,27 @@ export const ReportPage = () => {
             <button 
               type="submit"
               disabled={loading || submitted}
-              className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+              className={`w-full py-4.5 rounded-2xl font-black uppercase tracking-widest text-[12px] flex items-center justify-center gap-3 transition-all ${
                 submitted 
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30' 
-                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20'
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-xl shadow-emerald-500/10' 
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-500/20 active:scale-95'
               } ${loading ? 'opacity-70 cursor-wait' : ''}`}
             >
               {loading ? (
-                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                 <span className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></span>
               ) : submitted ? (
-                <><CheckCircle2 size={20} /> Recebido com sucesso!</>
+                <><CheckCircle2 size={24} /> Recebido com sucesso!</>
               ) : (
-                <><Send size={20} /> Enviar Relatório</>
+                <><Send size={24} /> Enviar Relatório</>
               )}
             </button>
           </div>
         </form>
 
-            <div className="mt-6 flex items-start gap-3 p-4 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg">
-              <AlertCircle size={18} className="text-zinc-400 mt-0.5" />
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                Seu e-mail e ID de usuário serão enviados automaticamente junto com este relato para facilitar a análise técnica da nossa equipe.
+            <div className="mt-8 flex items-start gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+              <AlertCircle size={20} className="text-slate-300 mt-0.5 shrink-0" />
+              <p className="text-[11px] text-slate-400 font-bold leading-relaxed">
+                Seu e-mail e ID de usuário serão enviados automaticamente junto com este relato para facilitar o suporte técnico.
               </p>
             </div>
           </>
@@ -289,56 +291,56 @@ export const ReportPage = () => {
                 <p className="text-slate-500 font-medium">Carregando seus chamados...</p>
               </div>
             ) : myTickets.length === 0 ? (
-              <div className="card p-12 text-center bg-zinc-100 dark:bg-zinc-900 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
-                <AlertCircle className="mx-auto text-zinc-400 mb-4" size={48} />
-                <p className="text-zinc-500 font-medium">Você ainda não enviou nenhum chamado.</p>
+              <div className="p-20 text-center bg-white border-2 border-dashed border-slate-100 rounded-[3rem] shadow-sm">
+                <AlertCircle className="mx-auto text-slate-200 mb-6" size={64} />
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[11px]">Você ainda não possui histórico de chamados.</p>
                 <button 
                   onClick={() => setActiveTab('new')}
-                  className="mt-4 text-sm font-bold text-green-600 hover:underline"
+                  className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 hover:text-emerald-700 underline underline-offset-8"
                 >
-                  Enviar meu primeiro relato
+                  Criar meu primeiro relato
                 </button>
               </div>
             ) : (
               myTickets.map((ticket) => (
-                <div key={ticket.id} className="card p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm hover:border-green-500/50 transition-all">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border border-zinc-100 dark:border-zinc-800 ${ticket.type === 'bug' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'}`}>
-                          {ticket.type === 'bug' ? <Bug size={20} /> : <MessageSquare size={20} />}
+                <div key={ticket.id} className="bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-sm hover:border-emerald-500/20 transition-all group">
+                  <div className="flex flex-col gap-6">
+                    <div className="flex items-start justify-between gap-6">
+                      <div className="flex items-center gap-5">
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${ticket.type === 'bug' ? 'bg-rose-50 border-rose-100 text-rose-500' : 'bg-sky-50 border-sky-100 text-sky-500'}`}>
+                          {ticket.type === 'bug' ? <Bug size={28} /> : <MessageSquare size={28} />}
                         </div>
                         <div>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">
+                          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none mb-2">
                             Protocolo: {ticket.id.split('-')[0]}
                           </p>
-                          <h3 className="text-lg font-bold text-zinc-900 dark:text-white line-clamp-1">{ticket.title}</h3>
+                          <h3 className="text-xl font-black text-slate-800 line-clamp-1 break-words">{ticket.title}</h3>
                         </div>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusMap[ticket.status]?.color || 'bg-zinc-500/10 text-zinc-500'}`}>
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border shrink-0 ${statusMap[ticket.status]?.color || 'bg-slate-50 text-slate-400'}`}>
                         {statusMap[ticket.status]?.label || ticket.status}
                       </span>
                     </div>
 
-                    <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-700/30">
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">{ticket.description}</p>
+                    <div className="bg-slate-50/50 p-6 rounded-[1.5rem] border border-slate-50">
+                      <p className="text-sm text-slate-600 font-bold leading-relaxed">{ticket.description}</p>
                     </div>
 
                     {ticket.adminResponse && (
-                      <div className="mt-2 p-5 rounded-2xl bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
-                          <CheckCircle2 size={48} className="text-green-600" />
+                      <div className="mt-4 p-8 rounded-[2rem] bg-emerald-50/30 border border-emerald-100 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform duration-500">
+                          <CheckCircle2 size={64} className="text-emerald-600" />
                         </div>
                         <div className="relative">
-                          <p className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            Resposta da Equipe
+                          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-4 flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            RESPOSTA DA EQUIPE TÉCNICA
                           </p>
-                          <p className="text-sm text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">
+                          <p className="text-[15px] text-slate-800 font-bold leading-relaxed pr-12">
                             {ticket.adminResponse}
                           </p>
                           {ticket.respondedAt && (
-                            <p className="text-[10px] text-zinc-500 mt-4 font-medium italic">
+                            <p className="text-[10px] text-slate-400 mt-6 font-black uppercase tracking-widest opacity-60">
                               Respondido em {new Date(ticket.respondedAt).toLocaleDateString()} às {new Date(ticket.respondedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </p>
                           )}
@@ -353,18 +355,18 @@ export const ReportPage = () => {
         )}
 
         {/* Action Footer */}
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50 shadow-lg">
-          <div className="text-center md:text-left space-y-1">
-            <p className="text-sm font-semibold text-white">Dúvidas sobre o Reporte?</p>
-            <p className="text-xs text-slate-500">Entre em contato com nosso suporte especializado.</p>
+        <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-8 p-10 rounded-[3rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/50">
+          <div className="text-center md:text-left space-y-2">
+            <p className="text-lg font-black text-slate-800 tracking-tight">Dúvidas sobre o Relato?</p>
+            <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest">Entre em contato direto com nosso suporte.</p>
           </div>
-          <div className="flex gap-3">
-            <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-surface-300 border border-white/5 text-white font-bold text-sm hover:bg-surface-400 transition-all flex items-center gap-2">
-              <ArrowLeft size={16} /> Voltar
+          <div className="flex gap-4">
+            <Link to="/dashboard" className="px-10 py-4.5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-400 font-black uppercase tracking-widest text-[11px] hover:bg-slate-100 transition-all flex items-center gap-3 active:scale-95">
+              <ArrowLeft size={18} /> Voltar
             </Link>
             <button 
               onClick={() => setShowContact(true)}
-              className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+              className="px-12 py-4.5 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest text-[12px] hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
             >
               Falar com Suporte
             </button>

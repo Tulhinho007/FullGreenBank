@@ -102,15 +102,15 @@ const ConfirmPopup = ({ title, message, confirmLabel='Confirmar', variant='dange
   <>
     <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm" onClick={onCancel}/>
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl p-6">
-        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant==='danger'?'bg-red-100 dark:bg-red-900/30':'bg-green-100 dark:bg-green-900/30'}`}>
-          <AlertTriangle size={20} className={variant==='danger'?'text-red-500':'text-green-500'}/>
+      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-2xl p-6">
+        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant==='danger'?'bg-rose-50':'bg-emerald-50'}`}>
+          <AlertTriangle size={20} className={variant==='danger'?'text-rose-500':'text-emerald-500'}/>
         </div>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white text-center mb-1">{title}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-5 leading-relaxed">{message}</p>
+        <h3 className="text-sm font-semibold text-slate-800 text-center mb-1">{title}</h3>
+        <p className="text-xs text-slate-500 text-center mb-5 leading-relaxed">{message}</p>
         <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant==='danger'?'bg-red-500 hover:bg-red-600':'bg-green-600 hover:bg-green-500'}`}>{confirmLabel}</button>
+          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-50 transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant==='danger'?'bg-rose-500 hover:bg-rose-600':'bg-emerald-600 hover:bg-emerald-500'}`}>{confirmLabel}</button>
         </div>
       </div>
     </div>
@@ -286,22 +286,22 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
   // ── Render sub-panel ──
   const renderPanel = () => {
     if (!action) return null
-    const panelClass = "mt-3 bg-slate-50 dark:bg-surface-300/50 border border-slate-200 dark:border-surface-400 rounded-xl p-4"
+    const panelClass = "mt-3 bg-slate-50 border border-slate-200 rounded-xl p-4"
 
     if (action === 'addLeague') return (
       <div className={panelClass}>
-        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-1.5"><Plus size={13}/>Nova Liga</p>
+        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5"><Plus size={13}/>Nova Liga</p>
         <div className="flex flex-col gap-2">
           <input value={newLeagueName} onChange={e=>setNewLeagueName(e.target.value)} placeholder="Nome da liga..." autoFocus
-            className="text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"/>
+            className="text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"/>
           <select value={newLeagueCat} onChange={e=>setNewLeagueCat(e.target.value)}
-            className="text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 transition-all">
+            className="text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 transition-all">
             <option value="">Selecione a categoria...</option>
             {allCategories.map(c=><option key={c} value={c}>{c}</option>)}
           </select>
           <div className="flex gap-2 mt-1">
-            <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-            <button onClick={doAddLeague} disabled={!newLeagueName.trim()||!newLeagueCat} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar</button>
+            <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 hover:bg-white transition-colors">Cancelar</button>
+            <button onClick={doAddLeague} disabled={!newLeagueName.trim()||!newLeagueCat} className="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-emerald-500/20">Salvar</button>
           </div>
         </div>
       </div>
@@ -309,21 +309,21 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
 
     if (action === 'addCategory') return (
       <div className={panelClass}>
-        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-1.5"><FolderPlus size={13}/>Nova Categoria</p>
+        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5"><FolderPlus size={13}/>Nova Categoria</p>
         <input value={newCatName} onChange={e=>setNewCatName(e.target.value)} placeholder="Nome da categoria..." autoFocus
-          className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all mb-2"/>
+          className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all mb-2"/>
         <div className="flex gap-2">
-          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={doAddCategory} disabled={!newCatName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar</button>
+          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 hover:bg-white transition-colors">Cancelar</button>
+          <button onClick={doAddCategory} disabled={!newCatName.trim()} className="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-emerald-500/20">Salvar</button>
         </div>
       </div>
     )
 
     if (action === 'removeLeague') return (
       <div className={panelClass}>
-        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-1.5"><Trash2 size={13} className="text-red-400"/>Remover Liga</p>
+        <p className="text-xs font-black uppercase tracking-widest text-rose-500 mb-3 flex items-center gap-1.5"><Trash2 size={13}/>Remover Liga</p>
         <select value={selLeague} onChange={e=>setSelLeague(e.target.value)}
-          className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-red-400 transition-all mb-2">
+          className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-rose-400 transition-all mb-2">
           <option value="">Selecione a liga...</option>
           {allCategories.map(cat=>(
             <optgroup key={cat} label={cat}>
@@ -332,34 +332,34 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
           ))}
         </select>
         <div className="flex gap-2">
-          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={doRemoveLeague} disabled={!selLeague} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Remover</button>
+          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 hover:bg-white transition-colors">Cancelar</button>
+          <button onClick={doRemoveLeague} disabled={!selLeague} className="flex-1 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-rose-500/20">Remover</button>
         </div>
       </div>
     )
 
     if (action === 'removeCategory') return (
       <div className={panelClass}>
-        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-1.5"><Trash2 size={13} className="text-red-400"/>Remover Categoria</p>
+        <p className="text-xs font-black uppercase tracking-widest text-rose-500 mb-3 flex items-center gap-1.5"><Trash2 size={13}/>Remover Categoria</p>
         <select value={selCategory} onChange={e=>setSelCategory(e.target.value)}
-          className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-red-400 transition-all mb-1">
+          className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-rose-400 transition-all mb-1">
           <option value="">Selecione a categoria...</option>
           {allCategories.map(c=><option key={c} value={c}>{c} ({(grouped[c]||[]).length} ligas)</option>)}
         </select>
-        {selCategory && <p className="text-[11px] text-red-400 mb-2">⚠ Todas as {(grouped[selCategory]||[]).length} ligas desta categoria serão removidas.</p>}
+        {selCategory && <p className="text-[11px] text-rose-500 font-bold mb-2">⚠ Todas as {(grouped[selCategory]||[]).length} ligas desta categoria serão removidas.</p>}
         <div className="flex gap-2">
-          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={doRemoveCategory} disabled={!selCategory} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Remover</button>
+          <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 hover:bg-white transition-colors">Cancelar</button>
+          <button onClick={doRemoveCategory} disabled={!selCategory} className="flex-1 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-rose-500/20">Remover</button>
         </div>
       </div>
     )
 
     if (action === 'editLeague') return (
       <div className={panelClass}>
-        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-1.5"><Pencil size={13} className="text-blue-400"/>Editar Liga</p>
+        <p className="text-xs font-black uppercase tracking-widest text-blue-500 mb-3 flex items-center gap-1.5"><Pencil size={13} className="text-blue-500"/>Editar Liga</p>
         <div className="flex flex-col gap-2">
           <select value={editLeagueId} onChange={e=>selectLeagueForEdit(e.target.value)}
-            className="text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-400 transition-all">
+            className="text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-blue-400 transition-all">
             <option value="">Selecione a liga...</option>
             {allCategories.map(cat=>(
               <optgroup key={cat} label={cat}>
@@ -369,17 +369,17 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
           </select>
           {editLeagueId && <>
             <input value={editLeagueName} onChange={e=>setEditLeagueName(e.target.value)} placeholder="Novo nome..."
-              className="text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"/>
+              className="text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"/>
             <select value={editLeagueCat} onChange={e=>setEditLeagueCat(e.target.value)}
-              className="text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-400 transition-all">
+              className="text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-blue-400 transition-all">
               <option value="">Categoria...</option>
               {allCategories.map(c=><option key={c} value={c}>{c}</option>)}
             </select>
           </>}
           <div className="flex gap-2 mt-1">
-            <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+            <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 hover:bg-white transition-colors">Cancelar</button>
             <button onClick={doEditLeague} disabled={!editLeagueId||!editLeagueName.trim()||!editLeagueCat}
-              className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
+              className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-blue-500/20">Salvar</button>
           </div>
         </div>
       </div>
@@ -392,40 +392,40 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
     <>
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-xl pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl flex flex-col"
+        <div className="w-full max-w-xl pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-2xl flex flex-col"
           style={{maxHeight:'90vh'}} onClick={e=>e.stopPropagation()}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-surface-300 shrink-0">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                <Trophy size={15} className="text-green-600 dark:text-green-400"/>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <Trophy size={15} className="text-emerald-600"/>
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-slate-800 dark:text-white">Ligas / Campeonatos</h2>
-                <p className="text-[11px] text-slate-400">{leagues.length} ligas · {allCategories.length} categorias</p>
+                <h2 className="text-sm font-bold text-slate-800">Ligas / Campeonatos</h2>
+                <p className="text-[11px] text-slate-400 font-bold">{leagues.length} ligas · {allCategories.length} categorias</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {history.length > 0 && !readOnly && (
                 <button onClick={()=>setUndoPrompt(true)}
-                  className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-amber-500 border border-slate-200 dark:border-surface-400 hover:border-amber-400 px-2 py-1 rounded-lg transition-colors"
+                  className="flex items-center gap-1 text-[11px] text-slate-400 font-bold hover:text-amber-500 border border-slate-100 hover:border-amber-400 px-2 py-1 rounded-lg transition-colors"
                   title="Desfazer última alteração">
                   <RotateCcw size={11}/> Desfazer
                 </button>
               )}
-              <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">
+              <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:bg-slate-50 hover:text-slate-500 transition-colors">
                 <X size={15}/>
               </button>
             </div>
           </div>
 
           {/* Search + Actions */}
-          <div className="px-5 py-3 border-b border-slate-100 dark:border-surface-300 shrink-0">
+          <div className="px-5 py-3 border-b border-slate-50 shrink-0">
             <div className="relative mb-3">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar liga ou campeonato..."
-                className="w-full text-sm bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-xl pl-9 pr-4 py-2 text-slate-800 dark:text-white placeholder-slate-400 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"/>
+                className="w-full text-xs bg-slate-50 border border-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-slate-700 font-bold placeholder-slate-300 outline-none focus:border-emerald-500/50 transition-all"/>
               {search && <button onClick={()=>setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X size={12}/></button>}
             </div>
 
@@ -433,15 +433,15 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
             {!readOnly && (
               <div className="flex flex-wrap gap-1.5">
                 <ActionBtn icon={<Plus size={12}/>}       label="Liga"       onClick={()=>setAction(a=>a==='addLeague'?null:'addLeague')}
-                  color={action==='addLeague'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
+                  color={action==='addLeague'?'bg-emerald-600 border-emerald-600 text-white':'border-emerald-100 text-emerald-600 hover:bg-emerald-50'}/>
                 <ActionBtn icon={<FolderPlus size={12}/>} label="Categoria"  onClick={()=>setAction(a=>a==='addCategory'?null:'addCategory')}
-                  color={action==='addCategory'?'bg-green-600 border-green-600 text-white':'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20'}/>
+                  color={action==='addCategory'?'bg-emerald-600 border-emerald-600 text-white':'border-emerald-100 text-emerald-600 hover:bg-emerald-50'}/>
                 <ActionBtn icon={<Pencil size={12}/>}     label="Editar"     onClick={()=>setAction(a=>a==='editLeague'?null:'editLeague')}
-                  color={action==='editLeague'?'bg-blue-500 border-blue-500 text-white':'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20'}/>
+                  color={action==='editLeague'?'bg-blue-500 border-blue-500 text-white':'border-blue-100 text-blue-500 hover:bg-blue-50'}/>
                 <ActionBtn icon={<Trash2 size={12}/>}     label="Liga"       onClick={()=>setAction(a=>a==='removeLeague'?null:'removeLeague')}
-                  color={action==='removeLeague'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
+                  color={action==='removeLeague'?'bg-rose-500 border-rose-500 text-white':'border-rose-100 text-rose-500 hover:bg-rose-50'}/>
                 <ActionBtn icon={<Trash2 size={12}/>}     label="Categoria"  onClick={()=>setAction(a=>a==='removeCategory'?null:'removeCategory')}
-                  color={action==='removeCategory'?'bg-red-500 border-red-500 text-white':'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'}/>
+                  color={action==='removeCategory'?'bg-rose-500 border-rose-500 text-white':'border-rose-100 text-rose-500 hover:bg-rose-50'}/>
               </div>
             )}
 
@@ -454,11 +454,11 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
             {search.trim().length > 1 ? (
               <div className="p-3">
                 {searchResults.length === 0
-                  ? <p className="text-sm text-slate-400 text-center py-6">Nenhuma liga encontrada para "{search}"</p>
+                  ? <p className="text-sm text-slate-300 text-center font-bold py-6 italic">Nenhuma liga encontrada</p>
                   : [...searchResults].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
-                    <div key={l.id} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-300/30 transition-colors">
-                      <span className="flex-1 text-xs text-slate-700 dark:text-slate-200">{l.name}</span>
-                      <span className="text-[10px] text-slate-400 bg-slate-100 dark:bg-surface-300 px-2 py-0.5 rounded">{l.category}</span>
+                    <div key={l.id} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors">
+                      <span className="flex-1 text-xs text-slate-700 font-bold">{l.name}</span>
+                      <span className="text-[9px] font-black uppercase tracking-tight text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{l.category}</span>
                     </div>
                   ))
                 }
@@ -468,15 +468,15 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
                 {/* Featured */}
                 <div className="px-4 pt-4 pb-2">
                   <div className="flex items-center gap-2 mb-3">
-                    <Star size={13} className="text-yellow-500"/>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Principais Ligas</span>
-                    <span className="text-[10px] bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-200 dark:border-yellow-800/50">Top {featured.length}</span>
+                    <Star size={13} className="text-amber-400 fill-amber-400"/>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Principais Ligas</span>
+                    <span className="text-[9px] font-black bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full border border-amber-100 ml-auto uppercase tracking-tighter">Top {featured.length}</span>
                   </div>
                   <div className="flex flex-col gap-1">
                     {[...featured].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
-                      <div key={l.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30">
-                        <Star size={11} className="text-yellow-400 shrink-0"/>
-                        <span className="text-xs font-medium text-slate-700 dark:text-slate-200 flex-1">{l.name}</span>
+                      <div key={l.id} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <Star size={11} className="text-amber-400 fill-amber-400 shrink-0"/>
+                        <span className="text-xs font-bold text-slate-700 flex-1">{l.name}</span>
                       </div>
                     ))}
                   </div>
@@ -484,29 +484,29 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
 
                 {/* Categories */}
                 <div className="px-4 pb-3">
-                  <div className="border-t border-slate-100 dark:border-surface-300 pt-3 mb-2">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Todas as categorias</span>
+                  <div className="border-t border-slate-50 pt-3 mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Categorias</span>
                   </div>
                   {visibleCats.map(cat=>{
                     const items = grouped[cat]||[]
                     const catOpen = openCats.has(cat)
                     return (
                       <div key={cat} className="mb-1">
-                        <button onClick={()=>toggleCat(cat)} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-surface-300/50 transition-colors">
+                        <button onClick={()=>toggleCat(cat)} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
                           <span className="text-base">{CAT_ICONS[cat]||'📋'}</span>
-                          <span className="flex-1 text-left text-sm font-medium text-slate-700 dark:text-slate-200">{cat}</span>
-                          <span className="text-[11px] text-slate-400 mr-1">{items.length}</span>
-                          {catOpen?<ChevronDown size={13} className="text-slate-400"/>:<ChevronRight size={13} className="text-slate-400"/>}
+                          <span className="flex-1 text-left text-xs font-bold text-slate-700">{cat}</span>
+                          <span className="text-[10px] font-black text-slate-300 mr-1">{items.length}</span>
+                          {catOpen?<ChevronDown size={13} className="text-slate-300"/>:<ChevronRight size={13} className="text-slate-300"/>}
                         </button>
                         {catOpen && (
-                          <div className="ml-4 pl-3 border-l border-slate-100 dark:border-surface-300 mb-2">
+                          <div className="ml-4 pl-3 border-l border-slate-50 mb-2">
                             {items.length === 0 ? (
-                              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-2 px-2">
-                                Nenhum liga nesta categoria ainda.
+                              <p className="text-[10px] text-slate-300 font-bold italic py-2 px-2">
+                                Nenhuma liga cadastrada.
                               </p>
                             ) : [...items].sort((a,b) => a.name.localeCompare(b.name)).map(l=>(
-                              <div key={l.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-surface-300/30 transition-colors">
-                                <span className="flex-1 text-xs text-slate-700 dark:text-slate-200">{l.name}</span>
+                              <div key={l.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-slate-50 transition-colors">
+                                <span className="flex-1 text-xs text-slate-500 font-bold">{l.name}</span>
                               </div>
                             ))}
                           </div>
@@ -515,8 +515,8 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
                     )
                   })}
                   <button onClick={()=>setShowAll(s=>!s)}
-                    className="w-full mt-2 py-2 rounded-xl border border-slate-200 dark:border-surface-400 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors flex items-center justify-center gap-1.5">
-                    {showAll?<><ChevronDown size={13}/>Ver menos</>:<><ChevronRight size={13}/>Ver todas ({Math.max(0, [...new Set([...Object.keys(CAT_ICONS),...allCategories])].length - 3)} a mais)</>}
+                    className="w-full mt-2 py-2.5 rounded-xl border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    {showAll?<><ChevronDown size={12}/>Ver menos</>:<><ChevronRight size={12}/>Ver todas ({Math.max(0, [...new Set([...Object.keys(CAT_ICONS),...allCategories])].length - 3)} a mais)</>}
                   </button>
                 </div>
               </>
@@ -524,8 +524,8 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
           </div>
 
           {/* Footer */}
-          <div className="px-5 py-3 border-t border-slate-100 dark:border-surface-300 shrink-0">
-            <button onClick={onClose} className="w-full py-2 rounded-xl bg-slate-100 dark:bg-surface-300 hover:bg-slate-200 dark:hover:bg-surface-400 text-slate-600 dark:text-slate-300 text-sm font-medium transition-colors">Fechar</button>
+          <div className="px-5 py-3 border-t border-slate-50 shrink-0">
+            <button onClick={onClose} className="w-full py-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest transition-colors">Fechar</button>
           </div>
         </div>
       </div>

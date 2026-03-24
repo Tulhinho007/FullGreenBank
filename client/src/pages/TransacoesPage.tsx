@@ -138,14 +138,14 @@ export const TransacoesPage = () => {
       {/* ─── Cabeçalho ─── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-display font-bold text-slate-800 dark:text-white">Depósitos & Saques</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h2 className="text-2xl font-display font-bold text-slate-800">Depósitos & Saques</h2>
+          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5">
             Controle financeiro completo por usuário
           </p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
+          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-emerald-500 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
         >
           <Plus size={18} />
           Nova Transação
@@ -155,58 +155,57 @@ export const TransacoesPage = () => {
       {/* ─── Cards de Resumo ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Depósitos */}
-        <div className="card p-5 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
-            <span className="text-sm font-semibold text-slate-500">Total Depósitos</span>
-            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 border border-green-500/20">
-              <BadgeDollarSign className="text-green-500" size={20} />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Depósitos</span>
+            <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100">
+              <BadgeDollarSign className="text-emerald-500" size={20} />
             </div>
           </div>
-          <p className="text-2xl font-bold text-green-500 tracking-tight">{fmt(totalDepositos)}</p>
+          <p className="text-2xl font-display font-bold text-emerald-600 tracking-tight">{fmt(totalDepositos)}</p>
         </div>
 
         {/* Total Saques */}
-        <div className="card p-5 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
-            <span className="text-sm font-semibold text-slate-500">Total Saques</span>
-            <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center shrink-0 border border-pink-500/20">
-              <ArrowDownCircle className="text-pink-500" size={20} />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Saques</span>
+            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0 border border-rose-100">
+              <ArrowDownCircle className="text-rose-500" size={20} />
             </div>
           </div>
-          <p className="text-2xl font-bold text-red-500 tracking-tight">{fmt(totalSaques)}</p>
+          <p className="text-2xl font-display font-bold text-rose-600 tracking-tight">{fmt(totalSaques)}</p>
         </div>
 
         {/* Saldo Líquido */}
-        <div className="card p-5 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
-            <span className="text-sm font-semibold text-slate-500">Saldo Líquido</span>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0 border border-blue-500/20">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Líquido</span>
+            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
               <Wallet className="text-blue-500" size={20} />
             </div>
           </div>
-          <p className="text-2xl font-bold text-blue-500 tracking-tight">{fmt(saldoLiquido)}</p>
+          <p className="text-2xl font-display font-bold text-blue-600 tracking-tight">{fmt(saldoLiquido)}</p>
         </div>
 
         {/* Pendentes */}
-        <div className="card p-5 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
-            <span className="text-sm font-semibold text-slate-500">Pendentes</span>
-            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0 border border-orange-500/20">
-              <Hourglass className="text-orange-500" size={20} />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pendentes</span>
+            <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center shrink-0 border border-amber-100">
+              <Hourglass className="text-amber-500" size={20} />
             </div>
           </div>
-          <p className="text-2xl font-bold text-orange-500 tracking-tight">{totalPendentes}</p>
+          <p className="text-2xl font-display font-bold text-amber-600 tracking-tight">{totalPendentes}</p>
         </div>
       </div>
 
-      {/* ─── Linha de Filtros ─── */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-surface-300/50 flex items-center justify-center shrink-0 border border-surface-300">
-          <Filter size={18} className="text-slate-500" />
+        <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+          <Filter size={18} className="text-slate-400" />
         </div>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300"
+          className="w-auto min-w-[150px] h-10 md:h-11 bg-white border-slate-100 text-sm cursor-pointer rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           value={filterUser} onChange={e => setFilterUser(e.target.value)}
         >
           <option value="">Todos os usuários</option>
@@ -216,7 +215,7 @@ export const TransacoesPage = () => {
         </select>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300"
+          className="w-auto min-w-[150px] h-10 md:h-11 bg-white border-slate-100 text-sm cursor-pointer rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           value={filterType} onChange={e => setFilterType(e.target.value)}
         >
           <option value="">Todos os tipos</option>
@@ -225,7 +224,7 @@ export const TransacoesPage = () => {
         </select>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300"
+          className="w-auto min-w-[150px] h-10 md:h-11 bg-white border-slate-100 text-sm cursor-pointer rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           value={filterMethod} onChange={e => setFilterMethod(e.target.value)}
         >
           <option value="">Todos os métodos</option>
@@ -240,7 +239,7 @@ export const TransacoesPage = () => {
         </select>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-10 md:h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer rounded-xl text-slate-600 dark:text-slate-300"
+          className="w-auto min-w-[150px] h-10 md:h-11 bg-white border-slate-100 text-sm cursor-pointer rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
         >
           <option value="">Todos os status</option>
@@ -251,8 +250,8 @@ export const TransacoesPage = () => {
       </div>
 
       {/* ─── Área da Tabela ─── */}
-      <div className="card overflow-hidden bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300">
-        <div className="hidden md:grid grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-slate-100 dark:border-surface-300 text-[11px] font-bold text-slate-500 uppercase tracking-widest items-center">
+      <div className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm">
+        <div className="hidden md:grid grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 bg-slate-50 border-b border-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest items-center">
           <span>Data</span>
           <span>Tipo</span>
           <span>Usuário</span>
@@ -265,35 +264,35 @@ export const TransacoesPage = () => {
 
         {filteredTransactions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-slate-100 dark:bg-surface-300/50 rounded-full flex items-center justify-center mb-4 border border-slate-200 dark:border-surface-300">
-              <BadgeDollarSign className="text-slate-300 dark:text-slate-500" size={24} />
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
+              <BadgeDollarSign className="text-slate-300" size={24} />
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">Nenhuma transação registrada ainda.</p>
+            <p className="text-slate-500 text-sm font-medium">Nenhuma transação registrada ainda.</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-surface-300">
+          <div className="divide-y divide-slate-100">
             {filteredTransactions.map(t => (
-              <div key={t.id} className="grid grid-cols-1 md:grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 text-sm items-center hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
-                <span className="text-slate-600 dark:text-slate-300">{formatDate(t.date)}</span>
+              <div key={t.id} className="grid grid-cols-1 md:grid-cols-[100px_100px_1.5fr_120px_120px_120px_2fr_80px] gap-4 px-6 py-4 text-sm items-center hover:bg-slate-50 transition-colors">
+                <span className="text-slate-600 font-medium">{formatDate(t.date)}</span>
                 
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded inline-flex w-fit ${
-                  t.type === 'DEPOSITO' ? 'bg-green-500/10 text-green-600 dark:text-green-500' : 'bg-pink-500/10 text-pink-600 dark:text-pink-500'
+                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full inline-flex w-fit uppercase tracking-widest ${
+                  t.type === 'DEPOSITO' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
                 }`}>
                   {t.type}
                 </span>
 
-                <span className="font-bold text-slate-700 dark:text-slate-200 truncate">{t.userName}</span>
+                <span className="font-bold text-slate-800 truncate">{t.userName}</span>
                 
-                <span className={`font-bold ${t.type === 'DEPOSITO' ? 'text-green-600 dark:text-green-400' : 'text-pink-600 dark:text-pink-400'}`}>
+                <span className={`font-display font-black text-sm ${t.type === 'DEPOSITO' ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {t.type === 'DEPOSITO' ? '+' : '-'}{fmt(t.value)}
                 </span>
                 
-                <span className="text-slate-600 dark:text-slate-300">{t.method}</span>
+                <span className="text-slate-600">{t.method}</span>
                 
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded inline-flex w-fit items-center gap-1.5 ${
-                  t.status === 'CONCLUIDO' ? 'bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20' : 
-                  t.status === 'PENDENTE' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-500 border border-orange-500/20' : 
-                  'bg-surface-300 text-slate-500 border border-surface-400'
+                <span className={`text-[10px] font-black px-3 py-1.5 rounded-full inline-flex w-fit items-center gap-2 uppercase tracking-widest ${
+                  t.status === 'CONCLUIDO' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 
+                  t.status === 'PENDENTE' ? 'bg-amber-50 text-amber-700 border border-amber-100' : 
+                  'bg-slate-50 text-slate-500 border border-slate-100'
                 }`}>
                   <div className="w-1.5 h-1.5 rounded-full bg-current" />
                   {t.status}
@@ -319,14 +318,14 @@ export const TransacoesPage = () => {
         title="Nova Transação"
         size="md"
       >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-slate-900 dark:text-slate-100">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-slate-900">
           
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Data *</label>
               <input 
                 type="date" 
-                className="input-field text-sm bg-surface-300" 
+                className="input-field text-sm bg-slate-50" 
                 value={formData.date}
                 onChange={e => setFormData({...formData, date: e.target.value})}
                 required
@@ -335,7 +334,7 @@ export const TransacoesPage = () => {
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo *</label>
               <select 
-                className="input-field text-sm cursor-pointer bg-surface-300"
+                className="input-field text-sm cursor-pointer bg-slate-50 border-slate-100 font-bold"
                 value={formData.type}
                 onChange={e => setFormData({...formData, type: e.target.value as 'DEPOSITO' | 'SAQUE'})}
                 required
@@ -352,83 +351,83 @@ export const TransacoesPage = () => {
               value={formData.value ? Number(formData.value) : 0}
               onChange={(v) => setFormData({...formData, value: String(v)})}
               alertLimit={1000}
-              className="text-sm bg-surface-300"
+              className="text-sm bg-slate-50 border-slate-100 font-bold"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Usuário *</label>
-            <select 
-              className="input-field text-sm cursor-pointer bg-surface-300"
-              value={formData.userId}
-              onChange={e => setFormData({...formData, userId: e.target.value})}
-              required
-            >
-              <option value="">Selecione...</option>
-              {users.map(u => (
-                <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-              ))}
-            </select>
-          </div>
+              <select 
+                className="input-field text-sm cursor-pointer bg-slate-50 border-slate-100 font-bold"
+                value={formData.userId}
+                onChange={e => setFormData({...formData, userId: e.target.value})}
+                required
+              >
+                <option value="">Selecione...</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Método *</label>
-            <select 
-              className="input-field text-sm cursor-pointer bg-surface-300"
-              value={formData.method}
-              onChange={e => setFormData({...formData, method: e.target.value})}
-              required
-            >
-              <option value="">Selecione...</option>
-              <option value="Pix">Pix</option>
-              <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
-              <option value="Boleto Bancário">Boleto Bancário</option>
-              <option value="PayPal">PayPal</option>
-              <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
-              <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
-              <option value="PicPay">PicPay</option>
-              <option value="Outros">Outros</option>
-            </select>
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Método *</label>
+              <select 
+                className="input-field text-sm cursor-pointer bg-slate-50 border-slate-100 font-bold"
+                value={formData.method}
+                onChange={e => setFormData({...formData, method: e.target.value})}
+                required
+              >
+                <option value="">Selecione...</option>
+                <option value="Pix">Pix</option>
+                <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
+                <option value="Boleto Bancário">Boleto Bancário</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Cartão de Credito (Visa/Mastercard)">Cartão de Credito (Visa/Mastercard)</option>
+                <option value="Criptomoedas (Stablecoins e Ativos)">Criptomoedas (Stablecoins e Ativos)</option>
+                <option value="PicPay">PicPay</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</label>
-            <select 
-              className="input-field text-sm cursor-pointer bg-surface-300"
-              value={formData.status}
-              onChange={e => setFormData({...formData, status: e.target.value as 'CONCLUIDO' | 'PENDENTE' | 'RECUSADO'})}
-            >
-              <option value="CONCLUIDO">Concluído</option>
-              <option value="PENDENTE">Pendente</option>
-              <option value="RECUSADO">Recusado</option>
-            </select>
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</label>
+              <select 
+                className="input-field text-sm cursor-pointer bg-slate-50 border-slate-100 font-bold"
+                value={formData.status}
+                onChange={e => setFormData({...formData, status: e.target.value as 'CONCLUIDO' | 'PENDENTE' | 'RECUSADO'})}
+              >
+                <option value="CONCLUIDO">Concluído</option>
+                <option value="PENDENTE">Pendente</option>
+                <option value="RECUSADO">Recusado</option>
+              </select>
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Observação</label>
-            <textarea 
-              className="input-field text-sm resize-none bg-surface-300" 
-              rows={3} 
-              placeholder="Ex: bônus, rollover, saque parcial..."
-              value={formData.notes}
-              onChange={e => setFormData({...formData, notes: e.target.value})}
-            ></textarea>
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Observação</label>
+              <textarea 
+                className="input-field text-sm resize-none bg-slate-50 border-slate-100 font-bold" 
+                rows={3} 
+                placeholder="Ex: bônus, rollover, saque parcial..."
+                value={formData.notes}
+                onChange={e => setFormData({...formData, notes: e.target.value})}
+              ></textarea>
+            </div>
 
           {/* Botões do Rodapé */}
           <div className="grid grid-cols-2 gap-4 mt-2">
             <button 
               type="button" 
               onClick={() => setIsModalOpen(false)}
-              className="btn-secondary py-3 text-sm font-bold border-slate-200 dark:border-surface-400"
+              className="btn-secondary py-3 text-sm font-bold border-slate-200"
             >
               Cancelar
             </button>
             <button 
               type="submit" 
-              className="py-3 px-4 bg-[#0bb489] hover:bg-[#0aa07a] text-white font-bold rounded-lg transition-colors text-sm shadow-sm flex items-center justify-center"
+              className="py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[11px] rounded-[1.5rem] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 flex items-center justify-center"
             >
-              Registrar
+              Registrar Now
             </button>
           </div>
         </form>

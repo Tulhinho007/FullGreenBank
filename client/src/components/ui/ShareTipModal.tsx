@@ -93,27 +93,27 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
         {/* Modal Container */}
-        <div className="bg-surface-200 border border-surface-400 rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[95vh]">
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] w-full max-w-2xl shadow-2xl flex flex-col max-h-[95vh] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-400">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-green-900/50 flex items-center justify-center border border-green-500/20">
-                <Share2 size={18} className="text-green-400" />
+          <div className="flex items-center justify-between px-10 py-8 border-b border-slate-100 bg-white">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100/50">
+                <Share2 size={22} className="text-emerald-600" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Compartilhar Tip</h3>
-                <p className="text-xs text-slate-400">Preview do card formato quadrado/feed</p>
+                <h3 className="text-lg font-black text-slate-800 tracking-tight leading-none mb-1">Compartilhar Tip</h3>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest underline decoration-emerald-200 decoration-2 underline-offset-4">Preview Social Card</p>
               </div>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors bg-surface-300 p-2 rounded-lg">
-              <X size={16} />
+            <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-100 hover:border-rose-200 text-slate-400 hover:text-rose-500 transition-all active:scale-90">
+              <X size={20} />
             </button>
           </div>
 
           {/* Content area */}
-          <div className="p-8 bg-surface-300 flex-1 overflow-y-auto flex items-center justify-center relative">
+          <div className="p-8 bg-slate-50 flex-1 overflow-y-auto flex items-center justify-center relative">
             <div className="relative w-full max-w-[500px]">
               {/* ── THE SHARE CARD NODE TO CAPTURE ── */}
               <div
@@ -200,15 +200,15 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-surface-400 flex items-center justify-between bg-surface-200">
-             <div className="flex-1 flex justify-end gap-3">
-               <button onClick={onClose} className="px-5 py-3 rounded-xl border border-surface-400 text-slate-300 font-medium hover:bg-surface-300 transition-colors">
-                 Cancelar
+          <div className="px-10 py-8 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+             <div className="flex-1 flex justify-end gap-4">
+               <button onClick={onClose} className="px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all">
+                 Fechar
                </button>
                <button onClick={handleDownload} disabled={downloading}
-                 className="flex items-center gap-2 px-6 py-3 bg-[#00ff41] hover:bg-[#00cc34] text-black font-bold rounded-xl transition-all disabled:opacity-50">
-                 {downloading ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                 {downloading ? 'Gerando...' : 'Baixar Imagem'}
+                 className="flex items-center gap-3 px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-500/10 active:scale-95 disabled:opacity-50">
+                 {downloading ? <Loader2 className="animate-spin" size={18} /> : <Download size={20} />}
+                 {downloading ? 'PROCESSANDO...' : 'Baixar Card'}
                </button>
              </div>
           </div>

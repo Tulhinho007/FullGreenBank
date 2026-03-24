@@ -22,15 +22,15 @@ const ConfirmPopup = ({ title, message, confirmLabel = 'Confirmar', variant = 'd
   <>
     <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl p-6">
-        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
-          <AlertTriangle size={20} className={variant === 'danger' ? 'text-red-500' : 'text-green-500'} />
+      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-2xl p-6">
+        <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant === 'danger' ? 'bg-rose-50' : 'bg-emerald-50'}`}>
+          <AlertTriangle size={20} className={variant === 'danger' ? 'text-rose-500' : 'text-emerald-500'} />
         </div>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white text-center mb-1">{title}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-5 leading-relaxed">{message}</p>
+        <h3 className="text-sm font-semibold text-slate-800 text-center mb-1">{title}</h3>
+        <p className="text-xs text-slate-500 text-center mb-5 leading-relaxed">{message}</p>
         <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-surface-400 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-slate-50 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant === 'danger' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-500'}`}>{confirmLabel}</button>
+          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-50 transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className={`flex-1 py-2 rounded-xl text-white text-xs font-semibold transition-colors ${variant === 'danger' ? 'bg-rose-500 hover:bg-rose-600' : 'bg-emerald-600 hover:bg-emerald-500'}`}>{confirmLabel}</button>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@ const TeamSearchInput = ({
             value={q}
             onChange={e => { setQ(e.target.value); setSelected(null) }}
             placeholder={placeholder}
-            className="w-full text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg pl-8 pr-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all"
+            className="w-full text-sm bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
           />
           {q && !selected && (
             <button onClick={() => { setQ(''); setSelected(null); setResults([]) }}
@@ -106,7 +106,7 @@ const TeamSearchInput = ({
         {/* Group filter */}
         <div className="relative">
           <select value={grp} onChange={e => setGrp(e.target.value)}
-            className="appearance-none text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg pl-2.5 pr-6 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-green-500 transition-all">
+            className="appearance-none text-xs bg-white border border-slate-200 rounded-lg pl-2.5 pr-6 py-2 text-slate-700 font-bold outline-none focus:border-emerald-500 transition-all">
             <option value="">Todos os grupos</option>
             {groups.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
@@ -116,19 +116,19 @@ const TeamSearchInput = ({
 
       {/* Dropdown results */}
       {!selected && (q.length > 0 || grp) && (
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg overflow-hidden max-h-44 overflow-y-auto">
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden max-h-44 overflow-y-auto shadow-lg">
           {loading ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 size={14} className="text-green-500 animate-spin" />
+              <Loader2 size={14} className="text-emerald-500 animate-spin" />
             </div>
           ) : results.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-4">Nenhum time encontrado</p>
           ) : results.map(t => (
             <button key={t.id} onClick={() => pick(t)}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors text-left border-b border-slate-50 dark:border-surface-300/30 last:border-b-0">
+              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-emerald-50 transition-colors text-left border-b border-slate-50 last:border-b-0">
               <Shield size={11} className="text-slate-400 shrink-0" />
-              <span className="flex-1 text-xs text-slate-800 dark:text-white truncate">{t.name}</span>
-              <span className="text-[10px] text-slate-400 shrink-0">{t.group}</span>
+              <span className="flex-1 text-xs text-slate-800 font-bold truncate">{t.name}</span>
+              <span className="text-[10px] text-slate-300 font-black uppercase tracking-tighter">{t.group}</span>
             </button>
           ))}
         </div>
@@ -136,12 +136,12 @@ const TeamSearchInput = ({
 
       {/* Selected badge */}
       {selected && (
-        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 rounded-lg px-3 py-2">
-          <Shield size={12} className="text-green-500 shrink-0" />
-          <span className="flex-1 text-xs font-medium text-green-700 dark:text-green-300">{selected.name}</span>
-          <span className="text-[10px] text-green-500">{selected.group}</span>
+        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">
+          <Shield size={12} className="text-emerald-600 shrink-0" />
+          <span className="flex-1 text-xs font-bold text-emerald-700">{selected.name}</span>
+          <span className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter">{selected.group}</span>
           <button onClick={() => { setSelected(null); setQ('') }}
-            className="text-green-400 hover:text-green-600 ml-1"><X size={11} /></button>
+            className="text-emerald-400 hover:text-emerald-600 ml-1"><X size={11} /></button>
         </div>
       )}
     </div>
@@ -286,45 +286,45 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
   }
 
   // ── Render action panel ───────────────────────────────────────────────────
-  const panelBase = "mt-1 bg-slate-50 dark:bg-surface-300/50 border border-slate-200 dark:border-surface-400 rounded-xl p-3 flex flex-col gap-2.5"
+  const panelBase = "mt-1 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-2.5"
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-2xl pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl flex flex-col"
-          style={{ maxHeight: '88vh' }} onClick={e => e.stopPropagation()}>
+        <div className="w-full max-w-3xl pointer-events-auto bg-white rounded-[3rem] border border-slate-100 shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-500"
+          style={{ maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-surface-300 shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                <Shield size={15} className="text-green-600 dark:text-green-400" />
+          <div className="flex items-center justify-between px-10 py-8 border-b border-slate-50 shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100/50">
+                <Shield size={20} className="text-emerald-600" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-slate-800 dark:text-white">Times</h2>
-                <p className="text-[11px] text-slate-400">{displayTotal.toLocaleString()} times · {groups.length} grupos</p>
+                <h2 className="text-lg font-black text-slate-800 tracking-tight leading-none mb-1">Gerenciamento de Times</h2>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">{displayTotal.toLocaleString()} registros · {groups.length} categorias</p>
               </div>
             </div>
-            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">
-              <X size={15} />
+            <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-100 hover:border-rose-200 text-slate-400 hover:text-rose-500 transition-all active:scale-90">
+              <X size={20} />
             </button>
           </div>
 
           {/* Search + actions */}
-          <div className="px-5 py-3 border-b border-slate-100 dark:border-surface-300 shrink-0 flex flex-col gap-2">
+          <div className="px-5 py-3 border-b border-slate-50 shrink-0 flex flex-col gap-2">
             {/* Search row */}
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input ref={searchRef} value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="Buscar time na lista..."
-                  className="w-full text-sm bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-xl pl-9 pr-4 py-2 text-slate-800 dark:text-white placeholder-slate-400 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" />
+                  className="w-full text-xs bg-slate-50 border border-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-slate-800 font-bold placeholder-slate-300 outline-none focus:border-emerald-500/50 transition-all" />
                 {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X size={12} /></button>}
               </div>
               <div className="relative">
                 <select value={groupFilter} onChange={e => setGroupFilter(e.target.value)}
-                  className="appearance-none text-xs bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-xl pl-3 pr-7 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-green-500 transition-all">
+                  className="appearance-none text-[11px] font-bold bg-slate-50 border border-slate-100 rounded-xl pl-3 pr-7 py-2 text-slate-700 outline-none focus:border-emerald-500 transition-all">
                   <option value="">Todos os grupos</option>
                   {groups.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -338,14 +338,14 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                 <div className="flex gap-1.5">
                   {(['add','edit','delete'] as const).map((mode) => {
                     const cfg = {
-                      add:    { icon: <Plus size={12}/>,   label: 'Adicionar time', active: 'bg-green-600 border-green-600 text-white', inactive: 'border-green-300 dark:border-green-700 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
-                      edit:   { icon: <Pencil size={12}/>, label: 'Editar',         active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-300 dark:border-blue-700 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-                      delete: { icon: <Trash2 size={12}/>, label: 'Remover',        active: 'bg-red-500 border-red-500 text-white',     inactive: 'border-red-300 dark:border-red-800 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
+                      add:    { icon: <Plus size={12}/>,   label: 'Adicionar time', active: 'bg-emerald-600 border-emerald-600 text-white', inactive: 'border-emerald-100 text-emerald-600 hover:bg-emerald-50 transition-all' },
+                      edit:   { icon: <Pencil size={12}/>, label: 'Editar',         active: 'bg-blue-500 border-blue-500 text-white',   inactive: 'border-blue-100 text-blue-500 hover:bg-blue-50 transition-all' },
+                      delete: { icon: <Trash2 size={12}/>, label: 'Remover',        active: 'bg-rose-500 border-rose-500 text-white',     inactive: 'border-rose-100 text-rose-500 hover:bg-rose-50 transition-all' },
                     }[mode]
                     return (
                       <button key={mode}
                         onClick={() => { setActionMode(a => a === mode ? null : mode); closeAction(); if (actionMode !== mode) setActionMode(mode) }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${actionMode === mode ? cfg.active : cfg.inactive}`}>
                         {cfg.icon}{cfg.label}
                       </button>
                     )
@@ -355,20 +355,20 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                 {/* ── ADD panel ── */}
                 {actionMode === 'add' && (
                   <div className={panelBase}>
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5"><Plus size={12}/>Novo time</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5"><Plus size={12}/>Novo time</p>
                     <div className="flex gap-2">
                       <input autoFocus value={addName} onChange={e => setAddName(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
                         placeholder="Nome do time..."
-                        className="flex-1 text-sm bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" />
+                        className="flex-1 text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" />
                       <select value={addGroup} onChange={e => setAddGroup(e.target.value)}
-                        className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-green-500 transition-all">
+                        className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-2 text-slate-700 font-bold outline-none focus:border-emerald-500 transition-all">
                         {groups.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
-                      <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white text-xs font-semibold transition-colors">✓ Confirmar adição</button>
+                      <button onClick={closeAction} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
+                      <button onClick={handleAdd} disabled={!addName.trim()} className="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-emerald-500/20">Adicionar</button>
                     </div>
                   </div>
                 )}
@@ -376,9 +376,9 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                 {/* ── EDIT panel ── */}
                 {actionMode === 'edit' && (
                   <div className={panelBase}>
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                       <Pencil size={12} className="text-blue-400"/>
-                      {editTarget ? `Editando: ${editTarget.name}` : 'Buscar time para editar'}
+                      {editTarget ? `Editando: ${editTarget.name}` : 'Buscar time'}
                     </p>
                     {!editTarget ? (
                       <TeamSearchInput
@@ -393,28 +393,28 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                           <input autoFocus value={editName} onChange={e => setEditName(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') handleEdit() }}
                             placeholder="Novo nome..."
-                            className="flex-1 text-sm bg-white dark:bg-surface-200 border border-blue-300 dark:border-blue-700 rounded-lg px-3 py-2 text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                            className="flex-1 text-sm bg-white border border-blue-200 rounded-lg px-3 py-2 text-slate-800 font-bold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all" />
                           <select value={editGroup} onChange={e => setEditGroup(e.target.value)}
-                            className="text-xs bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-lg px-2 py-2 text-slate-700 dark:text-slate-200 outline-none focus:border-blue-400 transition-all">
+                            className="text-xs bg-white border border-slate-200 rounded-lg px-2 py-2 text-slate-700 font-bold outline-none focus:border-blue-400 transition-all">
                             {groups.map(g => <option key={g} value={g}>{g}</option>)}
                           </select>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => { setEditTarget(null); setEditName(''); setEditGroup('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
-                          <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-semibold transition-colors">Salvar alteração</button>
+                          <button onClick={() => { setEditTarget(null); setEditName(''); setEditGroup('') }} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">← Trocar</button>
+                          <button onClick={handleEdit} disabled={!editName.trim()} className="flex-1 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-blue-500/20">Salvar</button>
                         </div>
                       </>
                     )}
-                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
                   </div>
                 )}
 
                 {/* ── DELETE panel ── */}
                 {actionMode === 'delete' && (
-                  <div className={`${panelBase} border-red-100 dark:border-red-900/30`}>
-                    <p className="text-xs font-semibold text-red-500 dark:text-red-400 flex items-center gap-1.5">
+                  <div className={`${panelBase} border-rose-100`}>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-rose-500 flex items-center gap-1.5">
                       <Trash2 size={12}/>
-                      {delTarget ? `Remover: ${delTarget.name}` : 'Buscar time para remover'}
+                      {delTarget ? `Remover: ${delTarget.name}` : 'Buscar time'}
                     </p>
                     {!delTarget ? (
                       <TeamSearchInput
@@ -425,18 +425,18 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
                       />
                     ) : (
                       <>
-                        <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-lg px-3 py-2">
-                          <Shield size={12} className="text-red-400 shrink-0" />
-                          <span className="flex-1 text-xs font-medium text-red-700 dark:text-red-300">{delTarget.name}</span>
-                          <span className="text-[10px] text-red-400">{delTarget.group}</span>
+                        <div className="flex items-center gap-2 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">
+                          <Shield size={12} className="text-rose-400 shrink-0" />
+                          <span className="flex-1 text-xs font-bold text-rose-700">{delTarget.name}</span>
+                          <span className="text-[10px] font-black uppercase tracking-tighter text-rose-400">{delTarget.group}</span>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">← Trocar time</button>
-                          <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Confirmar remoção</button>
+                          <button onClick={() => setDelTarget(null)} className="flex-1 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">← Trocar</button>
+                          <button onClick={handleDelete} className="flex-1 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest transition-colors shadow-lg shadow-rose-500/20">Remover</button>
                         </div>
                       </>
                     )}
-                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 dark:border-surface-400 text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-surface-300 transition-colors">Cancelar</button>
+                    <button onClick={closeAction} className="py-1.5 rounded-lg border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white transition-colors">Cancelar</button>
                   </div>
                 )}
               </>
@@ -446,39 +446,39 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
           {/* List */}
           <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div className="flex items-center justify-center py-16"><Loader2 size={24} className="text-green-500 animate-spin" /></div>
+              <div className="flex items-center justify-center py-16"><Loader2 size={24} className="text-emerald-500 animate-spin" /></div>
             ) : allDisplayed.length === 0 ? (
               <div className="py-12 text-center">
-                <Users size={32} className="text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-                <p className="text-sm text-slate-400">Nenhum time encontrado</p>
+                <Users size={32} className="text-slate-100 mx-auto mb-3" />
+                <p className="text-xs text-slate-300 font-bold italic">Nenhum time encontrado</p>
               </div>
             ) : (
               <>
                 {groupFilter && (
-                  <div className="px-5 py-2 bg-slate-50 dark:bg-surface-300/30 border-b border-slate-100 dark:border-surface-300">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{groupFilter} — {total} times</span>
+                  <div className="px-5 py-2 bg-slate-50 border-b border-slate-50 text-center">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{groupFilter} — {total} times</span>
                   </div>
                 )}
                 {allDisplayed.sort((a, b) => a.name.localeCompare(b.name)).map((team, i) => {
                   const custom = isCustom(team)
                   return (
                     <div key={`${team.id}-${i}`}
-                      className="flex items-center gap-3 px-5 py-2.5 border-b border-slate-50 dark:border-surface-300/30 hover:bg-slate-50 dark:hover:bg-surface-300/20 transition-colors">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${custom ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-slate-100 dark:bg-surface-300'}`}>
-                        <Shield size={13} className={custom ? 'text-blue-400' : 'text-slate-400 dark:text-slate-500'} />
+                      className="flex items-center gap-3 px-5 py-2.5 border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${custom ? 'bg-blue-50 border border-blue-100' : 'bg-slate-50'}`}>
+                        <Shield size={13} className={custom ? 'text-blue-500' : 'text-slate-200'} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm text-slate-800 dark:text-white truncate block">{team.name}</span>
-                        {!groupFilter && <span className="text-[10px] text-slate-400 dark:text-slate-500">{team.group}</span>}
+                        <span className="text-sm text-slate-800 font-bold truncate block">{team.name}</span>
+                        {!groupFilter && <span className="text-[9px] font-black text-slate-300 uppercase tracking-tight">{team.group}</span>}
                       </div>
-                      {custom && <span className="text-[9px] bg-blue-100 dark:bg-blue-900/30 text-blue-500 px-1.5 py-0.5 rounded font-medium shrink-0">Personalizado</span>}
+                      {custom && <span className="text-[8px] bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded font-black uppercase tracking-widest border border-blue-100 shrink-0">Pessoal</span>}
                     </div>
                   )
                 })}
                 {page < totalPages && (
                   <div className="p-4 text-center">
                     <button onClick={() => doSearch(search, groupFilter, page + 1, true)} disabled={loadingMore}
-                      className="flex items-center gap-2 mx-auto text-xs text-green-500 hover:text-green-400 border border-green-300 dark:border-green-800 px-4 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-50">
+                      className="flex items-center gap-2 mx-auto text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 border border-emerald-100 px-4 py-2.5 rounded-xl hover:bg-white transition-all disabled:opacity-50 shadow-sm">
                       {loadingMore ? <Loader2 size={13} className="animate-spin" /> : <ChevronDown size={13} />}
                       Carregar mais ({total - teams.length} restantes)
                     </button>
@@ -489,9 +489,9 @@ export const TeamsModal = ({ isOpen, onClose, readOnly }: TeamsModalProps) => {
           </div>
 
           {/* Footer */}
-          <div className="px-5 py-3 border-t border-slate-100 dark:border-surface-300 shrink-0 flex items-center justify-between">
-            <span className="text-xs text-slate-400">{allDisplayed.length} de {displayTotal.toLocaleString()} times</span>
-            <button onClick={onClose} className="px-5 py-2 rounded-xl bg-slate-100 dark:bg-surface-300 hover:bg-slate-200 dark:hover:bg-surface-400 text-slate-600 dark:text-slate-300 text-sm font-medium transition-colors">Fechar</button>
+          <div className="px-5 py-3 border-t border-slate-50 shrink-0 flex items-center justify-between bg-slate-50/30">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">{allDisplayed.length} de {displayTotal.toLocaleString()} times</span>
+            <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm border border-slate-100">Fechar</button>
           </div>
         </div>
       </div>

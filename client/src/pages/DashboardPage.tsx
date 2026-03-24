@@ -92,20 +92,20 @@ export const DashboardPage = () => {
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-display font-semibold text-slate-900 dark:text-white">Gestão</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Dicas e boas práticas de banca</p>
+            <h2 className="font-display font-semibold text-slate-900">Gestão</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Dicas e boas práticas de banca</p>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mgmtCards.map(card => (
-            <div key={card.title} className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-100 dark:border-white/5 hover:border-green-500/30 transition-all duration-300 shadow-sm group">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">
+            <div key={card.title} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 hover:border-emerald-500/30 transition-all duration-300 shadow-sm group">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform duration-300">
                   {card.icon}
                 </div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm">{card.title}</h3>
+                <h3 className="font-black text-slate-800 text-[11px] uppercase tracking-widest">{card.title}</h3>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{card.desc}</p>
+              <p className="text-[11px] text-slate-400 leading-relaxed font-bold uppercase tracking-tight opacity-80">{card.desc}</p>
             </div>
           ))}
         </div>
@@ -113,24 +113,24 @@ export const DashboardPage = () => {
 
       {/* Recent tips */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-slate-900 dark:text-white">Dicas Recentes</h2>
-          <a href="/tips" className="text-xs text-green-600 dark:text-green-400 hover:underline font-bold">Ver todas →</a>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-display font-black text-slate-800 uppercase tracking-widest text-sm">Próximas Dicas</h2>
+          <a href="/tips" className="text-[10px] text-emerald-600 hover:text-emerald-700 font-black uppercase tracking-widest transition-colors">Ver catálogo completo →</a>
         </div>
         
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-100 dark:border-white/5">
+          <div className="flex flex-col items-center justify-center py-16 bg-white rounded-[2rem] border border-slate-100">
             <div className="w-10 h-10 border-2 border-green-500 border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-xs text-slate-400">Carregando dicas...</p>
           </div>
         ) : tips.length === 0 ? (
-          <div className="bg-white dark:bg-surface-200 p-16 rounded-[2rem] border border-slate-100 dark:border-white/5 text-center shadow-sm">
-            <div className="w-16 h-16 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-               <TrendingUp size={32} className="text-slate-300 dark:text-slate-600" />
+          <div className="bg-white p-20 rounded-[3rem] border border-slate-100 text-center shadow-sm">
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+               <TrendingUp size={40} className="text-slate-200" />
             </div>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">Nenhuma dica cadastrada ainda.</p>
+            <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Aguardando novos sinais do mercado...</p>
             {(user?.role === 'ADMIN' || user?.role === 'MASTER') && (
-              <a href="/admin/tips/new" className="inline-flex items-center gap-2 mt-4 px-6 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-green-500/20">
+              <a href="/admin/tips/new" className="inline-flex items-center gap-3 mt-8 px-10 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
                 Criar primeira dica
               </a>
             )}

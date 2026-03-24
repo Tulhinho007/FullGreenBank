@@ -31,11 +31,11 @@ interface BancaContract {
 interface UserOption { id: string; name: string; email: string }
 
 const STATUS_CONFIG: Record<ContractStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ATIVO:            { label: 'Ativo',            color: 'text-green-400 bg-green-900/40 border-green-800/50',    icon: <CheckCircle size={12} /> },
-  AGUARDANDO_SAQUE: { label: 'Aguardando saque', color: 'text-blue-400 bg-blue-900/30 border-blue-800/50',      icon: <Clock size={12} /> },
-  FINALIZADO:       { label: 'Finalizado',        color: 'text-yellow-400 bg-yellow-900/30 border-yellow-800/50',icon: <TrendingUp size={12} /> },
-  ENCERRADO:        { label: 'Encerrado',         color: 'text-slate-400 bg-surface-300 border-surface-400',    icon: <XCircle size={12} /> },
-  CANCELADO:        { label: 'Cancelado',         color: 'text-red-400 bg-red-900/30 border-red-800/50',        icon: <XCircle size={12} /> },
+  ATIVO:            { label: 'Ativo',            color: 'text-emerald-700 bg-emerald-50 border-emerald-100', icon: <CheckCircle size={12} /> },
+  AGUARDANDO_SAQUE: { label: 'Aguardando saque', color: 'text-blue-700 bg-blue-50 border-blue-100',       icon: <Clock size={12} /> },
+  FINALIZADO:       { label: 'Finalizado',        color: 'text-amber-700 bg-amber-50 border-amber-100', icon: <TrendingUp size={12} /> },
+  ENCERRADO:        { label: 'Encerrado',         color: 'text-slate-500 bg-slate-50 border-slate-100',     icon: <XCircle size={12} /> },
+  CANCELADO:        { label: 'Cancelado',         color: 'text-rose-700 bg-rose-50 border-rose-100',         icon: <XCircle size={12} /> },
 }
 
 const MOTIVO_LABEL: Record<MotivoFim, string> = {
@@ -318,8 +318,8 @@ export const BancaGerenciadaPage = () => {
       {/* Cabeçalho */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display font-semibold text-white">Banca Gerenciada</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Gestão de contratos de banca com comissão automática</p>
+          <h2 className="font-display font-bold text-slate-800 text-2xl">Banca Gerenciada</h2>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Gestão de contratos de banca com comissão automática</p>
         </div>
         {!isReadOnly && (
           <button onClick={() => setAddOpen(true)} className="btn-primary flex items-center gap-2 shrink-0">
@@ -330,47 +330,47 @@ export const BancaGerenciadaPage = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-green-900/50 flex items-center justify-center"><Briefcase size={13} className="text-green-400" /></div>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Contratos Ativos</span>
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:border-emerald-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100"><Briefcase size={14} className="text-slate-400" /></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Contratos Ativos</span>
           </div>
-          <p className="text-2xl font-bold text-white">{loading ? '—' : ativos}</p>
-          <p className="text-xs text-slate-600 mt-1">{contracts.length} total</p>
+          <p className="text-2xl font-display font-bold text-slate-800">{loading ? '—' : ativos}</p>
+          <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">{contracts.length} total</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-green-900/50 flex items-center justify-center"><DollarSign size={13} className="text-green-400" /></div>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Banca Total Ativa</span>
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:border-emerald-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100"><DollarSign size={14} className="text-emerald-600" /></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Banca Total Ativa</span>
           </div>
-          <p className="text-2xl font-bold text-green-400">{loading ? '—' : fmt(bancaTotal)}</p>
-          <p className="text-xs text-slate-600 mt-1">Soma contratos ativos</p>
+          <p className="text-2xl font-display font-bold text-emerald-600 font-mono">{loading ? '—' : fmt(bancaTotal)}</p>
+          <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">Soma contratos ativos</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-yellow-900/40 flex items-center justify-center"><Percent size={13} className="text-yellow-400" /></div>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Comissão Acumulada</span>
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:border-emerald-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100"><Percent size={14} className="text-amber-600" /></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Comissão Acumulada</span>
           </div>
-          <p className="text-2xl font-bold text-yellow-400">{loading ? '—' : fmt(totalComissao)}</p>
-          <p className="text-xs text-slate-600 mt-1">Todos os contratos</p>
+          <p className="text-2xl font-display font-bold text-amber-600 font-mono">{loading ? '—' : fmt(totalComissao)}</p>
+          <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">Todos os contratos</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-green-900/50 flex items-center justify-center"><TrendingUp size={13} className="text-green-400" /></div>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Lucro Plataforma</span>
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:border-emerald-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100"><TrendingUp size={14} className="text-emerald-600" /></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Lucro Plataforma</span>
           </div>
-          <p className="text-2xl font-bold text-green-400">{loading ? '—' : fmt(lucroPlataforma)}</p>
-          <p className="text-xs text-slate-600 mt-1">Lucro bruto gerado</p>
+          <p className="text-2xl font-display font-bold text-emerald-600 font-mono">{loading ? '—' : fmt(lucroPlataforma)}</p>
+          <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">Lucro bruto gerado</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-900/40 flex items-center justify-center"><Users size={13} className="text-blue-400" /></div>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Lucro Clientes</span>
+        <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:border-emerald-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100"><Users size={14} className="text-blue-600" /></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Lucro Clientes</span>
           </div>
-          <p className={`text-2xl font-bold ${lucroClientes >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
+          <p className={`text-2xl font-display font-bold font-mono ${lucroClientes >= 0 ? 'text-blue-600' : 'text-rose-600'}`}>
             {loading ? '—' : fmt(Math.abs(lucroClientes))}
           </p>
-          <p className="text-xs text-slate-600 mt-1">Valor líquido clientes</p>
+          <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">Valor líquido clientes</p>
         </div>
       </div>
 
@@ -391,13 +391,13 @@ export const BancaGerenciadaPage = () => {
           </select>
         </div>
         <div className="flex gap-2 ml-auto w-full md:w-auto">
-          <button onClick={exportCSV} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-green-700/50 bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors flex" title="Exportar Excel">
+          <button onClick={exportCSV} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-[10px] font-black px-4 py-2 rounded-xl border border-emerald-100 bg-white text-emerald-600 hover:bg-emerald-50 transition-all uppercase tracking-widest shadow-sm" title="Exportar Excel">
             <FileSpreadsheet size={13} /> Excel
           </button>
-          <button onClick={exportPDF} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-400 hover:bg-red-900/50 transition-colors flex" title="Exportar PDF">
+          <button onClick={exportPDF} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-[10px] font-black px-4 py-2 rounded-xl border border-rose-100 bg-white text-rose-600 hover:bg-rose-50 transition-all uppercase tracking-widest shadow-sm" title="Exportar PDF">
             <FileText size={13} /> PDF
           </button>
-          <button onClick={() => window.print()} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-700/50 bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 transition-colors flex" title="Imprimir">
+          <button onClick={() => window.print()} className="flex-1 md:flex-none items-center justify-center gap-1.5 text-[10px] font-black px-4 py-2 rounded-xl border border-blue-100 bg-white text-blue-600 hover:bg-blue-50 transition-all uppercase tracking-widest shadow-sm" title="Imprimir">
             <Printer size={13} /> Imprimir
           </button>
         </div>
@@ -409,8 +409,8 @@ export const BancaGerenciadaPage = () => {
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="card overflow-hidden">
-          <div className="hidden xl:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-3 px-5 py-3 border-b border-surface-300 text-xs text-slate-500 uppercase tracking-wide">
+        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div className="hidden xl:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-3 px-8 py-5 border-b border-slate-50 text-[10px] font-black text-slate-300 uppercase tracking-widest">
             <span>Usuário</span><span>Período</span><span>B. Inicial</span><span>B. Final</span>
             <span>Lucro</span><span>Comissão</span><span>Status</span><span className="text-right">Ações</span>
           </div>
@@ -484,23 +484,23 @@ export const BancaGerenciadaPage = () => {
       <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Excluir Contrato" size="sm">
         {deleteTarget && (
           <div className="flex flex-col gap-4">
-            <div className="bg-red-900/20 border border-red-800/40 rounded-lg px-4 py-3 flex items-start gap-3">
-              <AlertTriangle size={16} className="text-red-400 mt-0.5 shrink-0" />
+            <div className="bg-rose-50 border border-rose-100 rounded-[1.5rem] px-5 py-4 flex items-start gap-4">
+              <AlertTriangle size={18} className="text-rose-600 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm text-white font-medium">Tem certeza que deseja excluir?</p>
-                <p className="text-xs text-slate-400 mt-1">
-                  Contrato de <strong className="text-white">{deleteTarget.userName}</strong>
-                  {' · '}<strong className="text-white">{fmt(deleteTarget.bancaFinal)}</strong>
+                <p className="text-xs text-slate-800 font-black uppercase tracking-widest">Tem certeza que deseja excluir?</p>
+                <p className="text-[11px] text-slate-500 mt-1 font-bold">
+                  Contrato de <strong className="text-slate-800">{deleteTarget.userName}</strong>
+                  {' · '}<strong className="text-slate-800">{fmt(deleteTarget.bancaFinal)}</strong>
                 </p>
-                <p className="text-xs text-red-400 mt-1">Esta ação é irreversível.</p>
+                <p className="text-[10px] text-rose-600 mt-2 font-black uppercase tracking-tighter">Esta ação é irreversível.</p>
               </div>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Cancelar</button>
               <button onClick={handleDelete} disabled={saving}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 active:scale-95">
                 {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Trash2 size={14} />}
-                Excluir
+                Excluir Now
               </button>
             </div>
           </div>
@@ -511,17 +511,17 @@ export const BancaGerenciadaPage = () => {
       <Modal isOpen={!!renewTarget} onClose={() => setRenewTarget(null)} title="Renovar Contrato" size="sm">
         {renewTarget && (
           <div className="flex flex-col gap-4">
-            <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
-              <p className="text-sm font-semibold text-white">{renewTarget.userName}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Novo ciclo será criado com os valores abaixo</p>
-              <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+            <div className="bg-slate-50 border border-slate-100 rounded-[1.5rem] px-5 py-5">
+              <p className="text-sm font-bold text-slate-800">{renewTarget.userName}</p>
+              <p className="text-[10px] text-slate-400 mt-1 font-black uppercase tracking-widest">Novo ciclo será criado com os valores abaixo</p>
+              <div className="mt-5 grid grid-cols-2 gap-4 text-[10px] font-black uppercase tracking-widest">
                 <div>
-                  <p className="text-slate-500">Novo Valor Inicial</p>
-                  <p className="text-green-400 font-bold font-mono text-sm">{fmt(renewTarget.vlCliente > 0 ? renewTarget.vlCliente : renewTarget.bancaInicial)}</p>
+                  <p className="text-slate-300 mb-1">Novo Valor Inicial</p>
+                  <p className="text-emerald-600 font-mono text-sm">{fmt(renewTarget.vlCliente > 0 ? renewTarget.vlCliente : renewTarget.bancaInicial)}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Comissão mantida</p>
-                  <p className="text-yellow-400 font-bold text-sm">{renewTarget.comissaoPercent}%</p>
+                  <p className="text-slate-300 mb-1">Comissão mantida</p>
+                  <p className="text-amber-600 text-sm">{renewTarget.comissaoPercent}%</p>
                 </div>
               </div>
             </div>
@@ -557,24 +557,24 @@ const PreviewCalc = ({ bi, bf, cp, di, df, fmt }: PreviewProps) => {
   const ms    = df && di ? new Date(df).getTime() - new Date(di).getTime() : 0
   const dias  = ms > 0 ? Math.ceil(ms / 86_400_000) : null
   return (
-    <div className="bg-surface-300/60 border border-surface-400 rounded-lg px-4 py-3">
-      <p className="text-xs text-slate-500 mb-2.5 font-semibold uppercase tracking-wide">Prévia dos Cálculos</p>
-      <div className="grid grid-cols-4 gap-3 text-xs">
+    <div className="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 mt-2">
+      <p className="text-[10px] text-slate-300 mb-3 font-black uppercase tracking-widest">Prévia dos Cálculos</p>
+      <div className="grid grid-cols-4 gap-4 text-[10px] font-black uppercase tracking-widest">
         <div>
-          <p className="text-slate-500 mb-0.5">Lucro</p>
-          <p className={`font-bold font-mono text-sm ${lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>{lucro > 0 ? '+' : ''}{fmt(lucro)}</p>
+          <p className="text-slate-300 mb-1">Lucro</p>
+          <p className={`font-mono text-xs ${lucro > 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{lucro > 0 ? '+' : ''}{fmt(lucro)}</p>
         </div>
         <div>
-          <p className="text-slate-500 mb-0.5">Vl. Comissão</p>
-          <p className="text-yellow-400 font-bold font-mono text-sm">{fmt(vlCom)}</p>
+          <p className="text-slate-300 mb-1">Vl. Comissão</p>
+          <p className="text-amber-500 font-mono text-xs">{fmt(vlCom)}</p>
         </div>
         <div>
-          <p className="text-slate-500 mb-0.5">Vl. Cliente</p>
-          <p className="text-white font-bold font-mono text-sm">{fmt(vlCli)}</p>
+          <p className="text-slate-300 mb-1">Vl. Cliente</p>
+          <p className="text-slate-700 font-mono text-xs">{fmt(vlCli)}</p>
         </div>
         <div>
-          <p className="text-slate-500 mb-0.5">Duração</p>
-          <p className="text-slate-300 font-bold text-sm">{dias ? `${dias} dias` : '—'}</p>
+          <p className="text-slate-300 mb-1">Duração</p>
+          <p className="text-slate-600 text-xs">{dias ? `${dias} dias` : '—'}</p>
         </div>
       </div>
     </div>
@@ -680,60 +680,61 @@ const ContractRow = ({ contract: c, onEdit, onDelete, onRenew, isReadOnly, isSub
   const encerrado = c.status !== 'ATIVO' && c.status !== 'AGUARDANDO_SAQUE'
   const dobrouBanca = c.bancaFinal >= c.bancaInicial * 2 && c.bancaInicial > 0;
   return (
-    <div className={`px-5 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/30 transition-colors group ${isSubcontract ? 'pl-10 lg:pl-16 bg-surface-300/10 border-l-4 border-l-slate-700' : ''}`}>
+    <div className={`px-8 py-5 border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors group ${isSubcontract ? 'pl-20 bg-slate-50/20 border-l-4 border-l-emerald-500' : ''}`}>
       <div className="flex flex-col xl:grid xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_160px] gap-2 xl:gap-3 xl:items-center">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
+          <div className="flex items-center gap-2 mb-1">
             {c.identificacao && (
-              <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${isSubcontract ? 'bg-slate-700/50 border border-slate-600/50 text-slate-300' : 'bg-surface-400 border border-surface-500 text-white'}`}>
+              <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${isSubcontract ? 'bg-slate-100/50 border border-slate-200/50 text-slate-400' : 'bg-slate-800 text-white'}`}>
                 {c.identificacao}
               </span>
             )}
-            <p className="text-sm font-medium text-white truncate">{c.userName}</p>
+            <p className="text-sm font-bold text-slate-800 truncate">{c.userName}</p>
           </div>
-          <p className="text-xs text-slate-500 truncate">{c.userEmail}</p>
+          <p className="text-[10px] font-bold text-slate-400 truncate tracking-tight">{c.userEmail}</p>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-          <CalendarDays size={11} className="text-slate-600 shrink-0" />
+        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
+          <CalendarDays size={13} className="text-slate-300 shrink-0" />
           <span>{fmtDate(c.dataInicial)}{c.dataFinal ? ` → ${fmtDate(c.dataFinal)}` : ''}</span>
         </div>
-        <span className="text-sm text-slate-400 font-mono">{fmt(c.bancaInicial)}</span>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-sm text-white font-mono font-medium truncate">{fmt(c.bancaFinal)}</span>
+        <span className="text-sm text-slate-400 font-mono font-bold">{fmt(c.bancaInicial)}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-sm text-slate-800 font-mono font-black truncate">{fmt(c.bancaFinal)}</span>
           {dobrouBanca && (
-            <span title="Banca Inicial Dobrada!" className="shrink-0 inline-flex items-center justify-center bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
+            <span title="Banca Inicial Dobrada!" className="shrink-0 inline-flex items-center justify-center bg-emerald-50 text-emerald-600 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-100">
               🚀 100%
             </span>
           )}
         </div>
-        <span className={`text-sm font-mono font-medium ${c.lucro > 0 ? 'text-green-400' : 'text-slate-500'}`}>
+        <span className={`text-sm font-mono font-black ${c.lucro > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
           {c.lucro > 0 ? '+' : ''}{fmt(c.lucro)}
         </span>
-        <span className="text-sm text-yellow-400 font-mono">
-          {fmt(c.vlComissao)}<span className="text-slate-600 text-xs ml-1">({c.comissaoPercent}%)</span>
+        <span className="text-sm text-amber-600 font-mono font-black">
+          {fmt(c.vlComissao)}<span className="text-slate-300 text-[10px] ml-1 font-bold">({c.comissaoPercent}%)</span>
         </span>
         <div>
-          <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${st.color}`}>
-            {st.icon}{st.label}
+          <span className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${st.color}`}>
+            {st.label}
           </span>
-          {c.motivoFim && <p className="text-[10px] text-slate-600 mt-1">{MOTIVO_LABEL[c.motivoFim]}</p>}
+          {c.motivoFim && <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tighter">{MOTIVO_LABEL[c.motivoFim]}</p>}
         </div>
-        <div className="flex items-center gap-1.5 xl:justify-end">
+        <div className="flex items-center gap-2 xl:justify-end">
           <button onClick={() => onEdit(c)} title={isReadOnly ? 'Visualizar' : 'Editar'}
-            className="flex items-center gap-1.5 text-xs text-slate-300 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-green-700/50 hover:text-green-400 transition-colors">
-            {isReadOnly ? <Eye size={11} /> : <Edit2 size={11} />}
-            <span className="hidden sm:inline">{isReadOnly ? 'Visualizar' : 'Editar'}</span>
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-100 bg-white px-3 py-2 rounded-xl hover:border-emerald-500/30 hover:text-emerald-600 transition-all shadow-sm">
+            {isReadOnly ? <Eye size={12} /> : <Edit2 size={12} />}
+            <span className="hidden sm:inline">{isReadOnly ? 'Ver' : 'Editar'}</span>
           </button>
           {!isReadOnly && (
             <>
               <button onClick={() => onDelete(c)} title="Excluir"
-                className="flex items-center gap-1.5 text-xs text-slate-400 border border-surface-400 bg-surface-300 px-2.5 py-1.5 rounded hover:border-red-700/50 hover:text-red-400 transition-colors">
-                <Trash2 size={11} /><span className="hidden sm:inline">Excluir</span>
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-300 border border-slate-100 bg-white px-3 py-2 rounded-xl hover:border-rose-500/30 hover:text-rose-600 transition-all shadow-sm">
+                <Trash2 size={12} /><span className="hidden sm:inline">Excluir</span>
               </button>
               {!hasChild && !encerrado && (
                 <button onClick={() => onRenew(c)} title="Renovar Contrato"
-                  className="flex items-center gap-1.5 text-xs text-green-400 border border-green-800/50 bg-green-900/30 px-2.5 py-1.5 rounded hover:bg-green-800/50 transition-colors">
-                  <RefreshCw size={11} /><span className="hidden sm:inline">Renovar</span>
+                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-600 border border-emerald-100 bg-emerald-50 px-3 py-2 rounded-xl hover:bg-emerald-100 transition-all shadow-sm">
+                  <RefreshCw size={12} />
+                  <span className="hidden sm:inline">Renovar</span>
                 </button>
               )}
             </>

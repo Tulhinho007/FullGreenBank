@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useTheme } from '../contexts/ThemeContext'
 import { futvoleiService, FutvoleiMatch } from '../services/futvolei.service'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
 
@@ -54,8 +53,8 @@ const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScore
         style={{
           width: 44, height: 44, textAlign: 'center', fontSize: 18, fontWeight: 800,
           borderRadius: 12, border: '2px solid #22c55e',
-          background: dark ? '#1e293b' : '#fff',
-          color: dark ? '#f1f5f9' : '#0f172a', outline: 'none',
+          background: '#fff',
+          color: '#0f172a', outline: 'none',
           boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
         }}
       />
@@ -72,7 +71,7 @@ const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScore
         boxShadow: winning ? '0 0 14px #22c55e55' : 'none',
         cursor: saving ? 'wait' : 'text', transition: 'all .25s', userSelect: 'none',
         position: 'relative', opacity: saving ? 0.7 : 1,
-        border: winning ? 'none' : `1px solid ${dark ? 'transparent' : '#cbd5e1'}`
+        border: winning ? 'none' : `1px solid #cbd5e1`
       }}
     >
       {value}
@@ -99,11 +98,11 @@ interface ConfirmModalProps {
   loading: boolean
 }
 
-const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModalProps) => {
+const ConfirmModal = ({ match, onConfirm, onCancel, loading }: Omit<ConfirmModalProps, 'dark'>) => {
   const [selected, setSelected] = useState<1 | 2 | null>(null)
-  const bg = dark ? '#1e293b' : '#fff'
-  const text = dark ? '#f1f5f9' : '#0f172a'
-  const sub = dark ? '#94a3b8' : '#64748b'
+  const bg = '#fff'
+  const text = '#0f172a'
+  const sub = '#64748b'
 
   return (
     <div style={{
@@ -115,7 +114,7 @@ const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModa
         background: bg, borderRadius: 22, padding: '36px 32px',
         maxWidth: 430, width: '92%',
         boxShadow: '0 32px 80px #00000055', animation: 'slideUp .25s ease',
-        border: `1px solid ${dark ? '#334155' : '#e2e8f0'}`,
+        border: `1px solid #e2e8f0`,
       }}>
         <div style={{ fontSize: 30, marginBottom: 6 }}>🏆</div>
         <h2 style={{ margin: '0 0 6px', fontSize: 21, fontWeight: 800, color: text }}>
@@ -138,11 +137,11 @@ const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModa
               key={opt.key}
               onClick={() => setSelected(opt.key)}
               style={{
-                border: `2px solid ${selected === opt.key ? '#22c55e' : dark ? '#334155' : '#e2e8f0'}`,
+                border: `2px solid ${selected === opt.key ? '#22c55e' : '#e2e8f0'}`,
                 borderRadius: 14, padding: '14px 18px',
                 background: selected === opt.key
-                  ? dark ? '#14532d' : '#f0fdf4'
-                  : dark ? '#0f172a' : '#f8fafc',
+                  ? '#f0fdf4'
+                  : '#f8fafc',
                 cursor: 'pointer', display: 'flex', alignItems: 'center',
                 gap: 14, transition: 'all .2s', textAlign: 'left',
               }}
@@ -151,7 +150,7 @@ const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModa
                 width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
                 border: selected === opt.key
                   ? '7px solid #22c55e'
-                  : `2px solid ${dark ? '#475569' : '#cbd5e1'}`,
+                  : `2px solid #cbd5e1`,
                 transition: 'all .2s',
               }} />
               <div>
@@ -167,7 +166,7 @@ const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModa
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={onCancel} disabled={loading} style={{
             flex: 1, padding: '13px', borderRadius: 12,
-            border: `2px solid ${dark ? '#334155' : '#e2e8f0'}`,
+            border: `2px solid #e2e8f0`,
             background: 'transparent', cursor: loading ? 'wait' : 'pointer',
             fontWeight: 700, color: sub, fontSize: 14,
           }}>
@@ -178,7 +177,7 @@ const ConfirmModal = ({ match, onConfirm, onCancel, dark, loading }: ConfirmModa
             disabled={!selected || loading}
             style={{
               flex: 2, padding: '13px', borderRadius: 12, border: 'none',
-              background: selected && !loading ? '#22c55e' : dark ? '#334155' : '#e2e8f0',
+              background: selected && !loading ? '#22c55e' : '#e2e8f0',
               cursor: selected && !loading ? 'pointer' : 'not-allowed',
               fontWeight: 800,
               color: selected && !loading ? '#fff' : sub,
@@ -205,8 +204,7 @@ const defaultForm: FormState = { a1: '', a2: '', b1: '', b2: '', valor: 50, sets
 
 // ── Página principal ───────────────────────────────────────────────────────────
 export const ArenaClecioPage = () => {
-  const { theme } = useTheme()
-  const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  const dark = false
 
   const [active, setActive]     = useState<FutvoleiMatch[]>([])
   const [history, setHistory]   = useState<FutvoleiMatch[]>([])
@@ -222,15 +220,15 @@ export const ArenaClecioPage = () => {
 
   // Paleta adaptativa
   const c = {
-    bg:          dark ? '#0f172a' : '#f8fafc',
-    card:        dark ? '#1e293b' : '#ffffff',
-    cardBorder:  dark ? '#334155' : '#e2e8f0',
-    text:        dark ? '#f1f5f9' : '#0f172a',
-    sub:         dark ? '#94a3b8' : '#64748b',
-    muted:       dark ? '#475569' : '#94a3b8',
-    inputBg:     dark ? '#0f172a' : '#f8fafc',
-    inputBorder: dark ? '#334155' : '#e2e8f0',
-    divider:     dark ? '#334155' : '#f1f5f9',
+    bg:          '#f8fafc',
+    card:        '#ffffff',
+    cardBorder:  '#f1f5f9',
+    text:        '#1e293b',
+    sub:         '#94a3b8',
+    muted:       '#cbd5e1',
+    inputBg:     '#f8fafc',
+    inputBorder: '#f1f5f9',
+    divider:     '#f1f5f9',
   }
 
   const showToast = (msg: string) => {
@@ -350,7 +348,7 @@ export const ArenaClecioPage = () => {
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         input:focus, select:focus { outline: none; }
-        .rh:hover { filter: brightness(${dark ? 1.08 : 0.97}); }
+        .rh:hover { filter: brightness(0.97); }
         .btnfin { transition: all .2s; }
         .btnfin:hover { filter: brightness(1.1); transform: scale(1.02); }
         .stcard { transition: transform .2s; }
@@ -400,7 +398,7 @@ export const ArenaClecioPage = () => {
               }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: 14,
-                  background: s.green ? '#16a34a' : dark ? '#0f172a' : '#f0fdf4',
+                  background: s.green ? '#16a34a' : '#f0fdf4',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0,
                   boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
                 }}>{s.icon}</div>
@@ -693,7 +691,6 @@ export const ArenaClecioPage = () => {
       {confirmTarget && (
         <ConfirmModal
           match={confirmTarget}
-          dark={dark}
           loading={loadingFinalize}
           onCancel={() => setConfirmTarget(null)}
           onConfirm={handleFinalize}

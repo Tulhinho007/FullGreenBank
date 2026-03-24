@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Search, Filter, Edit2, Trash2, CheckCircle, XCircle, Clock,
-  Layers, ListPlus, Target, Calendar, X, DollarSign
+  Layers, ListPlus, Target, Calendar, DollarSign
 } from 'lucide-react'
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
@@ -25,17 +25,17 @@ type TipoFiltro = 'TODAS' | 'S' | 'M' | 'C'
 type StatusFiltro = 'TODOS' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
 
 const STATUS_CONFIG: Record<string, any> = {
-  GREEN:   { bg: 'bg-emerald-500/10', text: 'text-emerald-500', label: 'Green', icon: <CheckCircle size={14} /> },
-  RED:     { bg: 'bg-rose-500/10',    text: 'text-rose-500',    label: 'Red',   icon: <XCircle size={14} /> },
-  VOID:    { bg: 'bg-slate-500/10',    text: 'text-slate-500',   label: 'Anulada', icon: <XCircle size={14} /> },
-  PENDING: { bg: 'bg-amber-500/10',   text: 'text-amber-500',   label: 'Pendente', icon: <Clock size={14} /> },
-  CASHOUT: { bg: 'bg-orange-500/10',  text: 'text-orange-500',  label: 'Cashout',  icon: <DollarSign size={14} /> },
+  GREEN:   { bg: 'bg-emerald-50 border-emerald-100', text: 'text-emerald-600', label: 'Green', icon: <CheckCircle size={14} /> },
+  RED:     { bg: 'bg-rose-50 border-rose-100',    text: 'text-rose-600',    label: 'Red',   icon: <XCircle size={14} /> },
+  VOID:    { bg: 'bg-slate-50 border-slate-100',    text: 'text-slate-400',   label: 'Anulada', icon: <XCircle size={14} /> },
+  PENDING: { bg: 'bg-amber-50 border-amber-100',   text: 'text-amber-600',   label: 'Pendente', icon: <Clock size={14} /> },
+  CASHOUT: { bg: 'bg-sky-50 border-sky-100',  text: 'text-sky-600',  label: 'Cashout',  icon: <DollarSign size={14} /> },
 }
 
 const TIPO_CONFIG = {
-  S: { label: 'Simples', icon: <Target size={14} />, bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' },
-  M: { label: 'Múltipla', icon: <Layers size={14} />, bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20' },
-  C: { label: 'Criar Aposta', icon: <ListPlus size={14} />, bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/20' }
+  S: { label: 'Simples', icon: <Target size={14} />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-500', border: 'border-slate-100' },
+  M: { label: 'Múltipla', icon: <Layers size={14} />, bg: 'bg-purple-50 border-purple-100', text: 'text-purple-600', border: 'border-purple-100' },
+  C: { label: 'Criar Aposta', icon: <ListPlus size={14} />, bg: 'bg-cyan-50 border-cyan-100', text: 'text-cyan-600', border: 'border-cyan-100' }
 }
 
 export const HistoricoDicasPage = () => {
@@ -175,41 +175,41 @@ export const HistoricoDicasPage = () => {
     <div className="space-y-6">
       
       {/* Header & Filters */}
-      <div className="bg-surface-100 p-5 rounded-2xl shadow-sm border border-surface-300">
-        <h1 className="text-xl font-display font-black text-white mb-6">Histórico Geral de Dicas</h1>
+      <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+        <h1 className="text-3xl font-black text-slate-800 tracking-tight mb-8">Histórico Geral de Dicas</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
             <input
               type="text"
               placeholder="Buscar por jogo ou mercado..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-200 border border-surface-300 text-white text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300"
             />
           </div>
           
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
             <select
               value={tipoFiltro}
               onChange={(e) => setTipoFiltro(e.target.value as TipoFiltro)}
-              className="w-full bg-surface-200 border border-surface-300 text-white text-sm rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             >
               <option value="TODAS">Tipos: Todos</option>
               <option value="S">Simples</option>
-              <option value="C">Criar Aposta (Mercados)</option>
+              <option value="C">Criar Aposta</option>
               <option value="M">Múltipla</option>
             </select>
           </div>
 
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
             <select
               value={statusFiltro}
               onChange={(e) => setStatusFiltro(e.target.value as StatusFiltro)}
-              className="w-full bg-surface-200 border border-surface-300 text-white text-sm rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             >
               <option value="TODOS">Status: Todos</option>
               <option value="PENDING">Pendentes</option>
@@ -221,39 +221,31 @@ export const HistoricoDicasPage = () => {
           </div>
 
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
             <input
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="w-full bg-surface-200 border border-surface-300 text-white text-sm rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-green-500 transition-colors [color-scheme:dark]"
+              className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             />
-            {dateFilter && (
-              <button 
-                onClick={() => setDateFilter('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
-              >
-                <X size={14} />
-              </button>
-            )}
           </div>
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="bg-surface-100 rounded-2xl border border-surface-300 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-surface-200/50 border-b border-surface-300 text-[10px] uppercase tracking-wider text-slate-400">
-                <th className="px-5 py-4 font-bold">Tipo</th>
-                <th className="px-5 py-4 font-bold">Data</th>
-                <th className="px-5 py-4 font-bold">Evento / Descrição</th>
-                <th className="px-5 py-4 font-bold">Odd</th>
-                <th className="px-5 py-4 font-bold">VALOR</th>
-                <th className="px-5 py-4 font-bold">Lucro Líquido</th>
-                <th className="px-5 py-4 font-bold">Status</th>
-                <th className="px-5 py-4 font-bold text-center">Ações</th>
+              <tr className="bg-slate-50/50 border-b border-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-8 py-5">Tipo</th>
+                <th className="px-8 py-5">Data</th>
+                <th className="px-8 py-5">Evento / Descrição</th>
+                <th className="px-8 py-5">Odd</th>
+                <th className="px-8 py-5">VALOR</th>
+                <th className="px-8 py-5">Lucro Líquido</th>
+                <th className="px-8 py-5">Status</th>
+                <th className="px-8 py-5 text-center">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-300/50">
@@ -277,55 +269,55 @@ export const HistoricoDicasPage = () => {
                   const statusConf = STATUS_CONFIG[status]
 
                   return (
-                    <tr key={tip.id} className="hover:bg-surface-200/30 transition-colors group">
-                      <td className="px-5 py-4">
-                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border ${conf.bg} ${conf.text} ${conf.border} text-[10px] font-bold uppercase tracking-wider`}>
+                    <tr key={tip.id} className="hover:bg-slate-50/50 transition-all group">
+                      <td className="px-8 py-5">
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${conf.bg} ${conf.text} ${conf.border} text-[9px] font-black uppercase tracking-widest shadow-sm`}>
                           {conf.icon}
                           {tipo}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">
+                      <td className="px-8 py-5 text-xs text-slate-400 font-bold whitespace-nowrap">
                         {fmtDate(tip.tipDate)}
                       </td>
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-bold text-white leading-tight mb-0.5">{tip.event}</p>
-                        <p className="text-xs text-slate-400 capitalize max-w-[200px] truncate">{tip.market}</p>
+                      <td className="px-8 py-5">
+                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-0.5">{tip.event}</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest truncate max-w-[200px]">{tip.market}</p>
                       </td>
-                      <td className="px-5 py-4 text-sm font-bold text-slate-700 dark:text-slate-200">
+                      <td className="px-8 py-5 text-sm font-black text-slate-800">
                         {tip.odds.toFixed(2)}
                       </td>
-                      <td className="px-5 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+                      <td className="px-8 py-5 text-sm font-bold text-slate-400">
                         {fmt(tip.stake)}
                       </td>
-                      <td className="px-5 py-4">
-                        <span className={`text-sm font-bold ${
-                          status === 'GREEN' ? 'text-emerald-500' :
-                          status === 'RED' ? 'text-rose-500' :
-                          'text-slate-500 dark:text-slate-400'
+                      <td className="px-8 py-5">
+                        <span className={`text-sm font-black ${
+                          status === 'GREEN' ? 'text-emerald-600' :
+                          status === 'RED' ? 'text-rose-600' :
+                          'text-slate-400'
                         }`}>
                           {status === 'GREEN' && tip.profit ? `+ ${fmt(tip.profit)}` :
                            status === 'RED' ? `- ${fmt(tip.stake)}` :
                            '---'}
                         </span>
                       </td>
-                      <td className="px-5 py-4">
-                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${statusConf.bg} ${statusConf.text} text-[10px] font-bold uppercase tracking-wider`}>
+                      <td className="px-8 py-5">
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${statusConf.bg} ${statusConf.text} ${statusConf.bg.replace('bg-', 'border-')} text-[9px] font-black uppercase tracking-widest shadow-sm`}>
                           {statusConf.icon}
                           {statusConf.label}
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => openEdit(tip)}
-                            className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-colors"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
                             title="Editar Bilhete"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(tip.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-colors"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                             title="Excluir Bilhete"
                           >
                             <Trash2 size={16} />
@@ -341,8 +333,8 @@ export const HistoricoDicasPage = () => {
           
           {/* Pagination block placeholder */}
           {!loading && filteredTips.length > 0 && (
-            <div className="px-5 py-4 border-t border-surface-300 flex items-center justify-between text-xs text-slate-400">
-              <span>Mostrando <strong className="text-white">{filteredTips.length}</strong> {filteredTips.length === 1 ? 'resultado' : 'resultados'}</span>
+            <div className="px-8 py-5 border-t border-slate-50 bg-slate-50/30 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total de <strong className="text-emerald-600">{filteredTips.length}</strong> {filteredTips.length === 1 ? 'registro' : 'registros'}</span>
             </div>
           )}
         </div>

@@ -30,10 +30,10 @@ export interface Transaction {
 }
 
 const STATUS_CONFIG: Record<StatusType, { label: string, colorClass: string, icon: React.ReactNode }> = {
-  GREEN:   { label: 'Green',    colorClass: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/50', icon: <CheckCircle size={14} /> },
-  RED:     { label: 'Red',      colorClass: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50',           icon: <XCircle size={14} /> },
-  VOID:    { label: 'Anulada',  colorClass: 'bg-slate-100 dark:bg-surface-300 text-slate-700 dark:text-slate-400 border border-slate-200 dark:border-surface-400', icon: <MinusCircle size={14} /> },
-  PENDING: { label: 'Pendente', colorClass: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800/50', icon: <Clock size={14} /> },
+  GREEN:   { label: 'Green',    colorClass: 'bg-emerald-50 text-emerald-600 border border-emerald-100', icon: <CheckCircle size={14} /> },
+  RED:     { label: 'Red',      colorClass: 'bg-rose-50 text-rose-600 border border-rose-100',           icon: <XCircle size={14} /> },
+  VOID:    { label: 'Anulada',  colorClass: 'bg-slate-50 text-slate-400 border border-slate-100', icon: <MinusCircle size={14} /> },
+  PENDING: { label: 'Pendente', colorClass: 'bg-amber-50 text-amber-600 border border-amber-100', icon: <Clock size={14} /> },
 }
 
 const MOCK_TRANSACTIONS: Transaction[] = [
@@ -50,15 +50,15 @@ const ConfirmPopup = ({ title, message, onConfirm, onCancel }: { title: string; 
   <>
     <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-surface-400 shadow-2xl p-6">
-        <div className="w-11 h-11 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-          <AlertTriangle size={20} className="text-red-500" />
+      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-8">
+        <div className="w-16 h-16 rounded-[1.5rem] bg-rose-50 flex items-center justify-center mx-auto mb-6 border border-rose-100">
+          <AlertTriangle size={32} className="text-rose-500" />
         </div>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white text-center mb-1">{title}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-5">{message}</p>
-        <div className="flex gap-2">
-          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border font-medium text-xs">Cancelar</button>
-          <button onClick={onConfirm} className="flex-1 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-xs transition-colors">Confirmar</button>
+        <h3 className="text-lg font-black text-slate-800 text-center mb-2 tracking-tight">{title}</h3>
+        <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 text-center mb-8">{message}</p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-3 rounded-xl border border-slate-100 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className="flex-1 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-rose-500/20">Confirmar</button>
         </div>
       </div>
     </div>
@@ -122,30 +122,30 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
     <>
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white dark:bg-surface-200 rounded-2xl shadow-xl flex flex-col">
-          <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-surface-300">
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
+        <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-slate-100">
+          <div className="flex items-center justify-between p-8 border-b border-slate-50">
+            <h2 className="text-xl font-black text-slate-800 tracking-tight">
               {editData ? 'Editar Registro' : 'Novo Registro'}
             </h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+            <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:bg-slate-50 transition-colors"><X size={18} /></button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5 opacity-80">
-              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Tipster (Automático)</label>
-              <div className="input-field py-2 bg-slate-50 dark:bg-surface-300/30 text-slate-500 font-medium cursor-not-allowed">
+          <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
+            <div className="flex flex-col gap-2 opacity-80">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tipster (Automático)</label>
+              <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-400 text-sm font-bold cursor-not-allowed">
                 {editData ? editData.tipsterName : user?.name}
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Data</label>
-                <input required type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="input-field py-2" />
+            <div className="flex gap-4">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Data</label>
+                <input required type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all" />
               </div>
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as StatusType })} className="input-field py-2">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</label>
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as StatusType })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none">
                   <option value="GREEN">Green</option>
                   <option value="RED">Red</option>
                   <option value="VOID">Anulada</option>
@@ -154,38 +154,38 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Evento</label>
-              <input required value={form.event} onChange={e => setForm({ ...form, event: e.target.value })} className="input-field py-2" placeholder="Ex: Flamengo x Vasco" />
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Evento / Jogo</label>
+              <input required value={form.event} onChange={e => setForm({ ...form, event: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300" placeholder="Ex: Flamengo x Vasco" />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Mercado</label>
-              <input required value={form.market} onChange={e => setForm({ ...form, market: e.target.value })} className="input-field py-2" placeholder="Ex: Over 2.5 Gols" />
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Mercado</label>
+              <input required value={form.market} onChange={e => setForm({ ...form, market: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300" placeholder="Ex: Over 2.5 Gols" />
             </div>
 
-              <div className="flex gap-3">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Investimento</label>
+            <div className="flex gap-4">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Investimento</label>
                 <CurrencyInput
                   value={form.amount ? Number(form.amount) : 0}
                   onChange={(v) => setForm({ ...form, amount: String(v) })}
                   alertLimit={1000}
-                  className="py-2"
+                  className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
               </div>
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Lucro / Prej.</label>
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lucro / Prejuízo</label>
                 <CurrencyInput
                   value={form.profit ? Number(form.profit) : 0}
                   onChange={(v) => setForm({ ...form, profit: String(v) })}
                   alertLimit={1000}
-                  className="py-2"
+                  className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
               </div>
             </div>
 
-            <button type="submit" className="mt-2 w-full py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors">
+            <button type="submit" className="mt-4 w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-emerald-500/20">
               Salvar Registro
             </button>
           </form>
@@ -303,9 +303,8 @@ export const GestaoTipstersPage = () => {
   }
   const chartData = useMemo(() => buildEvolutionChart(), [filteredTransactions])
 
-  const isDark = document.documentElement.classList.contains('dark')
-  const chartStroke = isDark ? '#4ade80' : '#16a34a'
-  const gridColor = isDark ? '#334155' : '#e2e8f0'
+  const chartStroke = '#059669'
+  const gridColor = '#f1f5f9'
 
   return (
     <div className="flex flex-col gap-6 w-full pb-10">
@@ -313,45 +312,42 @@ export const GestaoTipstersPage = () => {
       {/* HEADER & FILTERS */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <Target className="text-green-500" />
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <Target className="text-emerald-500" size={32} />
             Dashboard Tipsters
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Acompanhe o desempenho e as estatísticas dos analistas.
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1">
+            Performance e estatísticas em tempo real
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto items-stretch sm:items-center">
           <div className="flex-1 sm:w-64">
-            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5 ml-1">Tipster</label>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Filtro de Tipster</label>
             <select 
               value={selectedTipsterId} 
               onChange={e => setSelectedTipsterId(e.target.value)}
-              className="w-full bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-white outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all appearance-none cursor-pointer"
+              className="w-full bg-white border border-slate-100 rounded-xl px-5 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all appearance-none cursor-pointer shadow-sm"
             >
               <option value="all">Visão Geral (Todos)</option>
               {tipsters.map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
-              {tipsters.length === 0 && (
-                 <option value="" disabled>Nenhum tipster cadastrado</option>
-              )}
             </select>
           </div>
 
-          <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-xl px-5 py-2.5 flex items-center gap-6 shadow-sm">
+          <div className="bg-white border border-slate-100 rounded-[1.5rem] px-6 py-3 flex items-center gap-8 shadow-sm">
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Lucro Total</p>
-              <p className={`text-lg font-bold flex items-center gap-1 ${totalProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lucro Total</p>
+              <p className={`text-xl font-black tracking-tight ${totalProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                 {formatCurrency(totalProfit)}
               </p>
             </div>
-            <div className="w-px h-8 bg-slate-200 dark:bg-surface-300"></div>
+            <div className="w-px h-10 bg-slate-50"></div>
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">ROI</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-1">
-                <TrendingUp size={16} className="text-blue-500" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ROI Líquido</p>
+              <p className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-1">
+                <TrendingUp size={18} className="text-blue-500" />
                 {roi}%
               </p>
             </div>
@@ -362,57 +358,57 @@ export const GestaoTipstersPage = () => {
       {/* KPI CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* GREEN */}
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-green-500/50 transition-all group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
-              <CheckCircle size={20} />
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform border border-emerald-100">
+              <CheckCircle size={24} />
             </div>
-            <span className="text-xs font-bold text-slate-400 uppercase">Greens</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Greens</span>
           </div>
-          <h3 className="text-2xl font-display font-bold text-slate-800 dark:text-white">{counts.green}</h3>
-          <p className="text-xs text-slate-500 mt-1">Apostas ganhas</p>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{counts.green}</h3>
+          <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-wider mt-1">Apostas ganhas</p>
         </div>
         {/* RED */}
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-red-500/50 transition-all group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
-              <XCircle size={20} />
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-rose-50 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform border border-rose-100">
+              <XCircle size={24} />
             </div>
-            <span className="text-xs font-bold text-slate-400 uppercase">Reds</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reds</span>
           </div>
-          <h3 className="text-2xl font-display font-bold text-slate-800 dark:text-white">{counts.red}</h3>
-          <p className="text-xs text-slate-500 mt-1">Apostas perdidas</p>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{counts.red}</h3>
+          <p className="text-[10px] font-bold text-rose-600/60 uppercase tracking-wider mt-1">Apostas perdidas</p>
         </div>
         {/* VOID */}
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 transition-all group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-surface-300 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:scale-110 transition-transform">
-              <MinusCircle size={20} />
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform border border-slate-100">
+              <MinusCircle size={24} />
             </div>
-            <span className="text-xs font-bold text-slate-400 uppercase">Anuladas</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Anuladas</span>
           </div>
-          <h3 className="text-2xl font-display font-bold text-slate-800 dark:text-white">{counts.void}</h3>
-          <p className="text-xs text-slate-500 mt-1">Devoluções (Void)</p>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{counts.void}</h3>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Devoluções (Void)</p>
         </div>
         {/* PENDING */}
-        <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-yellow-500/50 transition-all group">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400 group-hover:scale-110 transition-transform">
-              <Clock size={20} />
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-amber-50 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform border border-amber-100">
+              <Clock size={24} />
             </div>
-            <span className="text-xs font-bold text-slate-400 uppercase">Pendentes</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pendentes</span>
           </div>
-          <h3 className="text-2xl font-display font-bold text-slate-800 dark:text-white">{counts.pending}</h3>
-          <p className="text-xs text-slate-500 mt-1">Aguardando resultado</p>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{counts.pending}</h3>
+          <p className="text-[10px] font-bold text-amber-600/60 uppercase tracking-wider mt-1">Aguardando resultado</p>
         </div>
       </div>
 
       {/* CHART SECTION */}
-      <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-5 lg:p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-white">Evolução de Patrimônio</h2>
-          <span className="text-xs text-slate-400 bg-slate-100 dark:bg-surface-300 px-2.5 py-1 rounded-full border border-slate-200 dark:border-surface-400">
-            Últimos Registros
+      <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">Evolução de Patrimônio</h2>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+            Lucro Acumulado
           </span>
         </div>
         
@@ -435,26 +431,26 @@ export const GestaoTipstersPage = () => {
                   dataKey="date" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 12, fill: isDark ? '#94a3b8' : '#64748b' }} 
-                  dy={10}
+                  tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 700 }} 
+                  dy={15}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 12, fill: isDark ? '#94a3b8' : '#64748b' }} 
+                  tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 700 }} 
                   tickFormatter={(val) => user?.currency === 'BRL' ? `R$ ${val}` : user?.currency === 'USD' ? `$${val}` : `€${val}`}
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: isDark ? '#1e293b' : '#ffffff', 
-                    borderColor: isDark ? '#334155' : '#e2e8f0',
-                    borderRadius: '12px',
-                    color: isDark ? '#f8fafc' : '#0f172a',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    backgroundColor: '#ffffff', 
+                    borderColor: '#f1f5f9',
+                    borderRadius: '24px',
+                    padding: '16px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)'
                   }}
-                  itemStyle={{ color: chartStroke, fontWeight: 'bold' }}
+                  itemStyle={{ color: '#059669', fontWeight: 900, fontSize: '14px' }}
                   formatter={(val: any) => [formatCurrency(Number(val)), 'Lucro Acumulado']}
-                  labelStyle={{ color: isDark ? '#94a3b8' : '#64748b', marginBottom: '4px' }}
+                  labelStyle={{ color: '#94a3b8', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}
                 />
                 <Area 
                   type="monotone" 
@@ -471,13 +467,13 @@ export const GestaoTipstersPage = () => {
       </div>
 
       {/* TRANSACTIONS TABLE */}
-      <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl shadow-sm overflow-hidden">
-        <div className="p-5 lg:p-6 border-b border-slate-200 dark:border-surface-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50 dark:bg-surface-300/20">
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-white">Registros de Apostas</h2>
+      <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/30">
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">Registros de Apostas</h2>
           {isTipster && (
             <button 
               onClick={() => { setEditTarget(null); setIsModalOpen(true) }}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
             >
               <Plus size={16} /> Novo Registro
             </button>
@@ -487,16 +483,16 @@ export const GestaoTipstersPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-surface-300/50 border-b border-slate-200 dark:border-surface-300">
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tipster</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Evento / Mercado</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Investimento</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">Ações</th>
+              <tr className="bg-slate-50/50 border-b border-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-8 py-5">Tipster</th>
+                <th className="px-8 py-5">Data</th>
+                <th className="px-8 py-5">Evento / Mercado</th>
+                <th className="px-8 py-5">Investimento</th>
+                <th className="px-8 py-5">Status</th>
+                <th className="px-8 py-5 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-surface-300/50">
+            <tbody className="divide-y divide-slate-50">
               {filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
@@ -510,47 +506,47 @@ export const GestaoTipstersPage = () => {
                   const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : t.date
 
                   return (
-                    <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-surface-300/30 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-surface-300 dark:bg-surface-400 flex items-center justify-center shrink-0">
-                            <User size={14} className="text-slate-500 dark:text-slate-300" />
+                    <tr key={t.id} className="hover:bg-slate-50/50 transition-all group">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                            <User size={16} className="text-slate-300" />
                           </div>
-                          <span className="text-sm font-semibold text-slate-800 dark:text-white">{t.tipsterName}</span>
+                          <span className="text-sm font-black text-slate-800 tracking-tight uppercase">{t.tipsterName}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                      <td className="px-8 py-6 text-xs text-slate-400 font-bold whitespace-nowrap">
                         {formattedDate}
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-medium text-slate-800 dark:text-white max-w-[200px] truncate" title={t.event}>{t.event}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.market}</p>
+                      <td className="px-8 py-6">
+                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-1 max-w-[200px] truncate" title={t.event}>{t.event}</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.market}</p>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="text-sm text-slate-800 dark:text-white">{formatCurrency(t.amount)}</p>
-                        <p className={`text-xs font-medium mt-0.5 ${t.profit > 0 ? 'text-green-500' : t.profit < 0 ? 'text-red-500' : 'text-slate-500'}`}>
+                      <td className="px-8 py-6 whitespace-nowrap">
+                        <p className="text-xs font-bold text-slate-400">{formatCurrency(t.amount)}</p>
+                        <p className={`text-sm font-black mt-1 tracking-tight ${t.profit > 0 ? 'text-emerald-600' : t.profit < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
                           {t.profit > 0 ? '+' : ''}{formatCurrency(t.profit)}
                         </p>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).colorClass}`}>
+                      <td className="px-8 py-6">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm ${(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).colorClass}`}>
                           {(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).icon}
                           {(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).label}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {(isTipster && (t.tipsterName.toLowerCase() === user?.name.toLowerCase() || user?.role === 'MASTER' || user?.role === 'ADMIN')) && (
                             <>
                               <button 
                                 onClick={() => { setEditTarget(t); setIsModalOpen(true) }}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors" title="Editar"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Editar"
                               >
                                 <Edit2 size={16} />
                               </button>
                               <button 
                                 onClick={() => setDeleteConfirm(t.id)}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title="Excluir"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Excluir"
                               >
                                 <Trash2 size={16} />
                               </button>

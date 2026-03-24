@@ -65,27 +65,27 @@ export const GuidePage = () => {
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Breadcrumb / Back */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium pt-4">
-        <Link to="/dashboard" className="hover:text-green-500 transition-colors flex items-center gap-1">
-          Dashboard
+      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 pt-6">
+        <Link to="/dashboard" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
+          DASHBOARD
         </Link>
-        <ChevronRight size={12} className="opacity-30" />
-        <span className="text-slate-400">Institucional</span>
-        <ChevronRight size={12} className="opacity-30" />
-        <span className="text-white">Guia da Plataforma</span>
+        <ChevronRight size={10} className="text-slate-300" />
+        <span className="text-slate-300">INSTITUCIONAL</span>
+        <ChevronRight size={10} className="text-slate-300" />
+        <span className="text-slate-800">GUIA DA PLATAFORMA</span>
       </div>
 
       {/* Header */}
-      <div className="card p-8 bg-surface-200 border-surface-400 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+      <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-start gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-surface-300 flex items-center justify-center border border-white/5 shadow-inner">
-              <BookOpen className="text-green-500" size={24} />
+          <div className="flex items-start gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 shadow-inner">
+              <BookOpen className="text-emerald-500" size={28} />
             </div>
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold text-white tracking-tight">Guia da Plataforma</h1>
-              <p className="text-sm text-slate-400">Tudo o que você precisa saber para operar no Full Green Bank.</p>
+              <h1 className="text-3xl font-black text-slate-800 tracking-tight">Guia da Plataforma</h1>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">Tudo o que você precisa saber para operar com maestria no Full Green Bank.</p>
             </div>
           </div>
         </div>
@@ -94,22 +94,22 @@ export const GuidePage = () => {
       {/* Sections Grid */}
       <div className="grid grid-cols-1 gap-6">
         {sections.map((section) => (
-          <div key={section.id} className="card p-6 bg-surface-100/40 border-surface-400 hover:bg-surface-100/60 transition-colors group">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="p-3 rounded-xl bg-surface-300 border border-white/5">
+          <div key={section.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 hover:border-emerald-100 transition-all group shadow-sm">
+            <div className="flex items-start gap-5 mb-8">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner group-hover:bg-emerald-50/50 group-hover:border-emerald-100 transition-colors">
                 {section.icon}
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">{section.title}</h2>
-                <p className="text-sm text-slate-400">{section.description}</p>
+              <div className="pt-1">
+                <h2 className="text-xl font-black text-slate-800 tracking-tight mb-1">{section.title}</h2>
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{section.description}</p>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-0 md:ml-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-0 md:ml-20">
               {section.items.map((item, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-surface-200/50 border border-white/5 space-y-2">
-                  <h4 className="text-xs font-bold text-green-500 uppercase tracking-wider">{item.label}</h4>
-                  <p className="text-sm text-slate-300 leading-relaxed">{item.content}</p>
+                <div key={idx} className="p-5 rounded-2xl bg-slate-50/50 border border-slate-50 space-y-3 group/item hover:bg-white hover:border-slate-100 hover:shadow-lg hover:shadow-slate-200/20 transition-all">
+                  <h4 className="text-[9px] font-black text-emerald-600 uppercase tracking-[0.2em]">{item.label}</h4>
+                  <p className="text-sm text-slate-500 leading-relaxed font-medium opacity-80 group-hover/item:opacity-100 transition-opacity">{item.content}</p>
                 </div>
               ))}
             </div>
@@ -118,40 +118,44 @@ export const GuidePage = () => {
       </div>
 
       {/* Dicas Importantíssimas */}
-      <div className="card p-8 bg-amber-500/5 border-amber-500/20">
-        <div className="flex items-center gap-3 mb-6">
-          <Lightbulb className="text-amber-400" size={24} />
-          <h2 className="text-xl font-bold text-amber-200">Dicas Importantes</h2>
+      <div className="bg-amber-50 p-10 rounded-[2.5rem] border border-amber-100 relative overflow-hidden group shadow-sm">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full -mr-16 -mt-16 blur-3xl animate-pulse"></div>
+        <div className="flex items-center gap-4 mb-8 relative z-10">
+          <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+            <Lightbulb size={24} />
+          </div>
+          <h2 className="text-2xl font-black text-amber-600 tracking-tight">Dicas de Sucesso</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-white">Disciplina é Lucro</h4>
-            <p className="text-xs text-amber-200/60 leading-relaxed">Nunca aposte mais do que o sugerido pela gestão de banca.</p>
+            <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Disciplina é Lucro</h4>
+            <p className="text-sm font-medium text-amber-600/70 leading-relaxed">Nunca aposte mais do que o sugerido pela gestão de banca estratégica.</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-white">Visão de Longo Prazo</h4>
-            <p className="text-xs text-amber-200/60 leading-relaxed">Resultados em renda variável devem ser analisados mensalmente, não diariamente.</p>
+            <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Longo Prazo</h4>
+            <p className="text-sm font-medium text-amber-600/70 leading-relaxed">Resultados em renda variável devem ser analisados mensalmente, evite a ansiedade diária.</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-white">Suporte Técnico</h4>
-            <p className="text-xs text-amber-200/60 leading-relaxed">Encontrou um erro? Use o link "Reportar Bug" no rodapé.</p>
+            <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Suporte</h4>
+            <p className="text-sm font-medium text-amber-600/70 leading-relaxed">Encontrou algo estranho? Use o link "Falar com Suporte" abaixo para ajuda imediata.</p>
           </div>
         </div>
       </div>
 
       {/* Action Footer */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-surface-400 bg-surface-200/50 shadow-lg">
-        <div className="text-center md:text-left space-y-1">
-          <p className="text-sm font-semibold text-white">Dúvidas sobre o nosso Guia?</p>
-          <p className="text-xs text-slate-500">Nossa Central de Ajuda tem todas as respostas detalhadas.</p>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-10 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        <div className="text-center md:text-left space-y-1 relative z-10">
+          <p className="text-lg font-black text-slate-800 tracking-tight">Dúvidas sobre o nosso Guia?</p>
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Nossa Central de Ajuda tem todas as respostas detalhadas.</p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/dashboard" className="px-6 py-2.5 rounded-xl bg-surface-300 border border-white/5 text-white font-bold text-sm hover:bg-surface-400 transition-all flex items-center gap-2">
+        <div className="flex gap-4 relative z-10">
+          <Link to="/dashboard" className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all active:scale-95">
             <ArrowLeft size={16} /> Voltar
           </Link>
           <button 
             onClick={() => setShowContact(true)}
-            className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+            className="flex items-center gap-2 px-10 py-3 rounded-xl bg-emerald-600 text-[10px] font-black uppercase tracking-widest text-white hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
           >
             Falar com Suporte
           </button>
