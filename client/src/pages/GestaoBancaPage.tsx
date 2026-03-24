@@ -66,6 +66,7 @@ export const GestaoBancaPage = () => {
   const [todasCarteiras, setTodasCarteiras] = useState<BancaCarteira[]>([])
   const [selectedCarteiraId, setSelectedCarteiraId] = useState<string>('')
   const [rows, setRows] = useState<DailyRow[]>([])
+  const [backupRow, setBackupRow] = useState<DailyRow | null>(null)
 
   // Modal nova banca
   const [isModalBancaOpen, setIsModalBancaOpen] = useState(false)
@@ -186,6 +187,21 @@ export const GestaoBancaPage = () => {
     } catch { toast.error('Erro ao remover do banco') }
   }
 
+  const toggleEditRow = (id: string, editing: boolean) => {
+    if (editing) {
+      const row = rows.find(r => r.id === id)
+      if (row) setBackupRow({ ...row })
+      setRows(prev => prev.map(r => r.id === id ? { ...r, isEditing: true } : r))
+    } else {
+      if (backupRow) {
+        setRows(prev => prev.map(r => r.id === id ? { ...backupRow, isEditing: false } : r))
+        setBackupRow(null)
+      } else {
+        setRows(prev => prev.map(r => r.id === id ? { ...r, isEditing: false } : r))
+      }
+    }
+  }
+
   const handleSaveRow = async (r: DailyRow) => {
     if (!selectedCarteiraId) return toast.error('Selecione uma Banca primeiro.')
     try {
@@ -203,12 +219,9 @@ export const GestaoBancaPage = () => {
         setRows(prev => prev.map(row => row.id === r.id ? { ...row, isEditing: false } : row))
         toast.success('Atualizado!')
       }
+      setBackupRow(null) // Limpa backup após salvar com sucesso
     } catch { toast.error('Erro ao salvar no banco.') }
   }
-
-  const toggleEditRow = (id: string, editing: boolean) =>
-    setRows(prev => prev.map(r => r.id === id ? { ...r, isEditing: editing } : r))
-
   const updateRow = (id: string, field: keyof DailyRow, value: string) =>
     setRows(prev => prev.map(r => {
       if (r.id !== id) return r
