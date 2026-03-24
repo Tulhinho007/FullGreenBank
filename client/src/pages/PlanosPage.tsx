@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Check, X, Star, Zap, Crown, Shield, ArrowLeft } from 'lucide-react'
+import { Check, X, Star, Zap, Crown, ArrowLeft } from 'lucide-react'
 
 const PLAN_DATA = [
   {
