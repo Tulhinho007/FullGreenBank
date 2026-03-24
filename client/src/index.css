@@ -5,12 +5,6 @@
 @layer base {
   * { box-sizing: border-box; }
 
-   :root {
-    --surface-100: #f8fafc;   /* slate-50  */
-    --surface-200: #ffffff;   /* white (cards) */
-    --surface-300: #f1f5f9;   /* slate-100 (hover/inputs) */
-    --surface-400: #e2e8f0;   /* slate-200 (borders) */
-  }
 
   /* =============================================
      BASE — design 100% Light Mode Premium
@@ -104,16 +98,16 @@ aside p, aside span, aside h1, aside h2, aside h3 {
   color: #64748b !important;
 }
 aside .text-white, aside .font-bold, aside font-display, aside b, aside strong {
-  @apply text-slate-900 !important;
+  color: #0f172a !important; /* slate-900 */
 }
 aside .text-green-500, aside .text-green-600, aside .text-green-400 {
-  @apply text-green-600 !important;
+  color: #16a34a !important; /* green-600 */
 }
 aside .active, aside .sidebar-link:hover {
   @apply bg-slate-50 !important;
 }
 aside .active p, aside .active span, aside .sidebar-link:hover span {
-  @apply text-green-600 !important;
+  color: #16a34a !important; /* green-600 */
 }
 aside .sidebar-link:hover {
   @apply text-slate-900 !important;
