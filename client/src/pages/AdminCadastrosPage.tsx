@@ -41,9 +41,7 @@ const loadMarkets = (): Market[] => {
 }
 
 
-const placeholders = [
-  { title: 'Categorias', desc: 'Categorias e tags de dicas'      },
-]
+
 
 
 
@@ -305,27 +303,7 @@ export const AdminCadastrosPage = () => {
           </div>
         </div>
 
-        {/* ── Cards PLACEHOLDER ── */}
-        {placeholders.map(s => (
-          <div key={s.title} className="bg-white p-5 rounded-3xl border border-slate-100 opacity-60 grayscale hover:grayscale-0 transition-all">
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center">
-                <ClipboardList size={16} className="text-slate-400" />
-              </div>
-              <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 uppercase tracking-widest">
-                {'Em breve'}
-              </span>
-            </div>
-            <h3 className="font-bold text-slate-900 text-sm">{s.title}</h3>
-            <p className="text-xs text-slate-500 mt-1">{s.desc}</p>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400">0 registros</span>
-              <button disabled className="text-xs font-bold text-slate-400 border border-slate-200 px-2.5 py-1 rounded-lg cursor-not-allowed">
-                {'Gerenciar'}
-              </button>
-            </div>
-          </div>
-        ))}
+
       </div>
 
 
