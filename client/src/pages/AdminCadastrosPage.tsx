@@ -81,7 +81,6 @@ export const AdminCadastrosPage = () => {
 
   // ── Sincronizar Defaults → popula o banco com dados padrão ───────────────────
   const handleSeed = async () => {
-    setLoading(true)
     try {
       const result = await runSeed()
       console.log('Seed result:', result)
