@@ -82,7 +82,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     res.clearCookie('fgb_token', {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
+      sameSite: 'lax',
       path: '/'
     });
     sendSuccess(res, null, 'Logout realizado com sucesso!');
@@ -124,7 +124,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     res.cookie('fgb_token', newAccessToken, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
+      sameSite: 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
