@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext'
 import { usersService } from '../services/users.service'
 import { formatDateTime } from '../utils/formatters'
 import { 
-  User as UserIcon, Mail, Phone, AtSign, Calendar, Eye, EyeOff, 
+  User as UserIcon, Mail, Phone, Calendar, Eye, EyeOff, 
   Settings, Lock, Moon, Sun, Monitor, CreditCard
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -16,7 +16,6 @@ export const ProfilePage = () => {
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
-    username: user?.username || '',
     password: '',
     confirmPassword: '',
     plan: user?.plan || 'STARTER',
@@ -40,7 +39,6 @@ export const ProfilePage = () => {
       const payload: any = { 
         name: form.name, 
         phone: form.phone, 
-        username: form.username,
         plan: form.plan,
 
         theme: form.theme.toUpperCase(),
@@ -94,7 +92,7 @@ export const ProfilePage = () => {
               {user?.avatarUrl ? <img src={user.avatarUrl} alt={user.name} className="w-full h-full rounded-full object-cover" /> : initials}
             </div>
             <h3 className="font-display font-bold text-white text-xl">{user?.name}</h3>
-            <p className="text-slate-400 text-sm mb-4">@{user?.username}</p>
+            <p className="text-slate-400 text-sm mb-4">{user?.email}</p>
             
             <div className="flex flex-wrap justify-center gap-2">
               <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
@@ -146,14 +144,7 @@ export const ProfilePage = () => {
                   <label className="label">Nome</label>
                   <input className="input-field" value={form.name} onChange={(e) => set('name', e.target.value)} />
                 </div>
-                <div>
-                  <label className="label">Usuário</label>
-                  <div className="relative">
-                    <AtSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input className="input-field pl-10" value={form.username} onChange={(e) => set('username', e.target.value)} />
-                  </div>
-                </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="label">Telefone</label>
                   <div className="relative">
                     <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />

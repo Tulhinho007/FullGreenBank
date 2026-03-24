@@ -11,10 +11,6 @@ router.post(
   [
     body('name').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('email').isEmail().withMessage('Email inválido').normalizeEmail(),
-    body('username')
-      .trim()
-      .isLength({ min: 3 })
-      .withMessage('Username deve ter pelo menos 3 caracteres'),
     body('password')
       .isLength({ min: 6 })
       .withMessage('Senha deve ter pelo menos 6 caracteres'),
@@ -28,18 +24,15 @@ router.post(
 router.post(
   '/login',
   [
+    body('email').isEmail().withMessage('Informe um e-mail válido'),
     body('password').notEmpty().withMessage('Senha é obrigatória'),
-    body().custom((_, { req }) => {
-      if (!req.body.email && !req.body.username) {
-        throw new Error('Informe e-mail ou usuário')
-      }
-      return true
-    }),
   ],
   validateRequest,
   authController.login
 );
 
+router.get('/me', authenticate, authController.getMe);
+router.post('/refresh', authController.refresh);
 router.post('/logout', authController.logout);
 
 export default router;

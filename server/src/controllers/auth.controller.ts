@@ -7,8 +7,8 @@ import { generateToken, generateRefreshToken, verifyRefreshToken } from '../util
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, phone, username, password } = req.body;
-    const result = await registerUser({ name, email, phone, username, password });
+    const { name, email, phone, password } = req.body;
+    const result = await registerUser({ name, email, phone, password });
     
     // Set the cookie if register automatically logs the user in
     const isProd = process.env.NODE_ENV === 'production';
@@ -30,8 +30,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, username, password } = req.body;
-    const result = await loginUser({ email, username, password });
+    const { email, password } = req.body;
+    const result = await loginUser({ email, password });
     
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie('fgb_token', result.token, {

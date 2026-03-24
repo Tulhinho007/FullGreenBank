@@ -8,7 +8,6 @@ export const getAllUsers = async () => {
       name: true,
       email: true,
       phone: true,
-      username: true,
       role: true,
       active: true,
       isTipster: true,
@@ -40,7 +39,6 @@ export const getUserById = async (id: string) => {
       name: true,
       email: true,
       phone: true,
-      username: true,
       role: true,
       active: true,
       isTipster: true,
@@ -66,7 +64,7 @@ export const getUserById = async (id: string) => {
 export const updateUser = async (
   id: string,
   data: { 
-    name?: string; email?: string; phone?: string; username?: string; 
+    name?: string; email?: string; phone?: string; 
     password?: string; isTipster?: boolean; 
     plan?: string; value?: number; payMethod?: string;
     purchaseDate?: string; lastPaymentDate?: string;
@@ -80,7 +78,6 @@ export const updateUser = async (
   if (data.name)     updateData.name     = data.name;
   if (data.email)    updateData.email    = data.email;
   if (data.phone)    updateData.phone    = data.phone;
-  if (data.username) updateData.username = data.username;
   if (data.password) updateData.password = await hashPassword(data.password);
   if (data.isTipster !== undefined)   updateData.isTipster = data.isTipster;
   
@@ -108,7 +105,6 @@ export const updateUser = async (
       name: true,
       email: true,
       phone: true,
-      username: true,
       role: true,
       isTipster: true,
       plan: true,

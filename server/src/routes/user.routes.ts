@@ -24,7 +24,6 @@ router.patch(
   [
     body('name').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
     body('phone').optional().trim(),
-    body('username').optional().trim().isLength({ min: 3 }).withMessage('Username muito curto'),
     body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
     body('plan').optional().isIn(['STARTER', 'STANDARD', 'PRO']),
     body('currency').optional().isIn(['BRL', 'USD', 'EUR']),
@@ -45,7 +44,6 @@ router.patch(
     body('name').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
     body('email').optional().isEmail().withMessage('Email inválido'),
     body('phone').optional().trim(),
-    body('username').optional().trim().isLength({ min: 3 }).withMessage('Username muito curto'),
     body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
     body('plan').optional().isIn(['STARTER', 'STANDARD', 'PRO']),
     body('paymentStatus').optional().isIn(['ATIVO', 'PENDENTE', 'ATRASADO', 'CANCELADO']),

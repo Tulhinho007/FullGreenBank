@@ -42,13 +42,13 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!.userId;
-    const { 
-      name, phone, username, password, isTipster,
-      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    const {
+      name, phone, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl
     } = req.body;
-    const user = await userService.updateUser(userId, { 
-      name, phone, username, password, isTipster,
-      plan, currency, language, theme, twoFactorEnabled, avatarUrl 
+    const user = await userService.updateUser(userId, {
+      name, phone, password, isTipster,
+      plan, currency, language, theme, twoFactorEnabled, avatarUrl
     });
     sendSuccess(res, user, 'Perfil atualizado com sucesso!');
   } catch (error) {
@@ -61,7 +61,7 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
   try {
     const { id } = req.params;
     const { 
-      name, email, phone, username, password, isTipster,
+      name, email, phone, password, isTipster,
       plan, value, payMethod, purchaseDate, lastPaymentDate,
       dueDate, paymentStatus, isActive, notes,
       currency, language, theme, twoFactorEnabled, avatarUrl 
@@ -75,7 +75,7 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
     }
 
     const user = await userService.updateUser(id, { 
-      name, email, phone, username, password, isTipster,
+      name, email, phone, password, isTipster,
       plan, value, payMethod, purchaseDate, lastPaymentDate,
       dueDate, paymentStatus, isActive, notes,
       currency, language, theme, twoFactorEnabled, avatarUrl 

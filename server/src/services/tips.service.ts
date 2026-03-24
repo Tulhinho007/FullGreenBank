@@ -20,7 +20,7 @@ export const createTip = async (data: CreateTipData) => {
     data,
     include: {
       author: {
-        select: { id: true, name: true, username: true },
+        select: { id: true, name: true },
       },
     },
   });
@@ -36,7 +36,7 @@ export const getAllTips = async (page = 1, limit = 10) => {
       orderBy: { createdAt: 'desc' },
       include: {
         author: {
-          select: { id: true, name: true, username: true },
+          select: { id: true, name: true },
         },
       },
     }),
@@ -50,7 +50,7 @@ export const getTipById = async (id: string) => {
   return prisma.tip.findUnique({
     where: { id },
     include: {
-      author: { select: { id: true, name: true, username: true } },
+      author: { select: { id: true, name: true } },
     },
   });
 };
@@ -76,7 +76,7 @@ export const updateTip = async (
     data,
     include: {
       author: {
-        select: { id: true, name: true, username: true },
+        select: { id: true, name: true },
       },
     },
   });

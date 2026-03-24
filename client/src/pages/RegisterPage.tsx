@@ -9,7 +9,7 @@ export const RegisterPage = () => {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', username: '', password: '', confirmPassword: '',
+    name: '', email: '', phone: '', password: '', confirmPassword: '',
   })
   const [show,    setShow]    = useState(false)
   const [loading, setLoading] = useState(false)
@@ -23,7 +23,7 @@ export const RegisterPage = () => {
     if (form.password.length < 6) { toast.error('Senha deve ter ao menos 6 caracteres'); return }
     setLoading(true)
     try {
-      await register({ name: form.name, email: form.email, phone: form.phone, username: form.username, password: form.password })
+      await register({ name: form.name, email: form.email, phone: form.phone, password: form.password })
       navigate('/dashboard')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao cadastrar'
@@ -58,10 +58,6 @@ export const RegisterPage = () => {
               <div className="col-span-2">
                 <label className="label">Nome completo</label>
                 <input className="input-field" placeholder="Seu nome" value={form.name} onChange={set('name')} required />
-              </div>
-              <div>
-                <label className="label">Usuário</label>
-                <input className="input-field" placeholder="username" value={form.username} onChange={set('username')} required />
               </div>
               <div>
                 <label className="label">Telefone</label>

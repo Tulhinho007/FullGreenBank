@@ -23,7 +23,6 @@ model User {
   name      String
   email     String   @unique
   phone     String?
-  username  String   @unique
   password  String
   role      UserRole @default(MEMBRO)
   active    Boolean  @default(true)

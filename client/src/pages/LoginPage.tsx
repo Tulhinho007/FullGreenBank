@@ -23,7 +23,7 @@ export const LoginPage = () => {
     console.log('[LOGIN] password preenchida:', !!form.password)
 
     if (!identifierClean) {
-      toast.error('Informe seu e-mail ou usuário')
+      toast.error('Informe seu e-mail')
       return
     }
     if (!form.password) {
@@ -33,12 +33,8 @@ export const LoginPage = () => {
 
     setLoading(true)
     try {
-      const isEmail = identifierClean.includes('@')
-      const payload = isEmail
-        ? { email: identifierClean, password: form.password }
-        : { username: identifierClean, password: form.password }
+      const payload = { email: identifierClean, password: form.password }
 
-      console.log('[LOGIN] isEmail:', isEmail)
       console.log('[LOGIN] payload enviado ao contexto:', payload)
 
       await login(payload as any)
@@ -59,9 +55,7 @@ export const LoginPage = () => {
       console.log('[LOGIN] backendMsg:', backendMsg)
 
       if (status === 404 || lowerMsg.includes('encontrado') || lowerMsg.includes('not found')) {
-        toast.error(identifierClean.includes('@')
-          ? 'E-mail não cadastrado.'
-          : 'Usuário não encontrado.')
+        toast.error('E-mail não cadastrado.')
       } else if (status === 401 || lowerMsg.includes('senha') || lowerMsg.includes('incorrect')) {
         toast.error('Senha incorreta. Tente novamente.')
       } else if (status === 403 || lowerMsg.includes('bloquead') || lowerMsg.includes('inativ')) {
@@ -97,14 +91,14 @@ export const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="label">E-mail ou usuário</label>
+              <label className="label">E-mail</label>
               <input
-                type="text"
+                type="email"
                 className="input-field"
-                placeholder="seu@email.com ou @usuario"
+                placeholder="seu@email.com"
                 value={form.identifier}
                 onChange={e => setForm(f => ({ ...f, identifier: e.target.value }))}
-                autoComplete="username"
+                autoComplete="email"
                 disabled={loading}
               />
             </div>

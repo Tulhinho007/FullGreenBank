@@ -1,11 +1,10 @@
 import api from './api'
 
 export const authService = {
-  login: async (data: { email?: string; username?: string; password: string }) => {
+  login: async (data: { email: string; password: string }) => {
     console.log('=== [AUTH SERVICE] login() CHAMADO ===')
     console.log('[AUTH SERVICE] data recebida:', {
       email: data.email,
-      username: data.username,
       password: data.password ? '***preenchida***' : 'VAZIA',
     })
 
@@ -25,7 +24,7 @@ export const authService = {
   },
 
   register: async (data: {
-    name: string; email: string; phone?: string; username: string; password: string
+    name: string; email: string; phone?: string; password: string
   }) => {
     const res = await api.post('/auth/register', data)
     return res.data.data

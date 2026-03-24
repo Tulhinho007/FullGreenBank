@@ -8,8 +8,7 @@ export interface User {
   id: string
   name: string
   email: string
-  phone?: string
-  username: string
+  phone?: string;
   role: 'MASTER' | 'ADMIN' | 'TESTER' | 'MEMBRO'
   active: boolean
   isTipster?: boolean
@@ -31,7 +30,7 @@ export interface User {
 }
 
 // Tipagem atualizada para suportar o novo payload de login
-type LoginPayload = { email?: string; username?: string; password: string };
+type LoginPayload = { email: string; password: string };
 
 interface AuthContextType {
   user: User | null
@@ -47,7 +46,7 @@ interface AuthContextType {
 }
 
 interface RegisterData {
-  name: string; email: string; phone?: string; username: string; password: string
+  name: string; email: string; phone?: string; password: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

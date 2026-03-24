@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, UserIcon } from 'lucide-react'
+import { ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, User as UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from '../services/log.service'
 
 interface User {
   id: string; name: string; email: string; phone?: string
-  username: string; role: string; active: boolean; isTipster?: boolean; createdAt: string
+  role: string; active: boolean; isTipster?: boolean; createdAt: string
   plan?: string
 }
 
@@ -32,7 +32,7 @@ export const AdminUsersPage = () => {
 
   // Edit form
   const [editForm, setEditForm] = useState({ 
-    name: '', email: '', phone: '', username: '', password: '', 
+    name: '', email: '', phone: '', password: '', 
     isTipster: false, plan: 'STARTER' 
   })
   const [showPass, setShowPass] = useState(false)
@@ -65,7 +65,6 @@ export const AdminUsersPage = () => {
       name: u.name, 
       email: u.email, 
       phone: u.phone || '', 
-      username: u.username, 
       password: '', 
       isTipster: u.isTipster || false, 
       plan: u.plan || 'STARTER' 
@@ -105,7 +104,6 @@ export const AdminUsersPage = () => {
         name: editForm.name,
         email: editForm.email,
         phone: editForm.phone,
-        username: editForm.username,
         isTipster: editForm.isTipster,
         plan: editForm.plan,
       }
@@ -173,7 +171,7 @@ export const AdminUsersPage = () => {
                           </div>
                           <div>
                             <p className="font-medium text-sm">{u.name}</p>
-                            <p className="text-slate-500 text-[11px]">@{u.username}</p>
+                            <p className="text-slate-500 text-[11px]">{u.email}</p>
                           </div>
                         </div>
                       </td>
@@ -285,10 +283,6 @@ export const AdminUsersPage = () => {
                 <div>
                   <label className="label">Email</label>
                   <input className="input-field" value={editForm.email} onChange={setEdit('email')} />
-                </div>
-                <div>
-                  <label className="label">Usuário</label>
-                  <input className="input-field" value={editForm.username} onChange={setEdit('username')} />
                 </div>
                 <div>
                   <label className="label">Telefone</label>

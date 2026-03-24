@@ -7,7 +7,7 @@ export const usersService = {
   },
 
   updateProfile: async (data: {
-    name?: string; phone?: string; username?: string; password?: string;
+    name?: string; phone?: string; password?: string;
     plan?: string; currency?: string; language?: string; theme?: string;
     twoFactorEnabled?: boolean; avatarUrl?: string;
   }) => {

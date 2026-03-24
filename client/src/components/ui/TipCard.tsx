@@ -12,7 +12,7 @@ interface Tip {
   result?: string
   profit?: number
   tipDate: string
-  author: { name: string; username: string }
+  author: { name: string }
 }
 
 interface TipCardProps {
@@ -59,7 +59,6 @@ export const TipCard = ({ tip, onUpdateResult, isAdmin }: TipCardProps) => {
           <div className="w-6 h-6 rounded-full bg-green-800 flex items-center justify-center text-[10px] font-bold text-green-300">
             {tip.author.name[0].toUpperCase()}
           </div>
-          <span className="text-xs text-slate-500">@{tip.author.username}</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-slate-600">{formatDate(tip.tipDate)}</span>
