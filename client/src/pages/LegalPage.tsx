@@ -1,4 +1,6 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
+import { useState } from 'react'
+import { SupportModal } from '../components/ui/SupportModal'
 import { 
   ShieldCheck, 
   FileText, 
@@ -130,6 +132,7 @@ const LEGAL_CONTENT: Record<string, any> = {
 export const LegalPage = () => {
   const { type } = useParams<{ type: string }>()
   const content = type ? LEGAL_CONTENT[type] : null
+  const [showContact, setShowContact] = useState(false)
 
   if (!content) {
     return <Navigate to="/dashboard" replace />
@@ -193,11 +196,17 @@ export const LegalPage = () => {
           <Link to="/dashboard" className="btn-secondary flex items-center gap-2 px-6">
             <ArrowLeft size={16} /> Voltar
           </Link>
-          <a href="mailto:suporte@fullgreenbank.com" className="btn-primary px-8">
+          <button 
+            onClick={() => setShowContact(true)}
+            className="btn-primary px-8"
+          >
             Falar com Suporte
-          </a>
+          </button>
         </div>
       </div>
+
+      {/* Modal de Contato */}
+      <SupportModal isOpen={showContact} onClose={() => setShowContact(false)} />
 
       {/* Disclaimer */}
       <p className="text-[10px] text-center text-slate-600 uppercase tracking-widest font-medium">
