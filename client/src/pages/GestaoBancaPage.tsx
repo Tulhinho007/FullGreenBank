@@ -58,7 +58,7 @@ export interface BancaCarteira {
 export const GestaoBancaPage = () => {
   const { user: me } = useAuth()
   const [loading, setLoading] = useState(false)
-  const isStarter = me?.role === 'MEMBRO' && me?.plan === 'STARTER'
+  const isStarter = me?.role === 'MEMBRO' && (!me?.plan || me?.plan === 'STARTER')
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   // Lista de casas vem do painel Admin

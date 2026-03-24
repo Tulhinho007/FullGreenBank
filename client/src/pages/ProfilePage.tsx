@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { usersService } from '../services/users.service'
@@ -24,6 +24,19 @@ export const ProfilePage = () => {
   })
   const [showPass, setShowPass] = useState(false)
   const [loading,  setLoading]  = useState(false)
+
+  // Sync form with user when user loads (fixes empty state on first load)
+  useEffect(() => {
+    if (user && !form.name && !form.phone) {
+      setForm(prev => ({
+        ...prev,
+        name: user.name || '',
+        phone: user.phone || '',
+        plan: user.plan || 'STARTER',
+        theme: (user.theme?.toLowerCase() as any) || 'dark',
+      }))
+    }
+  }, [user])
 
   const set = (field: string, value: any) => {
     setForm(f => ({ ...f, [field]: value }))

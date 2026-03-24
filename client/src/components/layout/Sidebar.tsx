@@ -6,7 +6,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart3,
   DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  Target, Star, Briefcase, Activity
+  Target, Star, Briefcase, Activity, Lock as LockIcon
 } from 'lucide-react'
 import { SupportModal } from '../ui/SupportModal'
 
@@ -14,13 +14,22 @@ interface NavItemProps {
   icon: React.ReactNode
   label: string
   to?: string
-  children?: { label: string; to?: string; placeholder?: boolean }[]
+  children?: { label: string; to?: string; placeholder?: boolean; isLocked?: boolean }[]
   placeholder?: boolean
+  isLocked?: boolean
+  onLockedClick?: () => void
 }
 
-const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
+const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedClick }: NavItemProps) => {
   const [open, setOpen] = useState(false)
   const location = useLocation()
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isLocked && onLockedClick) {
+      e.preventDefault()
+      onLockedClick()
+    }
+  }
 
   if (children) {
     const isChildActive = children.some(c => c.to && (location.pathname === c.to || location.pathname.startsWith(c.to + '/')))
@@ -37,8 +46,11 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
             </span>
             <span className="text-[15px] font-semibold tracking-wide">{label}</span>
           </span>
-          <span className="text-slate-500">
-            {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          <span className="flex items-center gap-2">
+            {isLocked && <LockIcon size={12} className="text-amber-500" />}
+            <span className="text-slate-500">
+              {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </span>
           </span>
         </button>
         {open && (
@@ -52,17 +64,22 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
                   </div>
                 )
               }
+              const childLocked = c.isLocked || isLocked
               return (
                 <NavLink
                   key={c.to}
-                  to={c.to}
+                  to={childLocked ? '#' : c.to}
+                  onClick={childLocked ? handleClick : undefined}
                   className={({ isActive }) =>
                     `text-[13px] py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center ${
-                      isActive ? 'text-green-400 font-bold bg-green-500/5' : 'text-slate-200 hover:text-white hover:bg-surface-300/30'
-                    }`
+                      isActive && !childLocked ? 'text-green-400 font-bold bg-green-500/5' : 'text-slate-200 hover:text-white hover:bg-surface-300/30'
+                    } ${childLocked ? 'opacity-70' : ''}`
                   }
                 >
-                  {c.label}
+                  <span className="flex items-center gap-2">
+                    {c.label}
+                    {childLocked && <LockIcon size={10} className="text-amber-500/70" />}
+                  </span>
                 </NavLink>
               )
             })}
@@ -86,15 +103,17 @@ const NavItem = ({ icon, label, to, children, placeholder }: NavItemProps) => {
 
   return (
     <NavLink
-      to={to}
-      className={({ isActive }) => `sidebar-link group ${isActive ? 'active' : ''}`}
+      to={isLocked ? '#' : to}
+      onClick={handleClick}
+      className={({ isActive }) => `sidebar-link group ${isActive && !isLocked ? 'active' : ''} ${isLocked ? 'opacity-70' : ''}`}
     >
       {({ isActive }) => (
         <>
-          <span className={`transition-colors flex-shrink-0 ${isActive ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
+          <span className={`transition-colors flex-shrink-0 ${isActive && !isLocked ? 'text-green-500' : 'text-slate-500 group-hover:text-slate-400'}`}>
             {icon}
           </span>
           <span className="truncate flex-1 text-[15px] tracking-wide">{label}</span>
+          {isLocked && <LockIcon size={14} className="text-amber-500 shrink-0 ml-1" />}
         </>
       )}
     </NavLink>
@@ -113,7 +132,12 @@ export const Sidebar = () => {
   const [isSupportOpen, setIsSupportOpen] = useState(false)
   
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
-  const isStarter = user?.role === 'MEMBRO' && user?.plan === 'STARTER'
+  const isStarter = user?.role === 'MEMBRO' && (!user?.plan || user?.plan === 'STARTER')
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+
+  const handleLockedClick = () => {
+    setShowUpgradeModal(true)
+  }
 
   const handleLogout = () => {
     logout()
@@ -138,43 +162,82 @@ export const Sidebar = () => {
       {/* Nav */}
       <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto custom-scrollbar">
 
-        {/* ANÁLISE / GESTÃO */}
-        {isStarter ? (
-          <>
-            <SectionLabel label="Início" />
-            <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard Geral" to="/dashboard" />
-            <NavItem icon={<TrendingUp size={16} />}      label="Dicas (Tips)"    to="/tips" />
-            
-            <SectionLabel label="Gestão" />
-            <NavItem icon={<Wallet size={16} />}       label="Gestão de Bancas" to="/gestao/banca" />
-            <NavItem icon={<Activity size={16} />}      label="Calculadora Operacional" to="/gestao/calculadora" />
-          </>
-        ) : !(user?.role === 'MEMBRO' && !user?.isActive) ? (
-          <>
-            <SectionLabel label="Análise" />
-            <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
-            <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
-            <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
-            <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
-              { label: 'Histórico de Dicas', to: '/reports/tips' },
-              { label: 'Performance', to: '/reports' }
-            ]} />
+        {/* ANÁLISE */}
+        <SectionLabel label="Análise" />
+        <NavItem 
+          icon={<LayoutDashboard size={16} />} 
+          label="Dashboard" 
+          to="/dashboard" 
+          onLockedClick={handleLockedClick}
+        />
+        
+        <NavItem 
+          icon={<TrendingUp size={16} />} 
+          label="Dicas" 
+          to="/tips" 
+          onLockedClick={handleLockedClick}
+        />
+        <NavItem 
+          icon={<Target size={16} />} 
+          label="Tipsters" 
+          to="/gestao/tipsters" 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+        />
+        <NavItem 
+          icon={<FileText size={16} />} 
+          label="Relatórios" 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+          children={[
+            { label: 'Histórico de Dicas', to: '/reports/tips' },
+            { label: 'Performance', to: '/reports' }
+          ]} 
+        />
 
-            {/* GESTÃO */}
-            <SectionLabel label="Gestão" />
-            <NavItem icon={<Wallet size={16} />}       label="Bancas"            to="/gestao/banca" />
-            <NavItem icon={<Briefcase size={16} />}    label="Investimentos"     to="/gestao/investimentos" />
-            <NavItem icon={<TrendingUp size={16} />}    label="Operacional"       children={[
-              { label: 'Alavancagem', to: '/gestao/alavancagem' },
-              { label: 'Calculadora', to: '/gestao/calculadora' },
-              { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao' }
-            ]} />
-            <NavItem icon={<Activity size={16} />}      label="Futevôlei"         children={[
-              { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
-            ]} />
-            <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-          </>
-        ) : (
+        {/* GESTÃO */}
+        <SectionLabel label="Gestão" />
+        <NavItem 
+          icon={<Wallet size={16} />} 
+          label="Bancas" 
+          to="/gestao/banca" 
+          onLockedClick={handleLockedClick}
+        />
+        <NavItem 
+          icon={<Briefcase size={16} />} 
+          label="Investimentos" 
+          to="/gestao/investimentos" 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+        />
+        <NavItem 
+          icon={<TrendingUp size={16} />} 
+          label="Operacional" 
+          onLockedClick={handleLockedClick}
+          children={[
+            { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isStarter },
+            { label: 'Calculadora', to: '/gestao/calculadora' },
+            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isStarter }
+          ]} 
+        />
+        <NavItem 
+          icon={<Activity size={16} />} 
+          label="Futevôlei" 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+          children={[
+            { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
+          ]} 
+        />
+        <NavItem 
+          icon={<BarChart3 size={16} />} 
+          label="Análise de Valor" 
+          isLocked={isStarter}
+          placeholder 
+          onLockedClick={handleLockedClick}
+        />
+
+        {user?.role === 'MEMBRO' && !user?.isActive && (
           <div className="px-4 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mx-2 mt-4">
             <p className="text-[10px] text-yellow-500 font-bold uppercase mb-1">
               {user.paymentStatus === 'ATRASADO' ? 'Assinatura Atrasada' : 'Assinatura Expirada'}
@@ -213,8 +276,20 @@ export const Sidebar = () => {
         <div onClick={() => setIsSupportOpen(true)} className="cursor-pointer">
           <NavItem icon={<BookOpen size={16} />}    label="Suporte Comum" />
         </div>
-        <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
-        <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
+        <NavItem 
+          icon={<Bell size={16} />}        
+          label="Alertas"        
+          placeholder 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+        />
+        <NavItem 
+          icon={<ShieldCheck size={16} />} 
+          label="Regras"         
+          placeholder 
+          isLocked={isStarter}
+          onLockedClick={handleLockedClick}
+        />
         <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
 
       </nav>
@@ -251,6 +326,39 @@ export const Sidebar = () => {
       </div>
 
       <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+
+      {/* MODAL UPGRADE PRO (Locked Content) */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-surface-200 border border-white/10 w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
+                <ShieldCheck size={32} className="text-amber-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Ops! Conteúdo Fechado</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                Essa ferramenta faz parte do <span className="text-white font-semibold">plano PRO</span>. <br />
+                Sua permissão atual não permite o acesso.<br />
+                <span className="text-amber-400 font-bold mt-2 inline-block">Assine o PRO e desbloqueie tudo!</span>
+              </p>
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={() => {
+                    setShowUpgradeModal(false)
+                    navigate('/planos')
+                  }} 
+                  className="w-full py-4 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all active:scale-95 shadow-lg shadow-amber-900/20"
+                >
+                  Ver Planos PRO
+                </button>
+                <button onClick={() => setShowUpgradeModal(false)} className="w-full py-4 rounded-2xl bg-surface-300 hover:bg-surface-400 text-slate-300 font-semibold transition-all">
+                  Voltar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }
