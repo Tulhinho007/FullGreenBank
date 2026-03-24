@@ -16,6 +16,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
     
@@ -38,6 +39,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
     
@@ -55,7 +57,8 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     res.clearCookie('fgb_token', {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' : 'lax'
+      sameSite: isProd ? 'none' : 'lax',
+      path: '/'
     });
     sendSuccess(res, null, 'Logout realizado com sucesso!');
   } catch (error) {
@@ -97,6 +100,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
     

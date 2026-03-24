@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET         = process.env.JWT_SECRET as string;
 const JWT_REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + '_refresh') as string;
-const JWT_EXPIRES_IN     = '15m';   // Access token curto — 15 minutos
+const JWT_EXPIRES_IN     = '7d';    // Estendido para 7 dias para consistência com o cookie
 const JWT_REFRESH_EXPIRES_IN = '7d'; // Refresh token longo — 7 dias
 
 export interface JwtPayload {

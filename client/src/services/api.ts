@@ -25,7 +25,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('fgb_user')
-      window.location.href = '/login'
+      
+      // Evita loop infinito de refresh se já estiver numa rota pública
+      const publicRoutes = ['/login', '/register', '/planos']
+      if (!publicRoutes.includes(window.location.pathname)) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
