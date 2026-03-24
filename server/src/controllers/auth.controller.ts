@@ -4,6 +4,7 @@ import { sendSuccess, sendError } from '../utils/response';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { getUserById } from '../services/user.service';
 import { generateToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
+import { createLog } from '../services/log.service';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -22,6 +23,18 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     
     // Do not return the token in the body anymore for better security
     const { token, ...userData } = result;
+
+    // Auditoria (Backend)
+    createLog({
+      userId: userData.user.id,
+      userEmail: userData.user.email,
+      userName: userData.user.name,
+      userRole: userData.user.role,
+      category: 'Auth',
+      action: 'Cadastro realizado',
+      detail: 'Nova conta criada via interface'
+    }).catch(err => console.error('Erro ao gerar log de cadastro:', err));
+
     sendSuccess(res, userData, 'Cadastro realizado com sucesso!', 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao registrar';
@@ -44,6 +57,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
     
     const { token, ...userData } = result;
+
+    // Auditoria (Backend)
+    createLog({
+      userId: userData.user.id,
+      userEmail: userData.user.email,
+      userName: userData.user.name,
+      userRole: userData.user.role,
+      category: 'Auth',
+      action: 'Login realizado',
+      detail: 'Acesso ao sistema via interface'
+    }).catch(err => console.error('Erro ao gerar log de login:', err));
+
     sendSuccess(res, userData, 'Login realizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao autenticar';

@@ -99,18 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userWithStatus)
       localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
       
-      // Log de auditoria
-      addLog({ 
-        userEmail: userRes.email, 
-        userName: userRes.name, 
-        userRole: userRes.role, 
-        category: 'Auth', 
-        action: 'Login realizado', 
-        detail: 'Acesso ao sistema via interface' 
-      })
-
-      // NOTA: O toast.success foi removido daqui para evitar duplicidade 
-      // com o toast que já existe na LoginPage.tsx
+      // Auditoria agora é feita automaticamente pelo Backend
     } catch (err) {
       // Importante: repassa o erro para que o componente (LoginPage) trate os status 401/404
       throw err
@@ -123,14 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userRes)
       localStorage.setItem('fgb_user', JSON.stringify(userRes))
       
-      addLog({ 
-        userEmail: userRes.email, 
-        userName: userRes.name, 
-        userRole: userRes.role, 
-        category: 'Auth', 
-        action: 'Cadastro realizado', 
-        detail: 'Nova conta criada' 
-      })
+      // Auditoria agora é feita automaticamente pelo Backend
       toast.success('Conta criada com sucesso! 🎉')
     } catch (err) {
       throw err

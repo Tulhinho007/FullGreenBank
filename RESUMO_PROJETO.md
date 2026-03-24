@@ -279,6 +279,8 @@ notes           String?    -- histórico de pagamentos em texto
 - **Otimização de Build (Code Splitting)**: Implementação de `manualChunks` no `vite.config.ts` para separar bibliotecas pesadas (`vendor`, `charts`, `utils`) em arquivos distintos, melhorando o cache do navegador e a performance de carregamento.
 - **Correção de Loop de Redirecionamento**: Ajuste no interceptor de API para evitar recarregamentos infinitos em rotas públicas (Login/Cadastro) quando ocorrem erros 401.
 - **Sessões Estendidas**: Aumento da expiração do JWT para 7 dias, garantindo maior estabilidade de sessão para o usuário.
+- **Prevenção de Information Disclosure (Hardening)**: Implementação de um manipulador de erro global e sanitização do utilitário `sendError` para ocultar stack traces e detalhes técnicos em produção.
+- **Auditoria Robusta (Backend Logging)**: Transferência do sistema de logs de autenticação do frontend para o backend, garantindo que registros de login/cadastro sejam criados de forma confiável e segura.
 
 ---
 

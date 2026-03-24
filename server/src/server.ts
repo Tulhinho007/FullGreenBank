@@ -129,6 +129,22 @@ app.use((_req, res) => {
   res.status(404).json({ success: false, message: 'Rota não encontrada' });
 });
 
+// ── Global Error Handler (Hides stack traces in production) ──────
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('SERVER ERROR:', err);
+  const isProd = process.env.NODE_ENV === 'production';
+  const statusCode = err.status || 500;
+  
+  // No PRD, não vazamos a mensagem real do erro se for 500
+  const message = (isProd && statusCode === 500) ? 'Erro interno no servidor' : (err.message || 'Erro desconhecido');
+  
+  res.status(statusCode).json({
+    success: false,
+    message,
+    errors: isProd ? null : err.stack
+  });
+});
+
 // ── Export para o Vercel ──────────────────────────────────────────
 export default app;
 
