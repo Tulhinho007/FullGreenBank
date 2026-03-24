@@ -3,12 +3,13 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 })
 
-// Attach token automatically
+// Attach headers dynamically
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('fgb_token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  // O token JWT agora vai automaticamente via cookie httpOnly.
+  // Não precisamos mais inserir Authorization
   
   const impersonateId = localStorage.getItem('fgb_impersonate_id')
   if (impersonateId) {
@@ -23,7 +24,6 @@ api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('fgb_token')
       localStorage.removeItem('fgb_user')
       window.location.href = '/login'
     }

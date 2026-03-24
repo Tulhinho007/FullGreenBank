@@ -9,7 +9,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, phone, username, password } = req.body;
     const result = await registerUser({ name, email, phone, username, password });
-    sendSuccess(res, result, 'Cadastro realizado com sucesso!', 201);
+    
+    // Set the cookie if register automatically logs the user in
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('fgb_token', result.token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+    });
+    
+    // Do not return the token in the body anymore for better security
+    const { token, ...userData } = result;
+    sendSuccess(res, userData, 'Cadastro realizado com sucesso!', 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao registrar';
     sendError(res, message, 400);
@@ -20,10 +32,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, username, password } = req.body;
     const result = await loginUser({ email, username, password });
-    sendSuccess(res, result, 'Login realizado com sucesso!');
+    
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('fgb_token', result.token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+    });
+    
+    const { token, ...userData } = result;
+    sendSuccess(res, userData, 'Login realizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao autenticar';
     sendError(res, message, 401);
+  }
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const isProd = process.env.NODE_ENV === 'production';
+    res.clearCookie('fgb_token', {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax'
+    });
+    sendSuccess(res, null, 'Logout realizado com sucesso!');
+  } catch (error) {
+    sendError(res, 'Erro ao fazer logout', 500);
   }
 };
 
@@ -55,7 +91,16 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     const payload = verifyRefreshToken(refreshToken);
     const newAccessToken  = generateToken(payload);
     const newRefreshToken = generateRefreshToken(payload);
-    sendSuccess(res, { token: newAccessToken, refreshToken: newRefreshToken });
+    
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('fgb_token', newAccessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+    });
+    
+    sendSuccess(res, { refreshToken: newRefreshToken });
   } catch {
     sendError(res, 'Refresh token inválido ou expirado', 401);
   }

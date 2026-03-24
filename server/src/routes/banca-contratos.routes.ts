@@ -9,7 +9,7 @@ const router = Router()
 router.use(authenticate)
 router.use(checkReadOnly)
 
-router.get('/', async (req: any, res) => {
+router.get('/', authorizeRoles('ADMIN', 'MASTER', 'TESTER'), async (req: any, res) => {
   try {
     const contratos = await prisma.bancaContrato.findMany({
       orderBy: { createdAt: 'desc' },

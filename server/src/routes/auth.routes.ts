@@ -38,5 +38,8 @@ router.post(
   ],
   validateRequest,
   authController.login
-)
+);
+
+router.post('/logout', authController.logout);
+
 export default router;

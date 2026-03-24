@@ -54,34 +54,33 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+  const [token] = useState<string | null>(null) // Token state mantido por compatibilidade
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('fgb_token')
       const savedUser = localStorage.getItem('fgb_user')
       
-      if (savedToken && savedUser) {
-        setToken(savedToken)
+      if (savedUser) {
         setUser(JSON.parse(savedUser))
-        
-        try {
-          const freshUser = await authService.getMe()
-          if (freshUser) {
-            const { status, isActive } = checkSubscription(freshUser)
-            const userWithStatus = { ...freshUser, paymentStatus: status, isActive }
-            setUser(userWithStatus)
-            localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
-          }
-        } catch (err) {
-          console.error('Failed to refresh user', err)
-          if ((err as any)?.response?.status === 401) {
-            logout()
-          }
-        }
       }
-      setLoading(false)
+      
+      try {
+        const freshUser = await authService.getMe()
+        if (freshUser) {
+          const { status, isActive } = checkSubscription(freshUser)
+          const userWithStatus = { ...freshUser, paymentStatus: status, isActive }
+          setUser(userWithStatus)
+          localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
+        }
+      } catch (err) {
+        console.error('Failed to refresh user', err)
+        setUser(null)
+        localStorage.removeItem('fgb_user')
+        // We log out automatically if me fails, handled by global interceptor anyway
+      } finally {
+        setLoading(false)
+      }
     }
     initAuth()
   }, [])
@@ -91,23 +90,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Função login simplificada e integrada com o novo service
   const login = async (payload: LoginPayload) => {
     try {
-      const res = await authService.login(payload)
+      const userRes = await authService.login(payload)
       
       // Validação de assinatura
-      const { status, isActive } = checkSubscription(res.user)
-      const userWithStatus = { ...res.user, paymentStatus: status, isActive }
+      const { status, isActive } = checkSubscription(userRes)
+      const userWithStatus = { ...userRes, paymentStatus: status, isActive }
       
       // Persistência de estado
-      setToken(res.token)
       setUser(userWithStatus)
-      localStorage.setItem('fgb_token', res.token)
       localStorage.setItem('fgb_user', JSON.stringify(userWithStatus))
       
       // Log de auditoria
       addLog({ 
-        userEmail: res.user.email, 
-        userName: res.user.name, 
-        userRole: res.user.role, 
+        userEmail: userRes.email, 
+        userName: userRes.name, 
+        userRole: userRes.role, 
         category: 'Auth', 
         action: 'Login realizado', 
         detail: 'Acesso ao sistema via interface' 
@@ -123,16 +120,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (data: RegisterData) => {
     try {
-      const res = await authService.register(data)
-      setToken(res.token)
-      setUser(res.user)
-      localStorage.setItem('fgb_token', res.token)
-      localStorage.setItem('fgb_user', JSON.stringify(res.user))
+      const userRes = await authService.register(data)
+      setUser(userRes)
+      localStorage.setItem('fgb_user', JSON.stringify(userRes))
       
       addLog({ 
-        userEmail: res.user.email, 
-        userName: res.user.name, 
-        userRole: res.user.role, 
+        userEmail: userRes.email, 
+        userName: userRes.name, 
+        userRole: userRes.role, 
         category: 'Auth', 
         action: 'Cadastro realizado', 
         detail: 'Nova conta criada' 
@@ -153,10 +148,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         action: 'Logout', 
         detail: 'Sessão encerrada' 
       })
+      authService.logout().catch(console.error)
     }
     setUser(null)
-    setToken(null)
-    localStorage.removeItem('fgb_token')
     localStorage.removeItem('fgb_user')
     toast('Sessão encerrada', { icon: '👋' })
   }

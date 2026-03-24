@@ -71,4 +71,28 @@ export const loginUser = async (data: LoginData) => {
   if (!user) {
     throw new Error('Usuário não encontrado');
   }
-}
+
+  // 4. Verifica a senha
+  const isMatch = await comparePassword(data.password, user.password);
+  if (!isMatch) {
+    throw new Error('Usuário não encontrado ou senha incorreta');
+  }
+
+  // 5. Verifica se o usuário está ativo
+  if (user.active === false) {
+    throw new Error('Usuário inativo');
+  }
+
+  // 6. Gera o token
+  const token = generateToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name
+  });
+
+  // Remove a senha do objeto de retorno
+  const { password, ...userWithoutPassword } = user;
+
+  return { user: userWithoutPassword, token };
+};

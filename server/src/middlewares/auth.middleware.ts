@@ -15,14 +15,18 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
+    let token: string | undefined = req.cookies?.fgb_token;
+    
+    // Fallback to Authorization header if cookie is not present (e.g. for external API clients)
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       sendError(res, 'Token de autenticação não fornecido', 401);
       return;
     }
 
-    const token = authHeader.split(' ')[1];
     const decoded = verifyToken(token);
     req.user = decoded;
 

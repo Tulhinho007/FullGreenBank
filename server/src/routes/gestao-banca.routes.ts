@@ -133,6 +133,14 @@ router.patch('/carteiras/:id', authenticate, async (req: any, res: any) => {
 router.post('/carteiras/:carteiraId/item', authenticate, async (req: any, res: any) => {
   try {
     const { carteiraId } = req.params
+    const userId = req.user!.userId
+
+    // Verificação de posse: impede IDOR enviando item pra carteira alheia
+    const carteira = await prisma.bancaCarteira.findUnique({ where: { id: carteiraId } })
+    if (!carteira || carteira.userId !== userId) {
+      return res.status(403).json({ message: 'Acesso negado à carteira.' })
+    }
+
     const { date, deposit, withdrawal, result } = req.body
 
     const newItem = await prisma.gestaoBancaItem.create({
@@ -162,6 +170,17 @@ router.post('/carteiras/:carteiraId/item', authenticate, async (req: any, res: a
 router.patch('/item/:id', authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params
+    const userId = req.user!.userId
+
+    // Verificação de posse: impede IDOR editando item alheio
+    const item = await prisma.gestaoBancaItem.findUnique({
+      where: { id },
+      include: { carteira: true }
+    })
+    if (!item || item.carteira?.userId !== userId) {
+      return res.status(403).json({ message: 'Acesso negado ao item.' })
+    }
+
     const { date, deposit, withdrawal, result } = req.body
 
     const updated = await prisma.gestaoBancaItem.update({
@@ -191,6 +210,17 @@ router.patch('/item/:id', authenticate, async (req: any, res: any) => {
 router.delete('/item/:id', authenticate, async (req: any, res: any) => {
   try {
     const { id } = req.params
+    const userId = req.user!.userId
+
+    // Verificação de posse: impede exclusão de item alheio
+    const item = await prisma.gestaoBancaItem.findUnique({
+      where: { id },
+      include: { carteira: true }
+    })
+    if (!item || item.carteira?.userId !== userId) {
+      return res.status(403).json({ message: 'Acesso negado ao item.' })
+    }
+
     await prisma.gestaoBancaItem.delete({ where: { id } })
     res.json({ success: true })
   } catch (error) {

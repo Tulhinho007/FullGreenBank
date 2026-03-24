@@ -10,8 +10,11 @@ export const getUserPermissions = async (req: AuthRequest, res: Response): Promi
     const requestor = req.user!
     const { userId } = req.params
 
-    // Apenas ADMIN e MASTER podem ver permissões
-    if (!['ADMIN', 'MASTER'].includes(requestor.role)) {
+    const isOwner = requestor.userId === userId
+    const isAdmin = ['ADMIN', 'MASTER'].includes(requestor.role)
+
+    // Defesa contra IDOR: Apenas o dono da conta, ADMIN ou MASTER podem ver as permissões
+    if (!isOwner && !isAdmin) {
       sendError(res, 'Acesso negado', 403)
       return
     }
