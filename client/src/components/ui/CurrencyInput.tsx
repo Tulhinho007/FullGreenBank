@@ -9,6 +9,7 @@ interface CurrencyInputProps {
   className?: string
   alertLimit?: number  // padrão R$ 1.000,00
   disabled?: boolean
+  allowNegative?: boolean
 }
 
 const HIGH_VALUE_LIMIT = 1000
@@ -21,6 +22,7 @@ export const CurrencyInput = ({
   className = '',
   alertLimit = HIGH_VALUE_LIMIT,
   disabled = false,
+  allowNegative = false,
 }: CurrencyInputProps) => {
   const [pendingValue, setPendingValue] = useState<number | null>(null)
   const [showConfirm, setShowConfirm]   = useState(false)
@@ -59,7 +61,7 @@ export const CurrencyInput = ({
           prefix="R$ "
           decimalScale={2}
           fixedDecimalScale
-          allowNegative={false}
+          allowNegative={allowNegative}
           placeholder={placeholder}
           disabled={disabled}
           className={`input-field ${className}`}

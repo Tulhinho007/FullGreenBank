@@ -520,6 +520,7 @@ export const GestaoBancaPage = () => {
                               value={r.result}
                               onChange={v => updateRow(r.id, 'result', String(v))}
                               alertLimit={1000}
+                              allowNegative={true}
                               className="w-24 text-sm"
                             />
                           ) : (
