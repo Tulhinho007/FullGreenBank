@@ -123,7 +123,7 @@ export const AdminSolicitacoesPage = () => {
     <div className="flex flex-col gap-6 font-sans">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display font-semibold text-white">Solicitações de Adesão</h2>
+          <h2 className="font-display font-bold text-slate-800">Solicitações de Adesão</h2>
           <p className="text-xs text-slate-500 mt-0.5">Gerenciamento de aportes em Banca Gerenciada</p>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-3 relative w-full sm:w-auto mt-4 sm:mt-0">
@@ -181,14 +181,14 @@ export const AdminSolicitacoesPage = () => {
                   <tr key={s.id} className="hover:bg-surface-200/20 transition-colors">
                     <td className="px-5 py-3">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-white">{s.usuario.name}</span>
-                        <span className="text-xs text-slate-500">{s.usuario.email}</span>
+                        <span className="text-sm font-bold text-slate-800">{s.usuario.name}</span>
+                        <span className="text-[11px] font-medium text-slate-400">{s.usuario.email}</span>
                       </div>
                     </td>
                     <td className="px-5 py-3 text-sm text-slate-400">
                       {new Date(s.dataPedido).toLocaleDateString('pt-BR')} às {new Date(s.dataPedido).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
                     </td>
-                    <td className="px-5 py-3 text-sm font-bold text-white font-mono">
+                    <td className="px-5 py-3 text-sm font-bold text-emerald-600 font-mono">
                       {formatCurrency(s.valorAporte)}
                     </td>
                     <td className="px-5 py-3">
@@ -230,8 +230,8 @@ export const AdminSolicitacoesPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="p-5 border-b border-surface-300 flex justify-between items-center">
-              <h3 className="font-display font-bold text-white flex items-center gap-2">
-                <Edit2 size={18} className="text-blue-400" />
+              <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
+                <Edit2 size={18} className="text-blue-500" />
                 Editar Solicitação
               </h3>
               <button onClick={() => setIsEditModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
@@ -282,12 +282,12 @@ export const AdminSolicitacoesPage = () => {
               <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
                 <Trash2 size={24} className="text-red-500" />
               </div>
-              <h3 className="font-display font-bold text-lg text-white mb-2">Excluir Solicitação?</h3>
-              <p className="text-sm text-slate-400 mb-6">
-                Tem certeza que deseja excluir a solicitação de <strong>{selectedSolicitacao.usuario.name}</strong> no valor de <strong>{formatCurrency(selectedSolicitacao.valorAporte)}</strong>? Esta ação não pode ser desfeita.
+              <h3 className="font-display font-bold text-lg text-slate-800 mb-2">Excluir Solicitação?</h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Tem certeza que deseja excluir a solicitação de <strong className="text-slate-700">{selectedSolicitacao.usuario.name}</strong> no valor de <strong className="text-emerald-600">{formatCurrency(selectedSolicitacao.valorAporte)}</strong>? Esta ação não pode ser desfeita.
               </p>
               <div className="flex gap-3 w-full">
-                <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-surface-200 text-white hover:bg-surface-300 transition-colors">
+                <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
                   Cancelar
                 </button>
                 <button onClick={handleDelete} disabled={loading} className="flex-1 py-2.5 rounded-xl font-bold bg-red-600 text-white hover:bg-red-500 transition-colors shadow-lg shadow-red-900/20">

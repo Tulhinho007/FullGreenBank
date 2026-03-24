@@ -6,7 +6,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart3,
   DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  Target, Star, Briefcase, Activity, Lock as LockIcon,
+  Target, Star, Briefcase, Lock as LockIcon,
   Eye, Edit3, Trash2
 } from 'lucide-react'
 import { SupportModal } from '../ui/SupportModal'
@@ -262,17 +262,7 @@ export const Sidebar = () => {
             { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter), permissionKey: 'dicas-gestao' }
           ]} 
         />
-        <NavItem 
-          icon={<Activity size={16} />} 
-          label="Futevôlei" 
-          isLocked={isLockedItem('arena-clecio', isStarter)}
-          onLockedClick={handleLockedClick}
-          permission={getPerm('arena-clecio')}
-          getPermission={getPerm}
-          children={[
-            { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio', permissionKey: 'arena-clecio' }
-          ]} 
-        />
+
         <NavItem 
           icon={<BarChart3 size={16} />} 
           label="Análise de Valor" 

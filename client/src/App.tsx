@@ -33,7 +33,7 @@ import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
 import { HistoricoSaquesPage } from './pages/HistoricoSaquesPage'
-import { ArenaClecioPage } from './pages/ArenaClecioPage'
+
 import { PermissionsProvider } from './contexts/PermissionsContext'
 import { AdminPermissoesPage } from './pages/AdminPermissoesPage'
 
@@ -160,7 +160,7 @@ function App() {
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/calculadora" element={<CalculadoraPage />} />
           <Route path="gestao/dicas-gestao" element={<DicasGestaoPage />} />
-          <Route path="gestao/futevolei/arena-clecio" element={<ArenaClecioPage />} />
+
           <Route path="gestao/historico" element={<HistoryPage />} />
 
         </Route>

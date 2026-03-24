@@ -310,7 +310,7 @@ export const AdminPermissoesPage = () => {
                                              ? field === 'canView'   ? 'bg-emerald-600 border-emerald-500 shadow-lg shadow-emerald-500/20'
                                              : field === 'canEdit'   ? 'bg-blue-600 border-blue-500 shadow-lg shadow-blue-500/20'
                                              : 'bg-rose-600 border-rose-500 shadow-lg shadow-rose-500/20'
-                                             : 'bg-white border-slate-100 text-slate-200 hover:border-slate-200'
+                                             : 'bg-slate-50/50 border-slate-300 text-slate-300 hover:border-slate-400'
                                          }`}
                                        >
                                          {p[field] ? (
@@ -318,7 +318,7 @@ export const AdminPermissoesPage = () => {
                                            field === 'canEdit' ? <Edit3 size={15} className="text-white" strokeWidth={3} /> :
                                            <Trash2 size={15} className="text-white" strokeWidth={3} />
                                          ) : (
-                                           <div className="w-1.5 h-1.5 rounded-full bg-slate-100" />
+                                           <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
                                          )}
                                        </button>
                                      </div>

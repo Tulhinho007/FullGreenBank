@@ -482,7 +482,7 @@ export const GestaoBancaPage = () => {
                   value={bancaInicialAtual}
                   onChange={(v) => handleSaveConfigCarteira('bancaInicial', String(v))}
                   disabled={!selectedCarteiraId}
-                  alertLimit={10}
+                  alertLimit={1000}
                   className="text-4xl font-black text-slate-800 tracking-tight bg-transparent border-none focus:ring-0 p-0 w-full"
                 />
                 <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mt-2">Capital de aporte inicial registrado</p>
@@ -554,7 +554,7 @@ export const GestaoBancaPage = () => {
                             <CurrencyInput
                               value={r.deposit}
                               onChange={v => updateRow(r.id, 'deposit', String(v))}
-                              alertLimit={10}
+                              alertLimit={1000}
                               className="w-28 text-sm bg-white border-slate-100 shadow-sm py-1.5"
                             />
                           ) : (
@@ -566,7 +566,7 @@ export const GestaoBancaPage = () => {
                             <CurrencyInput
                               value={r.withdrawal}
                               onChange={v => updateRow(r.id, 'withdrawal', String(v))}
-                              alertLimit={10}
+                              alertLimit={1000}
                               className="w-28 text-sm bg-white border-slate-100 shadow-sm py-1.5"
                             />
                           ) : (
@@ -578,7 +578,7 @@ export const GestaoBancaPage = () => {
                             <CurrencyInput
                               value={r.result}
                               onChange={v => updateRow(r.id, 'result', String(v))}
-                              alertLimit={10}
+                              alertLimit={1000}
                               allowNegative={true}
                               className="w-28 text-sm bg-white border-slate-100 shadow-sm py-1.5"
                             />
