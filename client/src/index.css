@@ -61,12 +61,38 @@
   }
 }
 
-/* Sidebar behavior - Always dark */
+/* Sidebar behavior - Force dark for premium branding across all themes */
 aside {
-  @apply bg-[#0f1923] border-r border-[#1e2d3d] !important;
+  background-color: #0f1923 !important;
+  border-right: 1px solid #1e2d3d !important;
+  color: #8fa3b4 !important;
 }
-aside *, aside p, aside span, aside h1, aside h2, aside h3 {
-  color: inherit !important;
+aside * {
+  border-color: #1e2d3d !important;
+}
+aside p, aside span, aside h1, aside h2, aside h3 {
+  color: #8fa3b4 !important;
+}
+aside .text-white, aside .font-bold, aside font-display, aside b, aside strong {
+  color: #ffffff !important;
+}
+aside .text-green-500, aside .text-green-600, aside .text-green-400 {
+  color: #4ade80 !important;
+}
+aside .active, aside .sidebar-link:hover {
+  background-color: #1e3a2f !important;
+}
+aside .active p, aside .active span, aside .sidebar-link:hover span {
+  color: #4ade80 !important;
+}
+aside .sidebar-link:hover {
+  color: #ffffff !important;
+}
+aside .text-red-400 {
+  color: #f87171 !important;
+}
+aside .text-amber-500 {
+  color: #f59e0b !important;
 }
 
 /* Custom Scrollbar */

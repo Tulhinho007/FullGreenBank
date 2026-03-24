@@ -70,17 +70,15 @@ export const CurrencyInput = ({
 
       {/* Modal de confirmação de valor alto */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm"
-             style={{ animation: 'fadeIn .2s ease' }}>
-          <div className="bg-surface-200 border border-surface-300 rounded-2xl p-8 max-w-sm w-[92%] shadow-2xl"
-               style={{ animation: 'slideUp .25s ease' }}>
-            <div className="text-4xl mb-4 text-center">⚠️</div>
-            <h3 className="text-white font-bold text-xl text-center mb-2">
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-surface-200 border border-slate-200 dark:border-surface-300 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="text-4xl mb-6 text-center">⚠️</div>
+            <h3 className="text-slate-900 dark:text-white font-display font-bold text-xl text-center mb-2">
               Valor Alto Detectado
             </h3>
-            <p className="text-slate-400 text-sm text-center mb-6">
-              Você está prestes a confirmar um valor de{' '}
-              <span className="text-yellow-400 font-bold text-base">
+            <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-8 leading-relaxed">
+              Você está prestes a confirmar um aporte de{' '}
+              <span className="text-green-600 dark:text-green-400 font-bold text-base">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL',
@@ -91,13 +89,13 @@ export const CurrencyInput = ({
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
-                className="flex-1 btn-secondary"
+                className="flex-1 py-3.5 rounded-2xl bg-slate-100 dark:bg-surface-300 text-slate-500 dark:text-slate-400 font-bold text-sm hover:bg-slate-200 dark:hover:bg-surface-400 transition-all active:scale-95"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 btn-primary"
+                className="flex-1 py-3.5 rounded-2xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 shadow-lg shadow-green-500/20 transition-all active:scale-95"
               >
                 Confirmar
               </button>
