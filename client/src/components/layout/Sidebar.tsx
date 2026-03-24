@@ -6,7 +6,8 @@ import {
   LayoutDashboard, TrendingUp, BarChart3,
   DollarSign, FileText, Settings, ShieldCheck, LogOut,
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
-  Target, Star, Briefcase, Activity, Lock as LockIcon
+  Target, Star, Briefcase, Activity, Lock as LockIcon,
+  Eye, Edit3, Trash2
 } from 'lucide-react'
 import { SupportModal } from '../ui/SupportModal'
 
@@ -14,13 +15,15 @@ interface NavItemProps {
   icon: React.ReactNode
   label: string
   to?: string
-  children?: { label: string; to?: string; placeholder?: boolean; isLocked?: boolean }[]
+  children?: { label: string; to?: string; placeholder?: boolean; isLocked?: boolean; permissionKey?: string }[]
   placeholder?: boolean
   isLocked?: boolean
   onLockedClick?: () => void
+  permission?: { canView: boolean; canEdit: boolean; canDelete: boolean }
+  getPermission?: (key: string) => { canView: boolean; canEdit: boolean; canDelete: boolean } | undefined // NEW
 }
 
-const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedClick }: NavItemProps) => {
+const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedClick, permission, getPermission }: NavItemProps) => {
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
@@ -29,6 +32,14 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
       e.preventDefault()
       onLockedClick()
     }
+  }
+
+  const renderPermissionIcon = (p?: { canView: boolean; canEdit: boolean; canDelete: boolean }) => {
+    if (!p) return null
+    if (p.canDelete) return <Trash2 size={12} className="text-red-500/70" />
+    if (p.canEdit)   return <Edit3 size={12} className="text-blue-500/70" />
+    if (p.canView)   return <Eye size={12} className="text-emerald-500/70" />
+    return null
   }
 
   if (children) {
@@ -47,6 +58,7 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
             <span className="text-[15px] font-semibold tracking-wide">{label}</span>
           </span>
           <span className="flex items-center gap-2">
+            {renderPermissionIcon(permission)}
             {isLocked && <LockIcon size={12} className="text-amber-500" />}
             <span className="text-slate-500">
               {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -65,6 +77,8 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
                 )
               }
               const childLocked = c.isLocked || isLocked
+              const childPerm = c.permissionKey && getPermission ? getPermission(c.permissionKey) : undefined
+              
               return (
                 <NavLink
                   key={c.to}
@@ -80,6 +94,7 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
                     {c.label}
                     {childLocked && <LockIcon size={10} className="text-amber-500/70" />}
                   </span>
+                  {renderPermissionIcon(childPerm)}
                 </NavLink>
               )
             })}
@@ -113,7 +128,10 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
             {icon}
           </span>
           <span className="truncate flex-1 text-[15px] tracking-wide">{label}</span>
-          {isLocked && <LockIcon size={14} className="text-amber-500 shrink-0 ml-1" />}
+          <div className="flex items-center gap-1.5 ml-auto">
+            {renderPermissionIcon(permission)}
+            {isLocked && <LockIcon size={14} className="text-amber-500 shrink-0" />}
+          </div>
         </>
       )}
     </NavLink>
@@ -139,9 +157,17 @@ export const Sidebar = () => {
     setShowUpgradeModal(true)
   }
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
+  const getPerm = (key: string) => {
+    const p = user?.permissions?.find(x => x.pageName === key)
+    return p ? { canView: p.canView, canEdit: p.canEdit, canDelete: p.canDelete } : undefined
+  }
+
+  const getPermForChild = (key: string) => getPerm(key)
+
+  const isLockedItem = (key: string, defaultLocked: boolean) => {
+    const p = getPerm(key)
+    if (p?.canView) return false // Explicit permission overrides plan lock
+    return defaultLocked
   }
 
   const initials = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
@@ -169,6 +195,8 @@ export const Sidebar = () => {
           label="Dashboard" 
           to="/dashboard" 
           onLockedClick={handleLockedClick}
+          permission={getPerm('dashboard')}
+          getPermission={getPerm}
         />
         
         <NavItem 
@@ -176,19 +204,22 @@ export const Sidebar = () => {
           label="Dicas" 
           to="/tips" 
           onLockedClick={handleLockedClick}
+          permission={getPerm('tips')}
         />
         <NavItem 
           icon={<Target size={16} />} 
           label="Tipsters" 
           to="/gestao/tipsters" 
-          isLocked={isStarter}
+          isLocked={isLockedItem('tipsters', isStarter)}
           onLockedClick={handleLockedClick}
+          permission={getPerm('tipsters')}
         />
         <NavItem 
           icon={<FileText size={16} />} 
           label="Relatórios" 
-          isLocked={isStarter}
+          isLocked={isLockedItem('reports', isStarter)}
           onLockedClick={handleLockedClick}
+          permission={getPerm('reports')}
           children={[
             { label: 'Histórico de Dicas', to: '/reports/tips' },
             { label: 'Performance', to: '/reports' }
@@ -202,29 +233,32 @@ export const Sidebar = () => {
           label="Bancas" 
           to="/gestao/banca" 
           onLockedClick={handleLockedClick}
+          permission={getPerm('gestao-banca')}
         />
         <NavItem 
           icon={<Briefcase size={16} />} 
           label="Investimentos" 
           to="/gestao/investimentos" 
-          isLocked={isStarter}
+          isLocked={isLockedItem('investimentos', isStarter)}
           onLockedClick={handleLockedClick}
+          permission={getPerm('investimentos')}
         />
         <NavItem 
           icon={<TrendingUp size={16} />} 
           label="Operacional" 
           onLockedClick={handleLockedClick}
           children={[
-            { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isStarter },
+            { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isLockedItem('alavancagem', isStarter) },
             { label: 'Calculadora', to: '/gestao/calculadora' },
-            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isStarter }
+            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter) }
           ]} 
         />
         <NavItem 
           icon={<Activity size={16} />} 
           label="Futevôlei" 
-          isLocked={isStarter}
+          isLocked={isLockedItem('arena-clecio', isStarter)}
           onLockedClick={handleLockedClick}
+          permission={getPerm('arena-clecio')}
           children={[
             { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
           ]} 
@@ -235,6 +269,7 @@ export const Sidebar = () => {
           isLocked={isStarter}
           placeholder 
           onLockedClick={handleLockedClick}
+          getPermission={getPerm}
         />
 
         {user?.role === 'MEMBRO' && !user?.isActive && (
@@ -250,23 +285,34 @@ export const Sidebar = () => {
         {isAdmin && (
           <>
             <SectionLabel label="Administração" />
-            <NavItem icon={<DollarSign size={16} />} label="Financeiro" children={[
-              { label: 'Assinaturas', to: '/financeiro/pagamentos' },
-              { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada' },
-              { label: 'Histórico de Contratos', to: '/gestao/historico' },
-              { label: 'Histórico de Saques', to: '/financeiro/saques' },
-              { label: 'Transações', to: '/financeiro/transacoes' },
-              { label: 'Fluxo de Caixa', placeholder: true }
-              
-            ]} />
-            <NavItem icon={<Settings size={16} />} label="Sistema" children={[
-              { label: 'Usuários', to: '/admin/users' },
-              { label: 'Cadastros', to: '/admin/cadastros' },
-              { label: 'Solicitações (Aportes)', to: '/admin/solicitacoes' },
-              { label: 'Suporte & Feedback', to: '/admin/support' },
-              { label: 'Logs / Eventos', to: '/admin/log' },
-              { label: 'Controle de Acesso', to: '/admin/permissoes' }
-            ]} />
+            <NavItem 
+              icon={<DollarSign size={16} />} 
+              label="Financeiro" 
+              permission={getPerm('financeiro')} 
+              getPermission={getPerm}
+              children={[
+                { label: 'Assinaturas', to: '/financeiro/pagamentos', permissionKey: 'pagamentos' },
+                { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada', permissionKey: 'banca-gerenciada' },
+                { label: 'Histórico de Contratos', to: '/gestao/historico', permissionKey: 'historico' },
+                { label: 'Histórico de Saques', to: '/financeiro/saques', permissionKey: 'saques' },
+                { label: 'Transações', to: '/financeiro/transacoes', permissionKey: 'transacoes' },
+                { label: 'Fluxo de Caixa', placeholder: true }
+              ]} 
+            />
+            <NavItem 
+              icon={<Settings size={16} />} 
+              label="Sistema" 
+              permission={getPerm('admin')} 
+              getPermission={getPerm}
+              children={[
+                { label: 'Usuários', to: '/admin/users', permissionKey: 'admin-users' },
+                { label: 'Cadastros', to: '/admin/cadastros', permissionKey: 'admin-cadastros' },
+                { label: 'Solicitações (Aportes)', to: '/admin/solicitacoes', permissionKey: 'admin-solicitacoes' },
+                { label: 'Suporte & Feedback', to: '/admin/support', permissionKey: 'admin-support' },
+                { label: 'Logs / Eventos', to: '/admin/log', permissionKey: 'admin-log' },
+                { label: 'Controle de Acesso', to: '/admin/permissoes', permissionKey: 'admin-permissoes' }
+              ]} 
+            />
           </>
         )}
 
@@ -282,6 +328,7 @@ export const Sidebar = () => {
           placeholder 
           isLocked={isStarter}
           onLockedClick={handleLockedClick}
+          getPermission={getPerm}
         />
         <NavItem 
           icon={<ShieldCheck size={16} />} 
@@ -289,6 +336,7 @@ export const Sidebar = () => {
           placeholder 
           isLocked={isStarter}
           onLockedClick={handleLockedClick}
+          getPermission={getPerm}
         />
         <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
 

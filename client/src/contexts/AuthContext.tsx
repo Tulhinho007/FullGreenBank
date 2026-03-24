@@ -4,6 +4,15 @@ import toast from 'react-hot-toast'
 import { addLog } from '../services/log.service'
 import { checkSubscription } from '../utils/subscription'
 
+export interface PagePermission {
+  module: string
+  pageName: string
+  pageLabel?: string
+  canView: boolean
+  canEdit: boolean
+  canDelete: boolean
+}
+
 export interface User {
   id: string
   name: string
@@ -27,6 +36,7 @@ export interface User {
   payMethod?: string
   notes?: string
   createdAt: string
+  permissions?: PagePermission[]
 }
 
 // Tipagem atualizada para suportar o novo payload de login

@@ -26,6 +26,7 @@ export const getAllUsers = async () => {
       twoFactorEnabled: true,
       avatarUrl: true,
       createdAt: true,
+      permissions: true,
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -57,6 +58,7 @@ export const getUserById = async (id: string) => {
       twoFactorEnabled: true,
       avatarUrl: true,
       createdAt: true,
+      permissions: true,
     },
   });
 };
@@ -122,6 +124,7 @@ export const updateUser = async (
       twoFactorEnabled: true,
       avatarUrl: true,
       createdAt: true,
+      permissions: true,
     },
   });
 };
