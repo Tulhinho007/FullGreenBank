@@ -44,41 +44,46 @@ const StatCard = ({ title, value, subValue, icon: Icon, trend }: {
   icon: any;
   trend?: 'up' | 'down'
 }) => (
-  <div className="card p-6 border border-surface-400 hover:border-green-600/40 transition-all duration-300 group">
+  <div className="bg-white dark:bg-surface-200 p-6 rounded-[2rem] border border-slate-200 dark:border-surface-400 hover:border-green-600/40 transition-all duration-300 shadow-sm group">
     <div className="flex items-start justify-between">
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">{title}</p>
-        <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
+        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{title}</p>
+        <h3 className="text-2xl font-display font-bold text-slate-900 dark:text-white mt-1">{value}</h3>
         {subValue && (
           <div className="flex items-center gap-1 mt-2">
             {trend === 'up' ? (
-              <ArrowUpRight size={14} className="text-green-400" />
+              <ArrowUpRight size={14} className="text-green-600 dark:text-green-400" />
             ) : trend === 'down' ? (
-              <ArrowDownRight size={14} className="text-red-400" />
+              <ArrowDownRight size={14} className="text-red-600 dark:text-red-400" />
             ) : null}
-            <span className={`text-xs font-medium ${trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-slate-400'}`}>
+            <span className={`text-[11px] font-bold ${trend === 'up' ? 'text-green-600 dark:text-green-400' : trend === 'down' ? 'text-red-600 dark:text-red-400' : 'text-slate-400'}`}>
               {subValue}
             </span>
           </div>
         )}
       </div>
-      <div className="w-12 h-12 rounded-2xl bg-surface-300 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-        <Icon size={24} className="text-green-500" />
+      <div className="w-12 h-12 rounded-2xl bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        <Icon size={24} className="text-green-600 dark:text-green-400" />
       </div>
     </div>
   </div>
-)
+);
 
 export const ReportsPage = () => {
   const { user } = useAuth()
 
 
 
+  const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark'
+
   const chartColors = {
     stroke: '#22c55e',
     fill: 'url(#colorProfit)',
-    grid: '#334155',
-    text: '#94a3b8'
+    grid: isDark ? '#334155' : '#e2e8f0',
+    text: isDark ? '#94a3b8' : '#64748b',
+    tooltipBg: isDark ? '#1e293b' : '#ffffff',
+    tooltipBorder: isDark ? '#334155' : '#e2e8f0',
+    tooltipText: isDark ? '#ffffff' : '#0f172a'
   }
 
   return (
@@ -86,12 +91,12 @@ export const ReportsPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-white">Relatório de Performance</h1>
-          <p className="text-sm text-slate-500 mt-1">Visão geral da saúde e crescimento da sua banca</p>
+          <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white">Relatório de Performance</h1>
+          <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Visão geral da saúde e crescimento da sua banca</p>
         </div>
-        <div className="flex items-center gap-2 bg-surface-200 border border-surface-400 rounded-xl p-1 shadow-inner">
-          <button className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-green-600 text-white shadow-lg">Este Mês</button>
-          <button className="px-4 py-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors">Total</button>
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-surface-200 border border-slate-200 dark:border-surface-400 rounded-2xl p-1.5 shadow-inner">
+          <button className="px-5 py-2 text-xs font-bold rounded-xl bg-green-500 text-white shadow-lg shadow-green-500/20 active:scale-95 transition-all">Este Mês</button>
+          <button className="px-5 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">Total</button>
         </div>
       </div>
 
@@ -121,16 +126,16 @@ export const ReportsPage = () => {
 
       {/* Main Chart Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card p-6 border border-surface-400">
+        <div className="lg:col-span-2 bg-white dark:bg-surface-200 p-8 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm relative overflow-hidden">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Activity size={18} className="text-green-500" />
               Evolução da Banca
             </h3>
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="text-slate-400">Saldo</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-500/50" />
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Saldo Atual</span>
               </div>
             </div>
           </div>
@@ -160,12 +165,14 @@ export const ReportsPage = () => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1e293b', 
-                    border: '1px solid #334155',
-                    borderRadius: '12px',
-                    fontSize: '12px'
+                    backgroundColor: chartColors.tooltipBg, 
+                    border: `1px solid ${chartColors.tooltipBorder}`,
+                    borderRadius: '16px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
                   }}
-                  itemStyle={{ color: '#fff' }}
+                  itemStyle={{ color: chartColors.tooltipText, textTransform: 'uppercase', letterSpacing: '0.05em' }}
                 />
                 <Area 
                   type="monotone" 
@@ -182,8 +189,8 @@ export const ReportsPage = () => {
 
         {/* Side Metrics */}
         <div className="flex flex-col gap-6">
-          <div className="card p-6 border border-surface-400 flex-1">
-            <h3 className="font-semibold text-white mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-surface-200 p-8 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+            <h3 className="font-display font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
               <Calendar size={18} className="text-green-500" />
               Saúde da Banca
             </h3>
@@ -191,45 +198,45 @@ export const ReportsPage = () => {
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Yield</span>
-                  <span className="text-sm font-bold text-green-400">+12.5%</span>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Yield</span>
+                  <span className="text-sm font-bold text-green-600 dark:text-green-400">+12.5%</span>
                 </div>
-                <div className="w-full h-1.5 bg-surface-300 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 rounded-full" style={{ width: '75%' }} />
+                <div className="w-full h-1.5 bg-slate-100 dark:bg-surface-300 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-green-500 rounded-full shadow-lg shadow-green-500/50" style={{ width: '75%' }} />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Max Drawdown</span>
-                  <span className="text-sm font-bold text-red-400">-8.2%</span>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Max Drawdown</span>
+                  <span className="text-sm font-bold text-red-600 dark:text-red-400">-8.2%</span>
                 </div>
-                <div className="w-full h-1.5 bg-surface-300 rounded-full overflow-hidden">
-                  <div className="h-full bg-red-500 rounded-full" style={{ width: '15%' }} />
+                <div className="w-full h-1.5 bg-slate-100 dark:bg-surface-300 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-red-500 rounded-full shadow-lg shadow-red-500/50" style={{ width: '15%' }} />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-surface-400 space-y-4">
+              <div className="pt-6 border-t border-slate-100 dark:border-surface-400 space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-xs text-slate-400">Total Apostado</span>
-                  <span className="text-xs font-semibold text-white">{formatCurrency(12450)}</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Apostado</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{formatCurrency(12450)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-xs text-slate-400">Média por Aposta</span>
-                  <span className="text-xs font-semibold text-white">{formatCurrency(150)}</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Média por Aposta</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">{formatCurrency(150)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-xs text-slate-400">Última Atualização</span>
-                  <span className="text-xs font-semibold text-white">Hoje, 14:10</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Última Atualização</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Hoje, 14:10</span>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="card p-6 border border-surface-400 bg-green-600/10 border-green-600/20">
-            <p className="text-xs text-green-400 font-bold uppercase tracking-widest">Insights</p>
-            <p className="text-sm text-slate-200 mt-2 leading-relaxed">
-              Sua performance em <span className="text-white font-bold">Futebol</span> atingiu <span className="text-white font-bold">78% de win rate</span> esta semana. Considere aumentar ligeiramente a stake nestes mercados.
+          <div className="bg-green-500/10 dark:bg-green-600/10 p-6 rounded-[2rem] border border-green-500/20 dark:border-green-600/20 shadow-sm group">
+            <p className="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase tracking-widest">Insights</p>
+            <p className="text-sm text-slate-700 dark:text-slate-200 mt-2 leading-relaxed font-medium">
+              Sua performance em <span className="text-green-600 dark:text-white font-bold">Futebol</span> atingiu <span className="text-green-600 dark:text-white font-bold">78% de win rate</span> esta semana. Considere aumentar ligeiramente a stake nestes mercados.
             </p>
           </div>
         </div>

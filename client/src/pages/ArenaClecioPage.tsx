@@ -39,7 +39,8 @@ interface EditableScoreProps {
 
 const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScoreProps) => {
   const [editing, setEditing] = useState(false)
-  const bg = winning ? '#22c55e' : dark ? '#334155' : '#1e293b'
+  const bg = winning ? '#22c55e' : dark ? '#334155' : '#e2e8f0'
+  const text = winning ? '#fff' : dark ? '#f1f5f9' : '#1e293b'
 
   if (editing) {
     return (
@@ -52,9 +53,10 @@ const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScore
         onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
         style={{
           width: 44, height: 44, textAlign: 'center', fontSize: 18, fontWeight: 800,
-          borderRadius: 10, border: '2px solid #22c55e',
+          borderRadius: 12, border: '2px solid #22c55e',
           background: dark ? '#1e293b' : '#fff',
           color: dark ? '#f1f5f9' : '#0f172a', outline: 'none',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
         }}
       />
     )
@@ -65,18 +67,19 @@ const EditableScore = ({ value, onChange, winning, dark, saving }: EditableScore
       onClick={() => !saving && setEditing(true)}
       title="Clique para editar"
       style={{
-        background: bg, color: '#fff', borderRadius: 10, fontWeight: 800, fontSize: 18,
+        background: bg, color: text, borderRadius: 12, fontWeight: 800, fontSize: 18,
         width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
         boxShadow: winning ? '0 0 14px #22c55e55' : 'none',
         cursor: saving ? 'wait' : 'text', transition: 'all .25s', userSelect: 'none',
         position: 'relative', opacity: saving ? 0.7 : 1,
+        border: winning ? 'none' : `1px solid ${dark ? 'transparent' : '#cbd5e1'}`
       }}
     >
       {value}
       {!saving && (
         <span style={{
           position: 'absolute', bottom: 0, right: 0, width: 13, height: 13,
-          background: '#22c55e', borderRadius: '50% 0 10px 0',
+          background: '#22c55e', borderRadius: '50% 0 12px 0',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <svg width="7" height="7" viewBox="0 0 8 8">
@@ -203,7 +206,7 @@ const defaultForm: FormState = { a1: '', a2: '', b1: '', b2: '', valor: 50, sets
 // ── Página principal ───────────────────────────────────────────────────────────
 export const ArenaClecioPage = () => {
   const { theme } = useTheme()
-  const dark = theme === 'dark' || (theme === 'DARK')
+  const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
   const [active, setActive]     = useState<FutvoleiMatch[]>([])
   const [history, setHistory]   = useState<FutvoleiMatch[]>([])
@@ -219,13 +222,13 @@ export const ArenaClecioPage = () => {
 
   // Paleta adaptativa
   const c = {
-    bg:          dark ? '#0f172a' : '#f1f5f9',
+    bg:          dark ? '#0f172a' : '#f8fafc',
     card:        dark ? '#1e293b' : '#ffffff',
     cardBorder:  dark ? '#334155' : '#e2e8f0',
     text:        dark ? '#f1f5f9' : '#0f172a',
     sub:         dark ? '#94a3b8' : '#64748b',
     muted:       dark ? '#475569' : '#94a3b8',
-    inputBg:     dark ? '#0f172a' : '#ffffff',
+    inputBg:     dark ? '#0f172a' : '#f8fafc',
     inputBorder: dark ? '#334155' : '#e2e8f0',
     divider:     dark ? '#334155' : '#f1f5f9',
   }
@@ -385,25 +388,27 @@ export const ArenaClecioPage = () => {
             {[
               { label: 'JOGOS CRIADOS (HOJE)', value: String(stats.jogosHoje), icon: '⚡', green: false },
               { label: 'TOTAL APOSTADO (HOJE)', value: fmtMoney(stats.totalApostadoHoje), icon: '🏆', green: false },
-              { label: 'STATUS DA ARENA', value: 'Arena Ativa & Monitorada', icon: '✅', green: true },
+              { label: 'STATUS DA ARENA', value: 'Ativa & Monitorada', icon: '✅', green: true },
             ].map((s, i) => (
               <div key={i} className="stcard" style={{
                 background: s.green ? '#22c55e' : c.card,
                 border: `1px solid ${s.green ? 'transparent' : c.cardBorder}`,
-                borderRadius: 16, padding: '18px 20px',
-                boxShadow: s.green ? '0 8px 28px #22c55e33' : '0 2px 8px #0000000a',
-                display: 'flex', alignItems: 'center', gap: 14,
+                borderRadius: 20, padding: '22px 24px',
+                boxShadow: s.green ? '0 12px 36px -8px #22c55e66' : '0 4px 20px -4px #0000000d',
+                display: 'flex', alignItems: 'center', gap: 16,
+                position: 'relative', overflow: 'hidden'
               }}>
                 <div style={{
-                  width: 46, height: 46, borderRadius: 13,
+                  width: 48, height: 48, borderRadius: 14,
                   background: s.green ? '#16a34a' : dark ? '#0f172a' : '#f0fdf4',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0,
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
                 }}>{s.icon}</div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.8, color: s.green ? '#d1fae5' : c.muted, textTransform: 'uppercase', marginBottom: 3 }}>
+                <div style={{ zIndex: 1 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: s.green ? '#d1fae5' : c.muted, textTransform: 'uppercase', marginBottom: 4 }}>
                     {s.label}
                   </div>
-                  <div style={{ fontSize: i === 2 ? 15 : 22, fontWeight: 800, color: s.green ? '#fff' : c.text, lineHeight: 1.2 }}>
+                  <div style={{ fontSize: i === 2 ? 14 : 24, fontWeight: 900, color: s.green ? '#fff' : c.text, lineHeight: 1, fontFamily: "'Syne', sans-serif" }}>
                     {s.value}
                   </div>
                 </div>
@@ -469,13 +474,14 @@ export const ArenaClecioPage = () => {
 
               {/* Valor/Config */}
               <div style={{
-                background: dark ? '#052e1633' : '#f0fdf4', borderRadius: 14, padding: '16px 18px',
+                background: dark ? '#052e1633' : '#f0fdf4', borderRadius: 16, padding: '20px',
                 border: `1.5px solid ${dark ? '#166534' : '#bbf7d0'}`, minWidth: 175,
+                boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.02)'
               }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
-                  Valor da Aposta (R$)
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 }}>
+                  Valor do Desafio (R$)
                 </div>
-                <div style={{ marginBottom: 14 }}>
+                <div style={{ marginBottom: 16 }}>
                   <CurrencyInput
                     value={form.valor}
                     onChange={(v) => setForm((p) => ({ ...p, valor: v }))}
@@ -483,21 +489,21 @@ export const ArenaClecioPage = () => {
                     alertLimit={1000}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 4 }}>SETS</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 6 }}>SETS</div>
                     <select value={form.sets} onChange={(e) => setForm((p) => ({ ...p, sets: +e.target.value }))}
-                      style={{ width: '100%', padding: '6px 8px', borderRadius: 8, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 700, background: c.inputBg, color: c.text }}>
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: 10, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 800, background: c.inputBg, color: c.text, cursor: 'pointer' }}>
                       <option value={1}>1 Set</option>
-                      <option value={3}>Melhor 3</option>
-                      <option value={5}>Melhor 5</option>
+                      <option value={3}>M3</option>
+                      <option value={5}>M5</option>
                     </select>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 4 }}>PTS/SET</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: c.muted, letterSpacing: 0.6, marginBottom: 6 }}>PTS</div>
                     <input type="number" value={form.pts}
                       onChange={(e) => setForm((p) => ({ ...p, pts: +e.target.value }))}
-                      style={{ width: '100%', padding: '6px 8px', borderRadius: 8, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 700, textAlign: 'center', background: c.inputBg, color: c.text }}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: 10, border: `1.5px solid ${dark ? '#166534' : '#d1fae5'}`, fontSize: 13, fontWeight: 800, textAlign: 'center', background: c.inputBg, color: c.text }}
                     />
                   </div>
                 </div>

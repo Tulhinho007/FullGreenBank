@@ -60,18 +60,18 @@ export const AlavancagemPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col items-center text-center gap-2 mb-2">
-        <h1 className="text-2xl font-display font-bold text-white flex items-center justify-center gap-3">
+        <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white flex items-center justify-center gap-3">
           <CalcIcon className="text-green-500" size={28} />
           Alavancagem Operacional
         </h1>
-        <p className="text-slate-400 text-sm">Simule o crescimento composto entrada por entrada e planeje suas metas.</p>
+        <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Simule o crescimento composto entrada por entrada e planeje suas metas.</p>
       </header>
 
       {/* Configuração */}
-      <div className="card p-6">
-        <div className="flex items-center gap-2 mb-6 pb-4 border-b border-surface-300">
+      <div className="bg-white dark:bg-surface-200 p-8 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-8 pb-4 border-b border-slate-100 dark:border-surface-300">
           <Target size={18} className="text-green-500" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider">Configuração</h2>
+          <h2 className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-widest">Configuração do Ciclo</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -88,17 +88,17 @@ export const AlavancagemPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Tipo de Meta</label>
-            <div className="flex bg-surface-300 rounded-lg p-1">
+            <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 text-center md:text-left">Tipo de Meta</label>
+            <div className="flex bg-slate-100 dark:bg-surface-300 rounded-2xl p-1.5 shadow-inner">
               <button 
                 onClick={() => { setTipoMeta('PERCENT'); setValorMeta('10'); }}
-                className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${tipoMeta === 'PERCENT' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                className={`flex-1 py-2 text-[10px] font-bold rounded-xl transition-all ${tipoMeta === 'PERCENT' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-white'}`}
               >
                 PORCENTAGEM (%)
               </button>
               <button 
                 onClick={() => { setTipoMeta('ODD'); setValorMeta('2.0'); }}
-                className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${tipoMeta === 'ODD' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                className={`flex-1 py-2 text-[10px] font-bold rounded-xl transition-all ${tipoMeta === 'ODD' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-white'}`}
               >
                 POR ODD (@)
               </button>
@@ -120,13 +120,13 @@ export const AlavancagemPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Número de Entradas</label>
+            <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Número de Entradas</label>
             <input 
               type="text" 
               inputMode="numeric"
               value={numEntradas} 
               onChange={(e) => setNumEntradas(e.target.value)}
-              className="input-field w-full"
+              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all text-center md:text-left shadow-inner"
               placeholder="Ex: 10"
             />
           </div>
@@ -134,45 +134,45 @@ export const AlavancagemPage = () => {
       </div>
 
       {/* Tabela de Previsão */}
-      <div className="card overflow-hidden">
-        <div className="p-5 border-b border-surface-300 flex items-center justify-between">
+      <div className="bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm overflow-hidden transition-all">
+        <div className="p-8 border-b border-slate-100 dark:border-surface-300 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <List size={18} className="text-green-500" />
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-              Tabela de Alavancagem — {numEntradas || 0} Entradas ({tipoMeta === 'PERCENT' ? `${valorMeta}% por aposta` : `@${valorMeta} por aposta`})
+            <h2 className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-widest">
+              Tabela de Projeção — {numEntradas || 0} Ciclos ({tipoMeta === 'PERCENT' ? `${valorMeta}%` : `@${valorMeta}`})
             </h2>
           </div>
         </div>
 
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left">
-            <thead className="bg-surface-300/50 text-[10px] uppercase font-bold text-slate-500 tracking-widest border-b border-surface-300">
+            <thead className="bg-slate-50/50 dark:bg-surface-300/50 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 tracking-widest border-b border-slate-100 dark:border-surface-300">
               <tr>
-                <th className="px-6 py-4">Entrada</th>
-                <th className="px-6 py-4 text-center">Banca Antes</th>
-                <th className="px-6 py-4 text-center text-green-500">{tipoMeta === 'PERCENT' ? '%' : 'Odd'}</th>
-                <th className="px-6 py-4 text-right">Banca Depois</th>
+                <th className="px-8 py-5"># Ciclo</th>
+                <th className="px-8 py-5 text-center">Banca Base</th>
+                <th className="px-8 py-5 text-center text-green-600 dark:text-green-500">{tipoMeta === 'PERCENT' ? 'Lucro/Entrada' : 'Lucro/Ciclo'}</th>
+                <th className="px-8 py-5 text-right">Acumulado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-300/30">
+            <tbody className="divide-y divide-slate-50 dark:divide-surface-300/30">
               {results.map((row: CalculationRow) => (
                 <tr key={row.index} className="hover:bg-green-500/5 transition-colors group">
-                  <td className="px-6 py-4">
+                  <td className="px-8 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-md bg-surface-300 flex items-center justify-center text-[11px] font-bold text-slate-400 group-hover:bg-green-900/30 group-hover:text-green-500 transition-colors">
+                      <span className="w-7 h-7 rounded-xl bg-slate-100 dark:bg-surface-300 flex items-center justify-center text-[11px] font-bold text-slate-500 dark:text-slate-400 group-hover:bg-green-500/10 group-hover:text-green-500 transition-colors border border-slate-200 dark:border-surface-300/50">
                         {row.index}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center font-mono text-sm text-slate-300">
-                    {row.before.toFixed(2)}
+                  <td className="px-8 py-4 text-center font-mono text-xs font-bold text-slate-600 dark:text-slate-400">
+                    {formatCurrency(row.before)}
                   </td>
-                  <td className="px-6 py-4 text-center font-mono text-sm font-bold text-green-500/80">
-                    {row.metaValue.toFixed(2)}
+                  <td className="px-8 py-4 text-center font-mono text-xs font-bold text-green-600 dark:text-green-500/80">
+                    +{formatCurrency(row.metaValue)}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="px-3 py-1 rounded-md bg-green-500/10 text-green-400 text-sm font-bold font-mono border border-green-500/20">
-                      {row.after.toFixed(2)}
+                  <td className="px-8 py-4 text-right">
+                    <span className="px-4 py-1.5 rounded-xl bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-bold font-mono border border-green-200 dark:border-green-500/20 shadow-sm">
+                      {formatCurrency(row.after)}
                     </span>
                   </td>
                 </tr>
@@ -184,33 +184,33 @@ export const AlavancagemPage = () => {
 
       {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card p-5 bg-gradient-to-br from-surface-200 to-green-900/10 border-green-500/10">
-          <div className="flex items-center justify-between mb-2 text-slate-500">
+        <div className="bg-white dark:bg-surface-200 p-6 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm bg-gradient-to-br from-white dark:from-surface-200 to-green-500/5 dark:to-green-900/10">
+          <div className="flex items-center justify-between mb-2 text-slate-400 dark:text-slate-500">
             <span className="text-[10px] font-bold uppercase tracking-widest">Resultado Final</span>
             <ArrowUpRight size={14} className="text-green-500" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-mono font-bold text-green-500">{formatCurrency(finalResult)}</span>
+            <span className="text-2xl font-display font-bold text-green-600 dark:text-green-500">{formatCurrency(finalResult)}</span>
           </div>
         </div>
 
-        <div className="card p-5">
-          <div className="flex items-center justify-between mb-2 text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-widest">Lucro Total</span>
+        <div className="bg-white dark:bg-surface-200 p-6 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+          <div className="flex items-center justify-between mb-2 text-slate-400 dark:text-slate-500">
+            <span className="text-[10px] font-bold uppercase tracking-widest">Lucro Projetado</span>
             <TrendingUp size={14} className="text-sky-500" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-mono font-bold text-emerald-400">+{totalProfitPercent.toFixed(1)}%</span>
-            <span className="text-sm font-mono text-emerald-400/60">+{formatCurrency(totalProfitValue)}</span>
+            <span className="text-2xl font-display font-bold text-emerald-600 dark:text-emerald-400">+{totalProfitPercent.toFixed(1)}%</span>
+            <span className="text-[11px] font-bold font-mono text-emerald-600/60 dark:text-emerald-400/60">+{formatCurrency(totalProfitValue)}</span>
           </div>
         </div>
 
-        <div className="card p-5">
-          <div className="flex items-center justify-between mb-2 text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-widest">Total de Entradas</span>
+        <div className="bg-white dark:bg-surface-200 p-6 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+          <div className="flex items-center justify-between mb-2 text-slate-400 dark:text-slate-500">
+            <span className="text-[10px] font-bold uppercase tracking-widest">Total de Ciclos</span>
             <Target size={14} className="text-purple-500" />
           </div>
-          <span className="text-3xl font-mono font-bold text-white">{numEntradas}</span>
+          <span className="text-3xl font-display font-bold text-slate-900 dark:text-white leading-none">{numEntradas}</span>
         </div>
       </div>
 

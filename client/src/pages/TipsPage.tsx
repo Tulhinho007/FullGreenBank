@@ -233,17 +233,17 @@ export const TipsPage = () => {
     const eExpansivel = temMercados || isMultipla
 
     return (
-      <div className={`border border-l-4 ${c.borderL} rounded-xl p-5 shadow-sm bg-surface-200 border-surface-400 group flex flex-col`}>
+      <div className={`border border-l-4 ${c.borderL} rounded-2xl p-5 shadow-sm bg-white dark:bg-surface-200 border-slate-200 dark:border-surface-400 group flex flex-col transition-all hover:border-green-500/30`}>
         <div
           className="flex justify-between items-start cursor-pointer w-full"
           onClick={() => eExpansivel && setIsExpanded(!isExpanded)}
         >
           <div className="flex-1 pr-4">
-            <h3 className="font-bold text-sm text-white leading-snug break-words">
+            <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white leading-snug break-words">
               {tip.title}
-              {isMultipla && <span className="ml-2 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-bold uppercase tracking-wider">Múltipla</span>}
+              {isMultipla && <span className="ml-2 px-1.5 py-0.5 rounded bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold uppercase tracking-wider border border-cyan-200 dark:border-cyan-500/30">Múltipla</span>}
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">
               {tip.sport} {tip.event ? `· ${tip.event}` : ''}
               {!eExpansivel && tip.market && ` · ${tip.market}`}
             </p>
@@ -251,9 +251,9 @@ export const TipsPage = () => {
           <div className="flex items-center gap-2">
             {isMaster && (
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2" onClick={e => e.stopPropagation()}>
-                <button onClick={() => setSharingTip(tip)} className="p-1.5 text-slate-400 hover:text-green-400 transition-colors"><Share2 size={13} /></button>
-                <button onClick={() => openEdit(tip)} className="p-1.5 text-slate-400 hover:text-white transition-colors"><Edit2 size={13} /></button>
-                <button onClick={() => handleDelete(tip.id)} className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
+                <button onClick={() => setSharingTip(tip)} className="p-1.5 text-slate-400 hover:text-green-500 transition-colors"><Share2 size={13} /></button>
+                <button onClick={() => openEdit(tip)} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><Edit2 size={13} /></button>
+                <button onClick={() => handleDelete(tip.id)} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={13} /></button>
               </div>
             )}
             {eExpansivel && (
@@ -264,34 +264,34 @@ export const TipsPage = () => {
           </div>
         </div>
 
-        <hr className="border-surface-400 my-4" />
+        <hr className="border-slate-50 dark:border-surface-400 my-4" />
 
         <div className="flex items-center justify-between text-center gap-2">
           <div className="text-left">
-            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Odd</p>
-            <p className="text-[15px] font-bold font-mono text-white">@{tip.odds.toFixed(2)}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mb-0.5">Odd</p>
+            <p className="text-[15px] font-bold font-mono text-slate-900 dark:text-white">@{tip.odds.toFixed(2)}</p>
           </div>
-          <div className="h-8 w-px bg-surface-400" />
+          <div className="h-8 w-px bg-slate-100 dark:bg-surface-400" />
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">VALOR (R$)</p>
-            <p className="text-[15px] font-bold font-mono text-white">{fmt(tip.stake)}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mb-0.5">VALOR (R$)</p>
+            <p className="text-[15px] font-bold font-mono text-slate-900 dark:text-white">{fmt(tip.stake)}</p>
           </div>
           {tip.profit !== undefined && (
             <>
-              <div className="h-8 w-px bg-surface-400" />
+              <div className="h-8 w-px bg-slate-100 dark:bg-surface-400" />
               <div className="text-center">
-                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Profit</p>
-                <p className={`text-[15px] font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mb-0.5">Profit</p>
+                <p className={`text-[15px] font-bold font-mono ${tip.profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                   {tip.profit >= 0 ? '+' : ''}{fmt(tip.profit)}
                 </p>
               </div>
             </>
           )}
 
-          <div className="h-8 w-px bg-surface-400 hidden sm:block" />
+          <div className="h-8 w-px bg-slate-100 dark:bg-surface-400 hidden sm:block" />
           <div className="flex flex-col items-end gap-1.5 flex-[1.5] text-right">
             <StatusBadge tip={tip} />
-            <span className="text-[10px] text-slate-500 font-mono">{fmtDate(tip.tipDate)}</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono font-bold">{fmtDate(tip.tipDate)}</span>
             {tip.linkAposta && (
               <a
                 href={tip.linkAposta}
@@ -307,25 +307,25 @@ export const TipsPage = () => {
         </div>
 
         {isExpanded && eExpansivel && (
-          <div className="mt-5 pt-4 border-t border-surface-400 space-y-2">
+          <div className="mt-5 pt-5 border-t border-slate-100 dark:border-surface-400 space-y-3">
             {isMultipla ? (
               <>
-                <div className="flex items-center gap-1.5 text-cyan-400 mb-3">
+                <div className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 mb-3">
                   <span className="text-xs">★</span>
-                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Jogos do Bilhete (Múltipla)</h4>
+                  <h4 className="font-bold uppercase text-[10px] tracking-widest">Jogos do Bilhete (Múltipla)</h4>
                 </div>
                 {tip.jogos!.map((jogo: any, index: number) => {
                   const sC = STATUS_CONFIG[jogo.resultado || 'PENDING'] || STATUS_CONFIG.PENDING
                   return (
-                    <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex flex-col gap-1.5 border border-surface-300">
+                    <div key={index} className="bg-slate-50 dark:bg-surface-100/50 p-3 rounded-2xl flex flex-col gap-1.5 border border-slate-100 dark:border-surface-300 shadow-sm">
                       <div className="flex items-center justify-between">
-                        <span className="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold rounded-full px-2 py-0.5 w-max">Jogo {index + 1}</span>
+                        <span className="bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold rounded-full px-2 py-0.5 w-max border border-cyan-100 dark:border-cyan-500/20">Jogo {index + 1}</span>
                         <span className={`text-[10px] font-bold uppercase tracking-widest ${sC.text}`}>{sC.label}</span>
                       </div>
-                      <p className="text-[13px] font-bold text-white flex-1 leading-snug">{jogo.mandante} x {jogo.visitante}</p>
-                      <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 pt-1 border-t border-surface-300/50">
-                        <span>{jogo.mercados?.map((m: any) => m.mercado || m).join(', ')}</span>
-                        <span className="font-mono text-emerald-400 font-bold">@{Number(jogo.odd).toFixed(2)}</span>
+                      <p className="text-[13px] font-display font-bold text-slate-900 dark:text-white flex-1 leading-snug">{jogo.mandante} x {jogo.visitante}</p>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-1 pt-2 border-t border-slate-200/50 dark:border-surface-300/50">
+                        <span className="font-medium">{jogo.mercados?.map((m: any) => m.mercado || m).join(', ')}</span>
+                        <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">@{Number(jogo.odd).toFixed(2)}</span>
                       </div>
                     </div>
                   )
@@ -333,14 +333,14 @@ export const TipsPage = () => {
               </>
             ) : (
               <>
-                <div className="flex items-center gap-1.5 text-yellow-400 mb-3">
+                <div className="flex items-center gap-1.5 text-amber-600 dark:text-yellow-400 mb-3">
                   <span className="text-xs">★</span>
-                  <h4 className="font-bold uppercase text-[10px] tracking-wider">Mercados do Bilhete</h4>
+                  <h4 className="font-bold uppercase text-[10px] tracking-widest">Mercados do Bilhete</h4>
                 </div>
                 {tip.mercados!.map((mercado, index) => (
-                  <div key={index} className="bg-surface-100/50 p-2.5 rounded-lg flex items-center gap-3 border border-surface-300">
-                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center">{index + 1}</span>
-                    <p className="text-[13px] text-slate-200 flex-1 leading-snug">{mercado}</p>
+                  <div key={index} className="bg-slate-50 dark:bg-surface-100/50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100 dark:border-surface-300 shadow-sm">
+                    <span className="bg-green-500/10 dark:bg-emerald-500/20 text-green-600 dark:text-emerald-400 text-[10px] font-bold rounded-full w-5 h-5 min-w-[20px] shrink-0 flex items-center justify-center border border-green-200 dark:border-emerald-500/20">{index + 1}</span>
+                    <p className="text-[13px] text-slate-700 dark:text-slate-200 flex-1 leading-snug font-medium">{mercado}</p>
                   </div>
                 ))}
               </>
@@ -365,8 +365,8 @@ export const TipsPage = () => {
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display font-semibold text-white">Dicas do Dia</h2>
-          <p className="text-xs text-slate-500 uppercase tracking-widest">{tips.length} dicas carregadas</p>
+          <h2 className="font-display font-bold text-slate-900 dark:text-white">Dicas do Dia</h2>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest mt-1">{tips.length} dicas carregadas</p>
         </div>
         {isMaster && (
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -380,7 +380,7 @@ export const TipsPage = () => {
             <button onClick={() => setIsCriarApostaModalOpen(true)} className="bg-[#00c58e] hover:bg-[#00b57e] transition-colors text-white px-4 py-2 font-bold flex items-center justify-center gap-1.5 rounded-xl shadow-lg shadow-emerald-500/20 text-sm">
               <span className="text-[10px] relative top-[-1px]">★</span> Dicas - Criar apostas
             </button>
-            <button onClick={() => setNewTipOpen(true)} className="btn-primary flex items-center gap-1.5 text-sm py-2 bg-surface-300 hover:bg-surface-400 text-white shadow-none">
+            <button onClick={() => setNewTipOpen(true)} className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 dark:bg-surface-300 text-white dark:text-white rounded-2xl font-bold text-xs hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-black/5">
               <Plus size={16} />Dicas simples
             </button>
           </div>
@@ -388,35 +388,35 @@ export const TipsPage = () => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">P&L Total</span>
-            <TrendingUp size={14} className="text-emerald-400" />
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">P&L Total</span>
+            <TrendingUp size={14} className="text-emerald-500" />
           </div>
-          <p className={`text-xl font-bold font-mono ${metrics.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+          <p className={`text-2xl font-display font-bold font-mono ${metrics.pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {metrics.pnl >= 0 ? '+' : ''}{fmt(metrics.pnl)}
           </p>
-          <p className="text-[10px] text-slate-600 mt-1">Profit acumulado</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Profit acumulado</p>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Win Rate</span>
-            <Target size={14} className="text-sky-400" />
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Win Rate</span>
+            <Target size={14} className="text-sky-500" />
           </div>
-          <p className="text-xl font-bold font-mono text-sky-400">{metrics.winRate.toFixed(1)}%</p>
-          <div className="mt-2 h-1 bg-surface-400 rounded-full overflow-hidden">
-            <div className="h-full bg-sky-400" style={{ width: `${metrics.winRate}%` }} />
+          <p className="text-2xl font-display font-bold font-mono text-sky-600 dark:text-sky-400">{metrics.winRate.toFixed(1)}%</p>
+          <div className="mt-3 h-1.5 bg-slate-100 dark:bg-surface-400 rounded-full overflow-hidden shadow-inner">
+            <div className="h-full bg-sky-500 shadow-lg shadow-sky-500/50" style={{ width: `${metrics.winRate}%` }} />
           </div>
         </div>
-        <div className="card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Volume</span>
-            <DollarSign size={14} className="text-purple-400" />
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Stake Total</span>
+            <DollarSign size={14} className="text-purple-500" />
           </div>
-          <p className="text-xl font-bold font-mono text-white">{fmt(metrics.volume)}</p>
-          <p className="text-[10px] text-slate-600 mt-1">Total apostado</p>
+          <p className="text-2xl font-display font-bold font-mono text-slate-900 dark:text-white">{fmt(metrics.volume)}</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Total apostado</p>
         </div>
-        <div className="card p-4 flex flex-col items-center justify-center">
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm flex flex-col items-center justify-center">
           <DoughnutChart greens={metrics.greens} reds={metrics.reds} pending={metrics.pending} voided={metrics.voided} cashout={metrics.cashout} />
         </div>
       </div>
@@ -424,16 +424,21 @@ export const TipsPage = () => {
       <div className="flex flex-wrap items-center gap-2">
         {FILTERS.map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${filter === f ? 'bg-green-600 border-green-600 text-white' : 'bg-surface-300 border-surface-400 text-slate-400 hover:text-white'}`}>
+            className={`text-[10px] font-bold px-4 py-2 rounded-xl border transition-all uppercase tracking-wider ${filter === f 
+              ? 'bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20' 
+              : 'bg-white dark:bg-surface-300 border-slate-200 dark:border-surface-400 text-slate-500 dark:text-slate-400 hover:border-green-500/30 dark:hover:text-white'}`}>
             {FILTER_LABELS[f]}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" /></div>
+        <div className="flex items-center justify-center py-24"><div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin" /></div>
       ) : filtered.length === 0 ? (
-        <div className="card p-16 text-center text-slate-500"><Ban size={32} className="mx-auto mb-4 opacity-20" />Nenhuma dica encontrada.</div>
+        <div className="bg-white dark:bg-surface-200 p-20 rounded-[3rem] border border-slate-100 dark:border-white/5 text-center shadow-sm">
+          <Ban size={48} className="mx-auto mb-4 text-slate-200 dark:text-slate-800" />
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Nenhuma dica encontrada para este filtro.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(t => <TipCard key={t.id} tip={t} />)}
@@ -480,7 +485,7 @@ export const TipsPage = () => {
               <div className="grid grid-cols-2 gap-3 border-t border-surface-400 pt-4 mt-4">
                 <div>
                   <label className="label">Resultado</label>
-                  <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="input-field py-2 px-3 w-full text-white bg-surface-200">
+                  <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 px-4 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all">
                     <option value="PENDING">Pendente</option>
                     <option value="GREEN">Green</option>
                     <option value="RED">Red</option>

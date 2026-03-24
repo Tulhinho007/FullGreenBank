@@ -3,7 +3,7 @@ import {
   Users, AlertTriangle, 
   TrendingUp, Edit2, Search, 
   CheckCircle, Ban, Hourglass, ClipboardList,
-  FileSpreadsheet, FileText, Printer,
+  FileSpreadsheet, FileText,
   CreditCard, Wallet, CircleEllipsis,
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
@@ -40,10 +40,10 @@ interface UserPayment {
 // ─── Helpers visuais ─────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ATIVO:     { label: 'PAGO',      color: 'bg-green-500/10 text-green-500 border-green-500/20',  icon: <CheckCircle size={12} /> },
-  PENDENTE:  { label: 'PENDENTE',  color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', icon: <Hourglass size={12} /> },
-  ATRASADO:  { label: 'ATRASADO',  color: 'bg-red-500/10 text-red-500 border-red-500/20',        icon: <AlertTriangle size={12} /> },
-  CANCELADO: { label: 'CANCELADO', color: 'bg-surface-300 text-slate-400 border-surface-400',    icon: <Ban size={12} /> },
+  ATIVO:     { label: 'PAGO',      color: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-green-500/10 dark:text-green-500 dark:border-green-500/20',  icon: <CheckCircle size={12} /> },
+  PENDENTE:  { label: 'PENDENTE',  color: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-yellow-500/10 dark:text-yellow-500 dark:border-yellow-500/20', icon: <Hourglass size={12} /> },
+  ATRASADO:  { label: 'ATRASADO',  color: 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-red-500/10 dark:text-red-500 dark:border-red-500/20',        icon: <AlertTriangle size={12} /> },
+  CANCELADO: { label: 'CANCELADO', color: 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-surface-300 dark:text-slate-400 dark:border-surface-400',    icon: <Ban size={12} /> },
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
@@ -305,88 +305,88 @@ export const FinanceiroPagamentosPage = () => {
     <div className="flex flex-col gap-6">
 
       {/* Cabeçalho */}
-      <div>
-        <h2 className="font-display font-semibold text-white">Assinaturas</h2>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Gerencie assinaturas e pagamentos de todos os usuários
+      <div className="flex flex-col gap-1">
+        <h2 className="font-display font-bold text-slate-900 dark:text-white text-xl">Gestão de Assinaturas</h2>
+        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+          Controle financeiro e recorrência de membros
         </p>
       </div>
 
       {/* ── Stats Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Users size={14} className="text-slate-400" />
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Total Usuários</span>
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-2">
+            <Users size={14} className="text-slate-400 dark:text-slate-500" />
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Membros</span>
           </div>
-          <p className="text-2xl font-bold text-white">{loading ? '—' : totalUsers}</p>
+          <p className="text-3xl font-display font-bold text-slate-900 dark:text-white">{loading ? '—' : totalUsers}</p>
         </div>
 
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <CheckCircle size={14} className="text-green-400" />
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Ativos</span>
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle size={14} className="text-emerald-500" />
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Ativos</span>
           </div>
-          <p className="text-2xl font-bold text-green-400">{loading ? '—' : ativos}</p>
+          <p className="text-3xl font-display font-bold text-emerald-600 dark:text-emerald-500">{loading ? '—' : ativos}</p>
         </div>
 
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Hourglass size={14} className="text-yellow-400" />
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Pendentes</span>
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-2">
+            <Hourglass size={14} className="text-amber-500" />
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pendentes</span>
           </div>
-          <p className="text-2xl font-bold text-yellow-400">{loading ? '—' : pendentes}</p>
+          <p className="text-3xl font-display font-bold text-amber-600 dark:text-amber-500">{loading ? '—' : pendentes}</p>
         </div>
 
-        <div className="card p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertTriangle size={14} className="text-red-400" />
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Atrasados</span>
+        <div className="bg-white dark:bg-surface-200 p-5 rounded-3xl border border-slate-200 dark:border-surface-400 shadow-sm transition-all hover:scale-[1.02]">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle size={14} className="text-rose-500" />
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Atrasados</span>
           </div>
-          <p className="text-2xl font-bold text-red-400">{loading ? '—' : atrasados}</p>
+          <p className="text-3xl font-display font-bold text-rose-600 dark:text-rose-400">{loading ? '—' : atrasados}</p>
         </div>
 
-        <div className="card p-4 col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp size={14} className="text-green-400" />
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Receita Mensal</span>
+        <div className="bg-slate-900 dark:bg-emerald-900/20 p-5 rounded-3xl border border-slate-800 dark:border-emerald-500/30 shadow-lg col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp size={14} className="text-emerald-400" />
+            <span className="text-[10px] font-bold text-emerald-500/70 uppercase tracking-widest">Receita Mensal</span>
           </div>
-                <p className="text-xl font-bold font-mono text-emerald-400">
-                  {fmt(receitaMes)}
-                </p>
+          <p className="text-2xl font-display font-bold text-white dark:text-emerald-400">
+            {fmt(receitaMes)}
+          </p>
         </div>
       </div>
 
       {/* ── Filtros e Ações ─────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-3 mb-6 bg-slate-50/50 dark:bg-white/5 p-4 rounded-3xl border border-slate-100 dark:border-white/10">
         <div className="relative flex-1 min-w-[280px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input
             type="text"
             placeholder="Pesquise por nome, email ou ID..."
-            className="input-field pl-10 h-11 bg-surface-300/50 border-surface-300"
+            className="w-full bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl py-2.5 pl-12 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all shadow-sm"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer" 
+          className="bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-sm"
           value={filterPlan} 
           onChange={e => setFilterPlan(e.target.value as PlanType | '')}
         >
-          <option value="">Todos os planos</option>
+          <option value="">Todos Planos</option>
           {Object.keys(PLAN_CONFIG).map(p => (
             <option key={p} value={p}>{PLAN_CONFIG[p as PlanType].label}</option>
           ))}
         </select>
 
         <select 
-          className="input-field w-auto min-w-[150px] h-11 bg-surface-300/50 border-surface-300 text-sm cursor-pointer" 
+          className="bg-white dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-2xl px-4 h-11 text-xs font-bold text-slate-600 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-sm"
           value={filterStatus} 
           onChange={e => setFilterStatus(e.target.value as PaymentStatus | '')}
         >
-          <option value="">Todos os status</option>
+          <option value="">Status</option>
           {(Object.keys(STATUS_CONFIG) as PaymentStatus[]).map(s => (
             <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
           ))}
@@ -400,17 +400,13 @@ export const FinanceiroPagamentosPage = () => {
         </select>
 
         <div className="flex items-center gap-2 ml-auto">
-          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-lg text-xs font-bold hover:bg-emerald-500/20 transition-colors h-11">
+          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-500 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-sm">
             <FileSpreadsheet size={16} />
             Excel
           </button>
-          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold hover:bg-rose-500/20 transition-colors h-11">
+          <button onClick={exportPDF} className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-500 border border-rose-100 dark:border-rose-500/20 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-sm">
             <FileText size={16} />
             PDF
-          </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 rounded-lg text-xs font-bold hover:bg-indigo-500/20 transition-colors h-11">
-            <Printer size={16} />
-            Imprimir
           </button>
         </div>
       </div>
@@ -421,20 +417,20 @@ export const FinanceiroPagamentosPage = () => {
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm overflow-hidden">
           {/* Header da tabela consolidado */}
-          <div className="hidden md:grid grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 bg-surface-300/30 border-b border-surface-300 text-[10px] font-bold text-slate-500 uppercase tracking-widest items-center">
+          <div className="hidden md:grid grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-surface-300 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest items-center">
             <span>Usuário</span>
             <span>Plano</span>
             <span>Valor</span>
-            <span>Forma de Pagamento</span>
+            <span>Pagamento</span>
             <span>Status</span>
-            <span>Data de Compra</span>
-            <span>Próxima Mensalidade</span>
+            <span>Compra</span>
+            <span>Próxima</span>
             <span className="text-right pr-4">Ações</span>
           </div>
 
-          <div className="divide-y divide-surface-300">
+          <div className="divide-y divide-slate-100 dark:divide-surface-300">
             {filtered.map(u => (
               <UserRow 
                 key={u.id} 
@@ -661,38 +657,37 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-surface-300 last:border-0 hover:bg-surface-300/20 transition-colors items-center group">
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_120px_120px_1.5fr_120px_1.5fr_150px_80px] gap-4 px-6 py-4 border-b border-slate-100 dark:border-surface-300 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors items-center group">
       
       {/* USUÁRIO */}
       <div className="flex flex-col min-w-0">
-        <span className="text-sm font-bold text-white truncate">{user.name}</span>
-        <span className="text-[10px] text-slate-500 truncate mt-0.5">{user.email}</span>
+        <span className="text-sm font-bold text-slate-900 dark:text-white truncate uppercase tracking-tight">{user.name}</span>
+        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 truncate mt-0.5">{user.email}</span>
       </div>
 
       {/* PLANO */}
       <div>
-        <span className={`text-[9px] font-black px-2.5 py-1 rounded border tracking-tighter ${planCfg.color}`}>
+        <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg border tracking-tighter uppercase ${planCfg.color}`}>
           {planCfg.label}
         </span>
       </div>
 
       {/* VALOR */}
-      <div className="text-sm font-bold text-white">
+      <div className="text-sm font-bold text-slate-900 dark:text-white font-mono">
         {user.value != null ? formatCurrency(user.value) : '—'}
       </div>
 
       {/* FORMA DE PAGAMENTO */}
       <div className="flex items-center gap-2">
         {getPayIcon(user.payMethod)}
-        <span className="text-xs text-slate-300 font-medium whitespace-nowrap">
+        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-bold whitespace-nowrap uppercase tracking-tighter">
           {PAY_METHOD_LABEL[user.payMethod] || '—'}
-          {user.payMethod === 'CARTAO' && ' **** 1234'}
         </span>
       </div>
 
       {/* STATUS */}
       <div>
-        <span className={`text-[9px] font-black px-2.5 py-1 rounded inline-flex items-center gap-1.5 ${statusCfg.color}`}>
+        <span className={`text-[9px] font-black px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 uppercase tracking-widest ${statusCfg.color}`}>
           <div className={`w-1.5 h-1.5 rounded-full bg-current`} />
           {statusCfg.label}
         </span>
@@ -700,7 +695,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
 
       {/* DATA DE COMPRA */}
       <div>
-        <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 truncate">
           {user.status !== 'PENDENTE' 
             ? (user.notes?.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1]?.split('|')[0]) : formatDate(new Date().toISOString()))
             : '—'}
@@ -708,25 +703,25 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       </div>
 
       {/* PRÓXIMA MENSALIDADE */}
-      <div className="text-sm font-bold text-slate-700 dark:text-slate-100">
+      <div className="text-[11px] font-bold text-slate-600 dark:text-slate-300 font-mono">
         {user.dueDate ? formatDate(user.dueDate) : '—'}
       </div>
 
       {/* AÇÕES */}
-      <div className="flex items-center justify-end gap-1">
+      <div className="flex items-center justify-end gap-1 translate-x-1 group-hover:translate-x-0 transition-transform">
         <button
           onClick={onHistory}
-          className="p-1.5 text-slate-400 hover:text-white hover:bg-surface-400 rounded transition-all"
+          className="p-1.5 text-slate-400 hover:text-blue-500 dark:hover:text-white bg-slate-50 dark:bg-surface-300 rounded-lg border border-slate-200 dark:border-surface-400 transition-all shadow-sm"
           title="Histórico de Pagamentos"
         >
-          <ClipboardList size={16} />
+          <ClipboardList size={14} />
         </button>
         <button
           onClick={() => onEdit(user)}
-          className="p-1.5 text-slate-400 hover:text-white hover:bg-surface-400 rounded transition-all"
+          className="p-1.5 text-slate-400 hover:text-green-600 dark:hover:text-white bg-slate-50 dark:bg-surface-300 rounded-lg border border-slate-200 dark:border-surface-400 transition-all shadow-sm"
           title="Editar"
         >
-          <Edit2 size={16} />
+          <Edit2 size={14} />
         </button>
       </div>
     </div>

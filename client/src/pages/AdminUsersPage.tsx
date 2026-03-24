@@ -139,8 +139,10 @@ export const AdminUsersPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display font-semibold text-white">Usuários</h2>
-          <p className="text-xs text-slate-500">{users.length} usuários cadastrados</p>
+          <h2 className="font-display font-bold text-slate-900 dark:text-white text-xl">Gestão de Usuários</h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+            {users.length} usuários registrados na plataforma
+          </p>
         </div>
       </div>
 
@@ -149,73 +151,77 @@ export const AdminUsersPage = () => {
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="card border border-surface-400 overflow-hidden">
+        <div className="bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-surface-400 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-surface-300">
-                  {['Usuários', 'Email', 'Telefone', 'Plano', 'Role', 'Cadastro', 'Status', 'Ações'].map((h, i) => (
-                    <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
+                <tr className="border-b border-slate-100 dark:border-surface-300 bg-slate-50/50 dark:bg-white/5">
+                  {['Usuários', 'Status', 'Plano', 'Role', 'Telefone', 'Cadastro', 'Ações'].map((h, i) => (
+                    <th key={i} className="px-5 py-4 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-surface-300">
+              <tbody className="divide-y divide-slate-100 dark:divide-surface-300">
                 {users.map(u => {
                   const editable = canEdit(u)
                   return (
-                    <tr key={u.id} className="hover:bg-surface-300/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-xs font-bold text-green-100 shrink-0">
+                    <tr key={u.id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-2xl bg-green-500/10 dark:bg-green-700/20 flex items-center justify-center text-sm font-bold text-green-600 dark:text-green-100 shrink-0 shadow-inner">
                             {u.name[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-sm">{u.name}</p>
-                            <p className="text-slate-500 text-[11px]">{u.email}</p>
+                            <p className="font-bold text-slate-900 dark:text-white text-sm">{u.name}</p>
+                            <p className="text-slate-400 dark:text-slate-500 text-[11px] font-medium">{u.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{u.email}</td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{u.phone || '—'}</td>
-                      <td className="px-4 py-3">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                          u.plan === 'PRO' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-800/50' :
-                          'bg-slate-900/40 text-slate-400 border-slate-800/50'
-                        }`}>
-                          {u.plan || 'STARTER'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-col gap-0.5">
-                          <p className={`text-[11px] ${getRoleInfo(u.role).color}`}>
-                            {getRoleInfo(u.role).label}
-                          </p>
-                          {u.isTipster && (
-                            <span className="flex items-center gap-1 text-[9px] font-bold text-orange-500 uppercase tracking-tight">
-                              <TrendingUp size={9} /> Tipster
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt)?.split(' ')[0]}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <button 
                           onClick={() => handleToggle(u)}
                           disabled={!editable || loading}
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${
                             u.active 
-                              ? 'bg-green-900/30 text-green-500 border border-green-800/50 hover:bg-green-900/50' 
-                              : 'bg-red-900/30 text-red-500 border border-red-800/50 hover:bg-red-900/50'
-                          }`}
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' 
+                              : 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
+                          } ${editable ? 'hover:scale-105 active:scale-95' : 'opacity-50 cursor-not-allowed'}`}
                         >
                           {u.active ? 'Ativo' : 'Inativo'}
                         </button>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
+                      <td className="px-5 py-4">
+                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg border ${
+                          u.plan === 'PRO' 
+                            ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-500/30' 
+                            : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800/20 dark:text-slate-400 dark:border-slate-700/50'
+                        }`}>
+                          {u.plan || 'STARTER'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col gap-0.5">
+                          <p className={`text-[11px] font-bold uppercase tracking-tight ${getRoleInfo(u.role).color}`}>
+                            {getRoleInfo(u.role).label}
+                          </p>
+                          {u.isTipster && (
+                            <span className="flex items-center gap-1 text-[9px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-tighter">
+                              <TrendingUp size={9} strokeWidth={3} /> Tipster Oficial
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-slate-400 dark:text-slate-500 text-[11px] font-bold font-mono">
+                        {u.phone || '—'}
+                      </td>
+                      <td className="px-5 py-4 text-slate-400 dark:text-slate-500 text-[11px] font-bold">
+                        {formatDateTime(u.createdAt)?.split(' ')[0]}
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-1.5 translate-x-1 group-hover:translate-x-0 transition-transform">
                           <button 
                             onClick={() => openEdit(u)}
-                            className="p-1.5 rounded-lg bg-surface-300 text-slate-400 hover:text-white hover:bg-surface-400 transition-all"
+                            className="p-2 rounded-xl bg-slate-100 dark:bg-surface-300 text-slate-400 hover:text-green-500 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-surface-400 transition-all shadow-sm"
                             title="Editar Perfil"
                           >
                             <Pencil size={14} />
@@ -223,7 +229,7 @@ export const AdminUsersPage = () => {
                           {isMaster && (
                             <button 
                               onClick={() => openRole(u)}
-                              className="p-1.5 rounded-lg bg-surface-300 text-blue-400 hover:text-white hover:bg-blue-600/50 transition-all"
+                              className="p-2 rounded-xl bg-slate-100 dark:bg-surface-300 text-blue-500 hover:text-white hover:bg-blue-500 transition-all shadow-sm"
                               title="Alterar Cargo"
                             >
                               <ShieldCheck size={14} />
@@ -232,7 +238,7 @@ export const AdminUsersPage = () => {
                           {isMaster && (
                             <button 
                               onClick={() => impersonateUser(u as any)}
-                              className="p-1.5 rounded-lg bg-surface-300 text-orange-400 hover:text-white hover:bg-orange-600/50 transition-all"
+                              className="p-2 rounded-xl bg-slate-100 dark:bg-surface-300 text-orange-500 hover:text-white hover:bg-orange-500 transition-all shadow-sm"
                               title="Acessar conta"
                             >
                               <UserIcon size={14} />
