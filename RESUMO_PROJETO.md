@@ -32,7 +32,7 @@ O **Full Green Bank** é uma plataforma SaaS de gestão de apostas esportivas vo
 | Backend | Node.js + Express + TypeScript |
 | ORM | Prisma |
 | Banco de Dados | PostgreSQL (Supabase) |
-| Autenticação | JWT (Bearer Token em localStorage) |
+| Autenticação | JWT (HttpOnly, Secure, SameSite Cookie) |
 | Hospedagem | Vercel (frontend + backend serverless) |
 
 ### Estrutura de Pastas
@@ -269,6 +269,15 @@ notes           String?    -- histórico de pagamentos em texto
 - **CRUD Completo**: Implementação das rotas `GET`, `POST`, `PATCH` e `DELETE` no backend (Vercel) para controle 100% via API.
 - **Histórico Persistente**: Ações de depósito, saque e resultado vinculadas à `carteiraId`, permitindo análise individual de performance.
 
+### 23. Segurança & Refatoração de Autenticação (Sessão Atual)
+- **Migração para Cookies Seguros**: Substituição do `localStorage` por `httpOnly`, `secure` e `sameSite: 'strict'` cookies para armazenamento do JWT, eliminando riscos de XSS.
+- **Segurança no Backend (RBAC)**: Implementação de middleware de autorização em todos os endpoints sensíveis (Saques, Gestão, Logs). Agora a segurança é garantida no servidor, independente do estado do frontend.
+- **Remoção Global do Campo "Usuário" (username)**:
+    - O sistema foi simplificado para utilizar apenas **E-mail** e Senha.
+    - O campo `username` foi removido do banco de dados (Prisma), serviços, controllers e de todas as telas (Login, Cadastro, Perfil, Admin).
+- **Prevenção de Information Disclosure**: Configuração do build de produção (Vite/esbuild) para remover automaticamente todos os `console.log` e `debugger`, protegendo a estrutura da API contra inspeção via DevTools.
+- **Correção de Rotas de Auth**: Resolvido erro 404 nos endpoints `/auth/me` e `/auth/refresh` após a refatoração de cookies.
+
 ---
 
 ## 📡 API — Principais Endpoints
@@ -306,8 +315,8 @@ VITE_API_URL=http://localhost:3001 # Local
 
 ## 📌 Últimos Commits (Resumo)
 
-| Commit | Descrição |
-|--------|-----------|
+| `9b454dd` | refactor: remove username field system-wide and migrate to email-only auth |
+| `e8e194e` | chore: remove console logs in production via Vite esbuild |
 | `1202efa` | fix: adicionar rotas GET e DELETE para carteiras em gestao-banca |
 | `ac9bf87` | debug: logs de seed no frontend e backend |
 | `efc5cea` | feat: otimizar inserção de mercados com createMany no backend |
