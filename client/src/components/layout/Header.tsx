@@ -1,6 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext'
-import { useTheme } from '../../contexts/ThemeContext'
-import { Bell, Search, Sun, Moon } from 'lucide-react'
+import { Bell, Search } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
 const routeTitles: Record<string, string> = {
@@ -22,7 +21,6 @@ const greetings = () => {
 
 export const Header = () => {
   const { user } = useAuth()
-  const { theme, toggleTheme } = useTheme()
   const location = useLocation()
   
   const title = routeTitles[location.pathname] || 'Full Green Bank'
@@ -47,28 +45,18 @@ export const Header = () => {
           <span>Pesquisar...</span>
         </div>
 
-        {/* Theme toggle */}
-        <button
-          onClick={() => toggleTheme()}
-          className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 hover:border-green-500 transition-colors shadow-sm"
-          title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
-        >
-          {theme === 'dark'
-            ? <Sun size={16} className="text-yellow-400" />
-            : <Moon size={16} className="text-slate-500" />
-          }
-        </button>
+
 
         {/* Notifications */}
-        <button className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 hover:border-green-500 transition-colors shadow-sm">
+        <button className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-surface-300 border border-surface-400 hover:border-green-500 transition-colors shadow-sm">
           <Bell size={16} className="text-slate-500" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full border-2 border-white dark:border-surface-300"></span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-500 rounded-full border-2 border-surface-300"></span>
         </button>
 
         {/* Role badge */}
-        <div className="hidden sm:flex items-center gap-2 bg-slate-50 dark:bg-surface-300 border border-slate-200 dark:border-surface-400 rounded-lg px-3 py-1.5">
+        <div className="hidden sm:flex items-center gap-2 bg-surface-300 border border-surface-400 rounded-lg px-3 py-1.5">
           <span className="w-2 h-2 rounded-full bg-green-500"></span>
-          <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{user?.role}</span>
+          <span className="text-xs font-bold text-slate-300">{user?.role}</span>
         </div>
       </div>
     </header>
