@@ -281,6 +281,9 @@ notes           String?    -- histórico de pagamentos em texto
 - **Sessões Estendidas**: Aumento da expiração do JWT para 7 dias, garantindo maior estabilidade de sessão para o usuário.
 - **Prevenção de Information Disclosure (Hardening)**: Implementação de um manipulador de erro global e sanitização do utilitário `sendError` para ocultar stack traces e detalhes técnicos em produção.
 - **Auditoria Robusta (Backend Logging)**: Transferência do sistema de logs de autenticação do frontend para o backend, garantindo que registros de login/cadastro sejam criados de forma confiável e segura.
+- **Normalização de E-mail**: Implementação de conversão automática de e-mail para minúsculas no cadastro e login, evitando erros 401 por diferenças de caixa alta/baixa.
+- **Blindagem de Frontend (Resiliência)**: Aplicação de *Optional Chaining* em todos os componentes que manipulam strings de usuário (nome, iniciais, datas), resolvendo erros de `TypeError: split` durante as transições de sessão.
+- **Fluxo de Autenticação Silencioso**: Otimização do carregamento inicial para evitar flashes de "Carregando" e reduzir ruído de erros 401 no console para visitantes não logados.
 
 ---
 
