@@ -276,6 +276,7 @@ notes           String?    -- histórico de pagamentos em texto
     - O sistema foi simplificado para utilizar apenas **E-mail** e Senha.
     - O campo `username` foi removido do banco de dados (Prisma), serviços, controllers e de todas as telas (Login, Cadastro, Perfil, Admin).
 - **Prevenção de Information Disclosure**: Configuração do build de produção (Vite/esbuild) para remover automaticamente todos os `console.log` e `debugger`, protegendo a estrutura da API contra inspeção via DevTools.
+- **Otimização de Build (Code Splitting)**: Implementação de `manualChunks` no `vite.config.ts` para separar bibliotecas pesadas (`vendor`, `charts`, `utils`) em arquivos distintos, melhorando o cache do navegador e a performance de carregamento.
 - **Correção de Rotas de Auth**: Resolvido erro 404 nos endpoints `/auth/me` e `/auth/refresh` após a refatoração de cookies.
 
 ---
