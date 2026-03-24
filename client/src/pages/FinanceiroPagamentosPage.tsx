@@ -149,7 +149,9 @@ export const FinanceiroPagamentosPage = () => {
   // ── Filtro ─────────────────────────────────────────────────────────────────
   const filtered = safeUsers.filter(u => {
     const term = search.toLowerCase()
-    const matchSearch = !term || u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)
+    const nameStr = u.name || ''
+    const emailStr = u.email || ''
+    const matchSearch = !term || nameStr.toLowerCase().includes(term) || emailStr.toLowerCase().includes(term)
     const matchStatus = !filterStatus || u.status === filterStatus
     const matchPlan   = !filterPlan   || u.plan   === filterPlan
     return matchSearch && matchStatus && matchPlan
@@ -475,7 +477,7 @@ export const FinanceiroPagamentosPage = () => {
               </thead>
               <tbody className="divide-y divide-surface-400">
                 {(() => {
-                  const lines = historyTarget?.notes.split('\n').filter(l => l.includes('PAG:')) || [];
+                  const lines = (historyTarget?.notes || '').split('\n').filter(l => l.includes('PAG:')) || [];
                   if (lines.length === 0) {
                     return (
                       <tr>
@@ -701,7 +703,7 @@ const UserRow = ({ user, onEdit, onHistory, formatCurrency }: UserRowProps) => {
       <div>
         <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
           {user.status !== 'PENDENTE' 
-            ? (user.notes.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1].split('|')[0]) : formatDate(new Date().toISOString()))
+            ? (user.notes?.includes('PAG:') ? formatDate(user.notes.split('PAG:')[1]?.split('|')[0]) : formatDate(new Date().toISOString()))
             : '—'}
         </span>
       </div>

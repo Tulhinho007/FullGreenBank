@@ -25,7 +25,7 @@ export const Header = () => {
   const location = useLocation()
   
   const title = routeTitles[location.pathname] || 'Full Green Bank'
-  const firstName = user?.name.split(' ')[0] || ''
+  const firstName = user?.name?.split(' ')[0] || ''
 
   return (
     <header className="h-16 bg-surface-200 border-b border-surface-300 flex items-center justify-between px-6 shrink-0 print:hidden">

@@ -116,7 +116,7 @@ export const Sidebar = () => {
     navigate('/login')
   }
 
-  const initials = user?.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
+  const initials = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
 
   return (
     <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col shrink-0 print:hidden">

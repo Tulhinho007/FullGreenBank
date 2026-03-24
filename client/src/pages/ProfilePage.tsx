@@ -70,7 +70,7 @@ export const ProfilePage = () => {
     }
   }
 
-  const initials = user?.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+  const initials = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
 
   return (
     <div className="max-w-4xl flex flex-col gap-8 pb-10">
@@ -120,7 +120,7 @@ export const ProfilePage = () => {
                <Calendar size={16} />
                <div className="flex flex-col">
                  <span className="text-[10px] uppercase text-slate-500 font-bold">Membro desde</span>
-                 <span className="text-xs text-white">{user?.createdAt ? formatDateTime(user.createdAt).split(' ')[0] : '--'}</span>
+                 <span className="text-xs text-white">{user?.createdAt ? (formatDateTime(user.createdAt)?.split(' ')[0] || '--') : '--'}</span>
                </div>
              </div>
           </div>

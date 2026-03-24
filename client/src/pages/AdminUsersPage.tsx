@@ -198,7 +198,7 @@ export const AdminUsersPage = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt).split(' ')[0]}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">{formatDateTime(u.createdAt)?.split(' ')[0]}</td>
                       <td className="px-4 py-3">
                         <button 
                           onClick={() => handleToggle(u)}

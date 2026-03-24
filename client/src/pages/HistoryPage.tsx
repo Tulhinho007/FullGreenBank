@@ -152,7 +152,9 @@ export const HistoryPage = () => {
     let current = 0
     return closed.map(c => {
       current += c.lucro
-      const date = c.dataFinal ? fmtDate(c.dataFinal).split('/')[0] + '/' + fmtDate(c.dataFinal).split('/')[1] : '?'
+      const dateRaw = c.dataFinal ? fmtDate(c.dataFinal) : '?'
+      const dateParts = dateRaw.split('/')
+      const date = dateParts.length >= 2 ? `${dateParts[0]}/${dateParts[1]}` : dateRaw
       return { date, profit: current }
     })
   }, [filtered])
