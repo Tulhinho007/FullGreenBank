@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Bug, MessageSquare, Send, Paperclip, AlertCircle, CheckCircle2, ChevronRight, X, ArrowLeft, MessageCircle, Clock } from 'lucide-react';
+import { Bug, MessageSquare, Send, Paperclip, AlertCircle, CheckCircle2, ChevronRight, X, ArrowLeft, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SupportModal } from '../components/ui/SupportModal';
 import api from '../services/api';
