@@ -16,7 +16,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res.cookie('fgb_token', result.token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
+      sameSite: 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie('fgb_token', result.token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
+      sameSite: 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
     });
