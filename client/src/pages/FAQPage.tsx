@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, HelpCircle, BookOpen, MessageCircle, ShieldCheck, ChevronRight, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SupportModal } from '../components/ui/SupportModal';
 
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
@@ -48,6 +48,21 @@ export const FAQPage = () => {
   ];
 
   const [showContact, setShowContact] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCardClick = (title: string) => {
+    switch (title) {
+      case "Guia":
+        navigate('/guide');
+        break;
+      case "Segurança":
+        navigate('/legal/privacy');
+        break;
+      case "Suporte":
+        setShowContact(true);
+        break;
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -85,7 +100,11 @@ export const FAQPage = () => {
             { icon: <ShieldCheck />, title: "Segurança", desc: "Dados protegidos" },
             { icon: <MessageCircle />, title: "Suporte", desc: "Fale conosco" },
           ].map((card, i) => (
-            <div key={i} className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:shadow-lg transition-shadow cursor-pointer group">
+            <div 
+              key={i} 
+              onClick={() => handleCardClick(card.title)}
+              className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:shadow-lg transition-all transform hover:-translate-y-1 cursor-pointer group"
+            >
               <div className="text-green-500 group-hover:scale-110 transition-transform">{card.icon}</div>
               <div>
                 <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{card.title}</h4>
