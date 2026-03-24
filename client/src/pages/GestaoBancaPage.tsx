@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import {
-  Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X, Rocket
+  Wallet, TrendingUp, Plus, Trash2, Edit2, CheckCircle, ChevronDown, Trophy, Calendar, X, Rocket, ShieldCheck
 } from 'lucide-react'
 import { formatCurrency } from '../utils/formatters'
 import toast from 'react-hot-toast'
@@ -58,6 +58,8 @@ export interface BancaCarteira {
 export const GestaoBancaPage = () => {
   const { user: me } = useAuth()
   const [loading, setLoading] = useState(false)
+  const isStarter = me?.role === 'MEMBRO' && me?.plan === 'STARTER'
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   // Lista de casas vem do painel Admin
   const [bookmakers] = useState<string[]>(() => getBookmakersFromAdmin())
@@ -379,7 +381,13 @@ export const GestaoBancaPage = () => {
         <div className="flex items-center gap-2 w-full md:w-auto mt-3 md:mt-0">
           {casaTemBanca && (
             <button
-              onClick={() => { setNovaBancaNome(''); setNovaBancaValorInicial(''); setIsModalBancaOpen(true) }}
+              onClick={() => { 
+                if (isStarter && todasCarteiras.length >= 1) {
+                  setShowUpgradeModal(true)
+                  return
+                }
+                setNovaBancaNome(''); setNovaBancaValorInicial(''); setIsModalBancaOpen(true) 
+              }}
               className="flex-1 md:flex-none btn-secondary flex items-center justify-center gap-2"
             >
               <Plus size={14} /> <span className="hidden sm:inline">Nova Banca</span>
@@ -429,6 +437,12 @@ export const GestaoBancaPage = () => {
             <button
               type="submit"
               className="btn-primary flex items-center gap-2 whitespace-nowrap bg-green-600 hover:bg-green-500 shadow-lg shadow-green-900/20"
+              onClick={(e) => {
+                if (isStarter && todasCarteiras.length >= 1) {
+                  e.preventDefault()
+                  setShowUpgradeModal(true)
+                }
+              }}
             >
               <Rocket size={14} /> Ativar Banca
             </button>
@@ -692,6 +706,40 @@ export const GestaoBancaPage = () => {
                 </button>
                 <button onClick={() => { setIsConfirmDeleteOpen(false); setCarteiraToDeleteId(null) }} className="w-full py-4 rounded-2xl bg-surface-300 hover:bg-surface-400 text-slate-300 font-semibold transition-all">
                   Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL UPGRADE PRO (LIMITE STARTER) */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-surface-200 border border-white/10 w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 border border-amber-500/20">
+                <ShieldCheck size={32} className="text-amber-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Ops! Limite Atingido</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                Você já possui <span className="text-white font-semibold">1 banca</span> ativa. <br />
+                Sua permissão atual não permite mais que uma.<br />
+                <span className="text-amber-400 font-bold mt-2 inline-block">Assine o plano PRO para desbloquear bancas ilimitadas!</span>
+              </p>
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={() => {
+                    setShowUpgradeModal(false)
+                    // Opcional: navegar para planos
+                    window.location.href = '/planos'
+                  }} 
+                  className="w-full py-4 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all active:scale-95 shadow-lg shadow-amber-900/20"
+                >
+                  Ver Planos PRO
+                </button>
+                <button onClick={() => setShowUpgradeModal(false)} className="w-full py-4 rounded-2xl bg-surface-300 hover:bg-surface-400 text-slate-300 font-semibold transition-all">
+                  Voltar
                 </button>
               </div>
             </div>

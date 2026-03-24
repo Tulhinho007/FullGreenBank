@@ -8,6 +8,7 @@ import {
   ChevronDown, ChevronRight, Wallet, User, Bell, BookOpen,
   Target, Star, Briefcase, Activity
 } from 'lucide-react'
+import { SupportModal } from '../ui/SupportModal'
 
 interface NavItemProps {
   icon: React.ReactNode
@@ -109,7 +110,10 @@ const SectionLabel = ({ label }: { label: string }) => (
 export const Sidebar = () => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [isSupportOpen, setIsSupportOpen] = useState(false)
+  
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MASTER'
+  const isStarter = user?.role === 'MEMBRO' && user?.plan === 'STARTER'
 
   const handleLogout = () => {
     logout()
@@ -134,12 +138,21 @@ export const Sidebar = () => {
       {/* Nav */}
       <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto custom-scrollbar">
 
-        {/* ANÁLISE */}
-        <SectionLabel label="Análise" />
-        <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
-        
-        {!(user?.role === 'MEMBRO' && !user?.isActive) ? (
+        {/* ANÁLISE / GESTÃO */}
+        {isStarter ? (
           <>
+            <SectionLabel label="Início" />
+            <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard Geral" to="/dashboard" />
+            <NavItem icon={<TrendingUp size={16} />}      label="Dicas (Tips)"    to="/tips" />
+            
+            <SectionLabel label="Gestão" />
+            <NavItem icon={<Wallet size={16} />}       label="Gestão de Bancas" to="/gestao/banca" />
+            <NavItem icon={<Activity size={16} />}      label="Calculadora Operacional" to="/gestao/calculadora" />
+          </>
+        ) : !(user?.role === 'MEMBRO' && !user?.isActive) ? (
+          <>
+            <SectionLabel label="Análise" />
+            <NavItem icon={<LayoutDashboard size={16} />} label="Dashboard"       to="/dashboard" />
             <NavItem icon={<TrendingUp size={16} />}      label="Dicas"           to="/tips" />
             <NavItem icon={<Target size={16} />}       label="Tipsters"         to="/gestao/tipsters" />
             <NavItem icon={<FileText size={16} />}        label="Relatórios"      children={[
@@ -160,7 +173,6 @@ export const Sidebar = () => {
               { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
             ]} />
             <NavItem icon={<BarChart3 size={16} />}    label="Análise de Valor" placeholder />
-
           </>
         ) : (
           <div className="px-4 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mx-2 mt-4">
@@ -198,7 +210,9 @@ export const Sidebar = () => {
         {/* OUTROS */}
         <SectionLabel label="Outros" />
         <NavItem icon={<Star size={16} />}        label="Nossos Planos"  to="/planos" />
-        <NavItem icon={<BookOpen size={16} />}    label="Apostas Escola" placeholder />
+        <div onClick={() => setIsSupportOpen(true)} className="cursor-pointer">
+          <NavItem icon={<BookOpen size={16} />}    label="Suporte Comum" />
+        </div>
         <NavItem icon={<Bell size={16} />}        label="Alertas"        placeholder />
         <NavItem icon={<ShieldCheck size={16} />} label="Regras"         placeholder />
         <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
@@ -235,6 +249,8 @@ export const Sidebar = () => {
           Sair
         </button>
       </div>
+
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </aside>
   )
 }
