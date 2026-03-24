@@ -20,7 +20,7 @@ interface NavItemProps {
   isLocked?: boolean
   onLockedClick?: () => void
   permission?: { canView: boolean; canEdit: boolean; canDelete: boolean }
-  getPermission?: (key: string) => { canView: boolean; canEdit: boolean; canDelete: boolean } | undefined // NEW
+  getPermission?: (key: string) => { canView: boolean; canEdit: boolean; canDelete: boolean } | undefined
 }
 
 const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedClick, permission, getPermission }: NavItemProps) => {
@@ -162,12 +162,15 @@ export const Sidebar = () => {
     return p ? { canView: p.canView, canEdit: p.canEdit, canDelete: p.canDelete } : undefined
   }
 
-  const getPermForChild = (key: string) => getPerm(key)
-
   const isLockedItem = (key: string, defaultLocked: boolean) => {
     const p = getPerm(key)
     if (p?.canView) return false // Explicit permission overrides plan lock
     return defaultLocked
+  }
+
+  const onSignOut = () => {
+    logout()
+    navigate('/login')
   }
 
   const initials = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
@@ -205,6 +208,7 @@ export const Sidebar = () => {
           to="/tips" 
           onLockedClick={handleLockedClick}
           permission={getPerm('tips')}
+          getPermission={getPerm}
         />
         <NavItem 
           icon={<Target size={16} />} 
@@ -213,6 +217,7 @@ export const Sidebar = () => {
           isLocked={isLockedItem('tipsters', isStarter)}
           onLockedClick={handleLockedClick}
           permission={getPerm('tipsters')}
+          getPermission={getPerm}
         />
         <NavItem 
           icon={<FileText size={16} />} 
@@ -220,9 +225,10 @@ export const Sidebar = () => {
           isLocked={isLockedItem('reports', isStarter)}
           onLockedClick={handleLockedClick}
           permission={getPerm('reports')}
+          getPermission={getPerm}
           children={[
-            { label: 'Histórico de Dicas', to: '/reports/tips' },
-            { label: 'Performance', to: '/reports' }
+            { label: 'Histórico de Dicas', to: '/reports/tips', permissionKey: 'reports-tips' },
+            { label: 'Performance', to: '/reports', permissionKey: 'reports' }
           ]} 
         />
 
@@ -234,6 +240,7 @@ export const Sidebar = () => {
           to="/gestao/banca" 
           onLockedClick={handleLockedClick}
           permission={getPerm('gestao-banca')}
+          getPermission={getPerm}
         />
         <NavItem 
           icon={<Briefcase size={16} />} 
@@ -242,15 +249,17 @@ export const Sidebar = () => {
           isLocked={isLockedItem('investimentos', isStarter)}
           onLockedClick={handleLockedClick}
           permission={getPerm('investimentos')}
+          getPermission={getPerm}
         />
         <NavItem 
           icon={<TrendingUp size={16} />} 
           label="Operacional" 
           onLockedClick={handleLockedClick}
+          getPermission={getPerm}
           children={[
-            { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isLockedItem('alavancagem', isStarter) },
-            { label: 'Calculadora', to: '/gestao/calculadora' },
-            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter) }
+            { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isLockedItem('alavancagem', isStarter), permissionKey: 'alavancagem' },
+            { label: 'Calculadora', to: '/gestao/calculadora', permissionKey: 'calculadora' },
+            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter), permissionKey: 'dicas-gestao' }
           ]} 
         />
         <NavItem 
@@ -259,8 +268,9 @@ export const Sidebar = () => {
           isLocked={isLockedItem('arena-clecio', isStarter)}
           onLockedClick={handleLockedClick}
           permission={getPerm('arena-clecio')}
+          getPermission={getPerm}
           children={[
-            { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio' }
+            { label: 'Arena Clêcio', to: '/gestao/futevolei/arena-clecio', permissionKey: 'arena-clecio' }
           ]} 
         />
         <NavItem 
@@ -338,7 +348,7 @@ export const Sidebar = () => {
           onLockedClick={handleLockedClick}
           getPermission={getPerm}
         />
-        <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" />
+        <NavItem icon={<Settings size={16} />}    label="Configurações"  to="/profile" getPermission={getPerm} />
 
       </nav>
 
@@ -365,7 +375,7 @@ export const Sidebar = () => {
         </NavLink>
 
         <button
-          onClick={handleLogout}
+          onClick={onSignOut}
           className="mt-2 sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-900/20"
         >
           <LogOut size={15} />
