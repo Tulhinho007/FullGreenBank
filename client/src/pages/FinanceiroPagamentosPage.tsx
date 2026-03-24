@@ -19,7 +19,7 @@ import { CurrencyInput } from '../components/ui/CurrencyInput'
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
 type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'CANCELADO'
-type PlanType      = 'STARTER' | 'STANDARD' | 'PRO'
+type PlanType      = 'STARTER' | 'PRO'
 type PayMethod     = 'PIX' | 'CARTAO' | 'BOLETO' | 'TRANSFERENCIA' | ''
 
 interface UserPayment {
@@ -48,7 +48,6 @@ const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon:
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
   STARTER:  { label: 'STARTER', color: 'bg-green-500/10 text-green-600 border-green-500/20 dark:text-green-400' },
-  STANDARD: { label: 'STANDARD',color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20 dark:text-indigo-400' },
   PRO:      { label: 'PRO',     color: 'bg-orange-500/10 text-orange-600 border-orange-500/20 dark:text-orange-400' },
 }
 
@@ -490,7 +489,7 @@ export const FinanceiroPagamentosPage = () => {
                   return lines.reverse().map((line, i) => {
                     const pag = line.split('PAG:')[1]?.split('|')[0] || '—';
                     const venc = line.split('VENC:')[1]?.split('|')[0] || '—';
-                    const plan = line.split('PLAN:')[1] || 'STANDARD';
+                    const plan = line.split('PLAN:')[1] || 'STARTER';
                     const isNewest = i === 0 && historyTarget?.status === 'ATIVO';
                     
                     return (
