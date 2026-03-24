@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Shield, Search, Save, ChevronDown, ChevronUp, Check, X, Eye, Edit3, Trash2, User } from 'lucide-react'
+import { Shield, Search, Save, ChevronDown, ChevronUp, Eye, Edit3, Trash2, User } from 'lucide-react'
 import api from '../services/api'
 import { permissionsService, PagePermission } from '../services/permissions.service'
 import { useAuth } from '../contexts/AuthContext'
@@ -21,17 +21,17 @@ const MODULE_LABELS: Record<string, string> = {
 }
 
 const MODULE_COLORS: Record<string, string> = {
-  analise:    'text-blue-400 bg-blue-900/20 border-blue-800/40',
-  gestao:     'text-green-400 bg-green-900/20 border-green-800/40',
-  financeiro: 'text-yellow-400 bg-yellow-900/20 border-yellow-800/40',
-  admin:      'text-purple-400 bg-purple-900/20 border-purple-800/40',
+  analise:    'text-blue-500 bg-blue-500/10 border-blue-200 dark:text-blue-400 dark:bg-blue-900/20 dark:border-blue-800/40',
+  gestao:     'text-green-500 bg-green-500/10 border-green-200 dark:text-green-400 dark:bg-green-900/20 dark:border-green-800/40',
+  financeiro: 'text-yellow-600 bg-yellow-500/10 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-800/40',
+  admin:      'text-purple-500 bg-purple-500/10 border-purple-200 dark:text-purple-400 dark:bg-purple-900/20 dark:border-purple-800/40',
 }
 
 const getRoleColor = (role: string) => {
-  if (role === 'MASTER') return 'text-purple-400 bg-purple-900/30 border-purple-700/50'
-  if (role === 'ADMIN')  return 'text-blue-400 bg-blue-900/30 border-blue-700/50'
-  if (role === 'TESTER') return 'text-yellow-400 bg-yellow-900/30 border-yellow-700/50'
-  return 'text-slate-400 bg-slate-800/50 border-slate-700/50'
+  if (role === 'MASTER') return 'text-purple-600 bg-purple-50 border-purple-200 dark:text-purple-400 dark:bg-purple-900/30 dark:border-purple-700/50'
+  if (role === 'ADMIN')  return 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-900/30 dark:border-blue-700/50'
+  if (role === 'TESTER') return 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-900/30 dark:border-yellow-700/50'
+  return 'text-slate-600 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-800/50 dark:border-slate-700/50'
 }
 
 export const AdminPermissoesPage = () => {
@@ -140,227 +140,219 @@ export const AdminPermissoesPage = () => {
     }
   }
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
-  )
-
-  // Agrupa permissões por módulo
-  const byModule = permissions.reduce<Record<string, PagePermission[]>>((acc, p) => {
-    if (!acc[p.module]) acc[p.module] = []
-    acc[p.module].push(p)
+  const groupedPermissions = permissions.reduce((acc, p) => {
+    const module = p.module || 'outros'
+    if (!acc[module]) acc[module] = []
+    acc[module].push(p)
     return acc
-  }, {})
-
-  const toggleCollapse = (module: string) =>
-    setCollapsed((prev) => ({ ...prev, [module]: !prev[module] }))
+  }, {} as Record<string, PagePermission[]>)
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-700/40 flex items-center justify-center">
-          <Shield size={20} className="text-purple-400" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-white font-display">Controle de Acesso</h1>
-          <p className="text-slate-400 text-sm">Gerencie as permissões de cada usuário por módulo e página</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Coluna esquerda — lista de usuários */}
-        <div className="lg:col-span-1">
-          <div className="card p-4">
-            <h2 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-4">
-              Selecionar Usuário
-            </h2>
-
-            {/* Search */}
-            <div className="relative mb-4">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por nome ou email..."
-                className="input-field pl-9 text-sm"
-              />
+    <div className="p-4 lg:p-8 min-h-screen bg-slate-50 dark:bg-surface-100 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
+              <Shield size={28} />
             </div>
-
-            {/* Lista */}
-            <div className="flex flex-col gap-1 max-h-[520px] overflow-y-auto custom-scrollbar">
-              {filteredUsers.map((u) => (
-                <button
-                  key={u.id}
-                  onClick={() => handleSelectUser(u)}
-                  className={`w-full text-left px-3 py-3 rounded-lg transition-all duration-150 border ${
-                    selectedUser?.id === u.id
-                      ? 'bg-green-900/20 border-green-700/40 text-white'
-                      : 'bg-transparent border-transparent hover:bg-surface-300/40 text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-700/50 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                      {u.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-sm truncate">{u.name}</div>
-                      <div className="text-xs text-slate-500 truncate">{u.email}</div>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${getRoleColor(u.role)}`}>
-                      {u.role}
-                    </span>
-                  </div>
-                </button>
-              ))}
-              {filteredUsers.length === 0 && (
-                <p className="text-slate-500 text-sm text-center py-8">Nenhum usuário encontrado</p>
-              )}
+            <div>
+              <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white">Controle de Acesso</h1>
+              <p className="text-slate-500 dark:text-slate-400">Gerencie permissões granulares por página e usuário</p>
             </div>
           </div>
         </div>
 
-        {/* Coluna direita — matriz de permissões */}
-        <div className="lg:col-span-2">
-          {!selectedUser ? (
-            <div className="card p-12 flex flex-col items-center justify-center gap-3 text-center h-full">
-              <User size={40} className="text-slate-600" />
-              <p className="text-slate-400 font-medium">Selecione um usuário para gerenciar permissões</p>
-              <p className="text-slate-600 text-sm">As permissões são configuradas por página e módulo</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* User List Panel */}
+          <div className="lg:col-span-1 bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col shadow-sm">
+            <div className="p-5 border-b border-slate-100 dark:border-white/5">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Buscar usuário..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all"
+                />
+              </div>
             </div>
-          ) : (
-            <div className="card p-6">
-              {/* User header */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-700/50 flex items-center justify-center text-sm font-bold text-white">
-                    {selectedUser.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()}
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1 max-h-[600px]">
+              {users
+                .filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()))
+                .map(u => (
+                  <button
+                    key={u.id}
+                    onClick={() => handleSelectUser(u)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 ${
+                      selectedUser?.id === u.id 
+                        ? 'bg-green-500 text-white shadow-lg shadow-green-500/20 active:scale-[0.98]' 
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                      selectedUser?.id === u.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-white/5 text-green-500'
+                    }`}>
+                      {u.name[0]}
+                    </div>
+                    <div className="text-left flex-1 min-w-0">
+                      <p className={`text-sm font-bold truncate ${selectedUser?.id === u.id ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                        {u.name}
+                      </p>
+                      <p className={`text-[11px] truncate ${selectedUser?.id === u.id ? 'text-white/70' : 'text-slate-500'}`}>
+                        {u.email}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${getRoleColor(u.role)}`}>
+                      {u.role}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          {/* Permissions Matrix Panel */}
+          <div className="lg:col-span-2">
+            {selectedUser ? (
+              <div className="space-y-6">
+                {/* User Profile Header */}
+                <div className="flex items-center gap-4 p-4 bg-white dark:bg-surface-200 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 font-bold text-lg">
+                    {selectedUser.name[0]}
                   </div>
                   <div>
-                    <div className="font-bold text-white">{selectedUser.name}</div>
-                    <div className="text-xs text-slate-400">{selectedUser.email}</div>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">{selectedUser.name}</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{selectedUser.email}</p>
                   </div>
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${getRoleColor(selectedUser.role)}`}>
-                    {selectedUser.role}
-                  </span>
+                  <div className="ml-auto">
+                    <button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-green-500/20"
+                    >
+                      <Save size={18} />
+                      {saving ? 'Salvando...' : 'Salvar Alterações'}
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="btn-primary flex items-center gap-2 text-sm"
-                >
-                  {saving ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Save size={15} />
-                  )}
-                  {saving ? 'Salvando...' : 'Salvar Permissões'}
-                </button>
-              </div>
 
-              {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {Object.entries(byModule).map(([module, pages]) => {
-                    const allGranted = pages.every((p) => p.canView && p.canEdit && p.canDelete)
-                    const isCollapsed = collapsed[module]
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center py-24 bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-white/5">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mb-4"></div>
+                    <p className="text-slate-500 dark:text-slate-400">Carregando permissões...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {Object.entries(groupedPermissions).map(([module, pages]) => {
+                      const isCollapsed = collapsed[module]
+                      const allGranted = pages.every(p => p.canView && p.canEdit && p.canDelete)
 
-                    return (
-                      <div key={module} className={`rounded-xl border ${MODULE_COLORS[module] || 'border-slate-700'} overflow-hidden`}>
-                        {/* Module header */}
-                        <div className={`flex items-center justify-between px-4 py-3 ${MODULE_COLORS[module] || ''}`}>
-                          <button
-                            onClick={() => toggleCollapse(module)}
-                            className="flex items-center gap-2 font-bold text-sm flex-1"
+                      return (
+                        <div key={module} className="bg-white dark:bg-surface-100 rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden shadow-sm">
+                          {/* Module header */}
+                          <div
+                            className={`flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!isCollapsed ? 'border-b border-slate-200 dark:border-white/5' : ''}`}
+                            onClick={() => setCollapsed(prev => ({ ...prev, [module]: !isCollapsed }))}
                           >
-                            {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
-                            {MODULE_LABELS[module] || module}
-                            <span className="text-xs font-normal opacity-70">({pages.length} páginas)</span>
-                          </button>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => toggleModule(module, true)}
-                              className="text-xs px-2 py-1 rounded bg-green-600/30 hover:bg-green-600/50 text-green-300 transition-colors flex items-center gap-1"
-                            >
-                              <Check size={11} /> Tudo
-                            </button>
-                            <button
-                              onClick={() => toggleModule(module, false)}
-                              className="text-xs px-2 py-1 rounded bg-red-600/20 hover:bg-red-600/40 text-red-400 transition-colors flex items-center gap-1"
-                            >
-                              <X size={11} /> Nada
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Pages table */}
-                        {!isCollapsed && (
-                          <div className="bg-surface-200/50">
-                            {/* Table header */}
-                            <div className="grid grid-cols-[1fr_80px_80px_80px] px-4 py-2 border-b border-slate-700/50 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                              <span>Página</span>
-                              <span className="text-center flex items-center justify-center gap-1">
-                                <Eye size={11} /> Ver
+                            <div className="flex items-center gap-3">
+                              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${MODULE_COLORS[module] || 'bg-slate-100 border-slate-200 dark:bg-white/5 dark:border-white/10'}`}>
+                                {MODULE_LABELS[module] || module}
                               </span>
-                              <span className="text-center flex items-center justify-center gap-1">
-                                <Edit3 size={11} /> Editar
-                              </span>
-                              <span className="text-center flex items-center justify-center gap-1">
-                                <Trash2 size={11} /> Deletar
+                              <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                                {pages.length} páginas
                               </span>
                             </div>
-
-                            {pages.map((p) => (
-                              <div
-                                key={p.pageName}
-                                className="grid grid-cols-[1fr_80px_80px_80px] px-4 py-3 border-b border-slate-800/60 last:border-0 hover:bg-surface-300/20 transition-colors"
+                            <div className="flex items-center gap-4" onClick={e => e.stopPropagation()}>
+                              <button
+                                onClick={() => toggleModule(module, !allGranted)}
+                                className={`text-[11px] font-bold uppercase tracking-tight px-3 py-1 rounded-md transition-colors ${
+                                  allGranted ? 'text-red-500 hover:bg-red-500/10' : 'text-green-500 hover:bg-green-500/10'
+                                }`}
                               >
-                                <span className="text-sm text-slate-200 font-medium self-center">{p.pageLabel}</span>
-                                {(['canView', 'canEdit', 'canDelete'] as const).map((field) => (
-                                  <div key={field} className="flex items-center justify-center">
-                                    <button
-                                      onClick={() => togglePermission(p.pageName, field)}
-                                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-150 ${
-                                        p[field]
-                                          ? field === 'canView'   ? 'bg-green-500 border-green-400'
-                                          : field === 'canEdit'   ? 'bg-blue-500 border-blue-400'
-                                          : 'bg-red-500 border-red-400'
-                                          : 'bg-transparent border-slate-600 hover:border-slate-400'
-                                      }`}
-                                    >
-                                      {p[field] && (
-                                        field === 'canView' ? <Eye size={13} className="text-white" strokeWidth={3} /> :
-                                        field === 'canEdit' ? <Edit3 size={13} className="text-white" strokeWidth={3} /> :
-                                        <Trash2 size={13} className="text-white" strokeWidth={3} />
-                                      )}
-                                    </button>
-                                  </div>
-                                ))}
+                                {allGranted ? 'Remover Tudo' : 'Liberar Tudo'}
+                              </button>
+                              <div className="text-slate-400">
+                                {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
                               </div>
-                            ))}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    )
-                  })}
+
+                          {/* Pages table */}
+                          {!isCollapsed && (
+                            <div className="bg-slate-50/50 dark:bg-surface-200/30">
+                              {/* Table header */}
+                              <div className="grid grid-cols-[1fr_80px_80px_80px] px-4 py-2 border-b border-slate-200 dark:border-slate-700/50 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <span>Página</span>
+                                <span className="text-center flex items-center justify-center gap-1">
+                                  <Eye size={11} /> Ver
+                                </span>
+                                <span className="text-center flex items-center justify-center gap-1">
+                                  <Edit3 size={11} /> Editar
+                                </span>
+                                <span className="text-center flex items-center justify-center gap-1">
+                                  <Trash2 size={11} /> Deletar
+                                </span>
+                              </div>
+
+                              {pages.map((p) => (
+                                <div
+                                  key={p.pageName}
+                                  className="grid grid-cols-[1fr_80px_80px_80px] px-4 py-3 border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-slate-100 dark:hover:bg-surface-300/20 transition-colors"
+                                >
+                                  <span className="text-sm text-slate-700 dark:text-slate-200 font-medium self-center">{p.pageLabel}</span>
+                                  {(['canView', 'canEdit', 'canDelete'] as const).map((field) => (
+                                    <div key={field} className="flex items-center justify-center">
+                                      <button
+                                        onClick={() => togglePermission(p.pageName, field)}
+                                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-150 ${
+                                          p[field]
+                                            ? field === 'canView'   ? 'bg-green-500 border-green-400'
+                                            : field === 'canEdit'   ? 'bg-blue-500 border-blue-400'
+                                            : 'bg-red-500 border-red-400'
+                                            : 'bg-transparent border-slate-300 dark:border-slate-600 hover:border-slate-400'
+                                        }`}
+                                      >
+                                        {p[field] && (
+                                          field === 'canView' ? <Eye size={13} className="text-white" strokeWidth={3} /> :
+                                          field === 'canEdit' ? <Edit3 size={13} className="text-white" strokeWidth={3} /> :
+                                          <Trash2 size={13} className="text-white" strokeWidth={3} />
+                                        )}
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[500px] text-center p-8 bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-200 dark:border-white/5 border-dashed shadow-sm">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
+                  <User size={32} className="text-slate-400" />
                 </div>
-              )}
-            </div>
-          )}
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Nenhum Usuário Selecionado</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
+                  Selecione um usuário na lista ao lado para gerenciar suas permissões de acesso.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl font-semibold text-sm shadow-2xl z-50 border ${
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl font-semibold text-sm shadow-2xl z-50 border animate-in fade-in slide-in-from-bottom-4 duration-300 ${
           toast.type === 'success'
-            ? 'bg-slate-900 text-white border-green-500/50'
-            : 'bg-slate-900 text-red-400 border-red-500/50'
+            ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-green-500/50'
+            : 'bg-white dark:bg-slate-900 text-red-500 dark:text-red-400 border-red-500/50'
         }`}>
           {toast.msg}
         </div>

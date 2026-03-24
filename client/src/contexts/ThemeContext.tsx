@@ -35,6 +35,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       }
 
       document.documentElement.setAttribute('data-theme', active)
+      if (active === 'dark') document.documentElement.classList.add('dark')
+      else document.documentElement.classList.remove('dark')
       localStorage.setItem('fgb_theme', t)
     }
 

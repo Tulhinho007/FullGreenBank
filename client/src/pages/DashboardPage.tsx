@@ -24,6 +24,7 @@ const mgmtCards = [
   { icon: <RefreshCw size={18} />, title: 'ROI & Revisão', desc: 'Monitore seu ROI mensalmente. Um ROI positivo de 5–10% já é excelente. Consistência é a meta.' },
   { icon: <BarChart3 size={18} />, title: 'Mercados Certos', desc: 'Especializar-se em 2-3 mercados/ligas melhora muito sua edge. Generalista perde, especialista lucra.' },
 ]
+
 export const DashboardPage = () => {
   const { user } = useAuth()
   const [tips,    setTips]    = useState<Tip[]>([])
@@ -32,7 +33,6 @@ export const DashboardPage = () => {
   useEffect(() => {
     tipsService.getAll(1, 12)
       .then(resp => {
-        // Robust extraction covering all possible API response formats
         const ts = Array.isArray(resp?.tips) ? resp.tips : (Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []));
         setTips(ts);
       })
@@ -55,7 +55,7 @@ export const DashboardPage = () => {
   const totalStake = ts.reduce((a: number, t: Tip) => a + t.stake, 0)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8 transition-colors duration-300">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -89,54 +89,58 @@ export const DashboardPage = () => {
       </div>
 
       {/* Management tips */}
-      <div>
+      <section>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-display font-semibold text-white">Gestão</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Dicas e boas práticas de banca</p>
+            <h2 className="font-display font-semibold text-slate-900 dark:text-white">Gestão</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Dicas e boas práticas de banca</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mgmtCards.map(card => (
-            <div key={card.title} className="card p-5 hover:border-green-800/40 transition-colors duration-200">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-green-900/50 flex items-center justify-center text-green-400">
+            <div key={card.title} className="bg-white dark:bg-surface-200 p-5 rounded-[2rem] border border-slate-100 dark:border-white/5 hover:border-green-500/30 transition-all duration-300 shadow-sm group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300">
                   {card.icon}
                 </div>
-                <h3 className="font-semibold text-white text-sm">{card.title}</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm">{card.title}</h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">{card.desc}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{card.desc}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Recent tips */}
-      <div>
+      <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-white">Dicas Recentes</h2>
-          <a href="/tips" className="text-xs text-green-400 hover:text-green-300">Ver todas →</a>
+          <h2 className="font-display font-semibold text-slate-900 dark:text-white">Dicas Recentes</h2>
+          <a href="/tips" className="text-xs text-green-600 dark:text-green-400 hover:underline font-bold">Ver todas →</a>
         </div>
+        
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-surface-200 rounded-[2rem] border border-slate-100 dark:border-white/5">
+            <div className="w-10 h-10 border-2 border-green-500 border-t-transparent rounded-full animate-spin mb-3" />
+            <p className="text-xs text-slate-400">Carregando dicas...</p>
           </div>
         ) : tips.length === 0 ? (
-          <div className="card p-12 text-center">
-            <TrendingUp size={32} className="text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400">Nenhuma dica cadastrada ainda.</p>
+          <div className="bg-white dark:bg-surface-200 p-16 rounded-[2rem] border border-slate-100 dark:border-white/5 text-center shadow-sm">
+            <div className="w-16 h-16 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+               <TrendingUp size={32} className="text-slate-300 dark:text-slate-600" />
+            </div>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">Nenhuma dica cadastrada ainda.</p>
             {(user?.role === 'ADMIN' || user?.role === 'MASTER') && (
-              <a href="/admin/tips/new" className="text-green-400 text-sm mt-2 inline-block hover:underline">
-                Criar primeira dica →
+              <a href="/admin/tips/new" className="inline-flex items-center gap-2 mt-4 px-6 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-green-500/20">
+                Criar primeira dica
               </a>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tips.map(tip => <TipCard key={tip.id} tip={tip} />)}
           </div>
         )}
-      </div>
+      </section>
     </div>
   )
 }
