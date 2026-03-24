@@ -10,6 +10,10 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-slate-900 dark:text-white;
+  }
+
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { 
     @apply bg-slate-100 dark:bg-[#0f1923]; 
