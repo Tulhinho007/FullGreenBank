@@ -28,20 +28,31 @@ export const authenticate = async (
 
     // --- Impersonation Support ---
     const impersonateId = req.headers['x-impersonate-user-id'] as string;
-    if (impersonateId && (decoded.role === 'ADMIN' || decoded.role === 'MASTER')) {
+    
+    if (impersonateId) {
+      // Verifica no backend se o usuário tem a role MASTER antes de prosseguir
+      if (decoded.role !== 'MASTER') {
+        sendError(res, 'Sem permissão para impersonation', 403);
+        return;
+      }
+
       const targetUser = await prisma.user.findUnique({
         where: { id: impersonateId },
         select: { id: true, name: true, email: true, role: true }
       });
 
-      if (targetUser) {
-        req.user = {
-          userId: targetUser.id,
-          role: targetUser.role as any,
-          email: targetUser.email,
-          name: targetUser.name
-        };
+      // Validação se o usuário a ser impersonado realmente existe
+      if (!targetUser) {
+        sendError(res, 'Usuário a ser impersonado não encontrado', 404);
+        return;
       }
+
+      req.user = {
+        userId: targetUser.id,
+        role: targetUser.role as any,
+        email: targetUser.email,
+        name: targetUser.name
+      };
     }
 
     next();
