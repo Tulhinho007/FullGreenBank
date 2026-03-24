@@ -16,7 +16,7 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
-        // Dark sidebar palette
+        // Dark sidebar palette (sempre dark — sidebar é forçada escura)
         sidebar: {
           bg:      '#0f1923',
           hover:   '#1a2a3a',
@@ -26,21 +26,25 @@ export default {
           heading: '#c5d8e8',
         },
         // Main content area
+        // dark:  tons escuros azulados (original)
+        // light: tons claros de slate (novo — evita fundo escuro no light mode)
         surface: {
-          100: '#131f2e',
-          200: '#172030',
-          300: '#1c2d40',
-          400: '#243447',
+          // Light mode → brancos/cinzas claros
+          // Dark mode  → azuis escuros (usados com dark:bg-surface-*)
+          100: 'var(--surface-100)',
+          200: 'var(--surface-200)',
+          300: 'var(--surface-300)',
+          400: 'var(--surface-400)',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
         display: ['Sora', 'Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono:    ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
         'green-glow': '0 0 20px rgba(34,197,94,0.25)',
-        'card': '0 4px 24px rgba(0,0,0,0.35)',
+        'card':       '0 4px 24px rgba(0,0,0,0.35)',
       },
     },
   },
