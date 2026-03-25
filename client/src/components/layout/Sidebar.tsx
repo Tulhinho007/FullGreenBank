@@ -292,7 +292,7 @@ export const Sidebar = () => {
               getPermission={getPerm}
               children={[
                 { label: 'Assinaturas', to: '/financeiro/pagamentos', permissionKey: 'pagamentos' },
-                { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada', permissionKey: 'banca-gerenciada' },
+
                 { label: 'Histórico de Contratos', to: '/gestao/historico', permissionKey: 'historico' },
 
                 { label: 'Transações', to: '/financeiro/transacoes', permissionKey: 'transacoes' },

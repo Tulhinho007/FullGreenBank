@@ -16,7 +16,7 @@ import { AdminSupportPage }   from './pages/AdminSupportPage'
 import { AdminSolicitacoesPage } from './pages/AdminSolicitacoesPage'
 import { SystemLogPage }               from './pages/SystemLogPage'
 import { FinanceiroPagamentosPage }   from './pages/FinanceiroPagamentosPage'
-import { BancaGerenciadaPage }         from './pages/BancaGerenciadaPage'
+
 import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 import { InvestimentosPage }           from './pages/InvestimentosPage'
 import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
@@ -140,13 +140,7 @@ function App() {
             }
           />
 
-          <Route path="financeiro/banca-gerenciada"
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
-                <BancaGerenciadaPage />
-              </ProtectedRoute>
-            }
-          />
+
           <Route path="gestao/banca" element={<GestaoBancaPage />} />
           <Route path="gestao/investimentos" element={<InvestimentosPage />} />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />

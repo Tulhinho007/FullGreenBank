@@ -18,7 +18,7 @@ export const SYSTEM_PAGES = [
   { module: 'gestao',        pageName: 'historico',          pageLabel: 'Histórico de Contratos' },
   // Financeiro (admin)
   { module: 'financeiro',    pageName: 'pagamentos',         pageLabel: 'Assinaturas' },
-  { module: 'financeiro',    pageName: 'banca-gerenciada',   pageLabel: 'Banca Gerenciada' },
+
   { module: 'financeiro',    pageName: 'transacoes',         pageLabel: 'Transações' },
 
   // Administração
