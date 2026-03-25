@@ -130,7 +130,7 @@ export const DashboardPage = () => {
             </div>
             <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Aguardando novos sinais do mercado...</p>
             {(user?.role === 'ADMIN' || user?.role === 'MASTER') && (
-              <a href="/admin/tips/new" className="inline-flex items-center gap-3 mt-8 px-10 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
+              <a href="/tips" className="inline-flex items-center gap-3 mt-8 px-10 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
                 Criar primeira dica
               </a>
             )}
