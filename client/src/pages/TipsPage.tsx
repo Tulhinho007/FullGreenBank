@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   TrendingUp, Target, Clock, CheckCircle, XCircle,
-  Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign, ChevronDown
+  Plus, X, Edit2, Trash2, Info, Share2, Ban, DollarSign, ChevronDown,
+  Link as LinkIcon, Hash, Calendar
 } from 'lucide-react'
-import { Modal } from '../components/ui/Modal'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 import { tipsService } from '../services/tips.service'
 import { useAuth } from '../contexts/AuthContext'
@@ -11,7 +11,6 @@ import toast from 'react-hot-toast'
 import { ShareTipModal } from '../components/ui/ShareTipModal'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { CurrencyInput } from '../components/ui/CurrencyInput'
 import { SportSelect } from '../components/ui/SportSelect'
 import { addLog } from '../services/log.service'
 
@@ -25,6 +24,8 @@ interface Tip {
   isMultipla?: boolean
   jogos?: any
   linkAposta?: string
+  tipoAposta?: string
+  sportsList?: string[]
 }
 
 type ResultFilter = 'Todos' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
@@ -35,12 +36,56 @@ const FILTER_LABELS: Record<ResultFilter, string> = {
 }
 
 const STATUS_CONFIG: Record<string, any> = {
-  GREEN:   { bg: 'bg-emerald-50', text: 'text-emerald-600', borderL: 'border-l-emerald-500', label: 'Green', icon: <CheckCircle size={12} /> },
-  RED:     { bg: 'bg-rose-50',    text: 'text-rose-600',    borderL: 'border-l-rose-500',    label: 'Red',   icon: <XCircle size={12} /> },
-  VOID:    { bg: 'bg-slate-50',   text: 'text-slate-500',   borderL: 'border-l-slate-400',   label: 'Anulada', icon: <XCircle size={12} /> },
-  PENDING: { bg: 'bg-amber-50',   text: 'text-amber-600',   borderL: 'border-l-amber-500',   label: 'Pendente', icon: <Clock size={12} /> },
-  CASHOUT: { bg: 'bg-orange-50',  text: 'text-orange-600',  borderL: 'border-l-orange-500',  label: 'Cashout',  icon: <DollarSign size={12} /> },
+  GREEN:   { bg: 'bg-emerald-50',  text: 'text-emerald-600', borderL: 'border-l-emerald-500', label: 'Green',    icon: <CheckCircle size={12} />, headerBg: 'from-emerald-500 to-emerald-600', headerText: 'text-emerald-100' },
+  RED:     { bg: 'bg-rose-50',     text: 'text-rose-600',    borderL: 'border-l-rose-500',    label: 'Red',      icon: <XCircle size={12} />,   headerBg: 'from-rose-500 to-rose-600',     headerText: 'text-rose-100' },
+  VOID:    { bg: 'bg-slate-50',    text: 'text-slate-500',   borderL: 'border-l-slate-400',   label: 'Anulado',  icon: <XCircle size={12} />,   headerBg: 'from-slate-400 to-slate-500',   headerText: 'text-slate-100' },
+  PENDING: { bg: 'bg-amber-50',    text: 'text-amber-600',   borderL: 'border-l-amber-500',   label: 'Pendente', icon: <Clock size={12} />,     headerBg: 'from-amber-400 to-amber-500',   headerText: 'text-amber-100' },
+  CASHOUT: { bg: 'bg-orange-50',   text: 'text-orange-600',  borderL: 'border-l-orange-500',  label: 'Cash Out', icon: <DollarSign size={12} />, headerBg: 'from-orange-400 to-orange-500', headerText: 'text-orange-100' },
 }
+
+// ── Shared form field styles ─────────────────────────────────────────────────
+const formField = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 transition-all placeholder:text-slate-300'
+const formLabel = 'block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5'
+
+// ── Status-Colored Modal Header ──────────────────────────────────────────────
+const ModalHeader = ({ status, title, onClose }: { status: string; title: string; onClose: () => void }) => {
+  const c = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING
+  return (
+    <div className={`bg-gradient-to-r ${c.headerBg} flex items-center justify-between px-6 py-4 rounded-t-2xl`}>
+      <div className="flex items-center gap-2">
+        <span className={`${c.headerText} opacity-80`}>{c.icon}</span>
+        <h2 className="text-white font-black text-sm tracking-wide">{title}</h2>
+        <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white`}>{c.label}</span>
+      </div>
+      <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+        <X size={18} />
+      </button>
+    </div>
+  )
+}
+
+// ── Bet Form (shared by create & edit) ───────────────────────────────────────
+interface BetFormState {
+  tipDate: string
+  linkAposta: string
+  tipoAposta: string
+  qtdEsportes: string
+  sportsList: string[]
+  odds: string
+  stake: string
+  status: string
+}
+
+const emptyBetForm = (): BetFormState => ({
+  tipDate: '',
+  linkAposta: '',
+  tipoAposta: 'Simples',
+  qtdEsportes: '',
+  sportsList: [],
+  odds: '',
+  stake: '',
+  status: 'PENDING',
+})
 
 const DoughnutChart = ({ greens, reds, pending, voided, cashout }: any) => {
   const data = {
@@ -86,15 +131,11 @@ export const TipsPage = () => {
   const [filter,     setFilter]     = useState<ResultFilter>('Todos')
   const [page,       setPage]       = useState(1)
   const [selected,   setSelected]   = useState<Tip | null>(null)
-  const [editForm,   setEditForm]   = useState({
-    title: '', event: '', market: '', odds: '', stake: '', result: 'PENDING',
-    profit: '', tipDate: '', valorCashout: '', sport: '', linkAposta: ''
-  })
-  const [newTipSport, setNewTipSport] = useState('')
-  const [newTipLink,  setNewTipLink]  = useState('')
+  const [editForm,   setEditForm]   = useState<BetFormState>(emptyBetForm())
   const [saving,     setSaving]     = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [newTipOpen, setNewTipOpen] = useState(false)
+  const [newForm,    setNewForm]    = useState<BetFormState>(emptyBetForm())
   const [sharingTip, setSharingTip] = useState<Tip | null>(null)
 
   const load = async (p = 1) => {
@@ -119,59 +160,88 @@ export const TipsPage = () => {
     } catch { toast.error('Erro ao excluir dica') }
   }
 
+  // ── Helpers for sport list ──────────────────────────────────────────────────
+  const updateQtdEsportes = (form: BetFormState, qty: string): BetFormState => {
+    const n = Math.max(0, Math.min(20, Number(qty) || 0))
+    const prev = form.sportsList
+    const next = Array.from({ length: n }, (_, i) => prev[i] ?? '')
+    return { ...form, qtdEsportes: qty, sportsList: next }
+  }
+
+  const updateSportAt = (form: BetFormState, idx: number, val: string): BetFormState => {
+    const list = [...form.sportsList]
+    list[idx] = val
+    return { ...form, sportsList: list }
+  }
+
+  // ── Create tip ─────────────────────────────────────────────────────────────
+  const handleCreateTip = async () => {
+    setSaving(true)
+    try {
+      const sport = newForm.sportsList[0] || 'Futebol'
+      const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}`
+      await tipsService.create({
+        title,
+        event: newForm.tipoAposta,
+        market: newForm.tipoAposta,
+        odds: Number(newForm.odds) || 0,
+        stake: Number(newForm.stake) || 0,
+        tipDate: newForm.tipDate ? new Date(newForm.tipDate).toISOString() : new Date().toISOString(),
+        sport,
+        description: newForm.tipoAposta,
+        linkAposta: newForm.linkAposta?.trim() || null,
+        result: newForm.status !== 'PENDING' ? newForm.status : undefined,
+      })
+      toast.success('Dica criada! 🎯')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip publicada', detail: `Publicou: ${title}` })
+      setNewTipOpen(false)
+      setNewForm(emptyBetForm())
+      load(1)
+    } catch { toast.error('Erro ao criar dica') }
+    finally { setSaving(false) }
+  }
+
+  // ── Update tip ─────────────────────────────────────────────────────────────
   const handleUpdateTip = async () => {
     if (!selected) return
     setSaving(true)
     try {
+      const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
       await tipsService.update(selected.id, {
-        title: editForm.title,
-        event: editForm.event,
-        market: editForm.market,
-        odds: Number(editForm.odds),
-        stake: Number(editForm.stake),
-        result: editForm.result,
-        profit: Number(editForm.profit),
-        tipDate: new Date(editForm.tipDate).toISOString(),
-        valorCashout: editForm.result === 'CASHOUT' ? Number(editForm.valorCashout) : null,
-        sport: editForm.sport || 'Futebol',
+        title: selected.title,
+        event: editForm.tipoAposta || selected.event,
+        market: editForm.tipoAposta || selected.market,
+        odds: Number(editForm.odds) || selected.odds,
+        stake: Number(editForm.stake) || selected.stake,
+        result: editForm.status,
+        profit: editForm.status === 'GREEN'
+          ? (Number(editForm.stake) * (Number(editForm.odds) - 1))
+          : editForm.status === 'RED'
+          ? -Number(editForm.stake)
+          : editForm.status === 'VOID' ? 0 : undefined,
+        tipDate: editForm.tipDate ? new Date(editForm.tipDate).toISOString() : selected.tipDate,
+        sport,
         linkAposta: editForm.linkAposta?.trim() || null,
       })
       toast.success('Dica atualizada! 🎯')
-      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Operacional', action: 'Resultado atualizado', detail: `Resultado: ${editForm.result} — ${selected?.title}` })
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Operacional', action: 'Resultado atualizado', detail: `Resultado: ${editForm.status} — ${selected?.title}` })
       setSelected(null); load(page)
     } catch { toast.error('Erro ao atualizar') }
     finally { setSaving(false) }
   }
 
-  const handleResultChange = (newResult: string) => {
-    setEditForm(f => {
-      const stakeVal = Number(f.stake) || 0
-      const oddsVal = Number(f.odds) || 1
-      let newProfit = f.profit
-      if (newResult === 'GREEN') newProfit = (stakeVal * (oddsVal - 1)).toFixed(2)
-      else if (newResult === 'RED') newProfit = (-stakeVal).toFixed(2)
-      else if (newResult === 'VOID') newProfit = '0'
-      else if (newResult === 'CASHOUT') newProfit = (Number(f.valorCashout || 0) - Number(f.stake || 0)).toFixed(2)
-      else newProfit = ''
-      return { ...f, result: newResult, profit: newProfit }
-    })
-  }
-
-
   const openEdit = (tip: Tip) => {
     setSelected(tip)
+    const datePart = new Date(tip.tipDate).toISOString().slice(0, 10)
     setEditForm({
-      title: tip.title,
-      event: tip.event,
-      market: tip.market,
-      odds: tip.odds.toString(),
-      stake: tip.stake.toString(),
-      result: tip.result || 'PENDING',
-      profit: tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '',
-      tipDate: new Date(tip.tipDate).toISOString().slice(0, 16),
-      valorCashout: tip.valorCashout?.toString() || '',
-      sport: tip.sport || '',
+      tipDate: datePart,
       linkAposta: tip.linkAposta || '',
+      tipoAposta: tip.isMultipla ? 'Múltipla' : 'Simples',
+      qtdEsportes: tip.sport ? '1' : '',
+      sportsList: tip.sport ? [tip.sport] : [],
+      odds: tip.odds?.toString() ?? '',
+      stake: tip.stake?.toString() ?? '',
+      status: tip.result || 'PENDING',
     })
   }
 
@@ -404,138 +474,267 @@ export const TipsPage = () => {
         </div>
       )}
 
-      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title="Editar Dica / Resultado" size="md">
-        {selected && (
-          <div className="flex flex-col gap-4">
-            <div className="space-y-4">
+      {/* ── EDITAR DICA MODAL ──────────────────────────────────────────── */}
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <ModalHeader status={editForm.status} title="Editar Dica" onClose={() => setSelected(null)} />
+            <div className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
+
+              {/* Data */}
+              <div>
+                <label className={formLabel}><Calendar size={10} className="inline mr-1" />Data</label>
+                <input
+                  type="date"
+                  className={formField}
+                  value={editForm.tipDate}
+                  onChange={e => setEditForm(f => ({ ...f, tipDate: e.target.value }))}
+                />
+              </div>
+
+              {/* Link de Aposta */}
+              <div>
+                <label className={formLabel}><LinkIcon size={10} className="inline mr-1" />Link de Aposta</label>
+                <input
+                  type="url"
+                  className={formField}
+                  placeholder="https://..."
+                  value={editForm.linkAposta}
+                  onChange={e => setEditForm(f => ({ ...f, linkAposta: e.target.value }))}
+                />
+              </div>
+
+              {/* Tipo de Aposta */}
+              <div>
+                <label className={formLabel}>Tipo de Aposta</label>
+                <select
+                  className={formField}
+                  value={editForm.tipoAposta}
+                  onChange={e => setEditForm(f => ({ ...f, tipoAposta: e.target.value }))}
+                >
+                  <option value="Simples">Simples</option>
+                  <option value="Múltipla">Múltipla</option>
+                  <option value="Criar Aposta">Criar Aposta</option>
+                </select>
+              </div>
+
+              {/* Quantidade de Esportes */}
+              <div>
+                <label className={formLabel}><Hash size={10} className="inline mr-1" />Quantidade de Esportes</label>
+                <input
+                  type="number"
+                  min="0" max="20"
+                  className={formField}
+                  placeholder="Ex: 2"
+                  value={editForm.qtdEsportes}
+                  onChange={e => setEditForm(f => updateQtdEsportes(f, e.target.value))}
+                />
+              </div>
+
+              {/* Dynamic Sport Selects */}
+              {editForm.sportsList.length > 0 && (
+                <div className="flex flex-col gap-2 pl-3 border-l-2 border-emerald-200">
+                  {editForm.sportsList.map((sp, idx) => (
+                    <div key={idx}>
+                      <label className={formLabel}>Esporte {idx + 1}</label>
+                      <SportSelect
+                        value={sp}
+                        onChange={v => setEditForm(f => updateSportAt(f, idx, v))}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Odd + Stake */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="label">Esporte</label>
-                  <SportSelect value={editForm.sport} onChange={v => setEditForm(f => ({ ...f, sport: v }))} />
-                </div>
-                <div>
-                  <label className="label">Evento</label>
-                  <input className="input-field" value={editForm.event} onChange={e => setEditForm(f => ({ ...f, event: e.target.value }))} />
-                </div>
-              </div>
-              <div>
-                <label className="label">Mercado</label>
-                <input className="input-field" value={editForm.market} onChange={e => setEditForm(f => ({ ...f, market: e.target.value }))} />
-              </div>
-              <div>
-                <label className="label">Link da Aposta</label>
-                <input type="url" className="input-field text-sm" placeholder="https://..." value={editForm.linkAposta} onChange={e => setEditForm(f => ({ ...f, linkAposta: e.target.value }))} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="label">Odd</label>
-                  <input type="number" step="0.01" className="input-field" value={editForm.odds} onChange={e => setEditForm(f => ({ ...f, odds: e.target.value }))} />
-                </div>
-                <div>
-                  <label className="label">Stake</label>
-                  <CurrencyInput
-                    value={editForm.stake ? Number(editForm.stake) : 0}
-                    onChange={(v) => setEditForm(f => ({ ...f, stake: String(v) }))}
-                    alertLimit={1000}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 mt-4">
-                <div>
-                  <label className="label">Resultado</label>
-                  <select value={editForm.result} onChange={e => handleResultChange(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-4 text-sm text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all">
-                    <option value="PENDING">Pendente</option>
-                    <option value="GREEN">Green</option>
-                    <option value="RED">Red</option>
-                    <option value="VOID">Anulada</option>
-                    <option value="CASHOUT">Cashout</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="label">
-                    {editForm.result === 'CASHOUT' ? 'Valor Recebido' : `Lucro/Prejuízo (${me?.currency || 'BRL'})`}
-                  </label>
+                  <label className={formLabel}>Odd</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    className="input-field font-mono"
-                    value={editForm.result === 'CASHOUT' ? editForm.valorCashout : editForm.profit}
-                    onChange={e => {
-                      const val = e.target.value
-                      if (editForm.result === 'CASHOUT') {
-                        const prof = (Number(val) - Number(editForm.stake)).toFixed(2)
-                        setEditForm(f => ({ ...f, valorCashout: val, profit: prof }))
-                      } else {
-                        setEditForm(f => ({ ...f, profit: val }))
-                      }
-                    }}
+                    type="number" step="0.01" min="1"
+                    className={formField}
+                    placeholder="Ex: 1.85"
+                    value={editForm.odds}
+                    onChange={e => setEditForm(f => ({ ...f, odds: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className={formLabel}>Stake (R$)</label>
+                  <input
+                    type="number" step="0.5" min="0"
+                    className={formField}
+                    placeholder="Ex: 50"
+                    value={editForm.stake}
+                    onChange={e => setEditForm(f => ({ ...f, stake: e.target.value }))}
                   />
                 </div>
               </div>
+
+              {/* Status */}
               <div>
-                <label className="label">Data/Hora</label>
-                <input type="datetime-local" className="input-field" value={editForm.tipDate} onChange={e => setEditForm(f => ({ ...f, tipDate: e.target.value }))} />
+                <label className={formLabel}>Status</label>
+                <select
+                  className={formField}
+                  value={editForm.status}
+                  onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}
+                >
+                  <option value="PENDING">— Pendente —</option>
+                  <option value="GREEN">✅ Green</option>
+                  <option value="RED">❌ Red</option>
+                  <option value="CASHOUT">🟠 Cash Out</option>
+                  <option value="VOID">⚪ Anulado</option>
+                </select>
               </div>
-            </div>
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
-              <button onClick={handleUpdateTip} disabled={saving} className="btn-primary flex-1">{saving ? 'Salvando...' : 'Confirmar'}</button>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2 border-t border-slate-100">
+                <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
+                <button
+                  onClick={handleUpdateTip}
+                  disabled={saving}
+                  className="btn-primary flex-1"
+                >
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
             </div>
           </div>
-        )}
-      </Modal>
+        </div>
+      )}
 
+      {/* ── NOVA DICA MODAL ───────────────────────────────────────────────── */}
       {newTipOpen && (
-        <Modal isOpen={newTipOpen} onClose={() => setNewTipOpen(false)} title="Nova Dica" size="md">
-          <form className="flex flex-col gap-4" onSubmit={async (e) => {
-            e.preventDefault()
-            setSaving(true)
-            try {
-              const autoTitle = (e.currentTarget.elements.namedItem('champ') as HTMLInputElement).value
-                ? `${(e.currentTarget.elements.namedItem('event') as HTMLInputElement).value} — ${(e.currentTarget.elements.namedItem('champ') as HTMLInputElement).value}`
-                : (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value
-              await tipsService.create({
-                title: autoTitle,
-                event: (e.currentTarget.elements.namedItem('event') as HTMLInputElement).value,
-                market: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
-                odds: Number((e.currentTarget.elements.namedItem('odds') as HTMLInputElement).value),
-                stake: Number((e.currentTarget.elements.namedItem('stake') as HTMLInputElement).value),
-                tipDate: new Date((e.currentTarget.elements.namedItem('date') as HTMLInputElement).value).toISOString(),
-                sport: newTipSport || 'Futebol',
-                description: (e.currentTarget.elements.namedItem('market') as HTMLInputElement).value,
-                linkAposta: newTipLink.trim() || null,
-              })
-              toast.success('Dica criada!')
-              if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip publicada', detail: `Publicou: ${autoTitle} — ${newTipSport || 'Futebol'}` })
-              setNewTipOpen(false)
-              setNewTipSport('')
-              setNewTipLink('')
-              load(1)
-            } catch { toast.error('Erro ao criar dica') }
-            finally { setSaving(false) }
-          }}>
-            <div><label className="label">Evento *</label><input name="event" required className="input-field" /></div>
-            <div><label className="label">Campeonato</label><input name="champ" className="input-field" /></div>
-            <div>
-              <label className="label">Esporte *</label>
-              <SportSelect value={newTipSport} onChange={setNewTipSport} required />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <ModalHeader status={newForm.status} title="Nova Dica" onClose={() => { setNewTipOpen(false); setNewForm(emptyBetForm()) }} />
+            <div className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
+
+              {/* Data */}
+              <div>
+                <label className={formLabel}><Calendar size={10} className="inline mr-1" />Data</label>
+                <input
+                  type="date"
+                  className={formField}
+                  value={newForm.tipDate}
+                  onChange={e => setNewForm(f => ({ ...f, tipDate: e.target.value }))}
+                />
+              </div>
+
+              {/* Link de Aposta */}
+              <div>
+                <label className={formLabel}><LinkIcon size={10} className="inline mr-1" />Link de Aposta</label>
+                <input
+                  type="url"
+                  className={formField}
+                  placeholder="https://..."
+                  value={newForm.linkAposta}
+                  onChange={e => setNewForm(f => ({ ...f, linkAposta: e.target.value }))}
+                />
+              </div>
+
+              {/* Tipo de Aposta */}
+              <div>
+                <label className={formLabel}>Tipo de Aposta</label>
+                <select
+                  className={formField}
+                  value={newForm.tipoAposta}
+                  onChange={e => setNewForm(f => ({ ...f, tipoAposta: e.target.value }))}
+                >
+                  <option value="Simples">Simples</option>
+                  <option value="Múltipla">Múltipla</option>
+                  <option value="Criar Aposta">Criar Aposta</option>
+                </select>
+              </div>
+
+              {/* Quantidade de Esportes */}
+              <div>
+                <label className={formLabel}><Hash size={10} className="inline mr-1" />Quantidade de Esportes</label>
+                <input
+                  type="number"
+                  min="0" max="20"
+                  className={formField}
+                  placeholder="Ex: 2"
+                  value={newForm.qtdEsportes}
+                  onChange={e => setNewForm(f => updateQtdEsportes(f, e.target.value))}
+                />
+              </div>
+
+              {/* Dynamic Sport Selects */}
+              {newForm.sportsList.length > 0 && (
+                <div className="flex flex-col gap-2 pl-3 border-l-2 border-emerald-200">
+                  {newForm.sportsList.map((sp, idx) => (
+                    <div key={idx}>
+                      <label className={formLabel}>Esporte {idx + 1}</label>
+                      <SportSelect
+                        value={sp}
+                        onChange={v => setNewForm(f => updateSportAt(f, idx, v))}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Odd + Stake */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={formLabel}>Odd</label>
+                  <input
+                    type="number" step="0.01" min="1"
+                    className={formField}
+                    placeholder="Ex: 1.85"
+                    value={newForm.odds}
+                    onChange={e => setNewForm(f => ({ ...f, odds: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className={formLabel}>Stake (R$)</label>
+                  <input
+                    type="number" step="0.5" min="0"
+                    className={formField}
+                    placeholder="Ex: 50"
+                    value={newForm.stake}
+                    onChange={e => setNewForm(f => ({ ...f, stake: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className={formLabel}>Status</label>
+                <select
+                  className={formField}
+                  value={newForm.status}
+                  onChange={e => setNewForm(f => ({ ...f, status: e.target.value }))}
+                >
+                  <option value="PENDING">— Pendente —</option>
+                  <option value="GREEN">✅ Green</option>
+                  <option value="RED">❌ Red</option>
+                  <option value="CASHOUT">🟠 Cash Out</option>
+                  <option value="VOID">⚪ Anulado</option>
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => { setNewTipOpen(false); setNewForm(emptyBetForm()) }}
+                  className="btn-secondary flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCreateTip}
+                  disabled={saving}
+                  className="btn-primary flex-1"
+                >
+                  {saving ? 'Publicando...' : 'Publicar'}
+                </button>
+              </div>
             </div>
-            <div><label className="label">Mercado *</label><input name="market" required className="input-field" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="label">Odd *</label><input name="odds" type="number" step="0.01" required className="input-field" /></div>
-              <div><label className="label">Stake *</label><input name="stake" type="number" step="0.5" required className="input-field" /></div>
-            </div>
-            <div><label className="label">Data/Hora *</label><input name="date" type="datetime-local" required className="input-field" /></div>
-            <div>
-              <label className="label">Link da Aposta</label>
-              <input type="url" value={newTipLink} onChange={e => setNewTipLink(e.target.value)}
-                placeholder="https://www.betano.bet.br/bookingcode/..."
-                className="input-field text-sm" />
-            </div>
-            <button type="submit" disabled={saving} className="btn-primary w-full py-3">{saving ? 'Publicando...' : 'Publicar'}</button>
-          </form>
-        </Modal>
+          </div>
+        </div>
       )}
 
       {sharingTip && <ShareTipModal isOpen={!!sharingTip} onClose={() => setSharingTip(null)} tip={sharingTip} />}
