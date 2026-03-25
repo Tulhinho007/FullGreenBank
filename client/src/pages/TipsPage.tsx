@@ -274,11 +274,15 @@ export const TipsPage = () => {
     const eExpansivel = temMercados || isMultipla
 
     return (
-      <div className={`border border-l-4 ${c.borderL} rounded-2xl p-5 shadow-sm bg-white border-slate-100 group flex flex-col transition-all hover:border-emerald-500/30`}>
-        <div
-          className="flex justify-between items-start cursor-pointer w-full"
-          onClick={() => eExpansivel && setIsExpanded(!isExpanded)}
-        >
+      <div 
+        className={`border border-l-4 ${c.borderL} rounded-2xl p-5 shadow-sm bg-white border-slate-100 group flex flex-col transition-all hover:border-emerald-500/30 hover:shadow-md ${tip.linkAposta ? 'cursor-pointer hover:-translate-y-1' : ''}`}
+        onClick={() => {
+          if (tip.linkAposta) {
+            window.open(tip.linkAposta, '_blank', 'noopener,noreferrer')
+          }
+        }}
+      >
+        <div className="flex justify-between items-start w-full">
           <div className="flex-1 pr-4">
             <h3 className="font-display font-bold text-sm text-slate-800 leading-snug break-words">
               {tip.title}
@@ -298,9 +302,16 @@ export const TipsPage = () => {
               </div>
             )}
             {eExpansivel && (
-              <span className={`text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsExpanded(!isExpanded)
+                }}
+                className={`p-1.5 text-slate-400 hover:text-slate-600 transition-all rounded-full hover:bg-slate-50 ${isExpanded ? 'rotate-180' : ''}`}
+                title="Ver detalhes dos mercados"
+              >
                 <ChevronDown size={18} />
-              </span>
+              </button>
             )}
           </div>
         </div>
@@ -333,19 +344,22 @@ export const TipsPage = () => {
           <div className="flex flex-col items-end gap-1.5 flex-[1.5] text-right">
             <StatusBadge tip={tip} />
             <span className="text-[10px] text-slate-400 font-mono font-bold">{fmtDate(tip.tipDate)}</span>
-            {tip.linkAposta && (
-              <a
-                href={tip.linkAposta}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={e => e.stopPropagation()}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-400 text-[10px] font-bold hover:bg-blue-500/30 transition-colors"
-              >
-                🔗 Ver Aposta
-              </a>
-            )}
           </div>
         </div>
+
+        {tip.linkAposta && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <a
+              href={tip.linkAposta}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-50 text-blue-600 text-[11px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-sm shadow-blue-500/10 border border-blue-100 hover:border-blue-500"
+            >
+              <LinkIcon size={14} /> Acessar Bilhete / Aposta
+            </a>
+          </div>
+        )}
 
         {isExpanded && eExpansivel && (
           <div className="mt-5 pt-5 border-t border-slate-100 space-y-3">

@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const p = new PrismaClient(); p.tip.findMany({take:2, orderBy:{createdAt:'desc'}}).then(console.log).finally(() => p.$disconnect());
