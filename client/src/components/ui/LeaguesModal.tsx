@@ -102,7 +102,7 @@ const ConfirmPopup = ({ title, message, confirmLabel='Confirmar', variant='dange
   <>
     <div className="fixed inset-0 z-[80] bg-slate-900/50 backdrop-blur-[6px]" onClick={onCancel}/>
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-2xl border border-slate-200  p-6">
+      <div className="w-full max-w-sm pointer-events-auto nm-modal rounded-[2.5rem] border-none  p-6">
         <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto mb-4 ${variant==='danger'?'bg-rose-50':'bg-emerald-50'}`}>
           <AlertTriangle size={20} className={variant==='danger'?'text-rose-500':'text-emerald-500'}/>
         </div>
@@ -392,7 +392,7 @@ export const LeaguesModal = ({ isOpen, onClose, leagues, onSave, readOnly }: Lea
     <>
       <div className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-[6px]" onClick={onClose}/>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div className="w-full max-w-xl pointer-events-auto bg-white rounded-2xl border border-slate-200  flex flex-col"
+        <div className="w-full max-w-xl pointer-events-auto nm-modal rounded-[2.5rem] border-none  flex flex-col"
           style={{maxHeight:'90vh'}} onClick={e=>e.stopPropagation()}>
 
           {/* Header */}
