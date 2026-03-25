@@ -3,7 +3,6 @@ import {
   History, 
   Search, 
   FileSpreadsheet, 
-  FileText,
   Printer, 
   Calendar,
   ChevronDown,
