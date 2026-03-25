@@ -294,7 +294,7 @@ export const Sidebar = () => {
                 { label: 'Assinaturas', to: '/financeiro/pagamentos', permissionKey: 'pagamentos' },
                 { label: 'Banca Gerenciada', to: '/financeiro/banca-gerenciada', permissionKey: 'banca-gerenciada' },
                 { label: 'Histórico de Contratos', to: '/gestao/historico', permissionKey: 'historico' },
-                { label: 'Histórico de Saques', to: '/financeiro/saques', permissionKey: 'saques' },
+
                 { label: 'Transações', to: '/financeiro/transacoes', permissionKey: 'transacoes' },
                 { label: 'Fluxo de Caixa', placeholder: true }
               ]} 

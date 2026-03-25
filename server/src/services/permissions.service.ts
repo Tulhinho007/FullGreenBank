@@ -14,13 +14,13 @@ export const SYSTEM_PAGES = [
   { module: 'gestao',        pageName: 'alavancagem',        pageLabel: 'Alavancagem' },
   { module: 'gestao',        pageName: 'calculadora',        pageLabel: 'Calculadora' },
   { module: 'gestao',        pageName: 'dicas-gestao',       pageLabel: 'Dicas de Gestão' },
-  { module: 'gestao',        pageName: 'arena-clecio',       pageLabel: 'Arena Clécio' },
+
   { module: 'gestao',        pageName: 'historico',          pageLabel: 'Histórico de Contratos' },
   // Financeiro (admin)
   { module: 'financeiro',    pageName: 'pagamentos',         pageLabel: 'Assinaturas' },
   { module: 'financeiro',    pageName: 'banca-gerenciada',   pageLabel: 'Banca Gerenciada' },
   { module: 'financeiro',    pageName: 'transacoes',         pageLabel: 'Transações' },
-  { module: 'financeiro',    pageName: 'saques',             pageLabel: 'Histórico de Saques' },
+
   // Administração
   { module: 'admin',         pageName: 'admin-users',        pageLabel: 'Usuários' },
   { module: 'admin',         pageName: 'admin-cadastros',    pageLabel: 'Cadastros' },

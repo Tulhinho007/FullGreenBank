@@ -32,7 +32,7 @@ import { AlavancagemPage } from './pages/AlavancagemPage'
 import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
-import { HistoricoSaquesPage } from './pages/HistoricoSaquesPage'
+
 
 import { PermissionsProvider } from './contexts/PermissionsContext'
 import { AdminPermissoesPage } from './pages/AdminPermissoesPage'
@@ -139,14 +139,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="financeiro/saques"
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
-                <HistoricoSaquesPage />
-              </ProtectedRoute>
-            }
-          />
+
           <Route path="financeiro/banca-gerenciada"
             element={
               <ProtectedRoute allowedRoles={['ADMIN', 'MASTER', 'TESTER']}>
