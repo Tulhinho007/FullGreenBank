@@ -83,6 +83,7 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
                 <NavLink
                   key={c.to}
                   to={childLocked ? '#' : c.to}
+                  end
                   onClick={childLocked ? handleClick : undefined}
                   className={({ isActive }) =>
                     `text-[13px] py-2 px-3 rounded-md transition-colors duration-150 flex justify-between items-center font-bold ${
@@ -119,6 +120,7 @@ const NavItem = ({ icon, label, to, children, placeholder, isLocked, onLockedCli
   return (
     <NavLink
       to={isLocked ? '#' : to}
+      end
       onClick={handleClick}
       className={({ isActive }) => `sidebar-link group font-bold ${isActive && !isLocked ? 'active text-emerald-600 bg-emerald-50 border border-emerald-100 shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'} ${isLocked ? 'opacity-70' : ''}`}
     >
