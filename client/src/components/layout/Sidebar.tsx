@@ -176,11 +176,23 @@ export const Sidebar = () => {
   const initials = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'U'
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar-bg border-r border-sidebar-border flex flex-col shrink-0 print:hidden">
+    <aside className="w-64 min-h-screen border-r border-slate-200/60 flex flex-col shrink-0 print:hidden"
+      style={{ background: '#f8fafc', boxShadow: '4px 0 20px rgba(203,213,225,0.35)' }}
+    >
       {/* Logo */}
-      <div className="px-5 py-6 border-b border-sidebar-border flex flex-col items-center justify-center text-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-          <span className="text-white font-display font-bold text-lg">FG</span>
+      <div className="px-5 py-6 border-b border-slate-200/60 flex flex-col items-center justify-center text-center gap-3">
+        <div
+          className="nm-icon w-12 h-12 rounded-2xl flex items-center justify-center"
+          style={{ background: '#f8fafc' }}
+        >
+          <span
+            className="font-display font-bold text-lg"
+            style={{
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >FG</span>
         </div>
         <div>
           <p className="font-display font-bold text-slate-800 text-lg leading-none tracking-wide">Full Green</p>
@@ -342,17 +354,23 @@ export const Sidebar = () => {
 
       </nav>
 
-      {/* User card */}
-      <div className="px-3 pb-4 border-t border-sidebar-border pt-4">
+      {/* User card — neumorfic on hover */}
+      <div className="px-3 pb-4 border-t border-slate-200/60 pt-4">
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 font-bold ${
-              isActive ? 'bg-emerald-50 border border-emerald-100' : 'hover:bg-slate-50 border border-transparent'
+            `flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 font-bold ${
+              isActive
+                ? 'text-emerald-600'
+                : 'text-slate-600 hover:text-slate-800'
             }`
           }
+          style={{ background: '#f8fafc', boxShadow: '3px 3px 8px rgba(203,213,225,0.5), -3px -3px 8px rgba(255,255,255,0.9)' }}
         >
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-black text-white shrink-0">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0"
+            style={{ background: 'linear-gradient(135deg, #10b981, #059669)', boxShadow: '2px 2px 6px rgba(16,185,129,0.4)' }}
+          >
             {initials}
           </div>
           <div className="flex-1 min-w-0">
@@ -366,7 +384,8 @@ export const Sidebar = () => {
 
         <button
           onClick={onSignOut}
-          className="mt-2 sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-900/20"
+          className="mt-2 w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-400 hover:text-rose-500 transition-all duration-200 text-sm font-medium"
+          style={{ background: '#f8fafc', boxShadow: '3px 3px 8px rgba(203,213,225,0.35), -3px -3px 8px rgba(255,255,255,0.8)' }}
         >
           <LogOut size={15} />
           Sair

@@ -10,17 +10,17 @@ interface StatCardProps {
 }
 
 const accentMap = {
-  green:  { icon: 'bg-green-500/10 text-green-600',  border: 'border-slate-200' },
-  red:    { icon: 'bg-red-500/10 text-red-600',       border: 'border-slate-200' },
-  blue:   { icon: 'bg-blue-500/10 text-blue-600',    border: 'border-slate-200' },
-  yellow: { icon: 'bg-yellow-500/10 text-yellow-600', border: 'border-slate-200' },
+  green:  { icon: 'text-green-600' },
+  red:    { icon: 'text-red-600'   },
+  blue:   { icon: 'text-blue-600'  },
+  yellow: { icon: 'text-yellow-600'},
 }
 
 export const StatCard = ({ title, value, subtitle, icon, trend, accent = 'green' }: StatCardProps) => {
-  const { icon: iconCls, border } = accentMap[accent]
+  const { icon: iconCls } = accentMap[accent]
 
   return (
-    <div className={`bg-white p-5 rounded-[2rem] border transition-all duration-300 shadow-sm ${border}`}>
+    <div className="nm-flat p-5 rounded-[2rem] transition-all duration-300 group">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{title}</p>
@@ -32,7 +32,7 @@ export const StatCard = ({ title, value, subtitle, icon, trend, accent = 'green'
             </p>
           )}
         </div>
-        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105 ${iconCls}`}>
+        <div className={`nm-icon w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${iconCls}`}>
           {icon}
         </div>
       </div>

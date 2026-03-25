@@ -47,6 +47,68 @@
 }
 
 @layer components {
+  /* =============================================
+     NEUMORPHISM — Sistema de Sombras Suaves
+     Base background: #f8fafc (slate-50)
+     Light shadow:    #ffffff
+     Dark shadow:     #d1d5db (gray-300 aprox.)
+     ============================================= */
+
+  /* Extruded — elemento "saindo" do fundo */
+  .nm-flat {
+    background: #f8fafc;
+    border: none !important;
+    box-shadow:
+      6px 6px 14px rgba(209, 213, 219, 0.8),
+      -6px -6px 14px rgba(255, 255, 255, 0.95);
+    transition: box-shadow 0.2s ease;
+  }
+  .nm-flat:hover {
+    box-shadow:
+      8px 8px 18px rgba(203, 213, 225, 0.9),
+      -8px -8px 18px rgba(255, 255, 255, 1);
+  }
+
+  /* Inset — campo "afundado" no fundo (inputs) */
+  .nm-inset {
+    background: #f8fafc;
+    border: none !important;
+    box-shadow:
+      inset 3px 3px 8px rgba(209, 213, 219, 0.8),
+      inset -3px -3px 8px rgba(255, 255, 255, 0.9);
+    transition: box-shadow 0.2s ease;
+  }
+  .nm-inset:focus {
+    box-shadow:
+      inset 4px 4px 10px rgba(209, 213, 219, 0.9),
+      inset -4px -4px 10px rgba(255, 255, 255, 1),
+      0 0 0 2px rgba(16, 185, 129, 0.25);
+  }
+
+  /* Pressed — estado ativo de botões */
+  .nm-pressed {
+    background: #f8fafc;
+    border: none !important;
+    box-shadow:
+      inset 3px 3px 8px rgba(209, 213, 219, 0.9),
+      inset -3px -3px 8px rgba(255, 255, 255, 0.95);
+  }
+
+  /* Ícone box neumorfic pequeno */
+  .nm-icon {
+    background: #f8fafc;
+    box-shadow:
+      4px 4px 10px rgba(209, 213, 219, 0.7),
+      -4px -4px 10px rgba(255, 255, 255, 0.95);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .nm-icon:hover {
+    box-shadow:
+      6px 6px 12px rgba(203, 213, 225, 0.8),
+      -6px -6px 12px rgba(255, 255, 255, 1);
+    transform: scale(1.05);
+  }
+
   .sidebar-link {
     @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sidebar-text
            hover:bg-sidebar-hover hover:text-white transition-all duration-200 cursor-pointer text-sm font-medium;
@@ -54,8 +116,14 @@
   .sidebar-link.active {
     @apply bg-sidebar-active text-green-400 border border-green-800/40;
   }
+
+  /* Card neumorfic */
   .card {
-    @apply bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-300;
+    @apply bg-slate-50 rounded-[2rem] transition-all duration-300;
+    box-shadow:
+      8px 8px 16px rgba(203, 213, 225, 0.7),
+      -8px -8px 16px rgba(255, 255, 255, 0.9);
+    border: none;
   }
 
   /* Badges */
@@ -67,18 +135,56 @@
 
   .btn-primary {
     @apply bg-green-600 hover:bg-green-500 text-white font-bold px-6 py-2.5
-           rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/20;
+           rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    box-shadow: 4px 4px 10px rgba(16, 185, 129, 0.35), -2px -2px 6px rgba(255, 255, 255, 0.5);
   }
+  .btn-primary:hover {
+    box-shadow: 6px 6px 14px rgba(16, 185, 129, 0.45), -3px -3px 8px rgba(255, 255, 255, 0.6);
+  }
+  .btn-primary:active {
+    box-shadow: inset 2px 2px 6px rgba(5, 150, 105, 0.5), inset -2px -2px 4px rgba(52, 211, 153, 0.3);
+  }
+
+  /* Secondary button — neumorfic */
   .btn-secondary {
-    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-2.5
-           rounded-xl border border-slate-200 transition-all duration-200 active:scale-95;
+    @apply text-slate-700 font-bold px-6 py-2.5 rounded-xl transition-all duration-200 active:scale-95;
+    background: #f8fafc;
+    box-shadow:
+      4px 4px 10px rgba(209, 213, 219, 0.7),
+      -4px -4px 10px rgba(255, 255, 255, 0.95);
+    border: none;
   }
+  .btn-secondary:hover {
+    box-shadow:
+      6px 6px 14px rgba(203, 213, 225, 0.8),
+      -6px -6px 14px rgba(255, 255, 255, 1);
+    @apply text-slate-800;
+  }
+  .btn-secondary:active {
+    box-shadow:
+      inset 3px 3px 7px rgba(209, 213, 219, 0.8),
+      inset -3px -3px 7px rgba(255, 255, 255, 0.9);
+  }
+
+  /* Input neumorfic */
   .input-field {
-    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5
+    @apply w-full rounded-xl px-4 py-2.5
            text-slate-900 placeholder-slate-400 text-sm
-           focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20
+           focus:outline-none
            transition-all duration-300;
+    background: #f8fafc;
+    box-shadow:
+      inset 3px 3px 7px rgba(209, 213, 219, 0.7),
+      inset -3px -3px 7px rgba(255, 255, 255, 0.85);
+    border: 1px solid transparent;
   }
+  .input-field:focus {
+    box-shadow:
+      inset 4px 4px 9px rgba(209, 213, 219, 0.8),
+      inset -4px -4px 9px rgba(255, 255, 255, 0.95),
+      0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+
   .label {
     @apply block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest;
   }

@@ -25,18 +25,23 @@ export const Modal = ({ isOpen, onClose, title = '', children, size = 'md', show
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-[6px]"
         onClick={onClose}
       />
-      {/* Modal */}
-      <div className={`relative w-full ${sizeMap[size]} bg-white border border-slate-100 rounded-[2.5rem] shadow-2xl animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden`}>
+      {/* Modal — neumorfic surface */}
+      <div className={`relative w-full ${sizeMap[size]} rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden`}
+        style={{
+          background: '#f8fafc',
+          boxShadow: '20px 20px 40px rgba(148,163,184,0.45), -20px -20px 40px rgba(255,255,255,0.9)'
+        }}
+      >
         {/* Header */}
         {showHeader && (
-          <div className="flex items-center justify-between px-8 py-6 border-b border-slate-50 bg-slate-50/20">
+          <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100/60">
             <h2 className="font-display font-black text-slate-800 text-lg tracking-tight">{title}</h2>
             <button
               onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-100 hover:border-rose-200 text-slate-400 hover:text-rose-500 transition-all active:scale-90"
+              className="nm-icon w-10 h-10 flex items-center justify-center rounded-2xl text-slate-400 hover:text-rose-500 transition-all active:scale-90"
             >
               <X size={20} />
             </button>
@@ -48,3 +53,4 @@ export const Modal = ({ isOpen, onClose, title = '', children, size = 'md', show
     </div>
   )
 }
+
