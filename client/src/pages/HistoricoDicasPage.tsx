@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Search, Filter, Edit2, Trash2, CheckCircle, XCircle, Clock,
-  Layers, ListPlus, Target, Calendar, DollarSign, X, Hash, Link as LinkIcon
+  Layers, ListPlus, Target, Calendar, DollarSign, X, Hash, Link as LinkIcon, MinusCircle, Wallet, TrendingUp, TrendingDown
 } from 'lucide-react'
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
@@ -120,6 +120,28 @@ export const HistoricoDicasPage = () => {
       return searchMatch && tipoMatch && statusMatch && dateMatch
     }).sort((a, b) => new Date(b.tipDate).getTime() - new Date(a.tipDate).getTime())
   }, [tips, search, tipoFiltro, statusFiltro, dateFilter])
+
+  const kpis = useMemo(() => {
+    let greens = 0
+    let reds = 0
+    let voids = 0
+    let cashouts = 0
+    let valProfit = 0
+    
+    filteredTips.forEach(tip => {
+      const res = tip.result || 'PENDING'
+      if (res === 'GREEN') greens++
+      if (res === 'RED') reds++
+      if (res === 'VOID') voids++
+      if (res === 'CASHOUT') cashouts++
+      
+      if (typeof tip.profit === 'number') {
+        valProfit += tip.profit
+      }
+    })
+    
+    return { greens, reds, voids, cashouts, valProfit }
+  }, [filteredTips])
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta dica?')) return
@@ -251,6 +273,75 @@ export const HistoricoDicasPage = () => {
               className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer"
             />
           </div>
+        </div>
+      </div>
+
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* GREEN */}
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform border border-emerald-100">
+              <CheckCircle size={24} />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Greens</span>
+          </div>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{kpis.greens}</h3>
+          <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-wider mt-1">Apostas ganhas</p>
+        </div>
+        
+        {/* RED */}
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-rose-50 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform border border-rose-100">
+              <XCircle size={24} />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reds</span>
+          </div>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{kpis.reds}</h3>
+          <p className="text-[10px] font-bold text-rose-600/60 uppercase tracking-wider mt-1">Apostas perdidas</p>
+        </div>
+        
+        {/* VOID */}
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform border border-slate-100">
+              <MinusCircle size={24} />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Anuladas</span>
+          </div>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{kpis.voids}</h3>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Devoluções (Void)</p>
+        </div>
+        
+        {/* CASHOUT */}
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-[1.25rem] bg-sky-50 flex items-center justify-center text-sky-600 group-hover:scale-110 transition-transform border border-sky-100">
+              <Wallet size={24} />
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cash Out</span>
+          </div>
+          <h3 className="text-3xl font-black text-slate-800 tracking-tight">{kpis.cashouts}</h3>
+          <p className="text-[10px] font-bold text-sky-600/60 uppercase tracking-wider mt-1">Encerradas antes</p>
+        </div>
+
+        {/* LUCRO / PREJUÍZO TOTAL */}
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className={`w-12 h-12 rounded-[1.25rem] flex items-center justify-center group-hover:scale-110 transition-transform border ${
+              kpis.valProfit >= 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'
+            }`}>
+              {kpis.valProfit >= 0 ? <TrendingUp size={24} /> : <TrendingDown size={24} />}
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Resultado</span>
+          </div>
+          <h3 className={`text-2xl font-black tracking-tight ${kpis.valProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+            {fmt(kpis.valProfit)}
+          </h3>
+          <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${kpis.valProfit >= 0 ? 'text-emerald-600/60' : 'text-rose-600/60'}`}>
+            {kpis.valProfit >= 0 ? 'Lucro Acumulado' : 'Prejuízo Acumulado'}
+          </p>
         </div>
       </div>
 
