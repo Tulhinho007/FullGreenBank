@@ -476,8 +476,8 @@ export const TipsPage = () => {
 
       {/* ── EDITAR DICA MODAL ──────────────────────────────────────────── */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+          <div className="bg-white rounded-2xl  w-full max-w-lg overflow-hidden">
             <ModalHeader status={editForm.status} title="Editar Dica" onClose={() => setSelected(null)} />
             <div className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
 
@@ -604,8 +604,8 @@ export const TipsPage = () => {
 
       {/* ── NOVA DICA MODAL ───────────────────────────────────────────────── */}
       {newTipOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+          <div className="bg-white rounded-2xl  w-full max-w-lg overflow-hidden">
             <ModalHeader status={newForm.status} title="Nova Dica" onClose={() => { setNewTipOpen(false); setNewForm(emptyBetForm()) }} />
             <div className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
 

@@ -350,7 +350,7 @@ export const AdminPermissoesPage = () => {
 
        {/* Toast */}
        {toast && (
-         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-2xl z-50 border animate-in fade-in slide-in-from-bottom-8 duration-500 ${
+         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px]  z-50 border animate-in fade-in slide-in-from-bottom-8 duration-500 ${
            toast.type === 'success'
              ? 'bg-white text-emerald-600 border-emerald-100'
              : 'bg-white text-rose-600 border-rose-100'

@@ -227,8 +227,8 @@ export const AdminSolicitacoesPage = () => {
 
       {/* Modal de Edição */}
       {isEditModalOpen && selectedSolicitacao && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+          <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-md overflow-hidden ">
             <div className="p-5 border-b border-surface-300 flex justify-between items-center">
               <h3 className="font-display font-bold text-slate-800 flex items-center gap-2">
                 <Edit2 size={18} className="text-blue-500" />
@@ -276,8 +276,8 @@ export const AdminSolicitacoesPage = () => {
 
       {/* Modal de Exclusão */}
       {isDeleteModalOpen && selectedSolicitacao && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+          <div className="bg-surface-100 border border-surface-300 rounded-2xl w-full max-w-sm overflow-hidden ">
             <div className="p-6 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
                 <Trash2 size={24} className="text-red-500" />

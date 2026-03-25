@@ -9,8 +9,8 @@ export const SupportModal = ({ isOpen, onClose }: SupportModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-200 w-full max-w-sm rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px] animate-in fade-in duration-300">
+      <div className="bg-white border border-slate-200 w-full max-w-sm rounded-[2rem] p-8  animate-in zoom-in-95 duration-300">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
             <MessageCircle size={24} />

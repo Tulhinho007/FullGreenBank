@@ -135,7 +135,7 @@ export const CalculadoraPage = () => {
 
       {/* Resultado */}
       {showResult && (
-        <div className="bg-white p-10 rounded-[3rem] border border-emerald-100 shadow-2xl shadow-emerald-500/10 bg-gradient-to-br from-white to-emerald-50/50 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        <div className="bg-white p-10 rounded-[3rem] border border-emerald-100  shadow-emerald-500/10 bg-gradient-to-br from-white to-emerald-50/50 animate-in fade-in slide-in-from-bottom-6 duration-700">
           <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-50">
             <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.2em]">Resultado Profissional</h3>
             <span className="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest border border-emerald-200">Valor Unitário</span>

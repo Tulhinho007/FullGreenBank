@@ -71,7 +71,7 @@ export const CurrencyInput = ({
       {/* Modal de confirmação de valor alto */}
       {showConfirm && (
         <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-500">
+          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 max-w-sm w-full  animate-in zoom-in-95 duration-500">
             <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-amber-100">
               <span className="text-4xl text-amber-500">⚠️</span>
             </div>

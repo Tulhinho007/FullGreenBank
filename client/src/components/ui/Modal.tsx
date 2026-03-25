@@ -29,12 +29,7 @@ export const Modal = ({ isOpen, onClose, title = '', children, size = 'md', show
         onClick={onClose}
       />
       {/* Modal — neumorfic surface */}
-      <div className={`relative w-full ${sizeMap[size]} rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden`}
-        style={{
-          background: '#f8fafc',
-          boxShadow: '20px 20px 40px rgba(148,163,184,0.45), -20px -20px 40px rgba(255,255,255,0.9)'
-        }}
-      >
+      <div className={`nm-modal relative w-full ${sizeMap[size]} rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden`}>
         {/* Header */}
         {showHeader && (
           <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100/60">

@@ -355,7 +355,7 @@ export const ReportPage = () => {
         )}
 
         {/* Action Footer */}
-        <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-8 p-10 rounded-[3rem] border border-slate-100 bg-white shadow-2xl shadow-slate-200/50">
+        <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-8 p-10 rounded-[3rem] border border-slate-100 bg-white  shadow-slate-200/50">
           <div className="text-center md:text-left space-y-2">
             <p className="text-lg font-black text-slate-800 tracking-tight">Dúvidas sobre o Relato?</p>
             <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest">Entre em contato direto com nosso suporte.</p>

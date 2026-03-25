@@ -137,8 +137,8 @@ export const ModalCriarMultipla = ({ isOpen, onClose, onSave, initialData }: Mod
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-surface-100 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+      <div className="bg-surface-100 rounded-2xl w-full max-w-2xl overflow-hidden  flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-5 flex justify-between items-center border-b border-surface-300 shrink-0">
           <h3 className="font-display font-black text-xl text-white flex items-center gap-2 italic tracking-wide">

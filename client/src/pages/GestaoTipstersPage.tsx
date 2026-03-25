@@ -48,9 +48,9 @@ const MOCK_TRANSACTIONS: Transaction[] = [
 
 const ConfirmPopup = ({ title, message, onConfirm, onCancel }: { title: string; message: string; onConfirm: () => void; onCancel: () => void }) => (
   <>
-    <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm" onClick={onCancel} />
+    <div className="fixed inset-0 z-[80] bg-slate-900/50 backdrop-blur-[6px]" onClick={onCancel} />
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-8">
+      <div className="w-full max-w-sm pointer-events-auto bg-white rounded-[2.5rem] border border-slate-100  p-8">
         <div className="w-16 h-16 rounded-[1.5rem] bg-rose-50 flex items-center justify-center mx-auto mb-6 border border-rose-100">
           <AlertTriangle size={32} className="text-rose-500" />
         </div>
@@ -120,9 +120,9 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-[6px]" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-slate-100">
+        <div className="w-full max-w-md bg-white rounded-[2.5rem]  flex flex-col overflow-hidden border border-slate-100">
           <div className="flex items-center justify-between p-8 border-b border-slate-50">
             <h2 className="text-xl font-black text-slate-800 tracking-tight">
               {editData ? 'Editar Registro' : 'Novo Registro'}

@@ -50,7 +50,7 @@ export const RegisterPage = () => {
           <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Crie sua conta gratuitamente</p>
         </div>
 
-        <div className="bg-white border border-slate-100 p-8 lg:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
+        <div className="nm-modal border-none p-8 lg:p-10 rounded-[2.5rem] shadow-slate-200/50">
           <h2 className="font-display font-bold text-slate-800 text-2xl mb-8">Criar conta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

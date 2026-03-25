@@ -93,9 +93,9 @@ export function ShareTipModal({ isOpen, onClose, tip }: ShareTipModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-[6px] flex items-center justify-center p-4">
         {/* Modal Container */}
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] w-full max-w-2xl shadow-2xl flex flex-col max-h-[95vh] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500">
+        <div className="bg-white border border-slate-100 rounded-[2.5rem] w-full max-w-2xl  flex flex-col max-h-[95vh] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500">
           {/* Header */}
           <div className="flex items-center justify-between px-10 py-8 border-b border-slate-100 bg-white">
             <div className="flex items-center gap-4">

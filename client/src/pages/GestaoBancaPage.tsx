@@ -646,8 +646,8 @@ export const GestaoBancaPage = () => {
       )}
 
       {isModalBancaOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[6px] z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="nm-modal border-none w-full max-w-md rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100">
@@ -697,8 +697,8 @@ export const GestaoBancaPage = () => {
       )}
 
       {isModalEditBancaOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[6px] z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="nm-modal border-none w-full max-w-sm rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600">
@@ -735,8 +735,8 @@ export const GestaoBancaPage = () => {
       )}
 
       {isModalDeleteBancaOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[120] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[6px] z-[120] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="nm-modal border-none w-full max-w-md rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center border border-rose-100 text-rose-600">
@@ -779,8 +779,8 @@ export const GestaoBancaPage = () => {
       )}
 
       {isConfirmDeleteOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[130] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[6px] z-[130] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="nm-modal border-none w-full max-w-sm rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-10 flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center mb-6 border border-rose-100 shadow-inner">
                 <Trash2 size={40} className="text-rose-500 animate-pulse" />
@@ -803,8 +803,8 @@ export const GestaoBancaPage = () => {
       )}
 
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-100 w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-[6px] z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="nm-modal border-none w-full max-w-sm rounded-[2.5rem] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-10 flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-amber-50 rounded-[2rem] flex items-center justify-center mb-6 border border-amber-100 shadow-inner">
                 <ShieldCheck size={40} className="text-amber-500" />
