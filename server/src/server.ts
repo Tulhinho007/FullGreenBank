@@ -14,6 +14,7 @@ import userRoutes          from './routes/user.routes';
 import teamsRoutes         from './routes/teams.routes';
 
 import gestaoBancaRoutes   from './routes/gestao-banca.routes';
+import contratosRoutes     from './routes/contratos.routes';
 import supportRoutes       from './routes/support.routes';
 import solicitacoesRoutes  from './routes/solicitacoes.routes';
 import cadastrosRoutes     from './routes/cadastros.routes';
@@ -91,6 +92,7 @@ app.use('/api/users',           userRoutes);
 app.use('/api/teams',           teamsRoutes);
 
 app.use('/api/gestao-banca',    gestaoBancaRoutes);
+app.use('/api/contratos',       contratosRoutes);
 app.use('/api/support',         supportRoutes);
 app.use('/api/solicitacoes',    solicitacoesRoutes);
 

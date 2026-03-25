@@ -52,6 +52,7 @@ model User {
 
   bancaCarteiras    BancaCarteira[]
   solicitacoesInv   SolicitacaoInvestimento[]
+  contratos         Contrato[]
 
   permissions       UserPermission[]
 
@@ -86,7 +87,22 @@ model Tip {
 
 
 
-model BancaCarteira {
+model Contrato {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dataInicio      DateTime  @default(now())
+  valorContratado Float?
+  comissaoPercent Float?    @default(10)
+  status          String    @default("ABERTO") // ABERTO, FINALIZADO, CANCELADO
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("contratos")
+}
+
   id           String            @id @default(uuid())
   userId       String
   user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
