@@ -97,8 +97,8 @@ export const HistoryPage = () => {
         api.get('/contratos'),
         api.get('/users')
       ])
-      setContracts(cRes.data)
-      setUsers(uRes.data?.users || uRes.data || [])
+      setContracts(Array.isArray(cRes.data) ? cRes.data : [])
+      setUsers(uRes.data?.data || uRes.data?.users || (Array.isArray(uRes.data) ? uRes.data : []))
     } catch {
       toast.error('Erro ao carregar dados.')
     } finally {
