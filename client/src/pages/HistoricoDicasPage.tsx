@@ -1,41 +1,67 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Search, Filter, Edit2, Trash2, CheckCircle, XCircle, Clock,
-  Layers, ListPlus, Target, Calendar, DollarSign
+  Layers, ListPlus, Target, Calendar, DollarSign, X, Hash, Link as LinkIcon
 } from 'lucide-react'
 import { tipsService } from '../services/tips.service'
 import { formatCurrency as fmt, formatDate as fmtDate } from '../utils/formatters'
 import toast from 'react-hot-toast'
-import { CurrencyInput } from '../components/ui/CurrencyInput'
-import { ModalCriarAposta } from '../components/ui/ModalCriarAposta'
-import { ModalCriarMultipla } from '../components/ui/ModalCriarMultipla'
-import { Modal } from '../components/ui/Modal'
+import { SportSelect } from '../components/ui/SportSelect'
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 interface Tip {
   id: string; title: string; description: string; sport: string
   event: string; market: string; odds: number; stake: number
   result?: string; profit?: number; valorCashout?: number; tipDate: string
-  mercados?: string[]
-  isMultipla?: boolean
-  jogos?: any
+  linkAposta?: string
+  sportsList?: string[]
 }
 
 type TipoFiltro = 'TODAS' | 'S' | 'M' | 'C'
 type StatusFiltro = 'TODOS' | 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
 
 const STATUS_CONFIG: Record<string, any> = {
-  GREEN:   { bg: 'bg-emerald-50 border-emerald-100', text: 'text-emerald-600', label: 'Green', icon: <CheckCircle size={14} /> },
-  RED:     { bg: 'bg-rose-50 border-rose-100',    text: 'text-rose-600',    label: 'Red',   icon: <XCircle size={14} /> },
-  VOID:    { bg: 'bg-slate-50 border-slate-100',    text: 'text-slate-400',   label: 'Anulada', icon: <XCircle size={14} /> },
-  PENDING: { bg: 'bg-amber-50 border-amber-100',   text: 'text-amber-600',   label: 'Pendente', icon: <Clock size={14} /> },
-  CASHOUT: { bg: 'bg-sky-50 border-sky-100',  text: 'text-sky-600',  label: 'Cashout',  icon: <DollarSign size={14} /> },
+  GREEN:   { bg: 'bg-emerald-50 border-emerald-100', text: 'text-emerald-600', label: 'Green', icon: <CheckCircle size={14} />, headerBg: 'from-emerald-500 to-emerald-600', headerText: 'text-emerald-100' },
+  RED:     { bg: 'bg-rose-50 border-rose-100',    text: 'text-rose-600',    label: 'Red',   icon: <XCircle size={14} />, headerBg: 'from-rose-500 to-rose-600', headerText: 'text-rose-100' },
+  VOID:    { bg: 'bg-slate-50 border-slate-100',    text: 'text-slate-400',   label: 'Anulada', icon: <XCircle size={14} />, headerBg: 'from-slate-400 to-slate-500', headerText: 'text-slate-100' },
+  PENDING: { bg: 'bg-amber-50 border-amber-100',   text: 'text-amber-600',   label: 'Pendente', icon: <Clock size={14} />, headerBg: 'from-amber-400 to-amber-500', headerText: 'text-amber-100' },
+  CASHOUT: { bg: 'bg-sky-50 border-sky-100',  text: 'text-sky-600',  label: 'Cashout',  icon: <DollarSign size={14} />, headerBg: 'from-sky-400 to-sky-500', headerText: 'text-sky-100' },
 }
 
 const TIPO_CONFIG = {
   S: { label: 'Simples', icon: <Target size={14} />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-500', border: 'border-slate-100' },
   M: { label: 'Múltipla', icon: <Layers size={14} />, bg: 'bg-purple-50 border-purple-100', text: 'text-purple-600', border: 'border-purple-100' },
   C: { label: 'Criar Aposta', icon: <ListPlus size={14} />, bg: 'bg-cyan-50 border-cyan-100', text: 'text-cyan-600', border: 'border-cyan-100' }
+}
+
+const formField = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 transition-all placeholder:text-slate-300'
+const formLabel = 'block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5'
+
+const ModalHeader = ({ status, title, onClose }: { status: string; title: string; onClose: () => void }) => {
+  const c = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING
+  return (
+    <div className={`bg-gradient-to-r ${c.headerBg} flex items-center justify-between px-6 py-4 rounded-t-2xl`}>
+      <div className="flex items-center gap-2">
+        <span className={`${c.headerText} opacity-80`}>{c.icon}</span>
+        <h2 className="text-white font-black text-sm tracking-wide">{title}</h2>
+        <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white`}>{c.label}</span>
+      </div>
+      <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+        <X size={18} />
+      </button>
+    </div>
+  )
+}
+
+interface BetFormState {
+  tipDate: string
+  linkAposta: string
+  tipoAposta: string
+  qtdEsportes: string
+  sportsList: string[]
+  odds: string
+  stake: string
+  status: string
 }
 
 export const HistoricoDicasPage = () => {
@@ -48,20 +74,12 @@ export const HistoricoDicasPage = () => {
   const [statusFiltro, setStatusFiltro] = useState<StatusFiltro>('TODOS')
   const [dateFilter, setDateFilter] = useState('')
 
-  // Modais de Edição
-  const [isEditSimpleOpen, setIsEditSimpleOpen] = useState(false)
-  const [isEditMultiMercadosOpen, setIsEditMultiMercadosOpen] = useState(false)
-  const [isEditMultiplaOpen, setIsEditMultiplaOpen] = useState(false)
+  // Edição
   const [editingTip, setEditingTip] = useState<Tip | null>(null)
-
-  // Modal de Simples (Para edição)
-  const [editDataAposta, setEditDataAposta] = useState('')
-  const [editTime, setEditTime] = useState('')
-  const [editMercado, setEditMercado] = useState('')
-  const [editOdd, setEditOdd] = useState('')
-  const [editStake, setEditStake] = useState('')
-  const [editResultado, setEditResultado] = useState('PENDING')
-  const [editProfit, setEditProfit] = useState('')
+  const [editForm, setEditForm] = useState<BetFormState>({
+    tipDate: '', linkAposta: '', tipoAposta: 'Simples', qtdEsportes: '', sportsList: [], odds: '', stake: '', status: 'PENDING'
+  })
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetchTips()
@@ -71,7 +89,6 @@ export const HistoricoDicasPage = () => {
     try {
       setLoading(true)
       const data = await tipsService.getAll(1, 100)
-      // Robust extraction covering all possible API response formats
       const ts = Array.isArray(data?.tips) ? data.tips : (Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []));
       setTips(ts)
     } catch {
@@ -82,8 +99,8 @@ export const HistoricoDicasPage = () => {
   }
 
   const getTipo = (tip: Tip): 'S' | 'M' | 'C' => {
-    if (tip.isMultipla) return 'M'
-    if (tip.mercados && tip.mercados.length > 0) return 'C'
+    if (tip.event === 'Múltipla') return 'M'
+    if (tip.event === 'Criar Aposta') return 'C'
     return 'S'
   }
 
@@ -91,8 +108,8 @@ export const HistoricoDicasPage = () => {
     if (!Array.isArray(tips)) return []
     return tips.filter(tip => {
       const tipo = getTipo(tip)
-      const searchMatch = (tip.event || '').toLowerCase().includes(search.toLowerCase()) ||
-                          (tip.market || '').toLowerCase().includes(search.toLowerCase())
+      const searchMatch = (tip.sport || '').toLowerCase().includes(search.toLowerCase()) ||
+                          (tip.title || '').toLowerCase().includes(search.toLowerCase())
       const tipoMatch = tipoFiltro === 'TODAS' || tipo === tipoFiltro
       const statusMatch = statusFiltro === 'TODOS' || (tip.result || 'PENDING') === statusFiltro
       
@@ -117,59 +134,64 @@ export const HistoricoDicasPage = () => {
 
   const openEdit = (tip: Tip) => {
     setEditingTip(tip)
-    if (tip.isMultipla) {
-      setIsEditMultiplaOpen(true)
-    } else if (tip.mercados && tip.mercados.length > 0) {
-      setIsEditMultiMercadosOpen(true)
-    } else {
-      // Simples
-      setEditDataAposta(new Date(new Date(tip.tipDate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16))
-      setEditTime(tip.event)
-      setEditMercado(tip.market)
-      setEditOdd(tip.odds.toString())
-      setEditStake(tip.stake.toString())
-      setEditResultado(tip.result || 'PENDING')
-      setEditProfit(tip.profit !== null && tip.profit !== undefined ? tip.profit.toString() : '')
-      setIsEditSimpleOpen(true)
-    }
+    const datePart = new Date(tip.tipDate).toISOString().slice(0, 10)
+    setEditForm({
+      tipDate: datePart,
+      linkAposta: tip.linkAposta || '',
+      tipoAposta: tip.event || 'Simples',
+      qtdEsportes: tip.sport ? '1' : '',
+      sportsList: tip.sport ? [tip.sport] : [],
+      odds: tip.odds?.toString() ?? '',
+      stake: tip.stake?.toString() ?? '',
+      status: tip.result || 'PENDING',
+    })
   }
 
-  const handleUpdateTip = async (data: any, id?: string) => {
-    if (!id) return
-    try {
-      await tipsService.update(id, data)
-      await fetchTips()
-    } catch (err) {
-      console.error(err)
-      throw err
-    }
-  }
-
-  const handleSubmitSimpleEdit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleUpdateTip = async () => {
     if (!editingTip) return
-    
+    setSaving(true)
     try {
+      const sport = editForm.sportsList[0] || editingTip.sport || 'Futebol'
+      const title = `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}`
       await tipsService.update(editingTip.id, {
-        title: editTime,
-        event: editTime,
-        market: editMercado,
-        odds: Number(editOdd),
-        stake: Number(editStake),
-        result: editResultado,
-        profit: Number(editProfit),
-        tipDate: new Date(editDataAposta).toISOString(),
-        valorCashout: editResultado === 'CASHOUT' ? Number(editProfit) : null
+        title,
+        event: editForm.tipoAposta,
+        market: editForm.tipoAposta,
+        odds: Number(editForm.odds) || editingTip.odds,
+        stake: Number(editForm.stake) || editingTip.stake,
+        result: editForm.status,
+        profit: editForm.status === 'GREEN'
+          ? (Number(editForm.stake) * (Number(editForm.odds) - 1))
+          : editForm.status === 'RED'
+          ? -Number(editForm.stake)
+          : editForm.status === 'VOID' ? 0 : undefined,
+        tipDate: editForm.tipDate ? new Date(editForm.tipDate).toISOString() : editingTip.tipDate,
+        sport,
+        description: editForm.tipoAposta,
+        linkAposta: editForm.linkAposta?.trim() || null,
       })
-      toast.success('Dica simples atualizada')
-      setIsEditSimpleOpen(false)
+      toast.success('Dica atualizada!')
+      setEditingTip(null)
       fetchTips()
     } catch {
       toast.error('Erro ao atualizar')
+    } finally {
+      setSaving(false)
     }
   }
 
+  const updateQtdEsportes = (form: BetFormState, qty: string): BetFormState => {
+    const n = Math.max(0, Math.min(20, Number(qty) || 0))
+    const prev = form.sportsList
+    const next = Array.from({ length: n }, (_, i) => prev[i] ?? '')
+    return { ...form, qtdEsportes: qty, sportsList: next }
+  }
 
+  const updateSportAt = (form: BetFormState, idx: number, val: string): BetFormState => {
+    const list = [...form.sportsList]
+    list[idx] = val
+    return { ...form, sportsList: list }
+  }
 
   return (
     <div className="space-y-6">
@@ -183,7 +205,7 @@ export const HistoricoDicasPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
             <input
               type="text"
-              placeholder="Buscar por jogo ou mercado..."
+              placeholder="Buscar por esporte ou título..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-sm font-bold rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300"
@@ -240,9 +262,9 @@ export const HistoricoDicasPage = () => {
               <tr className="bg-slate-50/50 border-b border-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <th className="px-8 py-5">Tipo</th>
                 <th className="px-8 py-5">Data</th>
-                <th className="px-8 py-5">Evento / Descrição</th>
+                <th className="px-8 py-5">Título / Esporte</th>
                 <th className="px-8 py-5">Odd</th>
-                <th className="px-8 py-5">VALOR</th>
+                <th className="px-8 py-5">Stake</th>
                 <th className="px-8 py-5">Lucro Líquido</th>
                 <th className="px-8 py-5">Status</th>
                 <th className="px-8 py-5 text-center">Ações</th>
@@ -273,15 +295,15 @@ export const HistoricoDicasPage = () => {
                       <td className="px-8 py-5">
                         <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${conf.bg} ${conf.text} ${conf.border} text-[9px] font-black uppercase tracking-widest shadow-sm`}>
                           {conf.icon}
-                          {tipo}
+                          {conf.label}
                         </div>
                       </td>
                       <td className="px-8 py-5 text-xs text-slate-400 font-bold whitespace-nowrap">
                         {fmtDate(tip.tipDate)}
                       </td>
                       <td className="px-8 py-5">
-                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-0.5">{tip.event}</p>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest truncate max-w-[200px]">{tip.market}</p>
+                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-0.5">{tip.title}</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest truncate max-w-[200px]">{tip.sport}</p>
                       </td>
                       <td className="px-8 py-5 text-sm font-black text-slate-800">
                         {tip.odds.toFixed(2)}
@@ -308,6 +330,17 @@ export const HistoricoDicasPage = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {tip.linkAposta && (
+                            <a
+                              href={tip.linkAposta}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                              title="Ver Bilhete"
+                            >
+                              <LinkIcon size={16} />
+                            </a>
+                          )}
                           <button
                             onClick={() => openEdit(tip)}
                             className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
@@ -340,84 +373,133 @@ export const HistoricoDicasPage = () => {
         </div>
       </div>
 
-      {/* Modals para Edição */}
-      <ModalCriarMultipla 
-        isOpen={isEditMultiplaOpen} 
-        onClose={() => setIsEditMultiplaOpen(false)} 
-        onSave={handleUpdateTip} 
-        initialData={editingTip} 
-      />
-      <ModalCriarAposta 
-        isOpen={isEditMultiMercadosOpen} 
-        onClose={() => setIsEditMultiMercadosOpen(false)} 
-        onSave={handleUpdateTip} 
-        initialData={editingTip} 
-      />
+      {/* ── EDITAR DICA MODAL ──────────────────────────────────────────── */}
+      {editingTip && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[6px]">
+          <div className="nm-modal w-full max-w-lg overflow-hidden rounded-[2.5rem] border-none">
+            <ModalHeader status={editForm.status} title="Editar Dica" onClose={() => setEditingTip(null)} />
+            <div className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
 
-      {/* Modal Edição Simples */}
-      <Modal isOpen={isEditSimpleOpen} onClose={() => setIsEditSimpleOpen(false)} title="Editar Dica Simples">
-        <form onSubmit={handleSubmitSimpleEdit} className="p-4 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Data/Hora</label>
-              <input type="datetime-local" value={editDataAposta} onChange={e => setEditDataAposta(e.target.value)} className="input-field py-2 px-3 w-full" required />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Evento/Jogo</label>
-              <input type="text" value={editTime} onChange={e => setEditTime(e.target.value)} placeholder="Ex: Flamengo x Vasco" className="input-field py-2 px-3 w-full" required />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Stake (R$)</label>
-              <CurrencyInput
-                value={editStake ? Number(editStake) : 0}
-                onChange={(v) => setEditStake(String(v))}
-                alertLimit={1000}
-                className="py-2 px-3 w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Odd</label>
-              <input type="number" step="0.01" value={editOdd} onChange={e => setEditOdd(e.target.value)} className="input-field py-2 px-3 w-full" required />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Mercado</label>
-            <input type="text" value={editMercado} onChange={e => setEditMercado(e.target.value)} placeholder="Ex: Vitória Mandante" className="input-field py-2 px-3 w-full" required />
-          </div>
+              {/* Data */}
+              <div>
+                <label className={formLabel}><Calendar size={10} className="inline mr-1" />Data</label>
+                <input
+                  type="date"
+                  className={formField}
+                  value={editForm.tipDate}
+                  onChange={e => setEditForm(f => ({ ...f, tipDate: e.target.value }))}
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Resultado</label>
-              <select value={editResultado} onChange={e => setEditResultado(e.target.value)} className="input-field py-2 px-3 w-full text-white bg-surface-200">
-                <option value="PENDING">Pendente</option>
-                <option value="GREEN">Green</option>
-                <option value="RED">Red</option>
-                <option value="VOID">Anulada</option>
-                <option value="CASHOUT">Cashout</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
-                {editResultado === 'CASHOUT' ? 'Recebido' : 'Lucro (Opcional)'}
-              </label>
-              <CurrencyInput
-                value={editProfit ? Number(editProfit) : 0}
-                onChange={(v) => setEditProfit(String(v))}
-                alertLimit={1000}
-                className="py-2 px-3 w-full"
-              />
+              {/* Link de Aposta */}
+              <div>
+                <label className={formLabel}><LinkIcon size={10} className="inline mr-1" />Link de Aposta</label>
+                <input
+                  type="url"
+                  className={formField}
+                  placeholder="https://..."
+                  value={editForm.linkAposta}
+                  onChange={e => setEditForm(f => ({ ...f, linkAposta: e.target.value }))}
+                />
+              </div>
+
+              {/* Tipo de Aposta */}
+              <div>
+                <label className={formLabel}>Tipo de Aposta</label>
+                <select
+                  className={formField}
+                  value={editForm.tipoAposta}
+                  onChange={e => setEditForm(f => ({ ...f, tipoAposta: e.target.value }))}
+                >
+                  <option value="Simples">Simples</option>
+                  <option value="Múltipla">Múltipla</option>
+                  <option value="Criar Aposta">Criar Aposta</option>
+                </select>
+              </div>
+
+              {/* Quantidade de Esportes */}
+              <div>
+                <label className={formLabel}><Hash size={10} className="inline mr-1" />Quantidade de Esportes</label>
+                <input
+                  type="number"
+                  min="0" max="20"
+                  className={formField}
+                  placeholder="Ex: 2"
+                  value={editForm.qtdEsportes}
+                  onChange={e => setEditForm(f => updateQtdEsportes(f, e.target.value))}
+                />
+              </div>
+
+              {/* Dynamic Sport Selects */}
+              {editForm.sportsList.length > 0 && (
+                <div className="flex flex-col gap-2 pl-3 border-l-2 border-emerald-200">
+                  {editForm.sportsList.map((sp, idx) => (
+                    <div key={idx}>
+                      <label className={formLabel}>Esporte {idx + 1}</label>
+                      <SportSelect
+                        value={sp}
+                        onChange={v => setEditForm(f => updateSportAt(f, idx, v))}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Odd + Stake */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={formLabel}>Odd</label>
+                  <input
+                    type="number" step="0.01" min="1"
+                    className={formField}
+                    placeholder="Ex: 1.85"
+                    value={editForm.odds}
+                    onChange={e => setEditForm(f => ({ ...f, odds: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className={formLabel}>Stake (R$)</label>
+                  <input
+                    type="number" step="0.5" min="0"
+                    className={formField}
+                    placeholder="Ex: 50"
+                    value={editForm.stake}
+                    onChange={e => setEditForm(f => ({ ...f, stake: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className={formLabel}>Status</label>
+                <select
+                  className={formField}
+                  value={editForm.status}
+                  onChange={e => setEditForm(f => ({ ...f, status: e.target.value }))}
+                >
+                  <option value="PENDING">— Pendente —</option>
+                  <option value="GREEN">✅ Green</option>
+                  <option value="RED">❌ Red</option>
+                  <option value="CASHOUT">🟠 Cash Out</option>
+                  <option value="VOID">⚪ Anulado</option>
+                </select>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2 border-t border-slate-100">
+                <button onClick={() => setEditingTip(null)} className="btn-secondary flex-1">Cancelar</button>
+                <button
+                  onClick={handleUpdateTip}
+                  disabled={saving}
+                  className="btn-primary flex-1"
+                >
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
             </div>
           </div>
-
-          <button type="submit" className="w-full btn-primary py-2.5">
-            Salvar Alterações
-          </button>
-        </form>
-      </Modal>
+        </div>
+      )}
 
     </div>
   )
