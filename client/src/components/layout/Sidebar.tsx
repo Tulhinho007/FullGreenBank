@@ -226,7 +226,8 @@ export const Sidebar = () => {
           getPermission={getPerm}
           children={[
             { label: 'Histórico de Dicas', to: '/reports/tips', permissionKey: 'reports-tips' },
-            { label: 'Performance', to: '/reports', permissionKey: 'reports' }
+            { label: 'Performance', to: '/reports', permissionKey: 'reports' },
+            { label: 'Análise de Estratégia', to: '/reports/strategy', permissionKey: 'reports-strategy' }
           ]} 
         />
 

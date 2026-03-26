@@ -21,6 +21,7 @@ import { GestaoBancaPage }             from './pages/GestaoBancaPage'
 import { InvestimentosPage }           from './pages/InvestimentosPage'
 import { GestaoTipstersPage }          from './pages/GestaoTipstersPage'
 import { ReportsPage }                 from './pages/ReportsPage'
+import { StrategyAnalysisPage }        from './pages/StrategyAnalysisPage'
 import { HistoricoDicasPage }          from './pages/HistoricoDicasPage'
 import { HistoryPage }                 from './pages/HistoryPage'
 import { LegalPage }                   from './pages/LegalPage'
@@ -67,6 +68,7 @@ function App() {
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
           <Route path="reports"   element={<ReportsPage />} />
+          <Route path="reports/strategy" element={<StrategyAnalysisPage />} />
           <Route path="reports/tips" element={<HistoricoDicasPage />} />
           {/* Institutional - inside layout */}
           <Route path="faq"       element={<FAQPage />} />
