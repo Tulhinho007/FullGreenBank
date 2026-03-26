@@ -174,7 +174,7 @@ export const HistoricoDicasPage = () => {
     setSaving(true)
     try {
       const sport = editForm.sportsList[0] || editingTip.sport || 'Futebol'
-      const title = `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}`
+      const title = `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
       await tipsService.update(editingTip.id, {
         title,
         event: editForm.tipoAposta,
@@ -187,7 +187,7 @@ export const HistoricoDicasPage = () => {
           : editForm.status === 'RED'
           ? -Number(editForm.stake)
           : editForm.status === 'VOID' ? 0 : undefined,
-        tipDate: editForm.tipDate ? new Date(editForm.tipDate).toISOString() : editingTip.tipDate,
+        tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : editingTip.tipDate,
         sport,
         description: editForm.tipoAposta,
         linkAposta: editForm.linkAposta?.trim() || null,

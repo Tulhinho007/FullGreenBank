@@ -85,7 +85,7 @@ interface TransactionModalProps {
 const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: TransactionModalProps) => {
   const { user } = useAuth()
   const [form, setForm] = useState({
-    tipsterId: '', tipDate: new Date().toISOString().split('T')[0], linkAposta: '', tipoAposta: 'Simples',
+    tipsterId: '', tipDate: new Date().toLocaleDateString('en-CA'), linkAposta: '', tipoAposta: 'Simples',
     qtdEsportes: '', sportsList: [] as string[], odds: '', stake: '', status: 'GREEN' as StatusType | 'CASHOUT'
   })
 
@@ -102,7 +102,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
         const matchingTipster = tipsters.find(t => t.name.toLowerCase() === user?.name.toLowerCase())
         setForm({
           tipsterId: matchingTipster?.id || user?.id || 'manual', 
-          tipDate: new Date().toISOString().split('T')[0], linkAposta: '', tipoAposta: 'Simples',
+          tipDate: new Date().toLocaleDateString('en-CA'), linkAposta: '', tipoAposta: 'Simples',
           qtdEsportes: '', sportsList: [], odds: '', stake: '', status: 'GREEN'
         })
       }

@@ -81,7 +81,7 @@ export const ReportsPage = () => {
             id: tip.id,
             tipsterId: user.id || 'master',
             tipsterName: user.name || 'Master',
-            tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toISOString().split('T')[0],
+            tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toLocaleDateString('en-CA'),
             linkAposta: tip.linkAposta || '',
             tipoAposta: tip.tipoAposta || 'Simples',
             sportsList: tip.sportsList || [tip.sport || 'Futebol'],

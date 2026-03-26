@@ -179,14 +179,14 @@ export const TipsPage = () => {
     setSaving(true)
     try {
       const sport = newForm.sportsList[0] || 'Futebol'
-      const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}`
+      const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
       await tipsService.create({
         title,
         event: newForm.tipoAposta,
         market: newForm.tipoAposta,
         odds: Number(newForm.odds) || 0,
         stake: Number(newForm.stake) || 0,
-        tipDate: newForm.tipDate ? new Date(newForm.tipDate).toISOString() : new Date().toISOString(),
+        tipDate: newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toISOString() : new Date().toISOString(),
         sport,
         description: newForm.tipoAposta,
         linkAposta: newForm.linkAposta?.trim() || null,
@@ -208,7 +208,7 @@ export const TipsPage = () => {
     try {
       const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
       await tipsService.update(selected.id, {
-        title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}` : selected.title,
+        title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}` : selected.title,
         event: editForm.tipoAposta || selected.event,
         market: editForm.tipoAposta || selected.market,
         odds: Number(editForm.odds) || selected.odds,
@@ -219,7 +219,7 @@ export const TipsPage = () => {
           : editForm.status === 'RED'
           ? -Number(editForm.stake)
           : editForm.status === 'VOID' ? 0 : undefined,
-        tipDate: editForm.tipDate ? new Date(editForm.tipDate).toISOString() : selected.tipDate,
+        tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : selected.tipDate,
         sport,
         linkAposta: editForm.linkAposta?.trim() || null,
       })
