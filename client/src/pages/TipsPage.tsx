@@ -208,7 +208,7 @@ export const TipsPage = () => {
     try {
       const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
       await tipsService.update(selected.id, {
-        title: selected.title,
+        title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate).toLocaleDateString('pt-BR') : 'Sem data'}` : selected.title,
         event: editForm.tipoAposta || selected.event,
         market: editForm.tipoAposta || selected.market,
         odds: Number(editForm.odds) || selected.odds,

@@ -49,7 +49,7 @@ export const StrategyAnalysisPage = () => {
             tipsterName: user.name || 'Master',
             tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toISOString().split('T')[0],
             linkAposta: tip.linkAposta || '',
-            tipoAposta: tip.tipoAposta || 'Simples',
+            tipoAposta: tip.tipoAposta || tip.market || tip.event || 'Simples',
             sportsList: tip.sportsList || [tip.sport || 'Futebol'],
             odds: Number(tip.odds) || 1,
             stake: Number(tip.stake) || 0,
@@ -90,7 +90,6 @@ export const StrategyAnalysisPage = () => {
   const efficiencyData = useMemo(() => {
     const bySport: Record<string, any> = {}
     const byMarket: Record<string, any> = {}
-    const byTipster: Record<string, any> = {}
 
     filteredTransactions.forEach(t => {
       // 1. By Sport
@@ -114,16 +113,6 @@ export const StrategyAnalysisPage = () => {
         if (t.status === 'GREEN' || t.status === 'CASHOUT') byMarket[market].wins++
       }
       byMarket[market].profit += (t.profit || 0)
-
-      // 3. By Tipster
-      const tipster = t.tipsterName || 'Master'
-      if (!byTipster[tipster]) byTipster[tipster] = { name: tipster, category: 'Tipster', profit: 0, invested: 0, wins: 0, count: 0 }
-      if (t.status !== 'VOID') {
-        byTipster[tipster].count++
-        byTipster[tipster].invested += (t.stake || 0)
-        if (t.status === 'GREEN' || t.status === 'CASHOUT') byTipster[tipster].wins++
-      }
-      byTipster[tipster].profit += (t.profit || 0)
     })
 
     const processStats = (obj: Record<string, any>) => Object.values(obj).map(s => ({
@@ -135,8 +124,7 @@ export const StrategyAnalysisPage = () => {
     return {
       sports: processStats(bySport),
       markets: processStats(byMarket),
-      tipsters: processStats(byTipster),
-      all: [...processStats(bySport), ...processStats(byMarket), ...processStats(byTipster)].sort((a, b) => b.profit - a.profit)
+      all: [...processStats(bySport), ...processStats(byMarket)].sort((a, b) => b.profit - a.profit)
     }
   }, [filteredTransactions])
 
