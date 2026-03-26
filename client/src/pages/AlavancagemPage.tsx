@@ -13,7 +13,7 @@ import { formatCurrency } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 
 type MetaType = 'PERCENT' | 'ODD'
 
@@ -37,7 +37,7 @@ export const AlavancagemPage = () => {
   
   // Novos Estados
   const [reinvestimento, setReinvestimento] = useState<number>(100)
-  const [frequencia, setFrequencia] = useState<'D' | 'S' | 'M'>('D')
+  const frequencia = 'D'
   const [completedCycles, setCompletedCycles] = useState<number[]>([])
 
   const results = useMemo(() => {
@@ -61,11 +61,9 @@ export const AlavancagemPage = () => {
       const reinvestAmount = profitPotential * reinvestRate
       const withdrawAmount = profitPotential * (1 - reinvestRate)
       
-      // Cálculo de data estimada
+      // Cálculo de data estimada (Diário por padrão)
       const date = new Date(startDate)
-      if (frequencia === 'D') date.setDate(startDate.getDate() + (i - 1))
-      if (frequencia === 'S') date.setDate(startDate.getDate() + (i - 1) * 7)
-      if (frequencia === 'M') date.setMonth(startDate.getMonth() + (i - 1))
+      date.setDate(startDate.getDate() + (i - 1))
 
       const before = current
       const after = current + reinvestAmount
@@ -125,19 +123,37 @@ export const AlavancagemPage = () => {
   }
 
   const exportPDF = () => {
-    const doc = new jsPDF()
-    doc.text('Plano de Alavancagem Operacional - Full Green Bank', 14, 15)
-    const tableData = results.map(r => [
-      r.index, r.date, formatCurrency(r.before), formatCurrency(r.profit), 
-      formatCurrency(r.reinvest), formatCurrency(r.withdraw), formatCurrency(r.after)
-    ])
-    ;(doc as any).autoTable({
-      head: [['#', 'Data', 'Banca Base', 'Lucro', 'Reinvest.', 'Saque', 'Acumulado']],
-      body: tableData,
-      startY: 25
-    })
-    doc.save('Plano_Alavancagem.pdf')
-    toast.success('PDF gerado com sucesso!')
+    try {
+      const doc = new jsPDF()
+      doc.setFontSize(16)
+      doc.text('Plano de Alavancagem Operacional - Full Green Bank', 14, 15)
+      doc.setFontSize(10)
+      doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 22)
+      
+      const tableData = results.map(r => [
+        r.index, 
+        r.date, 
+        formatCurrency(r.before), 
+        formatCurrency(r.profit), 
+        formatCurrency(r.reinvest), 
+        formatCurrency(r.withdraw), 
+        formatCurrency(r.after)
+      ])
+
+      autoTable(doc, {
+        head: [['#', 'Data', 'Banca Base', 'Lucro', 'Reinvest.', 'Saque', 'Acumulado']],
+        body: tableData,
+        startY: 30,
+        styles: { fontSize: 8, font: 'helvetica' },
+        headStyles: { fillColor: [16, 185, 129] }
+      })
+
+      doc.save('Plano_Alavancagem.pdf')
+      toast.success('PDF gerado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error)
+      toast.error('Erro ao gerar PDF. Tente novamente.')
+    }
   }
 
   return (
@@ -173,15 +189,15 @@ export const AlavancagemPage = () => {
             <h2 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Configuração do Plano</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Banca Inicial (R$)</label>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Banca Inicial (R$)</label>
               <input 
                 type="text" 
                 inputMode="decimal"
                 value={bancaInicial} 
                 onChange={(e) => setBancaInicial(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 h-12 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
               />
             </div>
 
@@ -204,7 +220,7 @@ export const AlavancagemPage = () => {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
                 {tipoMeta === 'PERCENT' ? 'Meta (%)' : 'Odd (@)'}
               </label>
               <input 
@@ -212,18 +228,18 @@ export const AlavancagemPage = () => {
                 inputMode="decimal"
                 value={valorMeta} 
                 onChange={(e) => setValorMeta(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 h-12 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total de Ciclos</label>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Total de Ciclos</label>
               <input 
                 type="text" 
                 inputMode="numeric"
                 value={numEntradas} 
                 onChange={(e) => setNumEntradas(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-center md:text-left"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 h-12 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-center md:text-left font-mono"
               />
             </div>
           </div>
@@ -256,20 +272,14 @@ export const AlavancagemPage = () => {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Frequência</label>
-                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                  {frequencia === 'D' ? 'Diário' : frequencia === 'S' ? 'Semanal' : 'Mensal'}
-                </span>
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Diário</span>
               </div>
-              <div className="flex bg-slate-800 rounded-xl p-1 gap-1">
-                {(['D', 'S', 'M'] as const).map(f => (
-                  <button 
-                    key={f}
-                    onClick={() => setFrequencia(f)}
-                    className={`flex-1 py-1.5 text-[10px] font-black rounded-lg transition-all ${frequencia === f ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/40' : 'text-slate-500 hover:text-slate-300'}`}
-                  >
-                    {f}
-                  </button>
-                ))}
+              <div className="flex bg-slate-800 rounded-xl p-1">
+                <button 
+                  className="flex-1 py-1.5 text-[10px] font-black rounded-lg bg-emerald-600 text-white shadow-lg shadow-emerald-500/40 cursor-default"
+                >
+                  DIÁRIO
+                </button>
               </div>
             </div>
 
