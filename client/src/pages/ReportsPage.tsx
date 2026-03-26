@@ -74,9 +74,10 @@ export const ReportsPage = () => {
         if (user?.role === 'MASTER') {
           // Conta Master: puxa da página histórico de dicas (backend)
           const params = { page: 1, limit: 1000 }
-          const backendTips = await tipsService.getAll(params.page, params.limit)
+          const backendData = await tipsService.getAll(params.page, params.limit)
+          const tipsArray = Array.isArray(backendData.tips) ? backendData.tips : []
           
-          const mappedTx: Transaction[] = backendTips.map((tip: any) => ({
+          const mappedTx: Transaction[] = tipsArray.map((tip: any) => ({
             id: tip.id,
             tipsterId: user.id || 'master',
             tipsterName: user.name || 'Master',
