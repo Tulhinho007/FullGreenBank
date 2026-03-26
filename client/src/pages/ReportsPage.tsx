@@ -11,6 +11,7 @@ import {
 import { useState, useEffect, useMemo } from 'react'
 import { formatCurrency } from '../utils/formatters'
 import { useAuth } from '../contexts/AuthContext'
+import { tipsService } from '../services/tips.service'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -68,20 +69,44 @@ export const ReportsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
-    try {
-      const storedTx = localStorage.getItem('fgb_tipster_transactions')
-      if (storedTx) {
-        const allTx: Transaction[] = JSON.parse(storedTx)
-        
-        const myTx = allTx.filter(t => 
-          t.tipsterName.toLowerCase() === user?.name?.toLowerCase() || 
-          t.tipsterId === user?.id
-        )
-        setTransactions(myTx)
+    async function loadData() {
+      try {
+        if (user?.role === 'MASTER') {
+          // Conta Master: puxa da página histórico de dicas (backend)
+          const params = { page: 1, limit: 1000 }
+          const backendTips = await tipsService.getAll(params.page, params.limit)
+          
+          const mappedTx: Transaction[] = backendTips.map((tip: any) => ({
+            id: tip.id,
+            tipsterId: user.id || 'master',
+            tipsterName: user.name || 'Master',
+            tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toISOString().split('T')[0],
+            linkAposta: tip.linkAposta || '',
+            tipoAposta: tip.tipoAposta || 'Simples',
+            sportsList: tip.sportsList || [tip.sport || 'Futebol'],
+            odds: Number(tip.odds) || 1,
+            stake: Number(tip.stake) || 0,
+            status: (tip.result as StatusType) || 'PENDING',
+            profit: Number(tip.profit) || 0
+          }))
+          setTransactions(mappedTx)
+        } else {
+          // Outras contas (Gestão Tipsters) lê do localStorage / registros atrelados
+          const storedTx = localStorage.getItem('fgb_tipster_transactions')
+          if (storedTx) {
+            const allTx: Transaction[] = JSON.parse(storedTx)
+            const myTx = allTx.filter(t => 
+              t.tipsterName.toLowerCase() === user?.name?.toLowerCase() || 
+              t.tipsterId === user?.id
+            )
+            setTransactions(myTx)
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar transações para relatórios:', error)
       }
-    } catch (error) {
-      console.error('Erro ao carregar transações para relatórios:', error)
     }
+    loadData()
   }, [user])
 
   // --- Calculations ---
