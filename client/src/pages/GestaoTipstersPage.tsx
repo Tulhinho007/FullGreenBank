@@ -28,8 +28,10 @@ export interface Transaction {
   sportsList: string[]
   odds: number
   stake: number
-  status: StatusType
+  status: StatusType | 'CASHOUT'
   profit: number
+  event?: string
+  market?: string
 }
 
 const STATUS_CONFIG: Record<StatusType, { label: string, colorClass: string, icon: React.ReactNode }> = {
@@ -92,7 +94,8 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
       if (editData) {
         setForm({
           tipsterId: editData.tipsterId, tipDate: editData.tipDate, linkAposta: editData.linkAposta || '',
-          tipoAposta: editData.tipoAposta || 'Simples', qtdEsportes: editData.sportsList?.length ? String(editData.sportsList.length) : '',
+          tipoAposta: editData.tipoAposta || editData.market || editData.event || 'Simples', 
+          qtdEsportes: editData.sportsList?.length ? String(editData.sportsList.length) : '',
           sportsList: editData.sportsList || [], odds: String(editData.odds || ''), stake: String(editData.stake || ''), status: editData.status
         })
       } else {
@@ -568,13 +571,17 @@ export const GestaoTipstersPage = () => {
                       </td>
                       <td className="px-8 py-6">
                         <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-1 max-w-[200px] truncate">
-                          {t.tipoAposta}
+                          {t.tipoAposta || t.event || 'Simples'}
                         </p>
-                        {t.sportsList && t.sportsList.length > 0 && (
+                        {t.sportsList && t.sportsList.length > 0 ? (
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                             {t.sportsList.join(', ')}
                           </p>
-                        )}
+                        ) : t.market ? (
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                            {t.market}
+                          </p>
+                        ) : null}
                         {t.linkAposta && (
                           <a href={t.linkAposta} target="_blank" rel="noreferrer" className="inline-flex mt-1 text-[10px] text-blue-500 hover:underline">Acessar Bilhete</a>
                         )}

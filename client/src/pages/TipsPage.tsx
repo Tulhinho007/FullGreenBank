@@ -236,7 +236,7 @@ export const TipsPage = () => {
     setEditForm({
       tipDate: datePart,
       linkAposta: tip.linkAposta || '',
-      tipoAposta: tip.isMultipla ? 'Múltipla' : 'Simples',
+      tipoAposta: tip.tipoAposta || tip.market || (tip.isMultipla ? 'Múltipla' : 'Simples'),
       qtdEsportes: tip.sport ? '1' : '',
       sportsList: tip.sport ? [tip.sport] : [],
       odds: tip.odds?.toString() ?? '',
@@ -289,8 +289,9 @@ export const TipsPage = () => {
               {isMultipla && <span className="ml-2 px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-600 text-[10px] font-black uppercase tracking-widest border border-cyan-100">Múltipla</span>}
             </h3>
             <p className="text-[11px] font-bold text-slate-400 mt-1">
-              {tip.sport} {tip.event ? `· ${tip.event}` : ''}
-              {!eExpansivel && tip.market && ` · ${tip.market}`}
+              {tip.sport}
+              {tip.event && !['Simples', 'Múltipla', 'Criar Aposta'].includes(tip.event) ? ` · ${tip.event}` : ''}
+              {!eExpansivel && tip.market && !['Simples', 'Múltipla', 'Criar Aposta'].includes(tip.market) ? ` · ${tip.market}` : ''}
             </p>
           </div>
           <div className="flex items-center gap-2">
