@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Eye, EyeOff, TrendingUp } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
 export const LoginPage = () => {
@@ -78,12 +78,8 @@ export const LoginPage = () => {
       </div>
 
       <div className="w-full max-w-md relative">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-emerald-600 mb-6 shadow-xl shadow-emerald-500/20">
-            <TrendingUp size={32} className="text-white" />
-          </div>
-          <h1 className="font-display font-black text-4xl text-slate-800 tracking-tight">Full Green Bank</h1>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Gestão inteligente de banca</p>
+        <div className="text-center mb-10 flex flex-col items-center">
+          <img src="/logo.png" alt="Full Green System" className="w-48 h-auto drop-shadow-2xl" />
         </div>
 
         <div className="nm-modal border-none p-8 lg:p-10 rounded-[2.5rem] shadow-slate-200/50">

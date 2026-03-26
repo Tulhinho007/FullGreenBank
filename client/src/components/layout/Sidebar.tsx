@@ -183,23 +183,7 @@ export const Sidebar = () => {
     >
       {/* Logo */}
       <div className="px-5 py-6 border-b border-slate-200/60 flex flex-col items-center justify-center text-center gap-3">
-        <div
-          className="nm-icon w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ background: '#f8fafc' }}
-        >
-          <span
-            className="font-display font-bold text-lg"
-            style={{
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >FG</span>
-        </div>
-        <div>
-          <p className="font-display font-bold text-slate-800 text-lg leading-none tracking-wide">Full Green</p>
-          <p className="text-emerald-600 text-[10px] font-black tracking-[0.2em] mt-2 uppercase">Bank</p>
-        </div>
+        <img src="/logo.png" alt="Full Green System" className="w-32 h-auto" />
       </div>
 
       {/* Nav */}
