@@ -91,6 +91,16 @@ export const AlavancagemPage = () => {
   const totalProfitValue = finalResult - bancaBase
   const totalProfitPercent = bancaBase > 0 ? (totalProfitValue / bancaBase) * 100 : 0
 
+  // Métricas Realizadas (Baseadas nos checks)
+  const realizedMetrics = useMemo(() => {
+    const checkedRows = results.filter(r => r.isCompleted)
+    return {
+      profit: checkedRows.reduce((acc, r) => acc + r.profit, 0),
+      withdraw: checkedRows.reduce((acc, r) => acc + r.withdraw, 0),
+      count: checkedRows.length
+    }
+  }, [results])
+
   const resetProgress = () => {
     if (confirm('Deseja resetar todo o progresso dos ciclos?')) {
       setCompletedCycles([])
@@ -349,34 +359,54 @@ export const AlavancagemPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden flex-1 flex flex-col justify-center">
-            <div className="absolute top-0 right-0 p-6 opacity-5">
-              <TrendingUp size={120} className="text-emerald-500" />
+        <div className="flex flex-col gap-4">
+          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden flex-1 flex flex-col justify-center bg-gradient-to-br from-white to-emerald-50/20">
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+              <TrendingUp size={80} className="text-emerald-500" />
             </div>
-            <div className="flex items-center justify-between mb-4 text-slate-400 relative z-10">
+            <div className="flex items-center justify-between mb-2 text-slate-400 relative z-10">
               <span className="text-[10px] font-black uppercase tracking-widest">Resultado Final</span>
-              <ArrowUpRight size={16} className="text-emerald-500" />
+              <ArrowUpRight size={14} className="text-emerald-500" />
             </div>
             <div className="space-y-1 relative z-10">
-              <span className="text-5xl font-black text-emerald-600 tracking-tighter leading-tight block">
+              <span className="text-3xl font-black text-emerald-600 tracking-tighter leading-tight block">
                 {formatCurrency(finalResult)}
               </span>
-              <p className="text-[11px] font-black text-emerald-600/50 uppercase tracking-widest">Projeção estimada após {numEntradas} ciclos</p>
+              <p className="text-[9px] font-black text-emerald-600/50 uppercase tracking-widest">Objetivo Final</p>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden flex-1 flex flex-col justify-center">
-            <div className="flex items-center justify-between mb-4 text-slate-400">
+          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden flex-1 flex flex-col justify-center bg-gradient-to-br from-white to-blue-50/20">
+            <div className="flex items-center justify-between mb-2 text-slate-400">
               <span className="text-[10px] font-black uppercase tracking-widest">Lucro Projetado (ROI)</span>
-              <TrendingUp size={16} className="text-blue-500" />
+              <TrendingUp size={14} className="text-blue-500" />
             </div>
             <div className="space-y-1">
-              <span className="text-5xl font-black text-slate-800 tracking-tighter leading-tight block">
+              <span className="text-3xl font-black text-slate-800 tracking-tighter leading-tight block">
                 +{totalProfitPercent.toFixed(1)}%
               </span>
-              <p className="text-[11px] font-black text-emerald-600 uppercase tracking-widest block">
-                +{formatCurrency(totalProfitValue)} acumulado
+              <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest block">
+                +{formatCurrency(totalProfitValue)} total
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl relative overflow-hidden flex-1 flex flex-col justify-center">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <CheckCircle2 size={80} className="text-emerald-500" />
+            </div>
+            <div className="flex items-center justify-between mb-2 text-slate-500 relative z-10">
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/80">Saques Realizados</span>
+              <div className="bg-emerald-500/20 text-emerald-500 px-2 py-0.5 rounded-full text-[9px] font-black">
+                {realizedMetrics.count} OK
+              </div>
+            </div>
+            <div className="space-y-1 relative z-10">
+              <span className="text-3xl font-black text-white tracking-tighter leading-tight block">
+                {formatCurrency(realizedMetrics.withdraw)}
+              </span>
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
+                Lucro garantido no bolso
               </p>
             </div>
           </div>
