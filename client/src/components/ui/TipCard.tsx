@@ -1,4 +1,5 @@
 import { resultLabel, formatDate, formatCurrency } from '../../utils/formatters'
+import { ExternalLink } from 'lucide-react'
 
 interface Tip {
   id: string
@@ -13,6 +14,7 @@ interface Tip {
   profit?: number
   tipDate: string
   author: { name: string }
+  linkAposta?: string
 }
 
 interface TipCardProps {
@@ -24,12 +26,24 @@ interface TipCardProps {
 export const TipCard = ({ tip, onUpdateResult, isAdmin }: TipCardProps) => {
   const resultInfo = resultLabel[tip.result ?? 'PENDING'] ?? resultLabel['PENDING']
 
+  const handleCardClick = () => {
+    if (tip.linkAposta) {
+      window.open(tip.linkAposta, '_blank')
+    }
+  }
+
   return (
-    <div className="bg-white p-4 rounded-[2rem] border border-slate-100 hover:border-emerald-500/30 transition-all duration-300 shadow-sm group">
+    <div 
+      onClick={handleCardClick}
+      className={`bg-white p-4 rounded-[2rem] border border-slate-100 hover:border-emerald-500/30 transition-all duration-300 shadow-sm group ${tip.linkAposta ? 'cursor-pointer' : ''}`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
-          <h3 className="font-display font-bold text-slate-900 text-[13px] leading-tight truncate">{tip.title}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-display font-bold text-slate-900 text-[13px] leading-tight truncate">{tip.title}</h3>
+            {tip.linkAposta && <ExternalLink size={12} className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />}
+          </div>
           <p className="text-[9px] uppercase font-black text-slate-400 mt-0.5 tracking-widest">{tip.event}</p>
         </div>
         <span className={`${resultInfo.cls} shrink-0 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest`}>{resultInfo.label}</span>
@@ -61,15 +75,23 @@ export const TipCard = ({ tip, onUpdateResult, isAdmin }: TipCardProps) => {
           </div>
           <span className="text-[10px] text-slate-400 font-medium">{tip.author.name.split(' ')[0]}</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{formatDate(tip.tipDate)}</span>
           {isAdmin && onUpdateResult && (!tip.result || tip.result === 'PENDING') && (
             <button
-              onClick={() => onUpdateResult(tip)}
+              onClick={(e) => { e.stopPropagation(); onUpdateResult(tip); }}
               className="text-[10px] font-bold bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg transition-all shadow-md shadow-green-500/10 active:scale-95"
             >
               Resolver
             </button>
+          )}
+          {tip.linkAposta && (
+             <button 
+               className="text-[9px] font-black bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors uppercase tracking-widest shadow-lg shadow-slate-200"
+               onClick={(e) => { e.stopPropagation(); window.open(tip.linkAposta, '_blank'); }}
+             >
+               Apostar
+             </button>
           )}
         </div>
       </div>

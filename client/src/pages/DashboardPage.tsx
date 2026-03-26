@@ -9,7 +9,10 @@ import {
   ChevronDown, ChevronUp, Clock,
   ArrowRight, Search
 } from 'lucide-react'
-import { formatCurrency } from '../utils/formatters'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts'
+import { formatCurrency, formatDate } from '../utils/formatters'
 
 interface Tip {
   id: string; title: string; description: string; sport: string
@@ -32,7 +35,7 @@ export const DashboardPage = () => {
   const [tips,    setTips]    = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
   const [mgmtOpen, setMgmtOpen] = useState(false)
-  const [tipFilter, setTipFilter] = useState('Todos')
+  const [tipFilter, setTipFilter] = useState('Pendentes')
 
   useEffect(() => {
     tipsService.getAll(1, 50)
@@ -63,10 +66,25 @@ export const DashboardPage = () => {
   const pendingTipsCount = tips.filter(t => t.result === 'PENDING').length
 
   const filteredTips = tips.filter(t => {
-    if (tipFilter === 'Todos') return true
-    if (tipFilter === 'Pendentes') return t.result === 'PENDING'
+    // Only show pending tips in this section as requested
+    if (t.result !== 'PENDING') return false
+    
+    if (tipFilter === 'Todos' || tipFilter === 'Pendentes') return true
     return t.sport === tipFilter
   }).slice(0, 6)
+
+  // Chart data calculation
+  const chartData = statsTips
+    .filter(t => t.result !== 'PENDING')
+    .sort((a, b) => new Date(a.tipDate).getTime() - new Date(b.tipDate).getTime())
+    .reduce((acc: any[], tip) => {
+      const prevProfit = acc.length > 0 ? acc[acc.length - 1].profit : 0
+      acc.push({
+        date: formatDate(tip.tipDate),
+        profit: prevProfit + (tip.profit || 0)
+      })
+      return acc
+    }, [])
 
   return (
     <div className="flex flex-col gap-6 transition-colors duration-300 pb-10">
@@ -104,35 +122,83 @@ export const DashboardPage = () => {
 
       {/* Stats - Personalized */}
       {userTips.length > 0 ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Dicas Seguidas"
-            value={userTips.length}
-            icon={<TrendingUp size={18} />}
-            accent="green"
-            subtitle="Sua atividade"
-          />
-          <StatCard
-            title="Lucro Acumulado"
-            value={profit >= 0 ? `+${formatCurrency(profit)}` : formatCurrency(profit)}
-            icon={<DollarSign size={18} />}
-            accent={profit >= 0 ? 'green' : 'red'}
-            subtitle={`Individual`}
-          />
-          <StatCard
-            title="Win Rate"
-            value={`${winRate}%`}
-            icon={<Target size={18} />}
-            accent="blue"
-            subtitle={`${greens} G / ${reds} R`}
-          />
-          <StatCard
-            title="ROI"
-            value={totalStake > 0 ? `${((profit / totalStake) * 100).toFixed(1)}%` : '0%'}
-            icon={<BarChart3 size={18} />}
-            accent="yellow"
-            subtitle="Peso individual"
-          />
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              title="Dicas Seguidas"
+              value={userTips.length}
+              icon={<TrendingUp size={18} />}
+              accent="green"
+              subtitle="Sua atividade"
+            />
+            <StatCard
+              title="Lucro Acumulado"
+              value={profit >= 0 ? `+${formatCurrency(profit)}` : formatCurrency(profit)}
+              icon={<DollarSign size={18} />}
+              accent={profit >= 0 ? 'green' : 'red'}
+              subtitle={`Individual`}
+            />
+            <StatCard
+              title="Win Rate"
+              value={`${winRate}%`}
+              icon={<Target size={18} />}
+              accent="blue"
+              subtitle={`${greens} G / ${reds} R`}
+            />
+            <StatCard
+              title="ROI"
+              value={totalStake > 0 ? `${((profit / totalStake) * 100).toFixed(1)}%` : '0%'}
+              icon={<BarChart3 size={18} />}
+              accent="yellow"
+              subtitle="Peso individual"
+            />
+          </div>
+
+          {/* Performance Chart */}
+          <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden h-[300px]">
+             <div className="flex items-center justify-between mb-6">
+                <div>
+                   <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em]">Evolução de Lucro</h3>
+                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight mt-1">Sua trajetória individual (BRL)</p>
+                </div>
+             </div>
+             <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis 
+                      dataKey="date" 
+                      hide
+                    />
+                    <YAxis 
+                      tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(value) => `R$ ${value}`}
+                    />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                      labelStyle={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', color: '#64748b' }}
+                      itemStyle={{ fontSize: '12px', fontWeight: 700, color: '#10b981' }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="profit" 
+                      stroke="#10b981" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorProfit)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+             </div>
+          </div>
         </div>
       ) : (
         <div className="bg-slate-50/50 p-6 rounded-[2rem] border border-dashed border-slate-200 text-center">
