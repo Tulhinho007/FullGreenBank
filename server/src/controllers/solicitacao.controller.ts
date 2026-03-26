@@ -6,19 +6,32 @@ const prisma = new PrismaClient()
 
 export const createSolicitacao = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { valorAporte, termoAceito } = req.body
-    const userId = req.user?.userId
+    const { valorAporte, termoAceito, userId: targetUserId } = req.body
+    const requesterId = req.user?.userId
+    const requesterRole = req.user?.role
 
-    if (!userId) {
+    if (!requesterId) {
       res.status(401).json({ error: 'Não autorizado' })
       return
     }
 
+    // Se for admin/master e enviou um userId no body, usa ele. Caso contrário, usa o próprio ID.
+    const isAdmin = requesterRole === 'ADMIN' || requesterRole === 'MASTER'
+    const finalUserId = (isAdmin && targetUserId) ? targetUserId : requesterId
+
     const solicitacao = await prisma.solicitacaoInvestimento.create({
       data: {
-        userId,
+        userId: finalUserId,
         valorAporte: Number(valorAporte),
-        termoAceito: Boolean(termoAceito)
+        termoAceito: Boolean(termoAceito ?? true)
+      },
+      include: {
+        usuario: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
       }
     })
 
