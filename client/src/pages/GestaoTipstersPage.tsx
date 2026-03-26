@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, Target, User, Plus, X, AlertTriangle } from 'lucide-react'
+import { CheckCircle, XCircle, MinusCircle, Clock, Edit2, Trash2, TrendingUp, Target, User, Plus, X, AlertTriangle, Hash, Calendar, Link as LinkIcon, DollarSign } from 'lucide-react'
 import { formatCurrency } from '../utils/formatters'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -7,10 +7,11 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import { usersService } from '../services/users.service'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
+import { SportSelect } from '../components/ui/SportSelect'
 
 // --- Types & Config ---
 
-export type StatusType = 'GREEN' | 'RED' | 'VOID' | 'PENDING'
+export type StatusType = 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
 
 export interface Tipster {
   id: string
@@ -21,11 +22,13 @@ export interface Transaction {
   id: string
   tipsterId: string
   tipsterName: string
-  date: string
-  event: string
-  market: string
+  tipDate: string
+  linkAposta: string
+  tipoAposta: string
+  sportsList: string[]
+  odds: number
+  stake: number
   status: StatusType
-  amount: number
   profit: number
 }
 
@@ -34,14 +37,15 @@ const STATUS_CONFIG: Record<StatusType, { label: string, colorClass: string, ico
   RED:     { label: 'Red',      colorClass: 'bg-rose-50 text-rose-600 border border-rose-100',           icon: <XCircle size={14} /> },
   VOID:    { label: 'Anulada',  colorClass: 'bg-slate-50 text-slate-400 border border-slate-100', icon: <MinusCircle size={14} /> },
   PENDING: { label: 'Pendente', colorClass: 'bg-amber-50 text-amber-600 border border-amber-100', icon: <Clock size={14} /> },
+  CASHOUT: { label: 'Cash Out', colorClass: 'bg-orange-50 text-orange-600 border border-orange-100', icon: <DollarSign size={14} /> },
 }
 
 const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', tipsterId: 't1', tipsterName: 'Mestre das Odds', date: '2023-10-30', event: 'Flamengo x Vasco', market: 'Over 2.5 Gols', status: 'GREEN', amount: 100, profit: 85 },
-  { id: '2', tipsterId: 't1', tipsterName: 'Mestre das Odds', date: '2023-10-29', event: 'Arsenal x Chelsea', market: 'Ambas Marcam', status: 'RED', amount: 50, profit: -50 },
-  { id: '3', tipsterId: 't2', tipsterName: 'Green VIP', date: '2023-10-28', event: 'Lakers x Warriors', market: 'Handicap -5.5', status: 'VOID', amount: 200, profit: 0 },
-  { id: '4', tipsterId: 't1', tipsterName: 'Mestre das Odds', date: '2023-10-31', event: 'Real Madrid x Barcelona', market: 'Vitória Real', status: 'PENDING', amount: 150, profit: 0 },
-  { id: '5', tipsterId: 't3', tipsterName: 'Rei do Escanteio', date: '2023-10-25', event: 'Boca x River', market: 'Mais de 9.5 Escanteios', status: 'GREEN', amount: 100, profit: 90 },
+  { id: '1', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-30', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.85, stake: 100, status: 'GREEN', profit: 85 },
+  { id: '2', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-29', linkAposta: '', tipoAposta: 'Múltipla', sportsList: ['Futebol', 'Basquete'], odds: 2.0, stake: 50, status: 'RED', profit: -50 },
+  { id: '3', tipsterId: 't2', tipsterName: 'Green VIP', tipDate: '2023-10-28', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Basquete'], odds: 1.9, stake: 200, status: 'VOID', profit: 0 },
+  { id: '4', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-31', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.5, stake: 150, status: 'PENDING', profit: 0 },
+  { id: '5', tipsterId: 't3', tipsterName: 'Rei do Escanteio', tipDate: '2023-10-25', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.9, stake: 100, status: 'GREEN', profit: 90 },
 ]
 
 // ── Modals ──────────────────────────────────────────────────────────────
@@ -65,6 +69,9 @@ const ConfirmPopup = ({ title, message, onConfirm, onCancel }: { title: string; 
   </>
 )
 
+const formField = 'w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 transition-all placeholder:text-slate-300'
+const formLabel = 'block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5'
+
 interface TransactionModalProps {
   isOpen: boolean
   onClose: () => void
@@ -76,26 +83,24 @@ interface TransactionModalProps {
 const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: TransactionModalProps) => {
   const { user } = useAuth()
   const [form, setForm] = useState({
-    tipsterId: '', date: new Date().toISOString().split('T')[0], event: '', market: '',
-    status: 'GREEN' as StatusType, amount: '', profit: ''
+    tipsterId: '', tipDate: new Date().toISOString().split('T')[0], linkAposta: '', tipoAposta: 'Simples',
+    qtdEsportes: '', sportsList: [] as string[], odds: '', stake: '', status: 'GREEN' as StatusType | 'CASHOUT'
   })
 
   useEffect(() => {
     if (isOpen) {
       if (editData) {
         setForm({
-          tipsterId: editData.tipsterId, date: editData.date, event: editData.event, 
-          market: editData.market, status: editData.status, amount: String(editData.amount),
-          profit: String(editData.profit)
+          tipsterId: editData.tipsterId, tipDate: editData.tipDate, linkAposta: editData.linkAposta || '',
+          tipoAposta: editData.tipoAposta || 'Simples', qtdEsportes: editData.sportsList?.length ? String(editData.sportsList.length) : '',
+          sportsList: editData.sportsList || [], odds: String(editData.odds || ''), stake: String(editData.stake || ''), status: editData.status
         })
       } else {
-        // Tenta encontrar o tipster que corresponde ao usuário logado
         const matchingTipster = tipsters.find(t => t.name.toLowerCase() === user?.name.toLowerCase())
-        
         setForm({
           tipsterId: matchingTipster?.id || user?.id || 'manual', 
-          date: new Date().toISOString().split('T')[0],
-          event: '', market: '', status: 'GREEN', amount: '', profit: ''
+          tipDate: new Date().toISOString().split('T')[0], linkAposta: '', tipoAposta: 'Simples',
+          qtdEsportes: '', sportsList: [], odds: '', stake: '', status: 'GREEN'
         })
       }
     }
@@ -103,18 +108,44 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 
   if (!isOpen) return null
 
+  const updateQtdEsportes = (qty: string) => {
+    const n = Math.max(0, Math.min(20, Number(qty) || 0))
+    const prev = form.sportsList
+    const next = Array.from({ length: n }, (_, i) => prev[i] ?? '')
+    setForm(f => ({ ...f, qtdEsportes: qty, sportsList: next }))
+  }
+
+  const updateSportAt = (idx: number, val: string) => {
+    setForm(f => {
+      const list = [...f.sportsList]
+      list[idx] = val
+      return { ...f, sportsList: list }
+    })
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    const odds = Number(form.odds) || 0
+    const stake = Number(form.stake) || 0
+    let profit = 0
+    if (form.status === 'GREEN') {
+      profit = stake * (odds - 1)
+    } else if (form.status === 'RED') {
+      profit = -stake
+    }
     
     onSave({
       id: editData?.id,
       tipsterId: form.tipsterId,
-      date: form.date,
-      event: form.event,
-      market: form.market,
+      tipDate: form.tipDate,
+      linkAposta: form.linkAposta,
+      tipoAposta: form.tipoAposta,
+      sportsList: form.sportsList,
       status: form.status,
-      amount: Number(form.amount) || 0,
-      profit: Number(form.profit) || 0
+      odds,
+      stake,
+      profit
     })
   }
 
@@ -122,67 +153,84 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
     <>
       <div className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-[6px]" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-[2.5rem]  flex flex-col overflow-hidden border border-slate-100">
-          <div className="flex items-center justify-between p-8 border-b border-slate-50">
+        <div className="w-full max-w-lg bg-white rounded-[2.5rem] flex flex-col overflow-hidden border border-slate-100">
+          <div className="flex items-center justify-between p-6 border-b border-slate-50">
             <h2 className="text-xl font-black text-slate-800 tracking-tight">
               {editData ? 'Editar Registro' : 'Novo Registro'}
             </h2>
             <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:bg-slate-50 transition-colors"><X size={18} /></button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto custom-scrollbar">
             <div className="flex flex-col gap-2 opacity-80">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tipster (Automático)</label>
-              <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-400 text-sm font-bold cursor-not-allowed">
+              <label className={formLabel}>Tipster (Automático)</label>
+              <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-slate-400 text-sm font-bold cursor-not-allowed mb-2">
                 {editData ? editData.tipsterName : user?.name}
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Data</label>
-                <input required type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all" />
+            {/* Data */}
+            <div>
+              <label className={formLabel}><Calendar size={10} className="inline mr-1" />Data</label>
+              <input type="date" className={formField} required value={form.tipDate} onChange={e => setForm(f => ({ ...f, tipDate: e.target.value }))} />
+            </div>
+
+            {/* Link de Aposta */}
+            <div>
+              <label className={formLabel}><LinkIcon size={10} className="inline mr-1" />Link de Aposta</label>
+              <input type="url" className={formField} placeholder="https://..." value={form.linkAposta} onChange={e => setForm(f => ({ ...f, linkAposta: e.target.value }))} />
+            </div>
+
+            {/* Tipo de Aposta */}
+            <div>
+              <label className={formLabel}>Tipo de Aposta</label>
+              <select className={formField} value={form.tipoAposta} onChange={e => setForm(f => ({ ...f, tipoAposta: e.target.value }))}>
+                <option value="Simples">Simples</option>
+                <option value="Múltipla">Múltipla</option>
+                <option value="Criar Aposta">Criar Aposta</option>
+              </select>
+            </div>
+
+            {/* Quantidade de Esportes */}
+            <div>
+              <label className={formLabel}><Hash size={10} className="inline mr-1" />Quantidade de Esportes</label>
+              <input type="number" min="0" max="20" className={formField} placeholder="Ex: 2" value={form.qtdEsportes} onChange={e => updateQtdEsportes(e.target.value)} />
+            </div>
+
+            {/* Dynamic Sport Selects */}
+            {form.sportsList.length > 0 && (
+              <div className="flex flex-col gap-2 pl-3 border-l-2 border-emerald-200">
+                {form.sportsList.map((sp, idx) => (
+                  <div key={idx}>
+                    <label className={formLabel}>Esporte {idx + 1}</label>
+                    <SportSelect value={sp} onChange={v => updateSportAt(idx, v)} />
+                  </div>
+                ))}
               </div>
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as StatusType })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none">
-                  <option value="GREEN">Green</option>
-                  <option value="RED">Red</option>
-                  <option value="VOID">Anulada</option>
-                  <option value="PENDING">Pendente</option>
-                </select>
+            )}
+
+            {/* Odd + Stake */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={formLabel}>Odd</label>
+                <input type="number" step="0.01" min="1" required className={formField} placeholder="Ex: 1.85" value={form.odds} onChange={e => setForm(f => ({ ...f, odds: e.target.value }))} />
+              </div>
+              <div>
+                <label className={formLabel}>Stake (R$)</label>
+                <CurrencyInput value={form.stake ? Number(form.stake) : 0} onChange={v => setForm(f => ({ ...f, stake: String(v) }))} alertLimit={5000} className={formField} />
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Evento / Jogo</label>
-              <input required value={form.event} onChange={e => setForm({ ...form, event: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300" placeholder="Ex: Flamengo x Vasco" />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Mercado</label>
-              <input required value={form.market} onChange={e => setForm({ ...form, market: e.target.value })} className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-slate-300" placeholder="Ex: Over 2.5 Gols" />
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Investimento</label>
-                <CurrencyInput
-                  value={form.amount ? Number(form.amount) : 0}
-                  onChange={(v) => setForm({ ...form, amount: String(v) })}
-                  alertLimit={1000}
-                  className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                />
-              </div>
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lucro / Prejuízo</label>
-                <CurrencyInput
-                  value={form.profit ? Number(form.profit) : 0}
-                  onChange={(v) => setForm({ ...form, profit: String(v) })}
-                  alertLimit={1000}
-                  className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                />
-              </div>
+            {/* Status */}
+            <div>
+              <label className={formLabel}>Status</label>
+              <select className={formField} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as StatusType | 'CASHOUT' }))}>
+                <option value="PENDING">— Pendente —</option>
+                <option value="GREEN">✅ Green</option>
+                <option value="RED">❌ Red</option>
+                <option value="CASHOUT">🟠 Cash Out</option>
+                <option value="VOID">⚪ Anulado</option>
+              </select>
             </div>
 
             <button type="submit" className="mt-4 w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-emerald-500/20">
@@ -270,7 +318,7 @@ export const GestaoTipstersPage = () => {
   }, [selectedTipsterId, transactions])
 
   const totalProfit = filteredTransactions.reduce((acc, t) => acc + t.profit, 0)
-  const totalInvested = filteredTransactions.reduce((acc, t) => acc + t.amount, 0)
+  const totalInvested = filteredTransactions.reduce((acc, t) => acc + t.stake, 0)
   const roi = totalInvested > 0 ? ((totalProfit / totalInvested) * 100).toFixed(2) : '0.00'
 
   const counts = {
@@ -284,8 +332,8 @@ export const GestaoTipstersPage = () => {
   const buildEvolutionChart = () => {
     const grouped = filteredTransactions.reduce((acc, t) => {
       // Basic formatting of date (YYYY-MM-DD to DD/MM)
-      const parts = t.date.split('-')
-      const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : t.date
+      const parts = t.tipDate.split('-')
+      const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : t.tipDate
       
       if (!acc[label]) acc[label] = 0
       acc[label] += t.profit
@@ -486,8 +534,8 @@ export const GestaoTipstersPage = () => {
               <tr className="bg-slate-50/50 border-b border-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <th className="px-8 py-5">Tipster</th>
                 <th className="px-8 py-5">Data</th>
-                <th className="px-8 py-5">Evento / Mercado</th>
-                <th className="px-8 py-5">Investimento</th>
+                <th className="px-8 py-5">Aposta</th>
+                <th className="px-8 py-5">Odd / Stake</th>
                 <th className="px-8 py-5">Status</th>
                 <th className="px-8 py-5 text-right">Ações</th>
               </tr>
@@ -502,8 +550,8 @@ export const GestaoTipstersPage = () => {
               ) : (
                 filteredTransactions.map(t => {
                   // Basic formatting of date
-                  const parts = t.date.split('-')
-                  const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : t.date
+                  const parts = t.tipDate.split('-')
+                  const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : t.tipDate
 
                   return (
                     <tr key={t.id} className="hover:bg-slate-50/50 transition-all group">
@@ -519,14 +567,27 @@ export const GestaoTipstersPage = () => {
                         {formattedDate}
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-1 max-w-[200px] truncate" title={t.event}>{t.event}</p>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.market}</p>
+                        <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-1 max-w-[200px] truncate">
+                          {t.tipoAposta}
+                        </p>
+                        {t.sportsList && t.sportsList.length > 0 && (
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                            {t.sportsList.join(', ')}
+                          </p>
+                        )}
+                        {t.linkAposta && (
+                          <a href={t.linkAposta} target="_blank" rel="noreferrer" className="inline-flex mt-1 text-[10px] text-blue-500 hover:underline">Acessar Bilhete</a>
+                        )}
                       </td>
                       <td className="px-8 py-6 whitespace-nowrap">
-                        <p className="text-xs font-bold text-slate-400">{formatCurrency(t.amount)}</p>
-                        <p className={`text-sm font-black mt-1 tracking-tight ${t.profit > 0 ? 'text-emerald-600' : t.profit < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
-                          {t.profit > 0 ? '+' : ''}{formatCurrency(t.profit)}
+                        <p className="text-xs font-bold text-slate-400 font-mono">
+                          @{Number(t.odds || 0).toFixed(2)} <span className="text-slate-200 mx-1">|</span> {formatCurrency(t.stake || 0)}
                         </p>
+                        {t.status !== 'PENDING' && (
+                          <p className={`text-sm font-black mt-1 tracking-tight ${t.profit > 0 ? 'text-emerald-600' : t.profit < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                            {t.profit > 0 ? '+' : ''}{formatCurrency(t.profit)}
+                          </p>
+                        )}
                       </td>
                       <td className="px-8 py-6">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm ${(STATUS_CONFIG[t.status] || STATUS_CONFIG.PENDING).colorClass}`}>
