@@ -38,8 +38,12 @@ export const Header = () => {
       <div>
         <h1 className="font-display font-bold text-slate-800 text-base">{title}</h1>
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">
-          {greetings()}, <span className="text-emerald-600 font-black">{firstName}</span>! 
-          {' '}<span className="text-slate-300 ml-2">— {'Sugestão: analise suas entradas hoje'} 📊</span>
+          {firstName ? (
+            <>{greetings()}, <span className="text-emerald-600 font-black">{firstName}</span>!</>
+          ) : (
+            <>{greetings()}!</>
+          )}
+          <span className="text-slate-300 ml-2">— {'Sugestão: analise suas entradas hoje'} 📊</span>
         </p>
       </div>
 
