@@ -10,7 +10,7 @@ import { formatCurrency } from '../utils/formatters'
 import { useAuth } from '../contexts/AuthContext'
 import { tipsService } from '../services/tips.service'
 import {
-  PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, LabelList
 } from 'recharts'
 
 export type StatusType = 'GREEN' | 'RED' | 'VOID' | 'PENDING' | 'CASHOUT'
@@ -177,7 +177,8 @@ export const StrategyAnalysisPage = () => {
                     innerRadius={60}
                     outerRadius={80}
                     paddingAngle={5}
-                    dataKey="profit"
+                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                    labelLine={false}
                   >
                     {efficiencyData.sports.filter(s => s.profit > 0).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -218,6 +219,12 @@ export const StrategyAnalysisPage = () => {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
                   <Bar dataKey="profit" name="Lucro Líquido" radius={[0, 4, 4, 0]}>
+                    <LabelList 
+                      dataKey="profit" 
+                      position="right" 
+                      formatter={(val: any) => formatCurrency(Number(val))} 
+                      style={{ fontSize: '11px', fontWeight: 'bold', fill: '#64748b' }} 
+                    />
                     {
                       efficiencyData.markets.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.profit >= 0 ? '#10b981' : '#f43f5e'} />
