@@ -242,9 +242,9 @@ export const Sidebar = () => {
         />
         <NavItem 
           icon={<Briefcase size={16} />} 
-          label="Investimentos" 
+          label="AREA VIP - PREMIUM" 
           to="/gestao/investimentos" 
-          isLocked={isLockedItem('investimentos', isStarter)}
+          isLocked={user?.role !== 'MASTER'}
           onLockedClick={handleLockedClick}
           permission={getPerm('investimentos')}
           getPermission={getPerm}
@@ -305,10 +305,10 @@ export const Sidebar = () => {
               children={[
                 { label: 'Usuários', to: '/admin/users', permissionKey: 'admin-users' },
                 { label: 'Cadastros', to: '/admin/cadastros', permissionKey: 'admin-cadastros' },
-                { label: 'Solicitações (Aportes)', to: '/admin/solicitacoes', permissionKey: 'admin-solicitacoes' },
+                { label: 'Solicitações (Aportes)', to: '/admin/solicitacoes', permissionKey: 'admin-solicitacoes', isLocked: user?.role !== 'MASTER' },
                 { label: 'Suporte & Feedback', to: '/admin/support', permissionKey: 'admin-support' },
                 { label: 'Logs / Eventos', to: '/admin/log', permissionKey: 'admin-log' },
-                { label: 'Controle de Acesso', to: '/admin/permissoes', permissionKey: 'admin-permissoes' }
+                { label: 'Controle de Acesso', to: '/admin/permissoes', permissionKey: 'admin-permissoes', isLocked: user?.role !== 'MASTER' }
               ]} 
             />
           </>

@@ -104,7 +104,7 @@ function App() {
           <Route
             path="admin/solicitacoes"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['MASTER']}>
                 <AdminSolicitacoesPage />
               </ProtectedRoute>
             }
@@ -120,7 +120,7 @@ function App() {
           <Route
             path="admin/permissoes"
             element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'MASTER']}>
+              <ProtectedRoute allowedRoles={['MASTER']}>
                 <AdminPermissoesPage />
               </ProtectedRoute>
             }
@@ -144,7 +144,14 @@ function App() {
 
 
           <Route path="gestao/banca" element={<GestaoBancaPage />} />
-          <Route path="gestao/investimentos" element={<InvestimentosPage />} />
+          <Route
+            path="gestao/investimentos"
+            element={
+              <ProtectedRoute allowedRoles={['MASTER']}>
+                <InvestimentosPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="gestao/tipsters" element={<GestaoTipstersPage />} />
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/calculadora" element={<CalculadoraPage />} />

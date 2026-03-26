@@ -31,7 +31,7 @@ export const CalculadoraPage = () => {
       { label: '0.50 Unidade', units: 0.5, value: unitValue * 0.5, description: 'Confiança Moderada' },
       { label: '1.00 Unidade', units: 1.0, value: unitValue, description: 'Confiança Padrão (Full Stake)' },
       { label: '1.50 Unidades', units: 1.5, value: unitValue * 1.5, description: 'Alta Confiança' },
-      { label: '2.00 Unidades', units: 2.0, value: unitValue * 2.0, description: 'Máxima Confiança / Stout' },
+      { label: '2.00 Unidades', units: 2.0, value: unitValue * 2.0, description: 'Máxima Confiança' },
     ]
 
     // Stop Loss / Green (Recomendado: Loss 3u, Green 2u)
@@ -243,7 +243,7 @@ export const CalculadoraPage = () => {
                       <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Meta de Ganho</span>
                     </div>
                     <span className="text-2xl font-black text-emerald-600">{formatCurrency(metrics.stopGreen)}</span>
-                    <p className="text-[8px] font-black text-emerald-600/50 uppercase tracking-widest mt-1">Sugerido: Stop Green 2u</p>
+                    <p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest mt-1">Sugerido: Stop Green 2u</p>
                   </div>
                   <div className="p-5 rounded-3xl bg-rose-500/5 border border-rose-500/10">
                     <div className="flex items-center gap-2 mb-2">
@@ -251,7 +251,7 @@ export const CalculadoraPage = () => {
                       <span className="text-[9px] font-black text-rose-700 uppercase tracking-widest">Limite de Perda</span>
                     </div>
                     <span className="text-2xl font-black text-rose-600">{formatCurrency(metrics.stopLoss)}</span>
-                    <p className="text-[8px] font-black text-rose-600/50 uppercase tracking-widest mt-1">Sugerido: Stop Loss 3u</p>
+                    <p className="text-[10px] font-black text-rose-600/60 uppercase tracking-widest mt-1">Sugerido: Stop Loss 3u</p>
                   </div>
                 </div>
               </div>
@@ -263,10 +263,10 @@ export const CalculadoraPage = () => {
                 </div>
                 <div className="bg-slate-50 rounded-[2rem] border border-slate-100 overflow-hidden divide-y divide-slate-100">
                   {metrics.variations.map((v, i) => (
-                    <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div key={i} className="px-6 py-5 flex items-center justify-between hover:bg-white transition-colors">
                       <div>
-                        <div className="text-[10px] font-black text-slate-800 uppercase tracking-widest">{v.label}</div>
-                        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{v.description}</div>
+                        <div className="text-[12px] font-black text-slate-800 uppercase tracking-widest">{v.label}</div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{v.description}</div>
                       </div>
                       <div className="text-lg font-black text-emerald-600 font-mono">
                         {formatCurrency(v.value)}
