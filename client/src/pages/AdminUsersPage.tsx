@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { ShieldCheck, Pencil, Eye, EyeOff, TrendingUp, User as UserIcon } from 'lucide-react'
+import { ShieldCheck, Pencil, Eye, EyeOff, User as UserIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from '../services/log.service'
 
 interface User {
   id: string; name: string; email: string; phone?: string
-  role: string; active: boolean; isTipster?: boolean; createdAt: string
+  role: string; active: boolean; createdAt: string
   plan?: string
 }
 
@@ -33,7 +33,7 @@ export const AdminUsersPage = () => {
   // Edit form
   const [editForm, setEditForm] = useState({ 
     name: '', email: '', phone: '', password: '', 
-    isTipster: false, plan: 'STARTER' 
+    plan: 'STARTER' 
   })
   const [showPass, setShowPass] = useState(false)
 
@@ -66,7 +66,6 @@ export const AdminUsersPage = () => {
       email: u.email, 
       phone: u.phone || '', 
       password: '', 
-      isTipster: u.isTipster || false, 
       plan: u.plan || 'STARTER' 
     })
     setModalType('edit')
@@ -104,7 +103,6 @@ export const AdminUsersPage = () => {
         name: editForm.name,
         email: editForm.email,
         phone: editForm.phone,
-        isTipster: editForm.isTipster,
         plan: editForm.plan,
       }
       if (editForm.password) payload.password = editForm.password
@@ -204,11 +202,6 @@ export const AdminUsersPage = () => {
                           <p className={`text-[10px] font-black uppercase tracking-widest leading-none ${getRoleInfo(u.role).color.replace('green', 'emerald').replace('blue', 'blue').replace('amber', 'amber')}`}>
                             {getRoleInfo(u.role).label}
                           </p>
-                          {u.isTipster && (
-                            <span className="flex items-center gap-1 text-[9px] font-black text-emerald-600 uppercase tracking-widest">
-                              <TrendingUp size={10} strokeWidth={3} /> Tipster
-                            </span>
-                          )}
                         </div>
                       </td>
                       <td className="px-5 py-4 text-slate-400 text-[11px] font-bold font-mono">
@@ -334,20 +327,7 @@ export const AdminUsersPage = () => {
                   ))}
                 </div>
               </div>
-
-               <div className="flex items-center justify-between p-6 rounded-3xl bg-slate-50 border border-slate-100">
-                <div>
-                  <p className="text-[11px] font-black text-slate-800 uppercase tracking-widest leading-none mb-1">Status de Tipster</p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Permite postar dicas oficiais</p>
-                </div>
-                <button
-                  onClick={() => setEditForm(f => ({ ...f, isTipster: !f.isTipster }))}
-                  className={`w-14 h-7 rounded-full transition-all relative ${editForm.isTipster ? 'bg-emerald-600' : 'bg-slate-200'}`}
-                >
-                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all shadow-sm ${editForm.isTipster ? 'left-8' : 'left-1'}`} />
-                </button>
               </div>
-            </div>
           )}
 
           <div className="flex gap-4 mt-4">

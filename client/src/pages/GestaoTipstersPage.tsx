@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { usersService } from '../services/users.service'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
 import { SportSelect } from '../components/ui/SportSelect'
+import toast from 'react-hot-toast'
 
 // --- Types & Config ---
 
@@ -252,7 +253,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
 export const GestaoTipstersPage = () => {
   const { user } = useAuth()
 
-  const isTipster = user?.isTipster || user?.role === 'MASTER'
+  const isAdmin = user?.role === 'MASTER' || user?.role === 'ADMIN'
   const [tipsters, setTipsters] = useState<Tipster[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedTipsterId, setSelectedTipsterId] = useState<string>('all')
@@ -289,6 +290,14 @@ export const GestaoTipstersPage = () => {
   const saveTransactions = (newTx: Transaction[]) => {
     setTransactions(newTx)
     localStorage.setItem('fgb_tipster_transactions', JSON.stringify(newTx))
+  }
+
+  const checkPermission = (item: Transaction) => {
+    const isOwner = item.tipsterId === user?.id || item.tipsterName.toLowerCase() === user?.name?.toLowerCase()
+    if (isOwner || isAdmin) return true
+    
+    toast.error('Você não tem permissão, apenas administradores.')
+    return false
   }
 
   const handleSaveModal = (data: Omit<Transaction, 'id' | 'tipsterName'> & { id?: string }) => {
@@ -521,14 +530,12 @@ export const GestaoTipstersPage = () => {
       <div className="bg-white border border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden">
         <div className="p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/30">
           <h2 className="text-xl font-black text-slate-800 tracking-tight">Registros de Apostas</h2>
-          {isTipster && (
-            <button 
-              onClick={() => { setEditTarget(null); setIsModalOpen(true) }}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
-            >
-              <Plus size={16} /> Novo Registro
-            </button>
-          )}
+          <button 
+            onClick={() => { setEditTarget(null); setIsModalOpen(true) }}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+          >
+            <Plus size={16} /> Novo Registro
+          </button>
         </div>
         
         <div className="overflow-x-auto">
@@ -604,22 +611,18 @@ export const GestaoTipstersPage = () => {
                       </td>
                       <td className="px-8 py-6">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {(isTipster && (t.tipsterName.toLowerCase() === user?.name.toLowerCase() || user?.role === 'MASTER' || user?.role === 'ADMIN')) && (
-                            <>
-                              <button 
-                                onClick={() => { setEditTarget(t); setIsModalOpen(true) }}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Editar"
-                              >
-                                <Edit2 size={16} />
-                              </button>
-                              <button 
-                                onClick={() => setDeleteConfirm(t.id)}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Excluir"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </>
-                          )}
+                          <button 
+                            onClick={() => { if(checkPermission(t)) { setEditTarget(t); setIsModalOpen(true) } }}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Editar"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button 
+                            onClick={() => { if(checkPermission(t)) { setDeleteConfirm(t.id) } }}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Excluir"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>

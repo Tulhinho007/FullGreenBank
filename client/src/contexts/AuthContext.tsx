@@ -20,7 +20,6 @@ export interface User {
   phone?: string;
   role: 'MASTER' | 'ADMIN' | 'TESTER' | 'MEMBRO'
   active: boolean
-  isTipster?: boolean
   plan: string
   currency: string
   language: string

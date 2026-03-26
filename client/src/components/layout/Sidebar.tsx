@@ -212,7 +212,6 @@ export const Sidebar = () => {
           icon={<Target size={16} />} 
           label="Tipsters" 
           to="/gestao/tipsters" 
-          isLocked={isLockedItem('tipsters', isStarter)}
           onLockedClick={handleLockedClick}
           permission={getPerm('tipsters')}
           getPermission={getPerm}
