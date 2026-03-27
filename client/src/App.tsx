@@ -38,8 +38,7 @@ import { SimuladorPage } from './pages/SimuladorPage'
 
 import { PermissionsProvider } from './contexts/PermissionsContext'
 import { AdminPermissoesPage } from './pages/AdminPermissoesPage'
-
-
+import { LandingPage } from './pages/LandingPage'
 
 function App() {
   return (
@@ -47,6 +46,9 @@ function App() {
     <ThemeProvider>
       <PermissionsProvider>
       <Routes>
+        {/* Public - Default Entry */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Public */}
         <Route path="/login"    element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -57,14 +59,12 @@ function App() {
 
         {/* Protected - all authenticated users */}
         <Route
-          path="/"
           element={
             <ProtectedRoute>
               <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/gestao/banca" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="tips"      element={<TipsPage />} />
           <Route path="profile"   element={<ProfilePage />} />
