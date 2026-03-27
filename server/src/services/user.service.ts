@@ -175,3 +175,7 @@ export const toggleUserActive = async (id: string) => {
     select: { id: true, name: true, active: true },
   });
 };
+
+export const deleteUser = async (id: string) => {
+  return prisma.user.delete({ where: { id } });
+};

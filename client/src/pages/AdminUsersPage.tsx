@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { ShieldCheck, Pencil, Eye, EyeOff, User as UserIcon, UserPlus } from 'lucide-react'
+import { ShieldCheck, Pencil, Eye, EyeOff, User as UserIcon, UserPlus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from '../services/log.service'
@@ -159,6 +159,27 @@ export const AdminUsersPage = () => {
     } finally { setSaving(false) }
   }
 
+  const handleDelete = async (u: User) => {
+    if (u.id === me?.id) { 
+      toast.error('Você não pode excluir sua própria conta.'); 
+      return; 
+    }
+    const confirmDelete = window.confirm(`ATENÇÃO! Tem certeza que deseja DELETAR permanentemente o usuário ${u.email}? Esta ação não pode ser desfeita e todos os dados serão perdidos.`);
+    if (!confirmDelete) return;
+
+    setSaving(true)
+    try {
+      await usersService.delete(u.id);
+      toast.success('Usuário deletado permanentemente!');
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Conta Deletada', detail: `Excluiu permanentemente a conta de: ${u.email}` });
+      load();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Erro ao deletar usuário');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const setEdit = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setEditForm(f => ({ ...f, [field]: e.target.value }))
     
@@ -273,6 +294,16 @@ export const AdminUsersPage = () => {
                               title="Acessar conta"
                             >
                               <UserIcon size={15} />
+                            </button>
+                          )}
+                          {(isMaster || isAdmin) && u.id !== me?.id && (
+                            <button 
+                              onClick={() => handleDelete(u)}
+                              disabled={saving}
+                              className="p-2.5 rounded-2xl bg-slate-50 text-rose-500 hover:text-white hover:bg-rose-500 transition-all border border-slate-100 disabled:opacity-50"
+                              title="Excluir Usuário"
+                            >
+                              <Trash2 size={15} />
                             </button>
                           )}
                         </div>

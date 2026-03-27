@@ -11,6 +11,11 @@ export const usersService = {
     return res.data.data
   },
 
+  delete: async (id: string) => {
+    const res = await api.delete(`/users/${id}`)
+    return res.data
+  },
+
   updateProfile: async (data: {
     name?: string; phone?: string; password?: string;
     plan?: string; currency?: string; language?: string; theme?: string;

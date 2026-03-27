@@ -91,4 +91,11 @@ router.patch(
   userController.toggleActive
 );
 
+// DELETE user - admin/master
+router.delete(
+  '/:id',
+  authorizeRoles('ADMIN', 'MASTER'),
+  userController.deleteUser
+);
+
 export default router;

@@ -133,3 +133,33 @@ export const createUser = async (req: AuthRequest, res: Response): Promise<void>
     sendError(res, message, 400);
   }
 };
+
+export const deleteUser = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userToDelete = await userService.getUserById(req.params.id);
+    if (!userToDelete) {
+      sendError(res, 'Usuário não encontrado', 404);
+      return;
+    }
+    
+    // Admins normais não podem deletar Masters
+    if (userToDelete.role === 'MASTER' && (req as any).user?.role !== 'MASTER') {
+      sendError(res, 'Apenas masters podem deletar contas com permissão MASTER.', 403);
+      return;
+    }
+    
+    // Evitar que o usuário delete a própria conta na área de gestão
+    if (userToDelete.id === (req as any).user?.id) {
+      sendError(res, 'Você não pode deletar sua própria conta por aqui.', 400);
+      return;
+    }
+
+    await userService.deleteUser(req.params.id);
+
+    logActivity(req, 'Usuários', 'Conta Deletada (Admin)', `Conta excluída: ${userToDelete.email} | Cargo: ${userToDelete.role}`);
+    sendSuccess(res, null, 'Usuário deletado do sistema com sucesso!', 200);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao deletar usuário';
+    sendError(res, message, 400);
+  }
+};
