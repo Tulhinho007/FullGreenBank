@@ -121,7 +121,7 @@ export const AdminSupportPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Suporte & Feedback</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Suporte & Feedback</h1>
           <p className="text-sm text-slate-400">Gerencie os relatos e sugestões enviadas pelos usuários.</p>
         </div>
         <div className="flex gap-2">
@@ -144,14 +144,14 @@ export const AdminSupportPage = () => {
               placeholder="Buscar por título ou e-mail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm shadow-inner"
             />
           </div>
           <div>
             <select 
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+              className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm shadow-inner"
             >
               <option value="all">Todos os Tipos</option>
               <option value="bug">Somente Bugs</option>
@@ -162,7 +162,7 @@ export const AdminSupportPage = () => {
             <select 
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+              className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm shadow-inner"
             >
               <option value="all">Todos os Status</option>
               <option value="PENDING">Pendentes</option>
@@ -220,7 +220,7 @@ export const AdminSupportPage = () => {
                       {ticket.type === 'bug' ? <Bug size={20} /> : <MessageSquare size={20} />}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                         {ticket.title}
                         {getStatusBadge(ticket.status)}
                       </h3>
@@ -234,7 +234,7 @@ export const AdminSupportPage = () => {
                   
                   <div className="bg-surface-200/50 rounded-xl p-4 border border-white/5 space-y-4">
                     <div>
-                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                      <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                         {ticket.description}
                       </p>
                     </div>
@@ -244,7 +244,7 @@ export const AdminSupportPage = () => {
                         <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                           <MessageSquare size={12} /> Sua Resposta Anterior
                         </p>
-                        <p className="text-sm text-slate-400 italic bg-surface-300/30 p-3 rounded-lg border border-white/5">
+                        <p className="text-sm text-slate-600 italic bg-slate-100 p-3 rounded-lg border border-slate-200">
                           "{ticket.adminResponse}"
                         </p>
                         {ticket.respondedAt && (
