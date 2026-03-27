@@ -49,6 +49,37 @@ router.post('/', authenticate, async (req: any, res: any) => {
   }
 })
 
+// PATCH /api/transacoes/:id — edita uma transação existente
+router.patch('/:id', authenticate, async (req: any, res: any) => {
+  try {
+    const { id } = req.params
+    const { date, type, userId, userName, value, method, status, notes } = req.body
+
+    const existing = await prisma.transacao.findUnique({ where: { id } })
+    if (!existing) return res.status(404).json({ success: false, message: 'Transação não encontrada.' })
+
+    const updated = await prisma.transacao.update({
+      where: { id },
+      data: {
+        ...(date !== undefined     ? { date }                    : {}),
+        ...(type !== undefined     ? { type }                    : {}),
+        ...(userId !== undefined   ? { userId }                  : {}),
+        ...(userName !== undefined ? { userName }                : {}),
+        ...(value !== undefined    ? { value: Number(value) }    : {}),
+        ...(method !== undefined   ? { method }                  : {}),
+        ...(status !== undefined   ? { status }                  : {}),
+        ...(notes !== undefined    ? { notes: notes || null }    : {}),
+      }
+    })
+
+    logActivity(req, 'Financeiro', 'Transação Editada', `ID: ${id} | Tipo: ${updated.type} | Valor: ${updated.value}`)
+    res.json({ success: true, data: updated })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ success: false, message: 'Erro ao editar transação.' })
+  }
+})
+
 // DELETE /api/transacoes/:id — exclui uma transação
 router.delete('/:id', authenticate, async (req: any, res: any) => {
   try {

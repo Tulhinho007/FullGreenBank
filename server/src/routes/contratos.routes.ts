@@ -53,7 +53,7 @@ router.post('/',
       const contrato = await prisma.contrato.create({
         data: {
           userId: userId || req.user.id,
-          dataInicio: dataInicio ? new Date(dataInicio) : new Date(),
+          dataInicio: dataInicio ? new Date(dataInicio + 'T12:00:00') : new Date(),
           valorContratado: valorContratado !== undefined ? Number(valorContratado) : null,
           comissaoPercent: comissaoPercent !== undefined ? Number(comissaoPercent) : 10,
           status: status || 'ABERTO',
@@ -91,7 +91,7 @@ router.patch('/:id',
         where: { id },
         data: {
           ...(userId ? { userId } : {}),
-          ...(dataInicio ? { dataInicio: new Date(dataInicio) } : {}),
+          ...(dataInicio ? { dataInicio: new Date(dataInicio + 'T12:00:00') } : {}),
           ...(valorContratado !== undefined ? { valorContratado: Number(valorContratado) } : {}),
           ...(comissaoPercent !== undefined ? { comissaoPercent: Number(comissaoPercent) } : {}),
           ...(status ? { status } : {}),
