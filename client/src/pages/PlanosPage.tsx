@@ -23,7 +23,6 @@ const PLAN_DATA = [
       'Tipsters', 
       'Histórico de Dicas', 
       'Relatórios de Performance', 
-      'Investimentos', 
       '🌱 Simulador de consistência', 
       'Alavancagem', 
       'Dicas de Gestão', 
@@ -54,9 +53,7 @@ const PLAN_DATA = [
       'Análise de Valor',
       'Suporte VIP / Direto'
     ],
-    notIncluded: [
-      'Investimentos'
-    ]
+    notIncluded: []
   }
 ]
 
@@ -68,7 +65,6 @@ const COMPARISON_TABLE = [
     { name: 'Histórico de Dicas', starter: false, pro: true },
     { name: 'Relatórios de Performance', starter: false, pro: true },
     { name: 'Gestão de Bancas', starter: 'Apenas 1', pro: 'Ilimitadas' },
-    { name: 'Investimentos', starter: false, pro: false },
     { name: 'Calculadora Operacional', starter: true, pro: true },
     { name: 'Simulador de consistência', starter: false, pro: true },
     { name: 'Alavancagem', starter: false, pro: true },
