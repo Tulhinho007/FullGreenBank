@@ -64,11 +64,12 @@ export const DashboardPage = () => {
   const winRateDenominator = greens + reds + profitableCashouts + losingCashouts
   const winRate = winRateDenominator > 0 ? ((winRateNumerator / winRateDenominator) * 100).toFixed(0) : '0'
 
-  const pendingTipsCount = tips.filter(t => t.result === 'PENDING').length
+  const pendingTipsCount = tips.filter(t => !t.result || t.result === 'PENDING').length
 
   const filteredTips = tips.filter(t => {
     // Only show pending tips in this section as requested
-    if (t.result !== 'PENDING') return false
+    const status = t.result || 'PENDING'
+    if (status !== 'PENDING') return false
     
     if (tipFilter === 'Todos' || tipFilter === 'Pendentes') return true
     return t.sport === tipFilter
@@ -76,7 +77,7 @@ export const DashboardPage = () => {
 
   // Chart data calculation
   const chartData = statsTips
-    .filter(t => t.result !== 'PENDING')
+    .filter(t => (t.result || 'PENDING') !== 'PENDING')
     .sort((a, b) => new Date(a.tipDate).getTime() - new Date(b.tipDate).getTime())
     .reduce((acc: any[], tip) => {
       const prevProfit = acc.length > 0 ? acc[acc.length - 1].profit : 0
