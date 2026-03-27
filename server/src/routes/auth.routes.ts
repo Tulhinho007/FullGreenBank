@@ -12,8 +12,8 @@ router.post(
     body('name').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('email').isEmail().withMessage('Email inválido').normalizeEmail(),
     body('password')
-      .isLength({ min: 6 })
-      .withMessage('Senha deve ter pelo menos 6 caracteres'),
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/)
+      .withMessage('Senha não atinge o mínimo de segurança (6 digitos, maiúscula, minúscula, número e especial)'),
     body('phone').optional().trim(),
   ],
   validateRequest,

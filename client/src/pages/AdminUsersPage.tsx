@@ -146,6 +146,14 @@ export const AdminUsersPage = () => {
     if (!createForm.name || !createForm.email || !createForm.password) {
       toast.error('Preencha os campos obrigatórios (Nome, Email, Senha)'); return;
     }
+
+    // Validação de Senha Forte
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/
+    if (!passwordRegex.test(createForm.password)) {
+      toast.error('Senha não pode ser criada: não atingiu o mínimo de segurança recomendado. Digite uma nova senha!')
+      return
+    }
+
     setSaving(true)
     try {
       await usersService.create(createForm)

@@ -16,7 +16,9 @@ router.post(
   [
     body('name').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('email').isEmail().withMessage('Email inválido'),
-    body('password').isLength({ min: 6 }).withMessage('Senha deve ter pelo menos 6 caracteres'),
+    body('password')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/)
+      .withMessage('Senha não atinge o mínimo de segurança (6 digitos, maiúscula, minúscula, número e especial)'),
     body('role').optional().isIn(['MASTER', 'ADMIN', 'MEMBRO']),
     body('plan').optional().isIn(['STARTER', 'PRO', 'VIP PREMIUM'])
   ],
@@ -39,7 +41,10 @@ router.patch(
   [
     body('name').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
     body('phone').optional().trim(),
-    body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
+    body('password')
+      .optional()
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/)
+      .withMessage('Senha não atinge o mínimo de segurança (6 digitos, maiúscula, minúscula, número e especial)'),
     body('plan').optional().isIn(['STARTER', 'PRO', 'VIP PREMIUM']),
     body('currency').optional().isIn(['BRL', 'USD', 'EUR']),
     body('language').optional().isIn(['PT-BR', 'EN-US', 'ES-ES']),
@@ -59,7 +64,10 @@ router.patch(
     body('name').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
     body('email').optional().isEmail().withMessage('Email inválido'),
     body('phone').optional().trim(),
-    body('password').optional().isLength({ min: 6 }).withMessage('Senha muito curta'),
+    body('password')
+      .optional()
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/)
+      .withMessage('Senha não atinge o mínimo de segurança (6 digitos, maiúscula, minúscula, número e especial)'),
     body('plan').optional().isIn(['STARTER', 'PRO', 'VIP PREMIUM']),
     body('paymentStatus').optional().isIn(['ATIVO', 'PENDENTE', 'ATRASADO', 'CANCELADO']),
     body('isActive').optional().isBoolean(),

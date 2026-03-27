@@ -20,7 +20,14 @@ export const RegisterPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (form.password !== form.confirmPassword) { toast.error('As senhas não conferem'); return }
-    if (form.password.length < 6) { toast.error('Senha deve ter ao menos 6 caracteres'); return }
+    
+    // Validação de Senha Forte
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/
+    if (!passwordRegex.test(form.password)) {
+      toast.error('Senha não pode ser criada: não atingiu o mínimo de segurança recomendado. Digite uma nova senha!')
+      return
+    }
+
     setLoading(true)
     try {
       await register({ name: form.name, email: form.email, phone: form.phone, password: form.password })
@@ -95,10 +102,15 @@ export const RegisterPage = () => {
                 />
               </div>
               <div className="col-span-2 px-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Mínimo de 6 caracteres para sua segurança
-                </p>
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest space-y-1">
+                  <p className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                    Requisitos: Mínimo 6 dígitos
+                  </p>
+                  <p className="flex items-center gap-2 pl-3.5 opacity-80">
+                    Incluir: Maiúscula, Minúscula, Número e Especial
+                  </p>
+                </div>
               </div>
             </div>
 
