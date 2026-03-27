@@ -177,21 +177,30 @@ export const HistoricoDicasPage = () => {
     setSaving(true)
     try {
       const sport = editForm.sportsList[0] || editingTip.sport || 'Futebol'
+      
+      const stakeNum = editForm.stake ? Number(editForm.stake) : (editingTip.stake ? Number(editingTip.stake) : 0)
+      const oddsNum = editForm.odds ? Number(editForm.odds) : (editingTip.odds ? Number(editingTip.odds) : 1)
+      let profit: number | undefined = undefined
+
+      if (editForm.status === 'GREEN') {
+        profit = stakeNum * (oddsNum - 1)
+      } else if (editForm.status === 'RED') {
+        profit = -stakeNum
+      } else if (['VOID', 'CASHOUT'].includes(editForm.status)) {
+        profit = 0
+      }
+
       await tipsService.update(editingTip.id, {
         title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${fmtDate(editForm.tipDate)}` : editingTip.title,
         event: editForm.tipoAposta || editingTip.event,
         market: editForm.tipoAposta || editingTip.market,
-        odds: Number(editForm.odds) || editingTip.odds,
-        stake: Number(editForm.stake) || editingTip.stake,
+        odds: oddsNum,
+        stake: stakeNum,
         result: editForm.status,
-        profit: editForm.status === 'GREEN'
-          ? (Number(editForm.stake) * (Number(editForm.odds) - 1))
-          : editForm.status === 'RED'
-          ? -Number(editForm.stake)
-          : editForm.status === 'VOID' ? 0 : undefined,
+        profit,
         tipDate: new Date(editForm.tipDate + 'T12:00:00').toISOString(),
         sport,
-        description: editForm.tipoAposta,
+        description: editForm.tipoAposta || editingTip.description,
         linkAposta: editForm.linkAposta?.trim() || null,
       })
       toast.success('Dica atualizada!')

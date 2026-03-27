@@ -195,12 +195,25 @@ export const TipsPage = () => {
       const sport = newForm.sportsList[0] || 'Futebol'
       const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
       
+      const stakeNum = newForm.stake ? Number(newForm.stake) : undefined
+      const oddsNum = newForm.odds ? Number(newForm.odds) : undefined
+      let profit: number | undefined = undefined
+
+      if (newForm.status === 'GREEN' && stakeNum && oddsNum) {
+        profit = stakeNum * (oddsNum - 1)
+      } else if (newForm.status === 'RED' && stakeNum) {
+        profit = -stakeNum
+      } else if (['VOID', 'CASHOUT'].includes(newForm.status)) {
+        profit = 0
+      }
+
       await tipsService.create({
         title: title || 'Sem título',
         event: newForm.tipoAposta || 'Simples',
         market: newForm.tipoAposta || 'Simples',
-        odds: newForm.odds ? Number(newForm.odds) : undefined,
-        stake: newForm.stake ? Number(newForm.stake) : undefined,
+        odds: oddsNum,
+        stake: stakeNum,
+        profit,
         tipDate: newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toISOString() : new Date().toISOString(),
         sport,
         description: newForm.tipoAposta || 'Bet',
@@ -228,26 +241,30 @@ export const TipsPage = () => {
     try {
       const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
       
+      const stakeNum = editForm.stake ? Number(editForm.stake) : (selected.stake ? Number(selected.stake) : undefined)
+      const oddsNum = editForm.odds ? Number(editForm.odds) : (selected.odds ? Number(selected.odds) : undefined)
+      let profit: number | undefined = undefined
+
+      if (editForm.status === 'GREEN' && stakeNum && oddsNum) {
+        profit = stakeNum * (oddsNum - 1)
+      } else if (editForm.status === 'RED' && stakeNum) {
+        profit = -stakeNum
+      } else if (['VOID', 'CASHOUT'].includes(editForm.status)) {
+        profit = 0
+      }
+
       const payload: any = {
         title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}` : selected.title,
         event: editForm.tipoAposta || selected.event,
         market: editForm.tipoAposta || selected.market,
-        odds: editForm.odds ? Number(editForm.odds) : undefined,
-        stake: editForm.stake ? Number(editForm.stake) : undefined,
+        odds: oddsNum,
+        stake: stakeNum,
+        profit,
         result: editForm.status,
         tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : selected.tipDate,
         sport,
         linkAposta: editForm.linkAposta?.trim() || null,
         isPublic: editForm.isPublic,
-      }
-
-      // Calcula profit apenas se houver stake e odd
-      if (payload.stake && payload.odds) {
-        payload.profit = editForm.status === 'GREEN'
-          ? (Number(payload.stake) * (Number(payload.odds) - 1))
-          : editForm.status === 'RED'
-          ? -Number(payload.stake)
-          : editForm.status === 'VOID' ? 0 : undefined
       }
 
       await tipsService.update(selected.id, payload)
