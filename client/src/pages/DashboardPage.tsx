@@ -55,12 +55,13 @@ export const DashboardPage = () => {
   const reds     = statsTips.filter(t => t.result === 'RED').length
   const cashouts = statsTips.filter(t => t.result === 'CASHOUT')
   const profitableCashouts = cashouts.filter(t => (t.profit || 0) > 0).length
+  const losingCashouts = cashouts.filter(t => (t.profit || 0) <= 0).length
   
   const profit   = statsTips.reduce((a: number, t: Tip) => a + (t.profit || 0), 0)
   const totalStake = statsTips.reduce((a: number, t: Tip) => a + t.stake, 0)
 
   const winRateNumerator = greens + profitableCashouts
-  const winRateDenominator = greens + reds + profitableCashouts
+  const winRateDenominator = greens + reds + profitableCashouts + losingCashouts
   const winRate = winRateDenominator > 0 ? ((winRateNumerator / winRateDenominator) * 100).toFixed(0) : '0'
 
   const pendingTipsCount = tips.filter(t => t.result === 'PENDING').length

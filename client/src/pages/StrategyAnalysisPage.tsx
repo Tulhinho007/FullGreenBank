@@ -99,7 +99,7 @@ export const StrategyAnalysisPage = () => {
         if (t.status !== 'VOID') {
           bySport[sport].count++
           bySport[sport].invested += (t.stake || 0)
-          if (t.status === 'GREEN' || t.status === 'CASHOUT') bySport[sport].wins++
+          if (t.status === 'GREEN' || (t.status === 'CASHOUT' && (t.profit || 0) > 0)) bySport[sport].wins++
         }
         bySport[sport].profit += (t.profit || 0)
       })
@@ -110,7 +110,7 @@ export const StrategyAnalysisPage = () => {
       if (t.status !== 'VOID') {
         byMarket[market].count++
         byMarket[market].invested += (t.stake || 0)
-        if (t.status === 'GREEN' || t.status === 'CASHOUT') byMarket[market].wins++
+        if (t.status === 'GREEN' || (t.status === 'CASHOUT' && (t.profit || 0) > 0)) byMarket[market].wins++
       }
       byMarket[market].profit += (t.profit || 0)
     })

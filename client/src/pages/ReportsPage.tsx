@@ -83,7 +83,7 @@ export const ReportsPage = () => {
             tipsterName: user.name || 'Master',
             tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toLocaleDateString('en-CA'),
             linkAposta: tip.linkAposta || '',
-            tipoAposta: tip.tipoAposta || 'Simples',
+            tipoAposta: tip.tipoAposta || tip.market || tip.event || 'Simples',
             sportsList: tip.sportsList || [tip.sport || 'Futebol'],
             odds: Number(tip.odds) || 1,
             stake: Number(tip.stake) || 0,
@@ -123,22 +123,33 @@ export const ReportsPage = () => {
   }, [transactions, filterType, currentMonth])
 
   const metrics = useMemo(() => {
-    const finalized = filteredTransactions.filter(t => t.status !== 'PENDING')
-    const greens = finalized.filter(t => t.status === 'GREEN' || t.status === 'CASHOUT')
-    const reds = finalized.filter(t => t.status === 'RED')
-    const voids = finalized.filter(t => t.status === 'VOID')
+    const finalized = filteredTransactions.filter(t => t.status !== 'PENDING' && t.status !== 'VOID')
     
-    const profit = finalized.reduce((acc, t) => acc + (t.profit || 0), 0)
-    const invested = finalized.reduce((acc, t) => acc + (t.stake || 0), 0)
+    const greens = finalized.filter(t => t.status === 'GREEN' || (t.status === 'CASHOUT' && (t.profit || 0) > 0))
+    const reds = finalized.filter(t => t.status === 'RED' || (t.status === 'CASHOUT' && (t.profit || 0) <= 0))
+    const voids = filteredTransactions.filter(t => t.status === 'VOID')
     
-    const winRateVal = greens.length + reds.length > 0 
+    const totalProfit = filteredTransactions.reduce((acc, t) => acc + (t.profit || 0), 0)
+    const totalInvested = filteredTransactions.reduce((acc, t) => acc + (t.stake || 0), 0)
+    
+    const winRateVal = (greens.length + reds.length) > 0 
       ? (greens.length / (greens.length + reds.length)) * 100 
       : 0
       
-    const roiVal = invested > 0 ? (profit / invested) * 100 : 0
-    const avgBetVal = finalized.length > 0 ? invested / finalized.length : 0
+    const roiVal = totalInvested > 0 ? (totalProfit / totalInvested) * 100 : 0
+    const avgBetVal = filteredTransactions.length > 0 ? totalInvested / filteredTransactions.length : 0
 
-    return { profit, invested, winRateVal, roiVal, avgBetVal, greens, reds, voids, finalizedCount: finalized.length }
+    return { 
+      profit: totalProfit, 
+      invested: totalInvested, 
+      winRateVal, 
+      roiVal, 
+      avgBetVal, 
+      greens, 
+      reds, 
+      voids, 
+      finalizedCount: (filteredTransactions.filter(t => t.status !== 'PENDING')).length 
+    }
   }, [filteredTransactions])
 
   // --- Insights Generation ---
@@ -148,13 +159,15 @@ export const ReportsPage = () => {
     if (finalized.length === 0) {
       return {
         bestSportMsg: "Você ainda não possui dados segmentados suficientes por esportes.",
-        bestTypeMsg: "Sua diversificação de apostas ainda está construindo os primeiros lucros."
+        bestTypeMsg: "Sua diversificação de apostas ainda está construindo os primeiros lucros.",
+        roiMsg: "Comece a registrar suas apostas para visualizar insights de gestão."
       }
     }
 
+    // 1. Melhor Esporte
     const sportsStats: Record<string, { wins: number, total: number, profit: number }> = {}
     finalized.forEach(t => {
-      const list = t.sportsList && t.sportsList.length > 0 ? t.sportsList : ['Sem Categoria']
+      const list = t.sportsList && t.sportsList.length > 0 ? t.sportsList : [t.tipoAposta || 'Outros']
       list.forEach(sport => {
         if(!sportsStats[sport]) sportsStats[sport] = { wins: 0, total: 0, profit: 0 }
         
@@ -166,7 +179,7 @@ export const ReportsPage = () => {
       })
     })
 
-    let bestSport = { name: '', winRate: 0, profit: -99999, total: 0 }
+    let bestSport = { name: '', winRate: 0, profit: -Infinity, total: 0 }
     Object.entries(sportsStats).forEach(([name, stats]) => {
       const rate = stats.total > 0 ? (stats.wins / stats.total) * 100 : 0
       if (stats.profit > bestSport.profit || (stats.profit === bestSport.profit && rate > bestSport.winRate)) {
@@ -174,6 +187,7 @@ export const ReportsPage = () => {
       }
     })
 
+    // 2. Melhor Mercado / Tipo
     const typeStats: Record<string, { profit: number, total: number }> = {}
     finalized.forEach(t => {
       const type = t.tipoAposta || 'Simples'
@@ -182,22 +196,36 @@ export const ReportsPage = () => {
       typeStats[type].profit += t.profit || 0
     })
 
-    let bestType = { name: '', profit: -99999 }
+    let bestType = { name: '', profit: -Infinity }
     Object.entries(typeStats).forEach(([name, stats]) => {
       if (stats.profit > bestType.profit) {
         bestType = { name, profit: stats.profit }
       }
     })
 
+    // 3. Insight de Gestão (ROI)
+    const roiVal = metrics.roiVal
+    let roiMsg = ''
+    if (roiVal > 20) {
+      roiMsg = `Seu ROI de ${roiVal.toFixed(1)}% é excelente! Você está batendo o mercado com folga.`
+    } else if (roiVal > 5) {
+      roiMsg = `Seu desempenho de ${roiVal.toFixed(1)}% de ROI é sólido. Continue com a mesma gestão.`
+    } else if (roiVal > 0) {
+      roiMsg = `Você está no positivo (${roiVal.toFixed(1)}% ROI), mas tente filtrar melhor suas odds para aumentar a margem.`
+    } else {
+      roiMsg = `Atenção: Seu ROI está negativo (${roiVal.toFixed(1)}%). Revise sua filtragem de entradas.`
+    }
+
     return {
       bestSportMsg: bestSport.name && bestSport.total > 0 
         ? `Seu melhor esporte para aposta é ${bestSport.name}, com ${bestSport.winRate.toFixed(1)}% de aproveitamento.`
-        : "Você ainda não possui dados segmentados suficientes por esportes.",
-      bestTypeMsg: bestType.name && bestType.profit > 0
+        : "Analisando seus primeiros esportes...",
+      bestTypeMsg: bestType.name && bestType.profit !== -Infinity
         ? `Sua maior rentabilidade vem de apostas da categoria "${bestType.name}", com um saldo de ${formatCurrency(bestType.profit)}.`
-        : "Sua diversificação de apostas ainda está construindo os primeiros lucros."
+        : "Avaliando tipos de aposta mais lucrativos...",
+      roiMsg
     }
-  }, [transactions])
+  }, [transactions, metrics.roiVal])
 
   // --- Evolution Chart ---
   
@@ -399,6 +427,10 @@ export const ReportsPage = () => {
               <li className="text-sm text-slate-600 leading-relaxed font-bold flex items-start gap-2 border-t border-emerald-100/50 pt-3">
                 <span className="text-emerald-500 mt-1">★</span>
                 <span>{insights.bestTypeMsg}</span>
+              </li>
+              <li className="text-sm text-slate-600 leading-relaxed font-bold flex items-start gap-2 border-t border-emerald-100/50 pt-3">
+                <span className="text-indigo-500 mt-1">★</span>
+                <span>{insights.roiMsg}</span>
               </li>
             </ul>
           </div>
