@@ -19,7 +19,7 @@ export const create = async (req: Request, res: Response) => {
         priority: priority || 'medium',
         userEmail,
         userId: userId || null,
-        status: 'OPEN'
+        status: 'PENDING'
       }
     });
 
@@ -92,5 +92,18 @@ export const updateStatus = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Erro ao atualizar ticket:', error);
     res.status(500).json({ error: 'Erro interno ao atualizar ticket' });
+  }
+};
+
+export const remove = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await prisma.supportTicket.delete({
+      where: { id }
+    });
+    res.json({ message: 'Ticket excluído com sucesso' });
+  } catch (error: any) {
+    console.error('Erro ao excluir ticket:', error);
+    res.status(500).json({ error: 'Erro interno ao excluir ticket' });
   }
 };

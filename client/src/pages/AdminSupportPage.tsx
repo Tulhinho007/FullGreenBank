@@ -6,7 +6,8 @@ import {
   AlertCircle, 
   Search, 
   Mail,
-  Calendar
+  Calendar,
+  Trash2
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -32,7 +33,7 @@ export const AdminSupportPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('pending');
+  const [filterStatus, setFilterStatus] = useState('PENDING'); // Começa filtrando pendentes
   const [adminResponses, setAdminResponses] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -73,25 +74,36 @@ export const AdminSupportPage = () => {
     }
   };
 
+  const handleDeleteTicket = async (id: string) => {
+    if (!window.confirm('Tem certeza que deseja excluir este chamado? Esta açao não pode ser desfeita.')) return;
+    
+    try {
+      await api.delete(`/support/${id}`);
+      toast.success('Ticket excluído com sucesso');
+      fetchTickets();
+    } catch (error) {
+      console.error('Erro ao excluir ticket:', error);
+      toast.error('Erro ao excluir ticket');
+    }
+  };
+
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          ticket.userEmail?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || ticket.type === filterType;
     const matchesStatus = filterStatus === 'all' 
       ? true 
-      : (filterStatus === 'pending' 
-          ? (ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS') 
-          : ticket.status === filterStatus);
+      : ticket.status === filterStatus;
     
     return matchesSearch && matchesType && matchesStatus;
   });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'PENDING': return <span className="px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-500 text-[10px] font-bold">PENDENTE</span>;
       case 'OPEN': return <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold">ABERTO</span>;
       case 'IN_PROGRESS': return <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold">EM ANDAMENTO</span>;
       case 'RESOLVED': return <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-bold">RESOLVIDO</span>;
-      case 'CLOSED': return <span className="px-2 py-0.5 rounded-full bg-zinc-500/10 text-zinc-500 text-[10px] font-bold">FECHADO</span>;
       default: return null;
     }
   };
@@ -152,12 +164,11 @@ export const AdminSupportPage = () => {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
             >
-              <option value="pending">Pendentes (Abertos / Em Andamento)</option>
               <option value="all">Todos os Status</option>
+              <option value="PENDING">Pendentes</option>
               <option value="OPEN">Abertos</option>
               <option value="IN_PROGRESS">Em Andamento</option>
               <option value="RESOLVED">Resolvidos</option>
-              <option value="CLOSED">Fechados</option>
             </select>
           </div>
         </div>
@@ -165,7 +176,7 @@ export const AdminSupportPage = () => {
         {/* Quick Filters */}
         <div className="flex flex-wrap gap-2">
           {[
-            { id: 'pending', label: 'Pendentes' },
+            { id: 'PENDING', label: 'Pendentes' },
             { id: 'OPEN', label: 'Abertos' },
             { id: 'IN_PROGRESS', label: 'Processar' },
             { id: 'RESOLVED', label: 'Resolvidos' },
@@ -256,27 +267,41 @@ export const AdminSupportPage = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-row md:flex-col gap-2 justify-end">
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex flex-row md:flex-col gap-4 justify-between">
+                  <div className="flex flex-wrap md:flex-col gap-2">
+                    <button 
+                      onClick={() => handleUpdateStatus(ticket.id, 'PENDING')}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ticket.status === 'PENDING' ? 'bg-slate-600 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
+                    >
+                      Pendente
+                    </button>
+                    <button 
+                      onClick={() => handleUpdateStatus(ticket.id, 'OPEN')}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ticket.status === 'OPEN' ? 'bg-blue-600 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
+                    >
+                      Aberto
+                    </button>
                     <button 
                       onClick={() => handleUpdateStatus(ticket.id, 'IN_PROGRESS')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${ticket.status === 'IN_PROGRESS' ? 'bg-amber-500 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ticket.status === 'IN_PROGRESS' ? 'bg-amber-500 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
                     >
                       Processar
                     </button>
                     <button 
                       onClick={() => handleUpdateStatus(ticket.id, 'RESOLVED')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${ticket.status === 'RESOLVED' ? 'bg-green-600 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ticket.status === 'RESOLVED' ? 'bg-green-600 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
                     >
-                      Resolver
-                    </button>
-                    <button 
-                      onClick={() => handleUpdateStatus(ticket.id, 'CLOSED')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${ticket.status === 'CLOSED' ? 'bg-zinc-600 text-white' : 'bg-surface-300 text-slate-400 hover:text-white'}`}
-                    >
-                      Fechar
+                      Resolvido
                     </button>
                   </div>
+
+                  <button 
+                    onClick={() => handleDeleteTicket(ticket.id)}
+                    className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all self-end"
+                    title="Excluir Chamado"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
 
               </div>

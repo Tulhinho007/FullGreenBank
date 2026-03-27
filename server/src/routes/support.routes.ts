@@ -24,5 +24,6 @@ router.use(authenticate);
 router.get('/my-tickets', supportController.getUserTickets);
 router.get('/', authorizeRoles('ADMIN', 'MASTER'), supportController.getAll);
 router.patch('/:id/status', authorizeRoles('ADMIN', 'MASTER'), supportController.updateStatus);
+router.delete('/:id', authorizeRoles('ADMIN', 'MASTER'), supportController.remove);
 
 export default router;

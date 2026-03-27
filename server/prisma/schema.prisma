@@ -144,7 +144,7 @@ model SupportTicket {
   title       String
   description String   @db.Text
   priority    String?  // low, medium, high, critical
-  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  status      String   @default("PENDING") // PENDING, OPEN, IN_PROGRESS, RESOLVED
 
   // User info (optional if public)
   userEmail   String?
