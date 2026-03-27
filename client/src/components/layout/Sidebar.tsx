@@ -257,7 +257,8 @@ export const Sidebar = () => {
           children={[
             { label: 'Alavancagem', to: '/gestao/alavancagem', isLocked: isLockedItem('alavancagem', isStarter), permissionKey: 'alavancagem' },
             { label: 'Calculadora', to: '/gestao/calculadora', permissionKey: 'calculadora' },
-            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter), permissionKey: 'dicas-gestao' }
+            { label: 'Dicas de Gestão', to: '/gestao/dicas-gestao', isLocked: isLockedItem('dicas-gestao', isStarter), permissionKey: 'dicas-gestao' },
+            { label: 'Simulador Constância', to: '/gestao/simulador', isLocked: isLockedItem('simulador', isStarter), permissionKey: 'simulador' }
           ]} 
         />
 

@@ -33,6 +33,7 @@ import { AlavancagemPage } from './pages/AlavancagemPage'
 import { CalculadoraPage } from './pages/CalculadoraPage'
 import { DicasGestaoPage } from './pages/DicasGestaoPage'
 import { TransacoesPage } from './pages/TransacoesPage'
+import { SimuladorPage } from './pages/SimuladorPage'
 
 
 import { PermissionsProvider } from './contexts/PermissionsContext'
@@ -156,6 +157,7 @@ function App() {
           <Route path="gestao/alavancagem" element={<AlavancagemPage />} />
           <Route path="gestao/calculadora" element={<CalculadoraPage />} />
           <Route path="gestao/dicas-gestao" element={<DicasGestaoPage />} />
+          <Route path="gestao/simulador" element={<SimuladorPage />} />
 
           <Route path="gestao/historico" element={<HistoryPage />} />
 
