@@ -123,41 +123,66 @@ export const AdminSupportPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="md:col-span-2 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-          <input 
-            type="text"
-            placeholder="Buscar por título ou e-mail..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
-          />
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            <input 
+              type="text"
+              placeholder="Buscar por título ou e-mail..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+            />
+          </div>
+          <div>
+            <select 
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+            >
+              <option value="all">Todos os Tipos</option>
+              <option value="bug">Somente Bugs</option>
+              <option value="feedback">Somente Feedbacks</option>
+            </select>
+          </div>
+          <div>
+            <select 
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
+            >
+              <option value="pending">Pendentes (Abertos / Em Andamento)</option>
+              <option value="all">Todos os Status</option>
+              <option value="OPEN">Abertos</option>
+              <option value="IN_PROGRESS">Em Andamento</option>
+              <option value="RESOLVED">Resolvidos</option>
+              <option value="CLOSED">Fechados</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <select 
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
-          >
-            <option value="all">Todos os Tipos</option>
-            <option value="bug">Somente Bugs</option>
-            <option value="feedback">Somente Feedbacks</option>
-          </select>
-        </div>
-        <div>
-          <select 
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full px-4 py-2 rounded-xl bg-surface-200 border border-surface-400 text-white outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans text-sm"
-          >
-            <option value="pending">Pendentes (Abertos / Em Andamento)</option>
-            <option value="all">Todos os Status</option>
-            <option value="OPEN">Abertos</option>
-            <option value="IN_PROGRESS">Em Andamento</option>
-            <option value="RESOLVED">Resolvidos</option>
-            <option value="CLOSED">Fechados</option>
-          </select>
+
+        {/* Quick Filters */}
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: 'pending', label: 'Pendentes' },
+            { id: 'OPEN', label: 'Abertos' },
+            { id: 'IN_PROGRESS', label: 'Processar' },
+            { id: 'RESOLVED', label: 'Resolvidos' },
+            { id: 'all', label: 'Todos' }
+          ].map(f => (
+            <button
+              key={f.id}
+              onClick={() => setFilterStatus(f.id)}
+              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
+                filterStatus === f.id 
+                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/20' 
+                  : 'bg-surface-200 border-surface-400 text-slate-400 hover:border-emerald-500/50 hover:text-white'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -226,7 +251,7 @@ export const AdminSupportPage = () => {
                       value={adminResponses[ticket.id] || ''}
                       onChange={(e) => setAdminResponses(prev => ({ ...prev, [ticket.id]: e.target.value }))}
                       placeholder="Digite aqui o que foi feito ou responda ao usuário..."
-                      className="w-full h-24 p-4 rounded-xl bg-surface-200 border border-surface-400 text-white text-sm outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans resize-none placeholder:text-slate-600"
+                      className="w-full h-24 p-4 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-green-500/50 transition-all font-sans resize-none placeholder:text-slate-400 shadow-sm"
                     />
                   </div>
                 </div>
