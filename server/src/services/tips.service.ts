@@ -17,7 +17,7 @@ interface CreateTipData {
 
 export const createTip = async (data: CreateTipData) => {
   return prisma.tip.create({
-    data,
+    data: data as any,
     include: {
       author: {
         select: { id: true, name: true },
@@ -75,7 +75,7 @@ export const updateTip = async (
 ) => {
   return prisma.tip.update({
     where: { id },
-    data,
+    data: data as any,
     include: {
       author: {
         select: { id: true, name: true },
