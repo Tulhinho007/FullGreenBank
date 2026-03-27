@@ -47,7 +47,6 @@ const PLAN_DATA = [
       'Histórico de Dicas',
       'Relatórios de Performance',
       'Gestão de Bancas (Ilimitadas)',
-      'Investimentos',
       'Calculadora Operacional',
       '🌱 Simulador de consistência',
       'Alavancagem',
@@ -55,7 +54,9 @@ const PLAN_DATA = [
       'Análise de Valor',
       'Suporte VIP / Direto'
     ],
-    notIncluded: []
+    notIncluded: [
+      'Investimentos'
+    ]
   }
 ]
 
@@ -67,7 +68,7 @@ const COMPARISON_TABLE = [
     { name: 'Histórico de Dicas', starter: false, pro: true },
     { name: 'Relatórios de Performance', starter: false, pro: true },
     { name: 'Gestão de Bancas', starter: 'Apenas 1', pro: 'Ilimitadas' },
-    { name: 'Investimentos', starter: false, pro: true },
+    { name: 'Investimentos', starter: false, pro: false },
     { name: 'Calculadora Operacional', starter: true, pro: true },
     { name: 'Simulador de consistência', starter: false, pro: true },
     { name: 'Alavancagem', starter: false, pro: true },
