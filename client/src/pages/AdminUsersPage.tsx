@@ -422,48 +422,103 @@ export const AdminUsersPage = () => {
         onClose={closeModal} 
         title="Criar Novo Usuário"
       >
-        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar px-1">
-          <div>
-            <label className="label mb-1.5">Nome Completo <span className="text-rose-500">*</span></label>
-            <input type="text" className="input" value={createForm.name} onChange={setCreate('name')} placeholder="Ex: João Silva" />
+        <div className="flex flex-col gap-5">
+          {/* Tabs */}
+          <div className="flex border-b border-slate-50">
+            <button 
+              onClick={() => setActiveTab('geral')}
+              className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 ${activeTab === 'geral' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            >
+              Geral
+            </button>
+            <button 
+              onClick={() => setActiveTab('plano')}
+              className={`px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 ${activeTab === 'plano' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            >
+              Plano & Acesso
+            </button>
           </div>
-          <div>
-            <label className="label mb-1.5">E-mail <span className="text-rose-500">*</span></label>
-            <input type="email" className="input" value={createForm.email} onChange={setCreate('email')} placeholder="usuario@email.com" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label mb-1.5">Telefone</label>
-              <input type="text" className="input" value={createForm.phone} onChange={setCreate('phone')} placeholder="(11) 90000-0000" />
-            </div>
-            <div>
-              <label className="label mb-1.5">Senha <span className="text-rose-500">*</span></label>
-              <div className="relative">
-                <input type={showPass ? "text" : "password"} className="input pr-10" value={createForm.password} onChange={setCreate('password')} placeholder="Mínimo 6 caracteres" />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-500 transition-colors" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+
+          {activeTab === 'geral' && (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className="label">Nome</label>
+                  <input className="input-field" value={createForm.name} onChange={setCreate('name')} placeholder="Nome completo" />
+                </div>
+                <div>
+                  <label className="label">Email</label>
+                  <input className="input-field" value={createForm.email} onChange={setCreate('email')} placeholder="usuario@email.com" />
+                </div>
+                <div>
+                  <label className="label">Telefone</label>
+                  <input className="input-field" value={createForm.phone} onChange={setCreate('phone')} placeholder="(11) 90000-0000" />
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <label className="label">Senha (Obrigatória)</label>
+                  <div className="relative">
+                    <input 
+                      type={showPass ? 'text' : 'password'} 
+                      className="input-field pr-10" 
+                      value={createForm.password} 
+                      onChange={setCreate('password')} 
+                      placeholder="Mín. 6 caracteres"
+                    />
+                    <button 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      onClick={() => setShowPass(!showPass)}
+                    >
+                      {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div>
-             <label className="label mb-1.5">Cargo / Papel</label>
-             <select className="input" value={createForm.role} onChange={setCreate('role')}>
-               <option value="MEMBRO">MEMBRO</option>
-               <option value="ADMIN">ADMIN</option>
-               {isMaster && <option value="MASTER">MASTER</option>}
-             </select>
-          </div>
-          <div>
-             <label className="label mb-1.5">Plano</label>
-             <select className="input" value={createForm.plan} onChange={setCreate('plan')}>
-               <option value="STARTER">STARTER</option>
-               <option value="PRO">PRO</option>
-               <option value="VIP PREMIUM">VIP PREMIUM</option>
-             </select>
-          </div>
+          )}
+
+          {activeTab === 'plano' && (
+            <div className="flex flex-col gap-6">
+              <div>
+                <label className="label mb-3">Plano de Assinatura</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['STARTER', 'PRO', 'VIP PREMIUM'].map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setCreateForm(f => ({ ...f, plan: p }))}
+                      className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-2 ${
+                        createForm.plan === p 
+                          ? 'border-emerald-600 bg-emerald-50 text-emerald-700' 
+                          : 'border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-100'
+                      }`}
+                    >
+                      <span className="text-[11px] font-black tracking-[0.2em]">{p}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="label mb-3">Cargo / Permissão</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['MEMBRO', 'ADMIN', ...(isMaster ? ['MASTER'] : [])].map(r => (
+                    <button
+                      key={r}
+                      onClick={() => setCreateForm(f => ({ ...f, role: r }))}
+                      className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${
+                        createForm.role === r 
+                          ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                          : 'border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-100'
+                      }`}
+                    >
+                      <span className="text-[10px] font-black tracking-[0.1em]">{r}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           
-          <div className="flex gap-4 mt-4 pt-2 border-t border-slate-100">
+          <div className="flex gap-4 mt-4">
             <button onClick={closeModal} className="btn-secondary flex-1 py-4 text-[10px] font-black uppercase tracking-widest border-slate-100">Cancelar</button>
             <button onClick={handleCreateSave} disabled={saving} className="btn-primary flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-emerald-500/10">
               {saving ? 'CRIANDO...' : 'CRIAR USUÁRIO'}
