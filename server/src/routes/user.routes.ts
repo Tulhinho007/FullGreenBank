@@ -9,6 +9,21 @@ const router = Router();
 router.use(authenticate);
 router.use(checkReadOnly);
 
+// POST create user - admin/master only
+router.post(
+  '/',
+  authorizeRoles('ADMIN', 'MASTER'),
+  [
+    body('name').trim().notEmpty().withMessage('Nome é obrigatório'),
+    body('email').isEmail().withMessage('Email inválido'),
+    body('password').isLength({ min: 6 }).withMessage('Senha deve ter pelo menos 6 caracteres'),
+    body('role').optional().isIn(['MASTER', 'ADMIN', 'MEMBRO']),
+    body('plan').optional().isIn(['STARTER', 'PRO', 'VIP PREMIUM'])
+  ],
+  validateRequest,
+  userController.createUser
+);
+
 // GET all users - admin/master only
 router.get('/', authorizeRoles('ADMIN', 'MASTER'), userController.getAll);
 

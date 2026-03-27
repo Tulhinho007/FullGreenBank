@@ -1,6 +1,6 @@
 # 📘 Full Green Bank — Resumo Completo do Projeto
 
-> Documento atualizado em: 25/03/2026
+> Documento atualizado em: 27/03/2026
 > Repositório: [github.com/Tulhinho007/FullGreenBank](https://github.com/Tulhinho007/FullGreenBank)
 
 ---
@@ -112,6 +112,7 @@ O sistema utiliza um design baseado em **neumorfismo** (soft UI) aplicado global
 | **STARTER** | Padrão de todo novo usuário |
 | **STANDARD** | Plano intermediário |
 | **PRO** | Acesso total a todas as ferramentas |
+| **VIP PREMIUM** | Acesso super restrito a módulos fechados (Área VIP) |
 
 | Status | Significado |
 |--------|-------------|
@@ -141,8 +142,9 @@ O sistema utiliza um design baseado em **neumorfismo** (soft UI) aplicado global
 | Histórico de Dicas | `/reports/tips` | Tabela unificada (Simples, Múltipla, Criar Aposta) |
 | Histórico de Contratos | `/gestao/historico` | Contratos com clientes (CRUD completo) |
 | Performance | `/reports` | Análise por período |
-| Investimentos | `/gestao/investimentos` | Controle de investimentos externos |
+| Investimentos | `/gestao/investimentos` | Controle de investimentos externos (Área VIP) |
 | Alavancagem | `/gestao/alavancagem` | Calculadora de alavancagem de banca |
+| Simulador Consistência | `/gestao/simulador` | Projeção de lucros via juros compostos diários |
 | Calculadora | `/gestao/calculadora` | Ferramentas de cálculo geral |
 | Dicas de Gestão | `/gestao/dicas-gestao` | Guia por perfil (Conservador, Moderado, Agressivo) |
 | Nossos Planos | `/planos` | Página pública de planos |
@@ -169,11 +171,14 @@ O sistema utiliza um design baseado em **neumorfismo** (soft UI) aplicado global
 ## 🔧 Histórico de Funcionalidades Implementadas
 
 ### Design & UX
-- **Neumorfismo Global** — Sistema de sombras suaves aplicado em toda a UI: cards, inputs, botões, header, sidebar, modais
-- **Light Mode Premium** — Tema 100% claro com cores de alta legibilidade
-- **Sidebar Neumorfic** — Logo com gradiente textual, user card e botão de logout com profundidade neumorfic
-- **Header Neumorfic** — Barra de busca (nm-inset), botão de notificação e badge de role (nm-flat)
-- **StatCard Neumorfic** — Cards de KPI extrudados com icon box neumorfic
+- **Neumorfismo Global** — Sistema de sombras suaves e componentes "inset"
+- **Glassmorphism (Novo)** — Efeitos translúcidos aplicados no Simulador de Consistência
+- **Light Mode Premium** — Tema claro focado em legibilidade e cores esmeralda/dourado
+
+### Operacional & Crescimento
+- **Simulador de Consistência**: Ferramenta interativa que puxa o total da banca automaticamente e projeta alcance do "Objetivo Final" através de juros compostos diários e Perfil de Risco simulado.
+- **Plano VIP PREMIUM**: Nova categoria bloqueada na vitrine (planos públicos), voltada apenas para concessão de administradores a usuários da "Área VIP".
+- **Criação de Contas por Administradores**: Workflow modal superseguro internamente onde o "Master" pode gerar novos membros com planos/cargos e senhas já configurados sem auto-deslogar a sessão ou depender da página pública de cadastro.
 
 ### Módulo de Dicas (TipsPage)
 - **Modal Reformulado** — Campos: Data, Link de Aposta, Tipo de Aposta (Simples/Múltipla/Criar Aposta), Quantidade de Esportes (gera selects dinâmicos), Odd, Stake, Status
@@ -276,6 +281,7 @@ VITE_API_URL=http://localhost:3001  # Local
 
 | Hash | Descrição |
 |------|-----------|
+| `HEAD` | feat: adicionado o simulador de juros compostos, plano vip premium e novo fluxo modal de criação instatânea de usuários para mestres/admins |
 | `25397c2` | feat(ui): aplica design neumorfismo — sombras suaves em cards, inputs, botoes, header, sidebar e modais |
 | `31513d7` | feat(tips): reformula modais Nova Dica e Editar Dica com novos campos |
 | _anterior_ | fix: resolve infinite redirect loop and improve auth stability on Vercel |

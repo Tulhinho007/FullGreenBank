@@ -100,15 +100,15 @@ export const SimuladorPage = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* LADO ESQUERDO: CONTROLES */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <div className="bg-white border text-center border-slate-200 rounded-[2rem] p-6 shadow-sm flex flex-col gap-6">
+        <div className="lg:col-span-1 flex flex-col gap-4">
+          <div className="bg-white border text-center border-slate-200 rounded-[2rem] p-5 shadow-sm flex flex-col gap-5">
             
             <div className="flex flex-col text-left">
               <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">1. Estratégia / Perfil de Risco</label>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <button 
                   onClick={() => setPerfil('CONSERVADOR', 2)}
-                  className={`p-3 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'CONSERVADOR' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 hover:border-emerald-200'}`}
+                  className={`px-3 py-2.5 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'CONSERVADOR' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 hover:border-emerald-200'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${perfilAtivo === 'CONSERVADOR' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -124,7 +124,7 @@ export const SimuladorPage = () => {
 
                 <button 
                   onClick={() => setPerfil('MODERADO', 4)}
-                  className={`p-3 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'MODERADO' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 hover:border-amber-200'}`}
+                  className={`px-3 py-2.5 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'MODERADO' ? 'border-amber-500 bg-amber-50' : 'border-slate-100 hover:border-amber-200'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${perfilAtivo === 'MODERADO' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -140,7 +140,7 @@ export const SimuladorPage = () => {
 
                 <button 
                   onClick={() => setPerfil('AGRESSIVO', 8)}
-                  className={`p-3 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'AGRESSIVO' ? 'border-rose-500 bg-rose-50' : 'border-slate-100 hover:border-rose-200'}`}
+                  className={`px-3 py-2.5 rounded-2xl border-2 transition-all flex items-center justify-between group ${perfilAtivo === 'AGRESSIVO' ? 'border-rose-500 bg-rose-50' : 'border-slate-100 hover:border-rose-200'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${perfilAtivo === 'AGRESSIVO' ? 'bg-rose-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -158,14 +158,14 @@ export const SimuladorPage = () => {
 
             <div className="w-full h-px bg-slate-100"></div>
 
-            <div className="flex flex-col gap-4 text-left">
+            <div className="flex flex-col gap-3 text-left">
                <div>
-                 <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">2. Valor Inicial (Banca)</label>
+                 <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-1 block">2. Valor Inicial (Banca)</label>
                  <div className="relative">
                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">R$</div>
                    <input 
                      type="number" 
-                     className="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold pl-10 pr-4 py-3 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                     className="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold pl-10 pr-4 py-2.5 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                      value={bancaAtual}
                      onChange={handleBancaChange}
                      placeholder={loadingBanca ? "Buscando..." : "100"}
@@ -174,11 +174,11 @@ export const SimuladorPage = () => {
                </div>
 
                <div>
-                 <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">3. Porcentagem Diária (%)</label>
+                 <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-1 block">3. Porcentagem Diária (%)</label>
                  <input 
                    type="number" 
                    step="0.1"
-                   className="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold px-4 py-3 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                   className="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold px-4 py-2.5 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                    value={metaPercent}
                    onChange={handleMetaChange}
                    placeholder="Ex: 2.5"
@@ -186,12 +186,12 @@ export const SimuladorPage = () => {
                </div>
 
                <div>
-                 <label className="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-1.5 block">🎯 Objetivo Final</label>
+                 <label className="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-1 block">🎯 Objetivo Final</label>
                  <div className="relative">
                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 font-bold">R$</div>
                    <input 
                      type="number" 
-                     className="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-black text-lg pl-12 pr-4 py-4 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all"
+                     className="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-black text-lg pl-12 pr-4 py-3 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all"
                      value={objetivo}
                      onChange={handleObjetivoChange}
                      placeholder="10000"

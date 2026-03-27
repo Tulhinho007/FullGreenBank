@@ -6,6 +6,11 @@ export const usersService = {
     return res.data.data
   },
 
+  create: async (data: any) => {
+    const res = await api.post('/users', data)
+    return res.data.data
+  },
+
   updateProfile: async (data: {
     name?: string; phone?: string; password?: string;
     plan?: string; currency?: string; language?: string; theme?: string;

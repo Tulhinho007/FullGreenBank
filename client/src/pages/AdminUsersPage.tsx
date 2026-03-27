@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { usersService } from '../services/users.service'
 import { getRoleInfo, formatDateTime } from '../utils/formatters'
 import { Modal } from '../components/ui/Modal'
-import { ShieldCheck, Pencil, Eye, EyeOff, User as UserIcon } from 'lucide-react'
+import { ShieldCheck, Pencil, Eye, EyeOff, User as UserIcon, UserPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { addLog } from '../services/log.service'
@@ -13,7 +13,7 @@ interface User {
   plan?: string
 }
 
-type ModalType = 'edit' | 'role' | null
+type ModalType = 'edit' | 'role' | 'create' | null
 
 export const AdminUsersPage = () => {
   const { user: me, impersonateUser } = useAuth()
@@ -35,6 +35,13 @@ export const AdminUsersPage = () => {
     name: '', email: '', phone: '', password: '', 
     plan: 'STARTER' 
   })
+
+  // Create form
+  const [createForm, setCreateForm] = useState({ 
+    name: '', email: '', phone: '', password: '', 
+    role: 'MEMBRO', plan: 'STARTER' 
+  })
+
   const [showPass, setShowPass] = useState(false)
 
   const load = () => {
@@ -76,6 +83,11 @@ export const AdminUsersPage = () => {
     setSelected(u)
     setNewRole(u.role)
     setModalType('role')
+  }
+
+  const openCreate = () => {
+    setCreateForm({ name: '', email: '', phone: '', password: '', role: 'MEMBRO', plan: 'STARTER' })
+    setModalType('create')
   }
 
   const closeModal = () => { 
@@ -130,8 +142,28 @@ export const AdminUsersPage = () => {
     finally { setSaving(false) }
   }
 
+  const handleCreateSave = async () => {
+    if (!createForm.name || !createForm.email || !createForm.password) {
+      toast.error('Preencha os campos obrigatórios (Nome, Email, Senha)'); return;
+    }
+    setSaving(true)
+    try {
+      await usersService.create(createForm)
+      toast.success('Usuário criado com sucesso!')
+      if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Admin', action: 'Nova Conta Criada', detail: `Criou usuário: ${createForm.email}` })
+      closeModal()
+      load()
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Erro ao criar usuário'
+      toast.error(msg)
+    } finally { setSaving(false) }
+  }
+
   const setEdit = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setEditForm(f => ({ ...f, [field]: e.target.value }))
+    
+  const setCreate = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    setCreateForm(f => ({ ...f, [field]: e.target.value }))
 
   return (
     <div className="flex flex-col gap-6">
@@ -142,6 +174,12 @@ export const AdminUsersPage = () => {
             {users.length} usuários registrados na plataforma
           </p>
         </div>
+        <button 
+          onClick={openCreate}
+          className="btn-primary rounded-xl px-4 py-3 text-[11px] font-black uppercase tracking-widest shadow-md shadow-emerald-500/20 flex items-center gap-2"
+        >
+          <UserPlus size={16} /> Novo Usuário
+        </button>
       </div>
 
       {loading ? (
@@ -377,6 +415,63 @@ export const AdminUsersPage = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Modal: Novo Usuário */}
+      <Modal 
+        isOpen={modalType === 'create'} 
+        onClose={closeModal} 
+        title="Criar Novo Usuário"
+      >
+        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar px-1">
+          <div>
+            <label className="label mb-1.5">Nome Completo <span className="text-rose-500">*</span></label>
+            <input type="text" className="input" value={createForm.name} onChange={setCreate('name')} placeholder="Ex: João Silva" />
+          </div>
+          <div>
+            <label className="label mb-1.5">E-mail <span className="text-rose-500">*</span></label>
+            <input type="email" className="input" value={createForm.email} onChange={setCreate('email')} placeholder="usuario@email.com" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label mb-1.5">Telefone</label>
+              <input type="text" className="input" value={createForm.phone} onChange={setCreate('phone')} placeholder="(11) 90000-0000" />
+            </div>
+            <div>
+              <label className="label mb-1.5">Senha <span className="text-rose-500">*</span></label>
+              <div className="relative">
+                <input type={showPass ? "text" : "password"} className="input pr-10" value={createForm.password} onChange={setCreate('password')} placeholder="Mínimo 6 caracteres" />
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-500 transition-colors" onClick={() => setShowPass(!showPass)}>
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div>
+             <label className="label mb-1.5">Cargo / Papel</label>
+             <select className="input" value={createForm.role} onChange={setCreate('role')}>
+               <option value="MEMBRO">MEMBRO</option>
+               <option value="ADMIN">ADMIN</option>
+               {isMaster && <option value="MASTER">MASTER</option>}
+             </select>
+          </div>
+          <div>
+             <label className="label mb-1.5">Plano</label>
+             <select className="input" value={createForm.plan} onChange={setCreate('plan')}>
+               <option value="STARTER">STARTER</option>
+               <option value="PRO">PRO</option>
+               <option value="VIP PREMIUM">VIP PREMIUM</option>
+             </select>
+          </div>
+          
+          <div className="flex gap-4 mt-4 pt-2 border-t border-slate-100">
+            <button onClick={closeModal} className="btn-secondary flex-1 py-4 text-[10px] font-black uppercase tracking-widest border-slate-100">Cancelar</button>
+            <button onClick={handleCreateSave} disabled={saving} className="btn-primary flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-emerald-500/10">
+              {saving ? 'CRIANDO...' : 'CRIAR USUÁRIO'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   )
 }

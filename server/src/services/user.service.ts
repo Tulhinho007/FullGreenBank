@@ -1,6 +1,29 @@
 import { prisma } from '../models/prismaClient';
 import { hashPassword } from '../utils/password';
 
+export const createUser = async (data: any) => {
+  const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+  if (existingUser) {
+    throw new Error('Email já cadastrado');
+  }
+
+  const hashedPassword = await hashPassword(data.password);
+  
+  return prisma.user.create({
+    data: {
+      ...data,
+      password: hashedPassword,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      plan: true,
+    }
+  });
+};
+
 export const getAllUsers = async () => {
   return prisma.user.findMany({
     select: {

@@ -111,3 +111,25 @@ export const toggleActive = async (req: AuthRequest, res: Response): Promise<voi
     sendError(res, message, 400);
   }
 };
+
+export const createUser = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { name, email, phone, password, role, plan } = req.body;
+    
+    // Admins normais não podem criar Masters
+    if (role === 'MASTER' && req.user!.role !== 'MASTER') {
+      sendError(res, 'Apenas masters podem criar contas com permissão MASTER.', 403);
+      return;
+    }
+
+    const user = await userService.createUser({
+      name, email, phone, password, role: role || 'MEMBRO', plan: plan || 'STARTER'
+    });
+
+    logActivity(req, 'Usuários', 'Criação de Conta (Admin)', `Nova conta criada: ${email} | Cargo: ${role}`);
+    sendSuccess(res, user, 'Usuário criado com sucesso!', 201);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao criar usuário';
+    sendError(res, message, 400);
+  }
+};
