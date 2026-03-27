@@ -13,7 +13,7 @@ import { usersService } from '../services/users.service'
 import api from '../services/api'
 import toast from 'react-hot-toast'
 import { formatCurrency as fmt } from '../utils/formatters'
-import { checkSubscription, createPayment } from '../utils/subscription'
+import { checkSubscription } from '../utils/subscription'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
 
 // ─── Tipos ──────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ const PAY_METHOD_LABEL: Record<PayMethod, string> = {
 }
 
 const formatDate = (d: string | null) =>
-  d ? new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') : '—'
+  d ? new Date(d + 'T12:00:00').toLocaleDateString('pt-BR') : '—'
 
 // ─── Formulário vazio ────────────────────────────────────────────────────────
 
@@ -249,33 +249,47 @@ export const FinanceiroPagamentosPage = () => {
     setSaving(true)
     
     try {
-      let payload: Record<string, any> = {
-        plan:      editForm.plan,
-        value:     editForm.value !== '' ? Number(editForm.value) : null,
-        payMethod: editForm.payMethod || null,
-        dueDate:   editForm.dueDate   || null,
+      // Monta payload base com o que o usuário preencheu
+      // Campos vazios = null (limpa o valor no banco)
+      const payload: Record<string, any> = {
+        plan:          editForm.plan      || null,
+        value:         editForm.value !== '' ? Number(editForm.value) : null,
+        payMethod:     editForm.payMethod || null,
+        dueDate:       editForm.dueDate   || null,
         paymentStatus: editForm.status,
-        notes:     editForm.notes,
+        notes:         editForm.notes     || null,
       }
 
-      // RULE 1 & 3: Use createPayment() when confirming payment (ATIVO)
+      // Status ATIVO: calcula datas automaticamente, mas respeita dueDate manual se preenchido
       if (editForm.status === 'ATIVO') {
-        const paymentData = createPayment({
-          plan:      editForm.plan,
-          value:     editForm.value !== '' ? Number(editForm.value) : null,
-          payMethod: editForm.payMethod || undefined,
-          notes:     editForm.notes,
-        })
-        // Append payment history entry to notes
-        const today = new Date().toISOString().split('T')[0]
-        const historyEntry = `PAG:${today}|VENC:${paymentData.dueDate}|PLAN:${editForm.plan}`
-        paymentData.notes = paymentData.notes
-          ? `${paymentData.notes}\n${historyEntry}`
+        const today = new Date()
+        const todayStr = today.toISOString().split('T')[0]
+
+        // Só gera dueDate automático se o campo estiver vazio
+        if (!editForm.dueDate) {
+          const due = new Date(today)
+          due.setDate(due.getDate() + 30)
+          payload.dueDate = due.toISOString().split('T')[0]
+        }
+
+        payload.purchaseDate    = todayStr
+        payload.lastPaymentDate = todayStr
+        payload.isActive        = true
+
+        // Appenda histórico nas notas
+        const historyEntry = `PAG:${todayStr}|VENC:${payload.dueDate}|PLAN:${editForm.plan}`
+        payload.notes = editForm.notes
+          ? `${editForm.notes}\n${historyEntry}`
           : historyEntry
 
-        payload = { ...payload, ...paymentData }
+      } else if (editForm.status === 'PENDENTE' || editForm.status === 'CANCELADO') {
+        // Resetar para estaca zero — limpa tudo
+        payload.isActive        = false
+        payload.purchaseDate    = null
+        payload.lastPaymentDate = null
+        // dueDate já é null se campo vazio (definido acima)
       } else {
-        // RULE 2: If setting non-ATIVO status, clear isActive
+        // ATRASADO
         payload.isActive = false
       }
 
@@ -611,22 +625,34 @@ export const FinanceiroPagamentosPage = () => {
             </div>
 
             {/* Ações */}
-            <div className="flex gap-3 pt-4 border-t border-slate-100">
-              <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
-                {isReadOnly ? 'Fechar' : 'Cancelar'}
-              </button>
-              {!isReadOnly && (
+            <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">
+              {/* Botão reset — só aparece se já houver algum dado */}
+              {!isReadOnly && (editTarget.status !== 'PENDENTE' || editTarget.dueDate) && (
                 <button
-                  type="submit"
-                  disabled={saving}
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => setEditForm({ ...emptyEdit, status: 'PENDENTE' })}
+                  className="w-full py-2 rounded-xl border border-rose-100 text-rose-500 hover:bg-rose-50 text-[10px] font-black uppercase tracking-widest transition-all"
                 >
-                  {saving
-                    ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</>
-                    : '✓ Salvar alterações'
+                  🗑 Limpar Tudo (Voltar estaca zero)
+                </button>
+              )}
+              <div className="flex gap-3">
+                <button type="button" onClick={closeEdit} className="btn-secondary flex-1">
+                  {isReadOnly ? 'Fechar' : 'Cancelar'}
+                </button>
+                {!isReadOnly && (
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="btn-primary flex-1 flex items-center justify-center gap-2"
+                  >
+                    {saving
+                      ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Salvando...</>
+                      : '✓ Salvar alterações'
                   }
                 </button>
               )}
+              </div>
             </div>
           </form>
         )}

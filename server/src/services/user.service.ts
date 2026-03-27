@@ -77,27 +77,27 @@ export const updateUser = async (
 ) => {
   const updateData: any = {};
 
-  if (data.name)     updateData.name     = data.name;
-  if (data.email)    updateData.email    = data.email;
-  if (data.phone)    updateData.phone    = data.phone;
-  if (data.password) updateData.password = await hashPassword(data.password);
+  if (data.name !== undefined)     updateData.name     = data.name;
+  if (data.email !== undefined)    updateData.email    = data.email;
+  if (data.phone !== undefined)    updateData.phone    = data.phone;
+  if (data.password !== undefined) updateData.password = await hashPassword(data.password);
   if (data.isTipster !== undefined)   updateData.isTipster = data.isTipster;
   
-  if (data.plan)                     updateData.plan          = data.plan;
+  if (data.plan !== undefined)                     updateData.plan          = data.plan;
   if (data.value !== undefined)      updateData.value         = data.value;
-  if (data.payMethod)                updateData.payMethod     = data.payMethod;
-  if (data.purchaseDate)             updateData.purchaseDate  = data.purchaseDate;
-  if (data.lastPaymentDate)          updateData.lastPaymentDate = data.lastPaymentDate;
-  if (data.dueDate)                  updateData.dueDate       = data.dueDate;
-  if (data.paymentStatus)            updateData.paymentStatus = data.paymentStatus;
+  if (data.payMethod !== undefined)                updateData.payMethod     = data.payMethod;
+  if (data.purchaseDate !== undefined)             updateData.purchaseDate  = data.purchaseDate;
+  if (data.lastPaymentDate !== undefined)          updateData.lastPaymentDate = data.lastPaymentDate;
+  if (data.dueDate !== undefined)                  updateData.dueDate       = data.dueDate;
+  if (data.paymentStatus !== undefined)            updateData.paymentStatus = data.paymentStatus;
   if (data.isActive !== undefined)   updateData.isActive      = data.isActive;
   if (data.notes !== undefined)      updateData.notes         = data.notes;
 
-  if (data.currency)            updateData.currency = data.currency;
-  if (data.language)            updateData.language = data.language;
-  if (data.theme)               updateData.theme    = data.theme;
+  if (data.currency !== undefined)            updateData.currency = data.currency;
+  if (data.language !== undefined)            updateData.language = data.language;
+  if (data.theme !== undefined)               updateData.theme    = data.theme;
   if (data.twoFactorEnabled !== undefined) updateData.twoFactorEnabled = data.twoFactorEnabled;
-  if (data.avatarUrl)           updateData.avatarUrl = data.avatarUrl;
+  if (data.avatarUrl !== undefined)           updateData.avatarUrl = data.avatarUrl;
 
   return prisma.user.update({
     where: { id },

@@ -6,7 +6,9 @@ export const formatCurrency = (value?: number | null) => {
 export const formatDate = (dateStr?: string | null) => {
   if (!dateStr) return '—'
   try {
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(dateStr))
+    // Se for apenas data YYYY-MM-DD, força meio-dia para evitar fuso horário
+    const d = dateStr.includes('T') ? new Date(dateStr) : new Date(dateStr + 'T12:00:00')
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d)
   } catch {
     return '—'
   }
