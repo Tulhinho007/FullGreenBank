@@ -82,16 +82,9 @@ export const ReportsPage = () => {
         )
 
         const mappedTx: Transaction[] = myTips.map((tip: any) => {
-          let tipoLabel = 'Simples'
-          if (tip.isMultipla) {
-            tipoLabel = 'Múltipla'
-          } else if (tip.event === 'Criar Aposta' || tip.market === 'Criar Aposta') {
-            tipoLabel = 'Criar Aposta'
-          } else if (tip.tipoAposta && tip.tipoAposta !== 'Simples') {
-            tipoLabel = tip.tipoAposta
-          } else if (tip.market && tip.market !== 'Simples') {
-            tipoLabel = tip.market
-          }
+          // Determina o tipo real da aposta usando o campo 'event' do banco
+          // Valores reais no DB: event = 'Múltipla' | 'Criar Aposta' | null
+          const tipoLabel = tip.event || tip.market || 'Simples'
 
           return {
             id: tip.id,
@@ -107,7 +100,6 @@ export const ReportsPage = () => {
             profit: Number(tip.profit) || 0
           }
         })
-        console.log('Processed Transactions:', mappedTx);
         setTransactions(mappedTx)
       } catch (error) {
         console.error('Erro ao carregar transações para relatórios:', error)

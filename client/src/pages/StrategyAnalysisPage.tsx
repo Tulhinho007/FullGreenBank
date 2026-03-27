@@ -52,16 +52,9 @@ export const StrategyAnalysisPage = () => {
         )
 
         const mappedTx: Transaction[] = myTips.map((tip: any) => {
-          let tipoLabel = 'Simples'
-          if (tip.isMultipla) {
-            tipoLabel = 'Múltipla'
-          } else if (tip.event === 'Criar Aposta' || tip.market === 'Criar Aposta') {
-            tipoLabel = 'Criar Aposta'
-          } else if (tip.tipoAposta && tip.tipoAposta !== 'Simples') {
-            tipoLabel = tip.tipoAposta
-          } else if (tip.market && tip.market !== 'Simples') {
-            tipoLabel = tip.market
-          }
+          // Determina o tipo real da aposta usando o campo 'event' do banco
+          // Valores reais no DB: event = 'Múltipla' | 'Criar Aposta' | null
+          const tipoLabel = tip.event || tip.market || 'Simples'
 
           return {
             id: tip.id,
@@ -171,7 +164,7 @@ export const StrategyAnalysisPage = () => {
             <PieChartIcon size={18} className="text-emerald-500" />
             Lucro por Esporte
           </h3>
-          <div className="flex-1 min-h-[250px] w-full">
+          <div className="flex-1 min-h-[320px] w-full">
             {efficiencyData.sports.filter(s => s.profit > 0).length === 0 ? (
               <div className="w-full h-full flex flex-col items-center justify-center text-sm text-slate-400 text-center px-4">
                 <Target size={32} className="text-slate-200 mb-3" />
@@ -179,17 +172,25 @@ export const StrategyAnalysisPage = () => {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 60, left: 60, bottom: 10 }}>
+                <PieChart margin={{ top: 30, right: 80, left: 80, bottom: 30 }}>
                   <Pie
                     data={efficiencyData.sports.filter(s => s.profit > 0)}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={75}
+                    innerRadius={55}
+                    outerRadius={65}
                     paddingAngle={5}
                     dataKey="profit"
-                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                    labelLine={true}
+                    label={({ name, percent, x, y, midAngle: _midAngle }) => {
+                      const mid = _midAngle ?? 0
+                      const cx2 = (x ?? 0) + (mid > 90 && mid < 270 ? -10 : 10)
+                      return (
+                        <text x={cx2} y={y} fill="#475569" textAnchor={mid > 90 && mid < 270 ? 'end' : 'start'} dominantBaseline="central" fontSize={11} fontWeight={600}>
+                          {`${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                        </text>
+                      )
+                    }}
+                    labelLine={{ stroke: '#94a3b8', strokeWidth: 1 }}
                   >
                     {efficiencyData.sports.filter(s => s.profit > 0).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
