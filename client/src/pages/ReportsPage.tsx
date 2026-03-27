@@ -71,38 +71,44 @@ export const ReportsPage = () => {
   useEffect(() => {
     async function loadData() {
       try {
-        if (user?.role === 'MASTER') {
-          // Conta Master: puxa da página histórico de dicas (backend)
-          const params = { page: 1, limit: 1000 }
-          const backendData = await tipsService.getAll(params.page, params.limit)
-          const tipsArray = Array.isArray(backendData.tips) ? backendData.tips : []
-          
-          const mappedTx: Transaction[] = tipsArray.map((tip: any) => ({
+        const params = { page: 1, limit: 1000 }
+        const backendData = await tipsService.getAll(params.page, params.limit)
+        const tipsArray = Array.isArray(backendData.tips) ? backendData.tips : []
+        
+        const myTips = tipsArray.filter((tip: any) => 
+          user?.role === 'MASTER' || 
+          tip.authorId === user?.id || 
+          (tip.author?.name?.toLowerCase() === user?.name?.toLowerCase())
+        )
+
+        const mappedTx: Transaction[] = myTips.map((tip: any) => {
+          let tipoLabel = 'Simples'
+          if (tip.isMultipla) {
+            tipoLabel = 'Múltipla'
+          } else if (tip.event === 'Criar Aposta' || tip.market === 'Criar Aposta') {
+            tipoLabel = 'Criar Aposta'
+          } else if (tip.tipoAposta && tip.tipoAposta !== 'Simples') {
+            tipoLabel = tip.tipoAposta
+          } else if (tip.market && tip.market !== 'Simples') {
+            tipoLabel = tip.market
+          }
+
+          return {
             id: tip.id,
-            tipsterId: user.id || 'master',
-            tipsterName: user.name || 'Master',
+            tipsterId: tip.authorId || user?.id || 'tipster',
+            tipsterName: tip.author?.name || user?.name || 'Tipster',
             tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toLocaleDateString('en-CA'),
             linkAposta: tip.linkAposta || '',
-            tipoAposta: tip.tipoAposta || tip.market || tip.event || 'Simples',
+            tipoAposta: tipoLabel,
             sportsList: tip.sportsList || [tip.sport || 'Futebol'],
             odds: Number(tip.odds) || 1,
             stake: Number(tip.stake) || 0,
             status: (tip.result as StatusType) || 'PENDING',
             profit: Number(tip.profit) || 0
-          }))
-          setTransactions(mappedTx)
-        } else {
-          // Outras contas (Gestão Tipsters) lê do localStorage / registros atrelados
-          const storedTx = localStorage.getItem('fgb_tipster_transactions')
-          if (storedTx) {
-            const allTx: Transaction[] = JSON.parse(storedTx)
-            const myTx = allTx.filter(t => 
-              t.tipsterName.toLowerCase() === user?.name?.toLowerCase() || 
-              t.tipsterId === user?.id
-            )
-            setTransactions(myTx)
           }
-        }
+        })
+        console.log('Processed Transactions:', mappedTx);
+        setTransactions(mappedTx)
       } catch (error) {
         console.error('Erro ao carregar transações para relatórios:', error)
       }

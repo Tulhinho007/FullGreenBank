@@ -38,36 +38,46 @@ export const StrategyAnalysisPage = () => {
   useEffect(() => {
     async function loadData() {
       try {
-        if (user?.role === 'MASTER') {
-          const params = { page: 1, limit: 1000 }
-          const backendData = await tipsService.getAll(params.page, params.limit)
-          const tipsArray = Array.isArray(backendData.tips) ? backendData.tips : []
-          
-          const mappedTx: Transaction[] = tipsArray.map((tip: any) => ({
+        const params = { page: 1, limit: 1000 }
+        const backendData = await tipsService.getAll(params.page, params.limit)
+        const tipsArray = Array.isArray(backendData.tips) ? backendData.tips : []
+        
+        // Se não for MASTER, filtramos apenas as tips do próprio usuário
+        // se houver necessidade (o backend getAll já deve filtrar se for um usuário comum)
+        // mas para garantir consistência com o que o MASTER vê:
+        const myTips = tipsArray.filter((tip: any) => 
+          user?.role === 'MASTER' || 
+          tip.authorId === user?.id || 
+          (tip.author?.name?.toLowerCase() === user?.name?.toLowerCase())
+        )
+
+        const mappedTx: Transaction[] = myTips.map((tip: any) => {
+          let tipoLabel = 'Simples'
+          if (tip.isMultipla) {
+            tipoLabel = 'Múltipla'
+          } else if (tip.event === 'Criar Aposta' || tip.market === 'Criar Aposta') {
+            tipoLabel = 'Criar Aposta'
+          } else if (tip.tipoAposta && tip.tipoAposta !== 'Simples') {
+            tipoLabel = tip.tipoAposta
+          } else if (tip.market && tip.market !== 'Simples') {
+            tipoLabel = tip.market
+          }
+
+          return {
             id: tip.id,
-            tipsterId: user.id || 'master',
-            tipsterName: user.name || 'Master',
+            tipsterId: tip.authorId || user?.id || 'tipster',
+            tipsterName: tip.author?.name || user?.name || 'Tipster',
             tipDate: tip.tipDate ? String(tip.tipDate).split('T')[0] : new Date().toISOString().split('T')[0],
             linkAposta: tip.linkAposta || '',
-            tipoAposta: tip.tipoAposta || tip.market || tip.event || 'Simples',
+            tipoAposta: tipoLabel,
             sportsList: tip.sportsList || [tip.sport || 'Futebol'],
             odds: Number(tip.odds) || 1,
             stake: Number(tip.stake) || 0,
             status: (tip.result as StatusType) || 'PENDING',
             profit: Number(tip.profit) || 0
-          }))
-          setTransactions(mappedTx)
-        } else {
-          const storedTx = localStorage.getItem('fgb_tipster_transactions')
-          if (storedTx) {
-            const allTx: Transaction[] = JSON.parse(storedTx)
-            const myTx = allTx.filter(t => 
-              t.tipsterName.toLowerCase() === user?.name?.toLowerCase() || 
-              t.tipsterId === user?.id
-            )
-            setTransactions(myTx)
           }
-        }
+        })
+        setTransactions(mappedTx)
       } catch (error) {
         console.error('Erro ao carregar dados de estratégia:', error)
       }
@@ -169,17 +179,17 @@ export const StrategyAnalysisPage = () => {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart margin={{ top: 10, right: 60, left: 60, bottom: 10 }}>
                   <Pie
                     data={efficiencyData.sports.filter(s => s.profit > 0)}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
-                    outerRadius={80}
+                    outerRadius={75}
                     paddingAngle={5}
                     dataKey="profit"
                     label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                    labelLine={false}
+                    labelLine={true}
                   >
                     {efficiencyData.sports.filter(s => s.profit > 0).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -189,7 +199,7 @@ export const StrategyAnalysisPage = () => {
                     formatter={(val: any) => formatCurrency(Number(val))} 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
-                  <Legend wrapperStyle={{ fontSize: '12px', fontWeight: 'bold', paddingTop: '20px' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
