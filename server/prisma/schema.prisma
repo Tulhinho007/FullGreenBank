@@ -282,3 +282,19 @@ model ActivityLog {
 
   @@map("activity_logs")
 }
+
+model Transacao {
+  id        String   @id @default(uuid())
+  date      String
+  type      String   // DEPOSITO | SAQUE
+  userId    String
+  userName  String
+  value     Float
+  method    String
+  status    String   @default("CONCLUIDO") // CONCLUIDO | PENDENTE | RECUSADO
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transacoes")
+}

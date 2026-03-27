@@ -10,11 +10,11 @@ import {
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
 import { useAuth } from '../contexts/AuthContext'
-import { addLog } from '../services/log.service'
 import { usersService } from '../services/users.service'
 import { formatCurrency as fmt, formatDate } from '../utils/formatters'
 import toast from 'react-hot-toast'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
+import api from '../services/api'
 
 // ─── Interfaces ─────────────────────────────────────────────────────────────
 interface Transaction {
@@ -40,6 +40,8 @@ export const TransacoesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   
   // Filtros
   const [filterUser, setFilterUser] = useState('')
@@ -59,20 +61,33 @@ export const TransacoesPage = () => {
   }
   const [formData, setFormData] = useState(initialForm)
 
-  // ─── Efeitos Iniciais (Carregar Usuários) ─────────────────────────────────
+  // ─── Carrega dados do servidor ─────────────────────────────────────────────
+  const fetchTransactions = async () => {
+    setLoading(true)
+    try {
+      const res = await api.get('/transacoes')
+      setTransactions(res.data.data || [])
+    } catch (error) {
+      console.error('Erro ao buscar transações:', error)
+      toast.error('Falha ao carregar transações.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await usersService.getAll()
         const dataArray = Array.isArray(response) ? response : (Array.isArray(response?.users) ? response.users : [])
-        // Se quiser filtrar só MEMBERS, pode usar dataArray.filter(u => u.role === 'MEMBRO'...)
         setUsers(dataArray)
       } catch (error) {
-        console.error("Erro ao buscar usuários:", error)
-        toast.error("Falha ao carregar lista de usuários.")
+        console.error('Erro ao buscar usuários:', error)
+        toast.error('Falha ao carregar lista de usuários.')
       }
     }
     fetchUsers()
+    fetchTransactions()
   }, [])
 
   // ─── Cálculos dos Cards (KPIs) ────────────────────────────────────────────
@@ -85,7 +100,6 @@ export const TransacoesPage = () => {
     .reduce((acc, t) => acc + t.value, 0)
     
   const saldoLiquido = totalDepositos - totalSaques
-  
   const totalPendentes = transactions.filter(t => t.status === 'PENDENTE').length
 
   // ─── Filtros de Tabela ────────────────────────────────────────────────────
@@ -98,61 +112,47 @@ export const TransacoesPage = () => {
   })
 
   // ─── Ações ────────────────────────────────────────────────────────────────
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     
-    // Validação básica
-    if (!formData.userId) return toast.error("Selecione um usuário!")
-    if (!formData.value || Number(formData.value) <= 0) return toast.error("Informe um valor válido!")
-    if (!formData.method) return toast.error("Selecione um método de pagamento!")
+    if (!formData.userId) return toast.error('Selecione um usuário!')
+    if (!formData.value || Number(formData.value) <= 0) return toast.error('Informe um valor válido!')
+    if (!formData.method) return toast.error('Selecione um método de pagamento!')
 
     const selectedUser = users.find(u => u.id === formData.userId)
 
-    const newTransaction: Transaction = {
-      id: crypto.randomUUID(), // Geração local de ID por enquanto
-      date: formData.date,
-      type: formData.type,
-      userId: formData.userId,
-      userName: selectedUser?.name || 'Desconhecido',
-      value: Number(formData.value),
-      method: formData.method,
-      status: formData.status,
-      notes: formData.notes
-    }
-
-    setTransactions(prev => [newTransaction, ...prev])
-    toast.success("Transação registrada com sucesso!")
-    
-    if (me) {
-      addLog({
-        userEmail: me.email,
-        userName: me.name,
-        userRole: me.role,
-        category: 'Financeiro',
-        action: `Transação ${formData.type}`,
-        detail: `${selectedUser?.name} | Valor: ${formData.value} | Método: ${formData.method}`
+    setSaving(true)
+    try {
+      await api.post('/transacoes', {
+        date: formData.date,
+        type: formData.type,
+        userId: formData.userId,
+        userName: selectedUser?.name || 'Desconhecido',
+        value: Number(formData.value),
+        method: formData.method,
+        status: formData.status,
+        notes: formData.notes
       })
+      
+      toast.success('Transação registrada com sucesso!')
+      setIsModalOpen(false)
+      setFormData(initialForm)
+      fetchTransactions() // Recarrega do servidor
+    } catch (err) {
+      toast.error('Erro ao registrar transação.')
+    } finally {
+      setSaving(false)
     }
-    
-    // Fechar e Resetar Modal
-    setIsModalOpen(false)
-    setFormData(initialForm)
   }
 
-  const handleDelete = (id: string) => {
-    if(window.confirm("Deseja mesmo remover esta transação?")) {
-      setTransactions(prev => prev.filter(t => t.id !== id))
-      toast.success("Transação removida.")
-      if (me) {
-        addLog({
-          userEmail: me.email,
-          userName: me.name,
-          userRole: me.role,
-          category: 'Financeiro',
-          action: 'Transação Excluída',
-          detail: `ID: ${id}`
-        })
-      }
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Deseja mesmo remover esta transação?')) return
+    try {
+      await api.delete(`/transacoes/${id}`)
+      toast.success('Transação removida.')
+      fetchTransactions() // Recarrega do servidor
+    } catch {
+      toast.error('Erro ao excluir transação.')
     }
   }
 
@@ -178,7 +178,6 @@ export const TransacoesPage = () => {
 
       {/* ─── Cards de Resumo ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Depósitos */}
         <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Depósitos</span>
@@ -189,7 +188,6 @@ export const TransacoesPage = () => {
           <p className="text-2xl font-display font-bold text-emerald-600 tracking-tight">{fmt(totalDepositos)}</p>
         </div>
 
-        {/* Total Saques */}
         <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Saques</span>
@@ -200,7 +198,6 @@ export const TransacoesPage = () => {
           <p className="text-2xl font-display font-bold text-rose-600 tracking-tight">{fmt(totalSaques)}</p>
         </div>
 
-        {/* Saldo Líquido */}
         <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Líquido</span>
@@ -211,7 +208,6 @@ export const TransacoesPage = () => {
           <p className="text-2xl font-display font-bold text-blue-600 tracking-tight">{fmt(saldoLiquido)}</p>
         </div>
 
-        {/* Pendentes */}
         <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pendentes</span>
@@ -286,7 +282,12 @@ export const TransacoesPage = () => {
           <span className="text-right pr-4">Ações</span>
         </div>
 
-        {filteredTransactions.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-slate-400 text-sm">Carregando transações...</p>
+          </div>
+        ) : filteredTransactions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
               <BadgeDollarSign className="text-slate-300" size={24} />
@@ -449,9 +450,10 @@ export const TransacoesPage = () => {
             </button>
             <button 
               type="submit" 
-              className="py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[11px] rounded-[1.5rem] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 flex items-center justify-center"
+              disabled={saving}
+              className="py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[11px] rounded-[1.5rem] transition-all shadow-xl shadow-emerald-500/10 active:scale-95 flex items-center justify-center disabled:opacity-60"
             >
-              Registrar Now
+              {saving ? 'Salvando...' : 'Registrar'}
             </button>
           </div>
         </form>

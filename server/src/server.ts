@@ -20,6 +20,7 @@ import solicitacoesRoutes  from './routes/solicitacoes.routes';
 import cadastrosRoutes     from './routes/cadastros.routes';
 import futvoleiRoutes      from './routes/futvolei.routes';
 import permissionsRoutes   from './routes/permissions.routes';
+import transacoesRoutes    from './routes/transacoes.routes';
 
 import { securityLoggerMiddleware } from './utils/securityLogger'
 
@@ -99,6 +100,7 @@ app.use('/api/solicitacoes',    solicitacoesRoutes);
 app.use('/api/cadastros',       cadastrosRoutes);
 app.use('/api/futvolei',        futvoleiRoutes);
 app.use('/api/permissions',     permissionsRoutes);
+app.use('/api/transacoes',      transacoesRoutes);
 app.use('/api/logs', logRoutes)
 
 // ── Health check ──────────────────────────────────────────────────
