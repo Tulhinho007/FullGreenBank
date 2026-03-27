@@ -9,6 +9,8 @@ import {
   Trash2
 } from 'lucide-react'
 import { Modal } from '../components/ui/Modal'
+import { useAuth } from '../contexts/AuthContext'
+import { addLog } from '../services/log.service'
 import { usersService } from '../services/users.service'
 import { formatCurrency as fmt, formatDate } from '../utils/formatters'
 import toast from 'react-hot-toast'
@@ -34,6 +36,7 @@ interface User {
 }
 
 export const TransacoesPage = () => {
+  const { user: me } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -120,6 +123,17 @@ export const TransacoesPage = () => {
     setTransactions(prev => [newTransaction, ...prev])
     toast.success("Transação registrada com sucesso!")
     
+    if (me) {
+      addLog({
+        userEmail: me.email,
+        userName: me.name,
+        userRole: me.role,
+        category: 'Financeiro',
+        action: `Transação ${formData.type}`,
+        detail: `${selectedUser?.name} | Valor: ${formData.value} | Método: ${formData.method}`
+      })
+    }
+    
     // Fechar e Resetar Modal
     setIsModalOpen(false)
     setFormData(initialForm)
@@ -129,6 +143,16 @@ export const TransacoesPage = () => {
     if(window.confirm("Deseja mesmo remover esta transação?")) {
       setTransactions(prev => prev.filter(t => t.id !== id))
       toast.success("Transação removida.")
+      if (me) {
+        addLog({
+          userEmail: me.email,
+          userName: me.name,
+          userRole: me.role,
+          category: 'Financeiro',
+          action: 'Transação Excluída',
+          detail: `ID: ${id}`
+        })
+      }
     }
   }
 

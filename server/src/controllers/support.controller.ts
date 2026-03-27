@@ -1,9 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { logActivity } from '../utils/activityLogger';
+import { AuthRequest } from '../middlewares/auth.middleware';
 
 const prisma = new PrismaClient();
 
-export const create = async (req: Request, res: Response) => {
+export const create = async (req: AuthRequest, res: Response) => {
   try {
     const { type, title, description, priority, userEmail, userId } = req.body;
 
@@ -23,6 +25,7 @@ export const create = async (req: Request, res: Response) => {
       }
     });
 
+    logActivity(req, 'Suporte', 'Novo Ticket Created', `Título: ${ticket.title}`);
     res.status(201).json(ticket);
   } catch (error: any) {
     console.error('Erro ao criar ticket:', error);
@@ -30,7 +33,7 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserTickets = async (req: Request, res: Response) => {
+export const getUserTickets = async (req: AuthRequest, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     const userEmail = (req as any).user?.email;
@@ -56,7 +59,7 @@ export const getUserTickets = async (req: Request, res: Response) => {
   }
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export const getAll = async (req: AuthRequest, res: Response) => {
   try {
     const tickets = await prisma.supportTicket.findMany({
       orderBy: { createdAt: 'desc' }
@@ -68,7 +71,7 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const updateStatus = async (req: Request, res: Response) => {
+export const updateStatus = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { status, adminResponse } = req.body;
@@ -88,6 +91,7 @@ export const updateStatus = async (req: Request, res: Response) => {
       data
     });
 
+    logActivity(req, 'Suporte', 'Status do Ticket Alterado', `ID: ${id} | Novo Status: ${status}`);
     res.json(ticket);
   } catch (error: any) {
     console.error('Erro ao atualizar ticket:', error);
@@ -95,12 +99,13 @@ export const updateStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const remove = async (req: Request, res: Response) => {
+export const remove = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     await prisma.supportTicket.delete({
       where: { id }
     });
+    logActivity(req, 'Suporte', 'Ticket Excluído', `ID: ${id}`);
     res.json({ message: 'Ticket excluído com sucesso' });
   } catch (error: any) {
     console.error('Erro ao excluir ticket:', error);

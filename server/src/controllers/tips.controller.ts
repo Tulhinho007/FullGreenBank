@@ -2,11 +2,13 @@ import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import * as tipsService from '../services/tips.service';
 import { sendSuccess, sendError } from '../utils/response';
+import { logActivity } from '../utils/activityLogger';
 
 export const create = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const authorId = req.user!.userId;
     const tip = await tipsService.createTip({ ...req.body, authorId });
+    logActivity(req, 'Tips', 'Nova Dica Created', `Título: ${tip.title} | Evento: ${tip.event}`);
     sendSuccess(res, tip, 'Dica criada com sucesso!', 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao criar dica';
@@ -42,6 +44,7 @@ export const updateResult = async (req: AuthRequest, res: Response): Promise<voi
   try {
     const { result, profit } = req.body;
     const tip = await tipsService.updateTipResult(req.params.id, result, profit);
+    logActivity(req, 'Tips', 'Resultado Atualizado', `ID: ${req.params.id} | Resultado: ${result}`);
     sendSuccess(res, tip, 'Resultado atualizado!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar resultado';
@@ -52,6 +55,7 @@ export const updateResult = async (req: AuthRequest, res: Response): Promise<voi
 export const update = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const tip = await tipsService.updateTip(req.params.id, req.body);
+    logActivity(req, 'Tips', 'Dica Editada', `ID: ${req.params.id} | Título: ${tip.title}`);
     sendSuccess(res, tip, 'Dica atualizada com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar dica';
@@ -67,6 +71,7 @@ export const deleteTip = async (req: AuthRequest, res: Response): Promise<void> 
       return;
     }
     await tipsService.deleteTip(req.params.id);
+    logActivity(req, 'Tips', 'Dica Excluída', `ID: ${req.params.id} | Título: ${tip.title}`);
     sendSuccess(res, null, 'Dica removida com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao excluir dica';

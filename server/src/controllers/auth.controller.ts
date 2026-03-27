@@ -5,6 +5,7 @@ import { AuthRequest } from '../middlewares/auth.middleware';
 import { getUserById } from '../services/user.service';
 import { generateToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { createLog } from '../services/log.service';
+import { logActivity } from '../utils/activityLogger';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -25,15 +26,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { token, ...userData } = result;
 
     // Auditoria (Backend)
-    createLog({
-      userId: userData.user.id,
-      userEmail: userData.user.email,
-      userName: userData.user.name,
-      userRole: userData.user.role,
-      category: 'Auth',
-      action: 'Cadastro realizado',
-      detail: 'Nova conta criada via interface'
-    }).catch(err => console.error('Erro ao gerar log de cadastro:', err));
+    logActivity(req as any, 'Auth', 'Cadastro realizado', `Nova conta criada: ${userData.user.email}`)
+      .catch(err => console.error('Erro ao gerar log de cadastro:', err));
 
     sendSuccess(res, userData, 'Cadastro realizado com sucesso!', 201);
   } catch (error) {
@@ -59,15 +53,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { token, ...userData } = result;
 
     // Auditoria (Backend)
-    createLog({
-      userId: userData.user.id,
-      userEmail: userData.user.email,
-      userName: userData.user.name,
-      userRole: userData.user.role,
-      category: 'Auth',
-      action: 'Login realizado',
-      detail: 'Acesso ao sistema via interface'
-    }).catch(err => console.error('Erro ao gerar log de login:', err));
+    logActivity(req as any, 'Auth', 'Login realizado', `Acesso ao sistema: ${userData.user.email}`)
+      .catch(err => console.error('Erro ao gerar log de login:', err));
 
     sendSuccess(res, userData, 'Login realizado com sucesso!');
   } catch (error) {

@@ -3,6 +3,7 @@ import { body, query } from 'express-validator'
 import { PrismaClient } from '@prisma/client'
 import { authenticate } from '../middlewares/auth.middleware'
 import { validateRequest } from '../middlewares/validate.middleware'
+import { logActivity } from '../utils/activityLogger'
 
 const router = Router()
 const prisma = new PrismaClient()
@@ -103,6 +104,7 @@ router.post('/carteiras', authenticate, async (req: any, res: any) => {
     })
     
     res.status(201).json({ ...nova, bancaInicial: Number(nova.bancaInicial) })
+    logActivity(req, 'Financeiro', 'Nova Banca Created', `Nome: ${nome} | Casa: ${casaAposta}`);
   } catch (err) {
     res.status(500).json({ message: 'Erro ao criar banca.' })
   }
@@ -124,6 +126,7 @@ router.patch('/carteiras/:id', authenticate, async (req: any, res: any) => {
       }
     })
     res.json({ success: true })
+    logActivity(req, 'Financeiro', 'Banca Editada', `ID: ${id} | Novo Saldo: ${bancaInicial}`);
   } catch (err) {
     res.status(500).json({ message: 'Erro ao atualizar banca.' })
   }
@@ -153,6 +156,7 @@ router.post('/carteiras/:carteiraId/item', authenticate, async (req: any, res: a
       }
     })
 
+    logActivity(req, 'Financeiro', 'Novo Item Gestão', `Banca ID: ${carteiraId} | Deposito: ${deposit} | Saque: ${withdrawal} | Resultado: ${result}`);
     res.status(201).json({
       ...newItem,
       dataReferencia: newItem.dataReferencia.toISOString().split('T')[0],
@@ -200,6 +204,7 @@ router.patch('/item/:id', authenticate, async (req: any, res: any) => {
       saque: Number(updated.saque),
       resultado: Number(updated.resultado)
     })
+    logActivity(req, 'Financeiro', 'Item Gestão Editado', `ID: ${id} | Resultado: ${result}`);
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Erro ao atualizar linha.' })
@@ -222,6 +227,7 @@ router.delete('/item/:id', authenticate, async (req: any, res: any) => {
     }
 
     await prisma.gestaoBancaItem.delete({ where: { id } })
+    logActivity(req, 'Financeiro', 'Item Gestão Excluído', `ID: ${id}`);
     res.json({ success: true })
   } catch (error) {
     res.status(500).json({ message: 'Erro ao excluir.' })

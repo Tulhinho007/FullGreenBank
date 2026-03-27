@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import * as userService from '../services/user.service';
 import { sendSuccess, sendError } from '../utils/response';
+import { logActivity } from '../utils/activityLogger';
 
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -80,6 +81,7 @@ export const updateProfileById = async (req: AuthRequest, res: Response): Promis
       dueDate, paymentStatus, isActive, notes,
       currency, language, theme, twoFactorEnabled, avatarUrl 
     });
+    logActivity(req, 'Usuários', 'Perfil Editado (Admin)', `ID Target: ${id} | Nome: ${user.name}`);
     sendSuccess(res, user, 'Usuário atualizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar usuário';
@@ -91,6 +93,7 @@ export const updateRole = async (req: AuthRequest, res: Response): Promise<void>
   try {
     const { role } = req.body;
     const user = await userService.updateUserRole(req.params.id, role);
+    logActivity(req, 'Usuários', 'Círculo de Acesso Alterado', `ID Target: ${req.params.id} | Novo Cargo: ${role}`);
     sendSuccess(res, user, 'Role atualizado com sucesso!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar role';
@@ -101,6 +104,7 @@ export const updateRole = async (req: AuthRequest, res: Response): Promise<void>
 export const toggleActive = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await userService.toggleUserActive(req.params.id);
+    logActivity(req, 'Usuários', 'Status de Atividade Alterado', `ID Target: ${req.params.id} | Ativo: ${user.active}`);
     sendSuccess(res, user, 'Status do usuário atualizado!');
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar status';

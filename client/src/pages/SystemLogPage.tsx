@@ -25,6 +25,8 @@ const categoryColors: Record<string, string> = {
   Financeiro:  'bg-emerald-50 text-emerald-600 border-emerald-100',
   Segurança:   'bg-rose-50 text-rose-600 border-rose-100',
   Operacional: 'bg-sky-50 text-sky-600 border-sky-100',
+  Tips:        'bg-green-50 text-green-600 border-green-100',
+  Suporte:     'bg-indigo-50 text-indigo-600 border-indigo-100',
 }
 
 const roleLabels: Record<string, { label: string, color: string }> = {
@@ -45,7 +47,7 @@ const groupByDate = (logs: LogEntry[]) => {
   return groups
 }
 
-const CATEGORIES = ['Todas as categorias', 'Auth', 'Dicas', 'Usuários', 'Admin', 'Sistema', 'Financeiro', 'Segurança', 'Operacional']
+const CATEGORIES = ['Todas as categorias', 'Auth', 'Tips', 'Usuários', 'Admin', 'Sistema', 'Financeiro', 'Segurança', 'Operacional', 'Suporte']
 
 export const SystemLogPage = () => {
   const { user } = useAuth()

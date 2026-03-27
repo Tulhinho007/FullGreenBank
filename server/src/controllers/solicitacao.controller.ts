@@ -1,6 +1,7 @@
 import { Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { AuthRequest } from '../middlewares/auth.middleware'
+import { logActivity } from '../utils/activityLogger'
 
 const prisma = new PrismaClient()
 
@@ -35,6 +36,7 @@ export const createSolicitacao = async (req: AuthRequest, res: Response): Promis
       }
     })
 
+    logActivity(req, 'Financeiro', 'Novo Aporte', `Valor: ${valorAporte} | Usuário: ${solicitacao.usuario.email}`);
     res.status(201).json(solicitacao)
   } catch (error) {
     console.error(error)
@@ -110,6 +112,7 @@ export const deleteSolicitacao = async (req: AuthRequest, res: Response): Promis
       where: { id }
     })
 
+    logActivity(req, 'Financeiro', 'Aporte Excluído', `ID: ${id}`);
     res.json({ message: 'Solicitação excluída com sucesso' })
   } catch (error) {
     console.error(error)
