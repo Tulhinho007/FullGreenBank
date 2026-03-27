@@ -19,7 +19,7 @@ import { CurrencyInput } from '../components/ui/CurrencyInput'
 // ─── Tipos ──────────────────────────────────────────────────────────────────
 
 type PaymentStatus = 'ATIVO' | 'PENDENTE' | 'ATRASADO' | 'CANCELADO'
-type PlanType      = 'STARTER' | 'PRO'
+type PlanType      = 'STARTER' | 'PRO' | 'VIP PREMIUM'
 type PayMethod     = 'PIX' | 'CARTAO' | 'BOLETO' | 'TRANSFERENCIA' | ''
 
 interface UserPayment {
@@ -47,8 +47,9 @@ const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; icon:
 }
 
 const PLAN_CONFIG: Record<PlanType, { label: string; color: string }> = {
-  STARTER:  { label: 'STARTER', color: 'bg-green-50 text-green-700 border-green-100' },
-  PRO:      { label: 'PRO',     color: 'bg-orange-50 text-orange-700 border-orange-100' },
+  STARTER:       { label: 'STARTER',       color: 'bg-green-50 text-green-700 border-green-100' },
+  PRO:           { label: 'PRO',           color: 'bg-orange-50 text-orange-700 border-orange-100' },
+  'VIP PREMIUM': { label: 'VIP PREMIUM',   color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
 }
 
 const PAY_METHOD_LABEL: Record<PayMethod, string> = {
