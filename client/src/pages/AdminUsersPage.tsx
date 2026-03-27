@@ -388,7 +388,7 @@ export const AdminUsersPage = () => {
             Alterar o cargo de <span className="text-slate-900 font-bold">{selected?.name}</span> para:
           </p>
           <div className="flex flex-col gap-2">
-            {['USER', 'ADMIN', 'MASTER'].map(r => (
+            {['MEMBRO', 'ADMIN', 'MASTER'].map(r => (
               <button 
                 key={r}
                 onClick={() => setNewRole(r)}
