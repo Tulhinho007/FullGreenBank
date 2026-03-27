@@ -21,7 +21,9 @@ export const getAll = async (req: AuthRequest, res: Response): Promise<void> => 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 100; // Increased default limit for dashboard
     const authorId = req.query.authorId as string;
-    const result = await tipsService.getAllTips(page, limit, authorId);
+    const isPublic = req.query.isPublic === 'true' ? true : (req.query.isPublic === 'false' ? false : undefined);
+    
+    const result = await tipsService.getAllTips(page, limit, authorId, isPublic);
     sendSuccess(res, result);
   } catch {
     sendError(res, 'Erro ao buscar dicas', 500);

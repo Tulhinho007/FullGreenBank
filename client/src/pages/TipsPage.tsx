@@ -74,6 +74,7 @@ interface BetFormState {
   odds: string
   stake: string
   status: string
+  isPublic: boolean
 }
 
 const emptyBetForm = (): BetFormState => ({
@@ -85,6 +86,7 @@ const emptyBetForm = (): BetFormState => ({
   odds: '',
   stake: '',
   status: 'PENDING',
+  isPublic: true,
 })
 
 const DoughnutChart = ({ greens, reds, pending, voided, cashout }: any) => {
@@ -141,14 +143,22 @@ export const TipsPage = () => {
   const load = async (p = 1) => {
     setLoading(true)
     try {
-      const data = await tipsService.getAll(p, 12)
-      const tipsRaw = Array.isArray(data.tips) ? data.tips : []
+      // Busca apenas dicas públicas para o feed
+      const data = await tipsService.getAll(p, 12, undefined, true)
+      let tipsRaw = Array.isArray(data.tips) ? data.tips : []
+      
+      // Se o usuário for Admin/Master, remove as próprias dicas da visualização dele
+      // para evitar redundância com a página de Histórico, conforme solicitado.
+      if (me && (me.role === 'ADMIN' || me.role === 'MASTER')) {
+        tipsRaw = tipsRaw.filter((t: any) => t.authorId !== me.id)
+      }
+
       setTips(tipsRaw)
       setPage(p)
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { load(1) }, [])
+  useEffect(() => { load(1) }, [me]) // Recarrega se o usuário logar/mudar
 
   const handleDelete = async (id: string) => {
     if (!confirm('Excluir esta dica?')) return
@@ -163,9 +173,13 @@ export const TipsPage = () => {
   // ── Helpers for sport list ──────────────────────────────────────────────────
   const updateQtdEsportes = (form: BetFormState, qty: string): BetFormState => {
     const n = Math.max(0, Math.min(20, Number(qty) || 0))
-    const prev = form.sportsList
-    const next = Array.from({ length: n }, (_, i) => prev[i] ?? '')
-    return { ...form, qtdEsportes: qty, sportsList: next }
+    const list = [...form.sportsList]
+    if (n > list.length) {
+      for (let i = list.length; i < n; i++) list.push('Futebol')
+    } else if (n < list.length) {
+      list.splice(n)
+    }
+    return { ...form, qtdEsportes: qty, sportsList: list }
   }
 
   const updateSportAt = (form: BetFormState, idx: number, val: string): BetFormState => {
@@ -192,6 +206,7 @@ export const TipsPage = () => {
         description: newForm.tipoAposta || 'Bet',
         linkAposta: newForm.linkAposta?.trim() || null,
         result: newForm.status !== 'PENDING' ? newForm.status : undefined,
+        isPublic: newForm.isPublic,
       })
       
       toast.success('Dica criada! 🎯')
@@ -223,6 +238,7 @@ export const TipsPage = () => {
         tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : selected.tipDate,
         sport,
         linkAposta: editForm.linkAposta?.trim() || null,
+        isPublic: editForm.isPublic,
       }
 
       // Calcula profit apenas se houver stake e odd
@@ -246,9 +262,9 @@ export const TipsPage = () => {
     finally { setSaving(false) }
   }
 
-  const openEdit = (tip: Tip) => {
+  const openEdit = (tip: any) => {
     setSelected(tip)
-    const datePart = new Date(tip.tipDate).toISOString().slice(0, 10)
+    const datePart = tip.tipDate ? new Date(tip.tipDate).toISOString().slice(0, 10) : ''
     setEditForm({
       tipDate: datePart,
       linkAposta: tip.linkAposta || '',
@@ -258,6 +274,7 @@ export const TipsPage = () => {
       odds: tip.odds?.toString() ?? '',
       stake: tip.stake?.toString() ?? '',
       status: tip.result || 'PENDING',
+      isPublic: tip.isPublic ?? true,
     })
   }
 
@@ -617,6 +634,20 @@ export const TipsPage = () => {
                 </select>
               </div>
 
+              {/* Visibilidade */}
+              <div className="flex items-center gap-2 px-1">
+                <input
+                  type="checkbox"
+                  id="isPublicEdit"
+                  className="w-4 h-4 text-emerald-600 bg-slate-100 border-slate-300 rounded focus:ring-emerald-500"
+                  checked={editForm.isPublic}
+                  onChange={e => setEditForm(f => ({ ...f, isPublic: e.target.checked }))}
+                />
+                <label htmlFor="isPublicEdit" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer">
+                  Dica Pública (Feed)
+                </label>
+              </div>
+
               {/* Actions */}
               <div className="flex gap-3 pt-2 border-t border-slate-100">
                 <button onClick={() => setSelected(null)} className="btn-secondary flex-1">Cancelar</button>
@@ -745,8 +776,22 @@ export const TipsPage = () => {
                 </select>
               </div>
 
+              {/* Visibilidade */}
+              <div className="flex items-center gap-2 px-1">
+                <input
+                  type="checkbox"
+                  id="isPublicNew"
+                  className="w-4 h-4 text-emerald-600 bg-slate-100 border-slate-300 rounded focus:ring-emerald-500"
+                  checked={newForm.isPublic}
+                  onChange={e => setNewForm(f => ({ ...f, isPublic: e.target.checked }))}
+                />
+                <label htmlFor="isPublicNew" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer">
+                  Dica Pública (Feed)
+                </label>
+              </div>
+
               {/* Actions */}
-              <div className="flex gap-3 pt-2 border-t border-slate-100">
+              <div className="flex gap-3 pt-2 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => { setNewTipOpen(false); setNewForm(emptyBetForm()) }}

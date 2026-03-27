@@ -74,6 +74,7 @@ model Tip {
   tipDate      DateTime?
   mercados     String[] @default([])
   isMultipla   Boolean  @default(false)
+  isPublic     Boolean  @default(true)
   jogos        Json?
   linkAposta   String?     //
   createdAt    DateTime @default(now())

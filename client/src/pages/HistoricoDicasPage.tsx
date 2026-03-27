@@ -15,6 +15,7 @@ interface Tip {
   result?: string; profit?: number; valorCashout?: number; tipDate: string
   linkAposta?: string
   sportsList?: string[]
+  isPublic: boolean
 }
 
 type TipoFiltro = 'TODAS' | 'S' | 'M' | 'C'
@@ -62,6 +63,7 @@ interface BetFormState {
   odds: string
   stake: string
   status: string
+  isPublic: boolean
 }
 
 export const HistoricoDicasPage = () => {
@@ -77,7 +79,7 @@ export const HistoricoDicasPage = () => {
   // Edição
   const [editingTip, setEditingTip] = useState<Tip | null>(null)
   const [editForm, setEditForm] = useState<BetFormState>({
-    tipDate: '', linkAposta: '', tipoAposta: 'Simples', qtdEsportes: '', sportsList: [], odds: '', stake: '', status: 'PENDING'
+    tipDate: '', linkAposta: '', tipoAposta: 'Simples', qtdEsportes: '', sportsList: [], odds: '', stake: '', status: 'PENDING', isPublic: true
   })
   const [saving, setSaving] = useState(false)
 
@@ -160,12 +162,13 @@ export const HistoricoDicasPage = () => {
     setEditForm({
       tipDate: datePart,
       linkAposta: tip.linkAposta || '',
-      tipoAposta: tip.event || 'Simples',
+      tipoAposta: tip.market || 'Simples',
       qtdEsportes: tip.sport ? '1' : '',
       sportsList: tip.sport ? [tip.sport] : [],
       odds: tip.odds?.toString() ?? '',
       stake: tip.stake?.toString() ?? '',
       status: tip.result || 'PENDING',
+      isPublic: tip.isPublic ?? true
     })
   }
 
@@ -174,11 +177,10 @@ export const HistoricoDicasPage = () => {
     setSaving(true)
     try {
       const sport = editForm.sportsList[0] || editingTip.sport || 'Futebol'
-      const title = `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
       await tipsService.update(editingTip.id, {
-        title,
-        event: editForm.tipoAposta,
-        market: editForm.tipoAposta,
+        title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${fmtDate(editForm.tipDate)}` : editingTip.title,
+        event: editForm.tipoAposta || editingTip.event,
+        market: editForm.tipoAposta || editingTip.market,
         odds: Number(editForm.odds) || editingTip.odds,
         stake: Number(editForm.stake) || editingTip.stake,
         result: editForm.status,
@@ -187,7 +189,7 @@ export const HistoricoDicasPage = () => {
           : editForm.status === 'RED'
           ? -Number(editForm.stake)
           : editForm.status === 'VOID' ? 0 : undefined,
-        tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : editingTip.tipDate,
+        tipDate: new Date(editForm.tipDate + 'T12:00:00').toISOString(),
         sport,
         description: editForm.tipoAposta,
         linkAposta: editForm.linkAposta?.trim() || null,
@@ -574,6 +576,20 @@ export const HistoricoDicasPage = () => {
                   <option value="CASHOUT">🟠 Cash Out</option>
                   <option value="VOID">⚪ Anulado</option>
                 </select>
+              </div>
+
+              {/* Visibilidade */}
+              <div className="flex items-center gap-2 px-1">
+                <input
+                  type="checkbox"
+                  id="isPublicEdit"
+                  className="w-4 h-4 text-emerald-600 bg-slate-50 border-slate-200 rounded focus:ring-emerald-500"
+                  checked={editForm.isPublic}
+                  onChange={e => setEditForm(f => ({ ...f, isPublic: e.target.checked }))}
+                />
+                <label htmlFor="isPublicEdit" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer">
+                  Dica Pública (Feed)
+                </label>
               </div>
 
               {/* Actions */}

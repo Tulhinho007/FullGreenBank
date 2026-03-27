@@ -12,6 +12,7 @@ interface CreateTipData {
   authorId: string;
   mercados?: string[];
   isMultipla?: boolean;
+  isPublic?: boolean;
   jogos?: any;
 }
 
@@ -26,9 +27,11 @@ export const createTip = async (data: CreateTipData) => {
   });
 };
 
-export const getAllTips = async (page = 1, limit = 10, authorId?: string) => {
+export const getAllTips = async (page = 1, limit = 10, authorId?: string, isPublic?: boolean) => {
   const skip = (page - 1) * limit;
-  const where = authorId ? { authorId } : {};
+  const where: any = {};
+  if (authorId) where.authorId = authorId;
+  if (isPublic !== undefined) where.isPublic = isPublic;
 
   const [tips, total] = await Promise.all([
     prisma.tip.findMany({

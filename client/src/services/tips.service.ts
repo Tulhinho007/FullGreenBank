@@ -1,10 +1,10 @@
 import api from './api'
 
 export const tipsService = {
-  getAll: async (page = 1, limit = 10, authorId?: string) => {
-    const url = authorId 
-      ? `/tips?page=${page}&limit=${limit}&authorId=${authorId}`
-      : `/tips?page=${page}&limit=${limit}`
+  getAll: async (page = 1, limit = 10, authorId?: string, isPublic?: boolean) => {
+    let url = `/tips?page=${page}&limit=${limit}`
+    if (authorId) url += `&authorId=${authorId}`
+    if (isPublic !== undefined) url += `&isPublic=${isPublic}`
     const res = await api.get(url)
     return res.data.data
   },
