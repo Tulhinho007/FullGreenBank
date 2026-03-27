@@ -147,11 +147,9 @@ export const TipsPage = () => {
       const data = await tipsService.getAll(p, 12, undefined, true)
       let tipsRaw = Array.isArray(data.tips) ? data.tips : []
       
-      // Se o usuário for Admin/Master, remove as próprias dicas da visualização dele
-      // para evitar redundância com a página de Histórico, conforme solicitado.
-      if (me && (me.role === 'ADMIN' || me.role === 'MASTER')) {
-        tipsRaw = tipsRaw.filter((t: any) => t.authorId !== me.id)
-      }
+      // Se o usuário for Admin/Master, removemos anteriormente o filtro de redundância
+      // para que ele possa ver suas próprias postagens confirmadas no feed.
+      // tipsRaw = tipsRaw.filter((t: any) => t.authorId !== me.id)
 
       setTips(tipsRaw)
       setPage(p)
