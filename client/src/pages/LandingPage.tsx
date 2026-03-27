@@ -7,7 +7,7 @@ export const LandingPage = () => {
 
   // Se o usuário já estiver logado (e a validação do token terminou), vai direto pro sistema.
   if (!loading && user) {
-    return <Navigate to="/gestao/banca" replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   return (

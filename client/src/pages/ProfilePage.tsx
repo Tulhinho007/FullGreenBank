@@ -6,7 +6,7 @@ import { usersService } from '../services/users.service'
 import { formatDateTime } from '../utils/formatters'
 import { 
   User as UserIcon, Mail, Phone, Calendar, Eye, EyeOff, 
-  Settings, Lock, CreditCard
+  Settings, Lock, CreditCard, ArrowLeft
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { addLog } from '../services/log.service'
@@ -80,6 +80,10 @@ export const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl flex flex-col gap-8 pb-10 transition-colors duration-300">
+      <Link to="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-emerald-600 transition-all text-[10px] font-black uppercase tracking-[0.2em] w-fit">
+        <ArrowLeft size={14} /> Voltar para o Dashboard
+      </Link>
+
       {/* Header Contextual */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-4">
