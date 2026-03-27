@@ -94,12 +94,15 @@ export const RegisterPage = () => {
                   required
                 />
               </div>
+              <div className="col-span-2 px-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Mínimo de 6 caracteres para sua segurança
+                </p>
+              </div>
             </div>
 
-            {/* Role info */}
-            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl px-5 py-4 text-[10px] font-bold text-emerald-700/80 leading-relaxed uppercase tracking-widest">
-              🔒 Toda conta começa como <span className="text-emerald-900 font-black">Membro</span>. Admins podem promover sua conta.
-            </div>
+
 
             <button type="submit" disabled={loading} className="btn-primary flex items-center justify-center gap-2 mt-2 py-4 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-95">
               {loading ? (
