@@ -3,6 +3,7 @@ import { AuthRequest } from '../middlewares/auth.middleware'
 import * as permissionsService from '../services/permissions.service'
 import { prisma } from '../models/prismaClient'
 import { sendSuccess, sendError } from '../utils/response'
+import { logActivity } from '../utils/activityLogger'
 
 // GET /api/permissions/:userId
 export const getUserPermissions = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -75,6 +76,25 @@ export const saveUserPermissions = async (req: AuthRequest, res: Response): Prom
     }
 
     await permissionsService.saveUserPermissions(userId, permissions)
+
+    // Gera log detalhado: quais páginas foram liberadas/bloqueadas
+    const pagesSummary = Array.isArray(permissions)
+      ? permissions.map((p: any) => {
+          const flags = []
+          if (p.canView)   flags.push('Ver')
+          if (p.canEdit)   flags.push('Editar')
+          if (p.canDelete) flags.push('Excluir')
+          return `${p.pageLabel || p.pageName}: [${flags.join(', ') || 'Nenhum'}]`
+        }).join(' | ')
+      : 'N/A'
+
+    logActivity(
+      req,
+      'Controle de Acesso',
+      'Permissões Atualizadas',
+      `Usuário alvo: ${targetUser.name} (${targetUser.role}) | Páginas: ${pagesSummary}`
+    )
+
     sendSuccess(res, null, 'Permissões salvas com sucesso!')
   } catch {
     sendError(res, 'Erro ao salvar permissões', 500)
