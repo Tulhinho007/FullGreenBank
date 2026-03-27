@@ -19,8 +19,9 @@ export const create = async (req: AuthRequest, res: Response): Promise<void> => 
 export const getAll = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-    const result = await tipsService.getAllTips(page, limit);
+    const limit = Number(req.query.limit) || 100; // Increased default limit for dashboard
+    const authorId = req.query.authorId as string;
+    const result = await tipsService.getAllTips(page, limit, authorId);
     sendSuccess(res, result);
   } catch {
     sendError(res, 'Erro ao buscar dicas', 500);

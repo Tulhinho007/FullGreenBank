@@ -1,8 +1,11 @@
 import api from './api'
 
 export const tipsService = {
-  getAll: async (page = 1, limit = 10) => {
-    const res = await api.get(`/tips?page=${page}&limit=${limit}`)
+  getAll: async (page = 1, limit = 10, authorId?: string) => {
+    const url = authorId 
+      ? `/tips?page=${page}&limit=${limit}&authorId=${authorId}`
+      : `/tips?page=${page}&limit=${limit}`
+    const res = await api.get(url)
     return res.data.data
   },
 

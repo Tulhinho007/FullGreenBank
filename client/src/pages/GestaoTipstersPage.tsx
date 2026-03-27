@@ -5,9 +5,10 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import { useAuth } from '../contexts/AuthContext'
-import { usersService } from '../services/users.service'
+import { tipsService } from '../services/tips.service'
 import { CurrencyInput } from '../components/ui/CurrencyInput'
 import { SportSelect } from '../components/ui/SportSelect'
+import api from '../services/api'
 import toast from 'react-hot-toast'
 
 // --- Types & Config ---
@@ -35,21 +36,13 @@ export interface Transaction {
   market?: string
 }
 
-const STATUS_CONFIG: Record<StatusType, { label: string, colorClass: string, icon: React.ReactNode }> = {
+const STATUS_CONFIG: Record<string, { label: string, colorClass: string, icon: React.ReactNode }> = {
   GREEN:   { label: 'Green',    colorClass: 'bg-emerald-50 text-emerald-600 border border-emerald-100', icon: <CheckCircle size={14} /> },
   RED:     { label: 'Red',      colorClass: 'bg-rose-50 text-rose-600 border border-rose-100',           icon: <XCircle size={14} /> },
   VOID:    { label: 'Anulada',  colorClass: 'bg-slate-50 text-slate-400 border border-slate-100', icon: <MinusCircle size={14} /> },
   PENDING: { label: 'Pendente', colorClass: 'bg-amber-50 text-amber-600 border border-amber-100', icon: <Clock size={14} /> },
   CASHOUT: { label: 'Cash Out', colorClass: 'bg-orange-50 text-orange-600 border border-orange-100', icon: <DollarSign size={14} /> },
 }
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-30', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.85, stake: 100, status: 'GREEN', profit: 85 },
-  { id: '2', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-29', linkAposta: '', tipoAposta: 'Múltipla', sportsList: ['Futebol', 'Basquete'], odds: 2.0, stake: 50, status: 'RED', profit: -50 },
-  { id: '3', tipsterId: 't2', tipsterName: 'Green VIP', tipDate: '2023-10-28', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Basquete'], odds: 1.9, stake: 200, status: 'VOID', profit: 0 },
-  { id: '4', tipsterId: 't1', tipsterName: 'Mestre das Odds', tipDate: '2023-10-31', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.5, stake: 150, status: 'PENDING', profit: 0 },
-  { id: '5', tipsterId: 't3', tipsterName: 'Rei do Escanteio', tipDate: '2023-10-25', linkAposta: '', tipoAposta: 'Simples', sportsList: ['Futebol'], odds: 1.9, stake: 100, status: 'GREEN', profit: 90 },
-]
 
 // ── Modals ──────────────────────────────────────────────────────────────
 
@@ -95,9 +88,9 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
       if (editData) {
         setForm({
           tipsterId: editData.tipsterId, tipDate: editData.tipDate, linkAposta: editData.linkAposta || '',
-          tipoAposta: editData.tipoAposta || editData.market || editData.event || 'Simples', 
+          tipoAposta: editData.tipoAposta || 'Simples', 
           qtdEsportes: editData.sportsList?.length ? String(editData.sportsList.length) : '',
-          sportsList: editData.sportsList || [], odds: String(editData.odds || ''), stake: String(editData.stake || ''), status: editData.status
+          sportsList: editData.sportsList || [], odds: String(editData.odds || ''), stake: String(editData.stake || ''), status: editData.status as any
         })
       } else {
         const matchingTipster = tipsters.find(t => t.name.toLowerCase() === user?.name.toLowerCase())
@@ -140,7 +133,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
     }
     
     onSave({
-      id: editData?.id,
+      id: editTarget?.id,
       tipsterId: form.tipsterId,
       tipDate: form.tipDate,
       linkAposta: form.linkAposta,
@@ -152,6 +145,8 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
       profit
     })
   }
+
+  const editTarget = editData;
 
   return (
     <>
@@ -257,40 +252,64 @@ export const GestaoTipstersPage = () => {
   const [tipsters, setTipsters] = useState<Tipster[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedTipsterId, setSelectedTipsterId] = useState<string>('all')
+  const [loading, setLoading] = useState(true)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Transaction | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
-  // Load Tipsters and Transactions
+  const loadData = async (tipsterId: string) => {
+    setLoading(true)
+    try {
+      const authorId = tipsterId === 'all' ? undefined : tipsterId
+      const data = await tipsService.getAll(1, 1000, authorId)
+      const tipsRaw = Array.isArray(data.tips) ? data.tips : []
+      
+      const mapped: Transaction[] = tipsRaw.map((t: any) => ({
+        id: t.id,
+        tipsterId: t.authorId,
+        tipsterName: t.author?.name || 'Anônimo',
+        tipDate: new Date(t.tipDate).toISOString().split('T')[0],
+        linkAposta: t.linkAposta || '',
+        tipoAposta: t.title || t.event || 'Simples',
+        sportsList: t.sport ? [t.sport] : [],
+        odds: t.odds,
+        stake: t.stake,
+        status: (t.result || 'PENDING') as StatusType,
+        profit: t.profit || 0,
+        event: t.event,
+        market: t.market
+      }))
+      setTransactions(mapped)
+    } catch (err) {
+      console.error('Failed to load tips', err)
+      toast.error('Erro ao carregar registros.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Load Tipsters
   useEffect(() => {
-    // Busca usuários que são Tipsters do banco de dados
-    usersService.getAll()
-      .then(allUsers => {
-        if (!Array.isArray(allUsers)) return
-        const activeTipsters = allUsers
+    const loadTipsters = async () => {
+      try {
+        const allUsers = await api.get('/users').then(r => r.data.data)
+        const dataArray = Array.isArray(allUsers) ? allUsers : (allUsers?.users || [])
+        const activeTipsters = dataArray
           .filter((u: any) => u.isTipster)
           .map((u: any) => ({ id: u.id, name: u.name }))
         setTipsters(activeTipsters)
-      })
-      .catch(err => console.error('Failed to load tipsters', err))
-
-    try {
-      const storedTx = localStorage.getItem('fgb_tipster_transactions')
-      if (storedTx) {
-        setTransactions(JSON.parse(storedTx))
-      } else {
-        setTransactions(MOCK_TRANSACTIONS) // Fallback for preview
+      } catch (err) {
+        console.error('Failed to load tipsters', err)
       }
-    } catch (err) {
-      console.error('Failed to load transactions', err)
     }
+    loadTipsters()
   }, [])
 
-  const saveTransactions = (newTx: Transaction[]) => {
-    setTransactions(newTx)
-    localStorage.setItem('fgb_tipster_transactions', JSON.stringify(newTx))
-  }
+  // Load Transactions when selection changes
+  useEffect(() => {
+    loadData(selectedTipsterId)
+  }, [selectedTipsterId])
 
   const checkPermission = (item: Transaction) => {
     const isOwner = item.tipsterId === user?.id || item.tipsterName.toLowerCase() === user?.name?.toLowerCase()
@@ -300,34 +319,61 @@ export const GestaoTipstersPage = () => {
     return false
   }
 
-  const handleSaveModal = (data: Omit<Transaction, 'id' | 'tipsterName'> & { id?: string }) => {
-    if (data.id) {
-      // Edit: Mantém o nome que já estava ou atualiza se mudou o tipsterId
-      const tipsterName = tipsters.find(t => t.id === data.tipsterId)?.name || transactions.find(t => t.id === data.id)?.tipsterName || 'Anônimo'
-      const updated = transactions.map(t => t.id === data.id ? { ...t, ...data, tipsterName } : t)
-      saveTransactions(updated)
-    } else {
-      // Add: Usa o nome do usuário logado/impersonado
-      const tipsterName = user?.name || 'Anônimo'
-      const newRecord: Transaction = { ...data, id: crypto.randomUUID(), tipsterName }
-      saveTransactions([newRecord, ...transactions])
+  const handleSaveModal = async (data: Omit<Transaction, 'id' | 'tipsterName'> & { id?: string }) => {
+    try {
+      if (data.id) {
+        await tipsService.update(data.id, {
+          title: data.tipoAposta,
+          event: data.tipoAposta,
+          market: data.market || data.tipoAposta,
+          odds: data.odds,
+          stake: data.stake,
+          result: data.status,
+          profit: data.profit,
+          tipDate: new Date(data.tipDate + 'T12:00:00').toISOString(),
+          sport: data.sportsList[0] || 'Futebol',
+          linkAposta: data.linkAposta
+        })
+        toast.success('Registro atualizado! ✓')
+      } else {
+        await tipsService.create({
+          title: data.tipoAposta,
+          event: data.tipoAposta,
+          market: data.tipoAposta,
+          odds: data.odds,
+          stake: data.stake,
+          tipDate: new Date(data.tipDate + 'T12:00:00').toISOString(),
+          sport: data.sportsList[0] || 'Futebol',
+          description: data.tipoAposta,
+          linkAposta: data.linkAposta,
+          result: data.status !== 'PENDING' ? data.status : undefined,
+        })
+        toast.success('Novo registro criado! 🎯')
+      }
+      setIsModalOpen(false)
+      loadData(selectedTipsterId)
+    } catch (err) {
+      toast.error('Erro ao salvar no servidor.')
     }
-    setIsModalOpen(false)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteConfirm) return
-    const updated = transactions.filter(t => t.id !== deleteConfirm)
-    saveTransactions(updated)
-    setDeleteConfirm(null)
+    try {
+      await tipsService.delete(deleteConfirm)
+      toast.success('Registro excluído.')
+      setDeleteConfirm(null)
+      loadData(selectedTipsterId)
+    } catch {
+      toast.error('Erro ao excluir.')
+    }
   }
 
   // Derived Data
   const filteredTransactions = useMemo(() => {
     if (!Array.isArray(transactions)) return []
-    if (selectedTipsterId === 'all') return transactions
-    return transactions.filter(t => t.tipsterId === selectedTipsterId)
-  }, [selectedTipsterId, transactions])
+    return transactions
+  }, [transactions])
 
   const totalProfit = filteredTransactions.reduce((acc, t) => acc + t.profit, 0)
   const totalInvested = filteredTransactions.reduce((acc, t) => acc + t.stake, 0)
@@ -343,7 +389,6 @@ export const GestaoTipstersPage = () => {
   // Evolution chart mapping: group by date and sum profit
   const buildEvolutionChart = () => {
     const grouped = filteredTransactions.reduce((acc, t) => {
-      // Basic formatting of date (YYYY-MM-DD to DD/MM)
       const parts = t.tipDate.split('-')
       const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : t.tipDate
       
@@ -352,7 +397,6 @@ export const GestaoTipstersPage = () => {
       return acc
     }, {} as Record<string, number>)
 
-    // sort keys by actual date conceptually - simple alpha sort if ISO
     const sortedKeys = Object.keys(grouped).sort()
     
     let cum = 0
@@ -473,7 +517,11 @@ export const GestaoTipstersPage = () => {
         </div>
         
         <div className="w-full h-[300px] min-h-[300px]">
-          {chartData.length === 0 ? (
+          {loading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : chartData.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center text-sm text-slate-400">
               Nenhum dado com lucro suficiente para montagem do gráfico.
             </div>
@@ -498,7 +546,6 @@ export const GestaoTipstersPage = () => {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 700 }} 
-                  tickFormatter={(val) => user?.currency === 'BRL' ? `R$ ${val}` : user?.currency === 'USD' ? `$${val}` : `€${val}`}
                 />
                 <Tooltip 
                   contentStyle={{ 
@@ -509,7 +556,6 @@ export const GestaoTipstersPage = () => {
                     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)'
                   }}
                   itemStyle={{ color: '#059669', fontWeight: 900, fontSize: '14px' }}
-                  formatter={(val: any) => [formatCurrency(Number(val)), 'Lucro Acumulado']}
                   labelStyle={{ color: '#94a3b8', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}
                 />
                 <Area 
@@ -551,7 +597,16 @@ export const GestaoTipstersPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {filteredTransactions.length === 0 ? (
+              {loading ? (
+                <tr>
+                   <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
+                    <div className="flex flex-col items-center gap-2">
+                       <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                       Carregando dados...
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
                     Nenhum registro encontrado para este filtro. Adicione novas transações.
@@ -559,7 +614,6 @@ export const GestaoTipstersPage = () => {
                 </tr>
               ) : (
                 filteredTransactions.map(t => {
-                  // Basic formatting of date
                   const parts = t.tipDate.split('-')
                   const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : t.tipDate
 
@@ -578,17 +632,13 @@ export const GestaoTipstersPage = () => {
                       </td>
                       <td className="px-8 py-6">
                         <p className="text-sm font-black text-slate-800 tracking-tight leading-tight mb-1 max-w-[200px] truncate">
-                          {t.tipoAposta || t.event || 'Simples'}
+                          {t.tipoAposta}
                         </p>
-                        {t.sportsList && t.sportsList.length > 0 ? (
+                        {t.sportsList && t.sportsList.length > 0 && (
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                             {t.sportsList.join(', ')}
                           </p>
-                        ) : t.market ? (
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                            {t.market}
-                          </p>
-                        ) : null}
+                        )}
                         {t.linkAposta && (
                           <a href={t.linkAposta} target="_blank" rel="noreferrer" className="inline-flex mt-1 text-[10px] text-blue-500 hover:underline">Acessar Bilhete</a>
                         )}

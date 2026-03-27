@@ -26,11 +26,13 @@ export const createTip = async (data: CreateTipData) => {
   });
 };
 
-export const getAllTips = async (page = 1, limit = 10) => {
+export const getAllTips = async (page = 1, limit = 10, authorId?: string) => {
   const skip = (page - 1) * limit;
+  const where = authorId ? { authorId } : {};
 
   const [tips, total] = await Promise.all([
     prisma.tip.findMany({
+      where,
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
@@ -40,7 +42,7 @@ export const getAllTips = async (page = 1, limit = 10) => {
         },
       },
     }),
-    prisma.tip.count(),
+    prisma.tip.count({ where }),
   ]);
 
   return { tips, total, page, limit, totalPages: Math.ceil(total / limit) };
