@@ -61,17 +61,17 @@ model User {
 
 model Tip {
   id           String   @id @default(uuid())
-  title        String
-  description  String
-  sport        String
-  event        String
-  market       String
-  odds         Float
-  stake        Float    // unidades
+  title        String?
+  description  String?
+  sport        String?
+  event        String?
+  market       String?
+  odds         Float?
+  stake        Float?    // unidades
   result       String?  // GREEN, RED, VOID, PENDING
   profit       Float?
   valorCashout Float?
-  tipDate      DateTime
+  tipDate      DateTime?
   mercados     String[] @default([])
   isMultipla   Boolean  @default(false)
   jogos        Json?

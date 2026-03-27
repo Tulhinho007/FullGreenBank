@@ -180,24 +180,29 @@ export const TipsPage = () => {
     try {
       const sport = newForm.sportsList[0] || 'Futebol'
       const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
+      
       await tipsService.create({
-        title,
-        event: newForm.tipoAposta,
-        market: newForm.tipoAposta,
-        odds: Number(newForm.odds) || 0,
-        stake: Number(newForm.stake) || 0,
+        title: title || 'Sem título',
+        event: newForm.tipoAposta || 'Simples',
+        market: newForm.tipoAposta || 'Simples',
+        odds: newForm.odds ? Number(newForm.odds) : undefined,
+        stake: newForm.stake ? Number(newForm.stake) : undefined,
         tipDate: newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toISOString() : new Date().toISOString(),
         sport,
-        description: newForm.tipoAposta,
+        description: newForm.tipoAposta || 'Bet',
         linkAposta: newForm.linkAposta?.trim() || null,
         result: newForm.status !== 'PENDING' ? newForm.status : undefined,
       })
+      
       toast.success('Dica criada! 🎯')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Dicas', action: 'Tip publicada', detail: `Publicou: ${title}` })
       setNewTipOpen(false)
       setNewForm(emptyBetForm())
       load(1)
-    } catch { toast.error('Erro ao criar dica') }
+    } catch (err: any) { 
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Erro ao criar dica');
+    }
     finally { setSaving(false) }
   }
 
@@ -207,26 +212,37 @@ export const TipsPage = () => {
     setSaving(true)
     try {
       const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
-      await tipsService.update(selected.id, {
+      
+      const payload: any = {
         title: editForm.tipoAposta ? `${editForm.tipoAposta} — ${editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}` : selected.title,
         event: editForm.tipoAposta || selected.event,
         market: editForm.tipoAposta || selected.market,
-        odds: Number(editForm.odds) || selected.odds,
-        stake: Number(editForm.stake) || selected.stake,
+        odds: editForm.odds ? Number(editForm.odds) : undefined,
+        stake: editForm.stake ? Number(editForm.stake) : undefined,
         result: editForm.status,
-        profit: editForm.status === 'GREEN'
-          ? (Number(editForm.stake) * (Number(editForm.odds) - 1))
-          : editForm.status === 'RED'
-          ? -Number(editForm.stake)
-          : editForm.status === 'VOID' ? 0 : undefined,
         tipDate: editForm.tipDate ? new Date(editForm.tipDate + 'T12:00:00').toISOString() : selected.tipDate,
         sport,
         linkAposta: editForm.linkAposta?.trim() || null,
-      })
+      }
+
+      // Calcula profit apenas se houver stake e odd
+      if (payload.stake && payload.odds) {
+        payload.profit = editForm.status === 'GREEN'
+          ? (Number(payload.stake) * (Number(payload.odds) - 1))
+          : editForm.status === 'RED'
+          ? -Number(payload.stake)
+          : editForm.status === 'VOID' ? 0 : undefined
+      }
+
+      await tipsService.update(selected.id, payload)
+      
       toast.success('Dica atualizada! 🎯')
       if (me) addLog({ userEmail: me.email, userName: me.name, userRole: me.role, category: 'Operacional', action: 'Resultado atualizado', detail: `Resultado: ${editForm.status} — ${selected?.title}` })
       setSelected(null); load(page)
-    } catch { toast.error('Erro ao atualizar') }
+    } catch (err: any) { 
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Erro ao atualizar');
+    }
     finally { setSaving(false) }
   }
 

@@ -1,14 +1,14 @@
 import { prisma } from '../models/prismaClient';
 
 interface CreateTipData {
-  title: string;
-  description: string;
-  sport: string;
-  event: string;
-  market: string;
-  odds: number;
-  stake: number;
-  tipDate: Date;
+  title?: string;
+  description?: string;
+  sport?: string;
+  event?: string;
+  market?: string;
+  odds?: number;
+  stake?: number;
+  tipDate?: Date;
   authorId: string;
   mercados?: string[];
   isMultipla?: boolean;
