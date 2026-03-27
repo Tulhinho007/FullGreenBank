@@ -244,7 +244,7 @@ export const Sidebar = () => {
           icon={<Briefcase size={16} />} 
           label="AREA VIP - PREMIUM" 
           to="/gestao/investimentos" 
-          isLocked={user?.role !== 'MASTER'}
+          isLocked={user?.role !== 'MASTER' && user?.plan !== 'VIP PREMIUM'}
           onLockedClick={handleLockedClick}
           permission={getPerm('investimentos')}
           getPermission={getPerm}

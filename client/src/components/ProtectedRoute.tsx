@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext'
 interface Props {
   children: React.ReactNode
   allowedRoles?: string[]
+  allowedPlans?: string[]
 }
 
-export const ProtectedRoute = ({ children, allowedRoles }: Props) => {
+export const ProtectedRoute = ({ children, allowedRoles, allowedPlans }: Props) => {
   const { user, loading } = useAuth()
 
   if (loading) {
@@ -22,8 +23,16 @@ export const ProtectedRoute = ({ children, allowedRoles }: Props) => {
 
   if (!user) return <Navigate to="/login" replace />
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />
+  if (allowedRoles || allowedPlans) {
+    const roleMatches = allowedRoles ? allowedRoles.includes(user.role) : false;
+    const planMatches = allowedPlans ? allowedPlans.includes(user.plan) : false;
+
+    // Se nenhum dos requisitos permitidos no override (role ou plan) for satisfeito, bloqueia
+    if (!roleMatches && !planMatches) {
+      // Mas se o único check for de roles, e deu fail (o caso padrão das outras rotas)
+      // Ou seja, fallback global
+      return <Navigate to="/dashboard" replace />
+    }
   }
 
   return <>{children}</>

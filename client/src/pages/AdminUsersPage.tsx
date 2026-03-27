@@ -311,8 +311,8 @@ export const AdminUsersPage = () => {
             <div className="flex flex-col gap-6">
               <div>
                 <label className="label mb-3">Plano de Assinatura</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {['STARTER', 'PRO'].map(p => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['STARTER', 'PRO', 'VIP PREMIUM'].map(p => (
                     <button
                       key={p}
                       onClick={() => setEditForm(f => ({ ...f, plan: p }))}

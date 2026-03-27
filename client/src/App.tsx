@@ -147,7 +147,7 @@ function App() {
           <Route
             path="gestao/investimentos"
             element={
-              <ProtectedRoute allowedRoles={['MASTER']}>
+              <ProtectedRoute allowedRoles={['MASTER']} allowedPlans={['VIP PREMIUM']}>
                 <InvestimentosPage />
               </ProtectedRoute>
             }
