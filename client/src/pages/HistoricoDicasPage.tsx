@@ -178,8 +178,8 @@ export const HistoricoDicasPage = () => {
     try {
       const sport = editForm.sportsList[0] || editingTip.sport || 'Futebol'
       
-      const stakeNum = editForm.stake ? Number(editForm.stake) : (editingTip.stake ? Number(editingTip.stake) : 0)
-      const oddsNum = editForm.odds ? Number(editForm.odds) : (editingTip.odds ? Number(editingTip.odds) : 1)
+      const stakeNum = Number(editForm.stake.toString().replace(',', '.')) || (editingTip.stake ? Number(editingTip.stake) : 0)
+      const oddsNum = Number(editForm.odds.toString().replace(',', '.')) || (editingTip.odds ? Number(editingTip.odds) : 1)
       let profit: number | undefined = undefined
 
       if (editForm.status === 'GREEN') {
@@ -408,7 +408,7 @@ export const HistoricoDicasPage = () => {
                         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest truncate max-w-[200px]">{tip.sport}</p>
                       </td>
                       <td className="px-8 py-5 text-sm font-black text-slate-800">
-                        {tip.odds.toFixed(2)}
+                        {Number(tip.odds || 0).toFixed(2)}
                       </td>
                       <td className="px-8 py-5 text-sm font-bold text-slate-400">
                         {fmt(tip.stake)}

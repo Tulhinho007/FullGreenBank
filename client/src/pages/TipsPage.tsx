@@ -195,9 +195,14 @@ export const TipsPage = () => {
       const sport = newForm.sportsList[0] || 'Futebol'
       const title = `${newForm.tipoAposta} — ${newForm.tipDate ? new Date(newForm.tipDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem data'}`
       
-      const stakeNum = newForm.stake ? Number(newForm.stake) : undefined
-      const oddsNum = newForm.odds ? Number(newForm.odds) : undefined
+      const stakeNum = newForm.stake ? Number(newForm.stake.toString().replace(',', '.')) : 0
+      const oddsNum = newForm.odds ? Number(newForm.odds.toString().replace(',', '.')) : undefined
       let profit: number | undefined = undefined
+
+      if (oddsNum && oddsNum < 1.01) {
+        toast.error('A Odd deve ser pelo menos 1.01')
+        return
+      }
 
       if (newForm.status === 'GREEN' && stakeNum && oddsNum) {
         profit = stakeNum * (oddsNum - 1)
@@ -241,9 +246,14 @@ export const TipsPage = () => {
     try {
       const sport = editForm.sportsList[0] || selected.sport || 'Futebol'
       
-      const stakeNum = editForm.stake ? Number(editForm.stake) : (selected.stake ? Number(selected.stake) : undefined)
-      const oddsNum = editForm.odds ? Number(editForm.odds) : (selected.odds ? Number(selected.odds) : undefined)
+      const stakeNum = editForm.stake ? Number(editForm.stake.toString().replace(',', '.')) : (selected.stake ? Number(selected.stake) : undefined)
+      const oddsNum = editForm.odds ? Number(editForm.odds.toString().replace(',', '.')) : (selected.odds ? Number(selected.odds) : undefined)
       let profit: number | undefined = undefined
+
+      if (oddsNum && oddsNum < 1.01) {
+        toast.error('A Odd deve ser pelo menos 1.01')
+        return
+      }
 
       if (editForm.status === 'GREEN' && stakeNum && oddsNum) {
         profit = stakeNum * (oddsNum - 1)
@@ -372,7 +382,7 @@ export const TipsPage = () => {
         <div className="flex items-center justify-between text-center gap-2">
           <div className="text-left">
             <p className="text-[10px] text-slate-300 uppercase font-black tracking-widest mb-0.5">Odd</p>
-            <p className="text-[15px] font-bold font-mono text-slate-800">@{tip.odds.toFixed(2)}</p>
+            <p className="text-[15px] font-bold font-mono text-slate-800">@{Number(tip.odds || 0).toFixed(2)}</p>
           </div>
           <div className="h-8 w-px bg-slate-100" />
           <div className="text-center">
@@ -431,7 +441,7 @@ export const TipsPage = () => {
                       <p className="text-[13px] font-display font-bold text-slate-800 flex-1 leading-snug">{jogo.mandante} x {jogo.visitante}</p>
                       <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1 pt-2 border-t border-slate-100">
                         <span className="font-bold">{jogo.mercados?.map((m: any) => m.mercado || m).join(', ')}</span>
-                        <span className="font-mono text-emerald-600 font-bold">@{Number(jogo.odd).toFixed(2)}</span>
+                        <span className="font-mono text-emerald-600 font-bold">@{Number(jogo.odd || 0).toFixed(2)}</span>
                       </div>
                     </div>
                   )

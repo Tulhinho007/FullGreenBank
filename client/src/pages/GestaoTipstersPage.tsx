@@ -123,8 +123,8 @@ const TransactionModal = ({ isOpen, onClose, onSave, tipsters, editData }: Trans
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    const odds = Number(form.odds) || 0
-    const stake = Number(form.stake) || 0
+    const odds = Number(form.odds.toString().replace(',', '.')) || 0
+    const stake = Number(form.stake.toString().replace(',', '.')) || 0
     let profit = 0
     if (form.status === 'GREEN') {
       profit = stake * (odds - 1)
