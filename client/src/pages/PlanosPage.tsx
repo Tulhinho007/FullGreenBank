@@ -82,7 +82,7 @@ export const PlanosPage = () => {
         {/* BACK BUTTON */}
         <div className="absolute top-8 left-4 md:left-8">
           <Link 
-            to="/dashboard" 
+            to="/" 
             className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors font-medium text-sm drop-shadow-md"
           >
             <ArrowLeft size={18} />
