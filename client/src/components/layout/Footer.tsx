@@ -72,21 +72,6 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Fixed Disclaimer Section */}
-        <div className="mt-12 p-6 rounded-3xl bg-slate-50 border border-slate-100/60 font-medium">
-          <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left transition-all hover:scale-[1.002]">
-            <div className="nm-icon w-14 h-14 shrink-0 rounded-2xl bg-white text-emerald-600 flex items-center justify-center">
-              <ShieldCheck size={28} />
-            </div>
-            <div className="space-y-2">
-              <h5 className="font-black text-slate-800 text-sm tracking-tight uppercase tracking-wider">Aviso importante & Gestão de Risco</h5>
-              <p className="text-xs text-slate-500 leading-relaxed italic">
-                O <strong>Full Green Bank</strong> fornece ferramentas de gestão e compartilhamento de análises. Lembramos que os bilhetes registrados representam a estratégia pessoal do administrador e não constituem recomendação de investimento ou consultoria financeira. Cada banca possui uma realidade única; gerencie seus riscos de acordo com o seu perfil e capital disponível. <strong>Ganhos passados não garantem retornos futuros.</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left font-bold">
           <div className="space-y-2">

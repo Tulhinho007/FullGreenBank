@@ -25,7 +25,6 @@ export interface User {
   language: string
   theme: string
   twoFactorEnabled: boolean
-  welcomeSeen: boolean
   avatarUrl?: string
   paymentStatus?: string
   purchaseDate?: string | null

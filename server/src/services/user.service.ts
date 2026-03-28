@@ -47,7 +47,6 @@ export const getAllUsers = async () => {
       language: true,
       theme: true,
       twoFactorEnabled: true,
-      welcomeSeen: true,
       avatarUrl: true,
       createdAt: true,
       permissions: true,
@@ -80,7 +79,6 @@ export const getUserById = async (id: string) => {
       language: true,
       theme: true,
       twoFactorEnabled: true,
-      welcomeSeen: true,
       avatarUrl: true,
       createdAt: true,
       permissions: true,
@@ -97,7 +95,7 @@ export const updateUser = async (
     purchaseDate?: string; lastPaymentDate?: string;
     dueDate?: string; paymentStatus?: string; isActive?: boolean; notes?: string;
     currency?: string; language?: string; theme?: string;
-    twoFactorEnabled?: boolean; welcomeSeen?: boolean; avatarUrl?: string;
+    twoFactorEnabled?: boolean; avatarUrl?: string;
   }
 ) => {
   const updateData: any = {};
@@ -122,7 +120,6 @@ export const updateUser = async (
   if (data.language !== undefined)            updateData.language = data.language;
   if (data.theme !== undefined)               updateData.theme    = data.theme;
   if (data.twoFactorEnabled !== undefined) updateData.twoFactorEnabled = data.twoFactorEnabled;
-  if (data.welcomeSeen !== undefined)       updateData.welcomeSeen = data.welcomeSeen;
   if (data.avatarUrl !== undefined)           updateData.avatarUrl = data.avatarUrl;
 
   return prisma.user.update({
@@ -148,7 +145,6 @@ export const updateUser = async (
       language: true,
       theme: true,
       twoFactorEnabled: true,
-      welcomeSeen: true,
       avatarUrl: true,
       createdAt: true,
       permissions: true,
