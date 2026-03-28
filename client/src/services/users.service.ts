@@ -19,7 +19,7 @@ export const usersService = {
   updateProfile: async (data: {
     name?: string; phone?: string; password?: string;
     plan?: string; currency?: string; language?: string; theme?: string;
-    twoFactorEnabled?: boolean; avatarUrl?: string;
+    twoFactorEnabled?: boolean; welcomeSeen?: boolean; avatarUrl?: string;
   }) => {
     const res = await api.patch('/users/profile/me', data)
     return res.data.data

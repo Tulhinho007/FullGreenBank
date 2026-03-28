@@ -45,11 +45,11 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     const userId = req.user!.userId;
     const {
       name, phone, password, isTipster,
-      plan, currency, language, theme, twoFactorEnabled, avatarUrl
+      plan, currency, language, theme, twoFactorEnabled, welcomeSeen, avatarUrl
     } = req.body;
     const user = await userService.updateUser(userId, {
       name, phone, password, isTipster,
-      plan, currency, language, theme, twoFactorEnabled, avatarUrl
+      plan, currency, language, theme, twoFactorEnabled, welcomeSeen, avatarUrl
     });
     sendSuccess(res, user, 'Perfil atualizado com sucesso!');
   } catch (error) {

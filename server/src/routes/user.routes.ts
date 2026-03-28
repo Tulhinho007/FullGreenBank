@@ -50,6 +50,7 @@ router.patch(
     body('language').optional().isIn(['PT-BR', 'EN-US', 'ES-ES']),
     body('theme').optional().isIn(['LIGHT', 'DARK', 'SYSTEM']),
     body('twoFactorEnabled').optional().isBoolean(),
+    body('welcomeSeen').optional().isBoolean(),
     body('avatarUrl').optional().isURL(),
   ],
   validateRequest,

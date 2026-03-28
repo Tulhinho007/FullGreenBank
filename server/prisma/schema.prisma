@@ -43,6 +43,7 @@ model User {
   language          String   @default("PT-BR")   // PT-BR, EN-US, ES-ES
   theme             String   @default("DARK")    // LIGHT, DARK, SYSTEM
   twoFactorEnabled  Boolean  @default(false)
+  welcomeSeen       Boolean  @default(false)
   avatarUrl         String?
 
   createdAt DateTime @default(now())
