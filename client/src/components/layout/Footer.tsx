@@ -56,12 +56,12 @@ export const Footer = () => {
           {/* Coluna 4: Aviso de Risco */}
           <div className="space-y-6 font-bold">
             <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Segurança</h4>
-            <div className="p-4 rounded-2xl border-l-4 border-rose-500 bg-rose-50 space-y-3">
-              <div className="flex items-center gap-2 text-rose-600">
+            <div className="p-4 rounded-2xl border-l-4 border-amber-500 bg-amber-50 space-y-3">
+              <div className="flex items-center gap-2 text-amber-600">
                 <AlertTriangle size={16} />
                 <span className="text-[11px] font-black uppercase tracking-wider">Aviso de Risco</span>
               </div>
-              <p className="text-[11px] text-rose-800 leading-relaxed italic font-bold">
+              <p className="text-[11px] text-amber-800 leading-relaxed italic font-bold">
                 Esportes e investimentos envolvem riscos significativos. Resultados passados não garantem ganhos futuros. Nunca utilize capital destinado a despesas essenciais.
               </p>
             </div>
