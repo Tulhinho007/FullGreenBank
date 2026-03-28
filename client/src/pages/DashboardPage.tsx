@@ -90,6 +90,21 @@ export const DashboardPage = () => {
 
   return (
     <div className="flex flex-col gap-6 transition-colors duration-300 pb-10">
+      {/* Disclaimer de Responsabilidade */}
+      <section className="bg-emerald-50/50 border border-emerald-100/60 p-5 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-5 group transition-all hover:bg-emerald-50">
+        <div className="nm-icon w-14 h-14 shrink-0 rounded-2xl bg-white text-emerald-600 flex items-center justify-center shadow-sm">
+          <ShieldCheck size={28} />
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs text-slate-600 leading-relaxed font-semibold">
+            Nosso objetivo é fornecer ferramentas de gestão e compartilhamento de análises. Lembramos que os bilhetes registrados representam a <strong className="text-emerald-700">estratégia pessoal do administrador</strong> e não constituem recomendação de investimento ou consultoria financeira.
+          </p>
+          <p className="text-[11px] text-slate-500 italic font-bold">
+            Cada banca possui uma realidade única; gerencie seus riscos de acordo com o seu perfil e capital disponível.
+          </p>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50 group-hover:scale-110 transition-transform duration-700 pointer-events-none"></div>
