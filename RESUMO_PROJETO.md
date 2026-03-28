@@ -1,6 +1,6 @@
 # 📘 Full Green Bank — Resumo Completo do Projeto
 
-> Documento atualizado em: 27/03/2026
+> Documento atualizado em: 28/03/2026
 > Repositório: [github.com/Tulhinho007/FullGreenBank](https://github.com/Tulhinho007/FullGreenBank)
 
 ---
@@ -172,13 +172,16 @@ O sistema utiliza um design baseado em **neumorfismo** (soft UI) aplicado global
 
 ### Design & UX
 - **Neumorfismo Global** — Sistema de sombras suaves e componentes "inset"
-- **Glassmorphism (Novo)** — Efeitos translúcidos aplicados no Simulador de Consistência
+- **Glassmorphism** — Efeitos translúcidos aplicados no Simulador de Consistência e Landing Page
+- **Design Premium** — Nova Landing Page com 5 pilares institucionais e mockups de alta qualidade
 - **Light Mode Premium** — Tema claro focado em legibilidade e cores esmeralda/dourado
+- **Dark Mode Moderno** — Landing Page agora utiliza um fundo ultra-dark (#06080B) para maior contraste corporativo
 
 ### Operacional & Crescimento
 - **Simulador de Consistência**: Ferramenta interativa que puxa o total da banca automaticamente e projeta alcance do "Objetivo Final" através de juros compostos diários e Perfil de Risco simulado.
-- **Plano VIP PREMIUM**: Nova categoria bloqueada na vitrine (planos públicos), voltada apenas para concessão de administradores a usuários da "Área VIP".
-- **Criação de Contas por Administradores**: Workflow modal superseguro internamente onde o "Master" pode gerar novos membros com planos/cargos e senhas já configurados sem auto-deslogar a sessão ou depender da página pública de cadastro.
+- **Landing Page 2.0**: Reformulação total com seções para Dashboard, Performance, Inteligência Operacional, Simulador e Curadoria de Conteúdo.
+- **Plano VIP PREMIUM**: Categoria exclusiva para membros selecionados pela administração.
+- **Criação de Contas por Administradores**: Workflow modal seguro para geração instantânea de usuários.
 
 ### Módulo de Dicas (TipsPage)
 - **Modal Reformulado** — Campos: Data, Link de Aposta, Tipo de Aposta (Simples/Múltipla/Criar Aposta), Quantidade de Esportes (gera selects dinâmicos), Odd, Stake, Status
@@ -208,6 +211,7 @@ O sistema utiliza um design baseado em **neumorfismo** (soft UI) aplicado global
 ### Segurança & Autenticação
 - JWT em cookies `httpOnly`, `secure`, `sameSite: strict`
 - RBAC no backend para todos os endpoints sensíveis
+- **Política de Senhas Fortes**: Validação Regex no frontend/backend (Min 6 chars, Maiúscula, Minúscula, Número, Caractere Especial)
 - Normalização de e-mail automática no login/cadastro
 - Remoção do campo `username` — apenas e-mail + senha
 - `console.log` removidos no build de produção (esbuild)
@@ -279,12 +283,9 @@ VITE_API_URL=http://localhost:3001  # Local
 
 ## 📌 Últimos Commits
 
-| Hash | Descrição |
-|------|-----------|
-| `HEAD` | feat: adicionado o simulador de juros compostos, plano vip premium e novo fluxo modal de criação instatânea de usuários para mestres/admins |
-| `25397c2` | feat(ui): aplica design neumorfismo — sombras suaves em cards, inputs, botoes, header, sidebar e modais |
-| `31513d7` | feat(tips): reformula modais Nova Dica e Editar Dica com novos campos |
-| _anterior_ | fix: resolve infinite redirect loop and improve auth stability on Vercel |
-| _anterior_ | perf: optimize frontend build with manual chunks and increased size limit |
-| _anterior_ | refactor: remove username field system-wide and migrate to email-only auth |
-| _anterior_ | feat: persistência de dados de cadastros no PostgreSQL |
+| `HEAD` | feat: nova Landing Page premium com 5 pilares e integração de link direto para suporte via WhatsApp |
+| `bdc4aa0` | fix(planos): rota do botão voltar apontando para a Landing Page |
+| `109cfee` | feat: aprimoramento visual da Landing Page e correção de filtros de visibilidade |
+| `7b672ae` | feat: correção de fuso horário em datas e bypass de reset de pagamentos |
+| `25397c2` | feat(ui): aplica design neumorfismo global |
+| _anterior_ | feat(tips): reformula modais de nova e edição de dica |

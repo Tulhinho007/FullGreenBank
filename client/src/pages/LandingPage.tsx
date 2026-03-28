@@ -162,7 +162,14 @@ export const LandingPage = () => {
           <p className="text-xl text-slate-400 mb-12 font-medium">Junte-se a centenas de operadores que usam a inteligência de dados para bater o mercado.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link to="/register" className="px-12 py-5 rounded-2xl bg-[#00FF7F] text-[#06080B] font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:shadow-[#00FF7F]/40 transition-all active:scale-95">Criar Conta Grátis</Link>
-            <Link to="/faq" className="px-12 py-5 rounded-2xl border border-white/10 text-white font-black uppercase tracking-[0.2em] text-xs hover:bg-white/5 transition-all">Tirar Dúvidas</Link>
+            <a 
+              href="https://api.whatsapp.com/send?phone=5581995750402&text=Bem+vindo+a+Full+Green+Bank%21+" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-12 py-5 rounded-2xl border border-white/10 text-white font-black uppercase tracking-[0.2em] text-xs hover:bg-white/5 transition-all text-center"
+            >
+              Tirar Dúvidas
+            </a>
           </div>
         </div>
       </section>
