@@ -464,28 +464,29 @@ export const GestaoBancaPage = () => {
       {casaTemBanca && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-              <div className="flex items-center justify-between mb-4 relative z-10">
+            <div className="bg-slate-50 p-8 rounded-[2.5rem] border-none shadow-sm relative overflow-hidden group nm-flat transition-all duration-300">
+              <div className="flex items-center justify-between mb-6 relative z-10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                    <Wallet size={20} className="text-slate-400" />
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200/50 nm-icon">
+                    <Wallet size={20} className="text-emerald-500" />
                   </div>
-                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Banca Inicial</span>
+                  <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Banca Inicial</span>
                 </div>
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm">
                   <Edit2 size={12} className="text-emerald-600" />
                 </div>
               </div>
               <div className="relative z-10">
-                <CurrencyInput
-                  value={bancaInicialAtual}
-                  onChange={(v) => handleSaveConfigCarteira('bancaInicial', String(v))}
-                  disabled={!selectedCarteiraId}
-                  alertLimit={1000}
-                  className="text-4xl font-black text-slate-800 tracking-tight bg-transparent border-none focus:ring-0 p-0 w-full"
-                />
-                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mt-2">Capital de aporte inicial registrado</p>
+                <div className="nm-inset rounded-2xl p-5 mb-3 transition-all group-hover:bg-slate-50/50">
+                  <CurrencyInput
+                    value={bancaInicialAtual}
+                    onChange={(v) => handleSaveConfigCarteira('bancaInicial', String(v))}
+                    disabled={!selectedCarteiraId}
+                    alertLimit={1000}
+                    className="text-2xl font-black text-slate-800 tracking-tight bg-transparent border-none focus:ring-0 p-0 w-full"
+                  />
+                </div>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Capital de aporte inicial registrado</p>
               </div>
             </div>
 
